@@ -23,6 +23,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +31,7 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 fun CollectionCatalogApp() {
     CollectionCatalogTheme {
         //CenterAlignedTopAppBar(title = "Collection Catalog", canNavigateBack = true)
-        TopAppBar()
+        HomeScreen()
     }
 }
 
@@ -62,63 +63,7 @@ fun CenterAlignedTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopAppBar() {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            androidx.compose.material3.TopAppBar(
-                title = {
-                    Text(
-                        "title",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        //modifier = Modifier.padding(16.dp)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Menu"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search"
-                        )
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add"
-                        )
-                    }
-                    /*IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More actions")
-                    }*/
-                },
-                scrollBehavior = scrollBehavior
-            )
-        },
-        content = { innerPadding ->
-            LazyColumn(
-                contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                /*TODO*/
-            }
-        }
-    )
-}
 
 /*
 @Composable

@@ -1,11 +1,14 @@
 package com.mikohatara.collectioncatalog
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
-/*
-@HiltAndroidApp
+import com.mikohatara.collectioncatalog.data.SampleAppContainer
+import com.mikohatara.collectioncatalog.data.SampleDataContainer
+
 class CollectionCatalogApplication: Application() {
+    //lateinit var container: SampleAppContainer
+
     override fun onCreate() {
         super.onCreate()
+        //container = SampleDataContainer(this)
     }
-}*/
+}

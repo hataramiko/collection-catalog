@@ -11,7 +11,7 @@ activityCompose = "1.8.2"
 composeBom = "2024.04.00"
 room = "2.6.1"
 devtoolsKsp = "1.9.0-1.0.13"
-#devtoolsKsp = "1.8.21-1.0.11"
+navigation = "2.7.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,6 +28,11 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+androidx-navigation-dff = { group = "androidx.navigation", name = "navigation-dynamic-features-fragment", version.ref = "navigation" }
+androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigation" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hiltAndroid" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

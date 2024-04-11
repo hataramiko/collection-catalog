@@ -4,5 +4,6 @@
     <string name="collection_is_empty">The collection is empty</string>
     <string name="country">Country</string>
     <string name="number">Number</string>
-    <string name="Type">Type</string>
+    <string name="type">Type</string>
+    <string name="title">Title</string>
 </resources>
