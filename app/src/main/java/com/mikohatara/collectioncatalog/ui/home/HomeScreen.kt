@@ -125,6 +125,7 @@ fun HomeBody(
 @Composable
 private fun ItemCard(
     item: SampleImage,
+    //title: SampleImage,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier) {
@@ -138,13 +139,14 @@ private fun ItemCard(
     }
 }
 
+/*
 @Preview
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
         HomeScreen()
     }
-}
+}*/
 
 @Preview
 @Composable
