@@ -1,4 +1,4 @@
-package com.mikohatara.collectioncatalog.data
+package com.mikohatara.collectioncatalog.data.sample
 
 import android.content.Context
 import androidx.room.Database

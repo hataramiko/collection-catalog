@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
@@ -17,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.data.SampleImage
+import com.mikohatara.collectioncatalog.data.sample.SampleImage
 
 @Composable
 fun ItemCard(
@@ -64,10 +63,12 @@ private fun defineImageSize(item: SampleImage): Int {
     val sizeToGive: Int
 
     if (item == SampleImage(R.drawable.j_sa0123_a) ||
-        item == SampleImage(R.drawable.j_a1234_a)) {
+        item == SampleImage(R.drawable.j_a1234_a)
+    ) {
             sizeToGive = 256
     } else if (item == SampleImage(R.drawable.fin_abc012_a) ||
-        item == SampleImage(R.drawable.fin_abc012_b)) {
+        item == SampleImage(R.drawable.fin_abc012_b)
+    ) {
             sizeToGive = 300
     } else {
         sizeToGive = 400
