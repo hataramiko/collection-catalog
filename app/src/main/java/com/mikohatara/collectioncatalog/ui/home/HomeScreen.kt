@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.SampleImage
 import com.mikohatara.collectioncatalog.data.SampleImageSource
+import com.mikohatara.collectioncatalog.ui.item.ItemCard
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
@@ -94,7 +96,8 @@ fun HomeTopAppBar(
         content = { innerPadding ->
             LazyColumn(
                 contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 items(itemList) { item ->
                     ItemCard(
@@ -107,6 +110,7 @@ fun HomeTopAppBar(
     )
 }
 
+/*
 @Composable
 fun HomeBody(
     itemList: List<SampleImage>,
@@ -120,36 +124,12 @@ fun HomeBody(
             )
         }
     }
-}
+}*/
 
-@Composable
-private fun ItemCard(
-    item: SampleImage,
-    //title: SampleImage,
-    modifier: Modifier = Modifier
-) {
-    Card(modifier = modifier) {
-        Image(
-            painter = painterResource(item.imageResourceId),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxHeight(),
-            contentScale = ContentScale.FillWidth
-        )
-    }
-}
-
-/*
 @Preview
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
         HomeScreen()
     }
-}*/
-
-@Preview
-@Composable
-fun CardPreview() {
-    ItemCard(SampleImage(R.drawable.j_sa0123_a))
 }
