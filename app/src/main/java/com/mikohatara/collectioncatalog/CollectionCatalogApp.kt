@@ -23,16 +23,29 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionCatalogApp() {
-    CollectionCatalogTheme {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "home" /*, graph =*/ ) {
+        composable("home") { HomeScreen() }
+        // more destinations
+        // navGraph?
+    }
+
+    /*CollectionCatalogTheme {
         //CenterAlignedTopAppBar(title = "Collection Catalog", canNavigateBack = true)
         HomeScreen()
-    }
+    }*/
+
+    //HomeScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

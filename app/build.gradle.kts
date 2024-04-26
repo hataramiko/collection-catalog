@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    kotlin("kapt")
+    alias(libs.plugins.jetbrainsKotlinKapt)
     alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.devtoolsKsp)
 }
@@ -86,4 +86,6 @@ dependencies {
 }
 
 // Hilt - Allow references to generated code
-kapt { correctErrorTypes = true }
+kapt {
+    correctErrorTypes = true
+}
