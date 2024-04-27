@@ -1,7 +1,7 @@
 package com.mikohatara.collectioncatalog.di
 
-//import com.mikohatara.collectioncatalog.data.OfflinePlateRepository
-//import com.mikohatara.collectioncatalog.data.PlateRepository
+import com.mikohatara.collectioncatalog.data.OfflinePlateRepository
+import com.mikohatara.collectioncatalog.data.PlateRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 import javax.inject.Singleton
-/*
+
 @Module
 @InstallIn(SingletonComponent::class)
 interface DataModule {
@@ -31,4 +31,4 @@ class FakePlateRepository @Inject constructor() : PlateRepository {
     }
 }
 
-val fakePlates = listOf("ABC-123", "DEF-456", "GHI-789")*/*/
+val fakePlates = listOf("ABC-123", "DEF-456", "GHI-789")*/
