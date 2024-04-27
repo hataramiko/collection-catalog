@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase
 abstract class CollectionDatabase : RoomDatabase() {
     abstract fun plateDao(): PlateDao
 
+    /*
     companion object {
         @Volatile
         private var Instance: CollectionDatabase? = null
@@ -25,5 +26,5 @@ abstract class CollectionDatabase : RoomDatabase() {
                     .also { Instance = it }
             }
         }
-    }
+    }*/
 }

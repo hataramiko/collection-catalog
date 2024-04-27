@@ -17,25 +17,27 @@ import kotlinx.coroutines.flow.Flow
 data class Plate(
     @Embedded var commonDetails: CommonDetails,
     @Embedded var uniqueDetails: UniqueDetails,
-
+    @Embedded var availability: Availability,
+    @Embedded var source: Source,
 )
 
 @Entity(tableName = "wishlist")
 data class WantedPlate(
     @PrimaryKey @Ignore val id: Int,
-    @ColumnInfo(name = "country") var country: String,
-    @ColumnInfo(name = "region") var region: String?,
-    @ColumnInfo(name = "area") var area: String?,
-    @ColumnInfo(name = "number") var number: String,
-    @ColumnInfo(name = "type") var type: String,
-    @ColumnInfo(name = "year") var year: Int?,
-    @ColumnInfo(name = "period") var period: String?,
+    @Embedded var commonDetails: CommonDetails,
+    @ColumnInfo(name = "number") var number: String?,
+    @ColumnInfo(name = "notes") var notes: String?
 )
 
 @Entity(tableName = "former", primaryKeys = ["number", "variant"])
 data class FormerPlate(
+    @Embedded var commonDetails: CommonDetails,
+    @Embedded var uniqueDetails: UniqueDetails,
+    @Embedded var source: Source,
     @Embedded var former: Former?
 )
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 data class CommonDetails(
     @ColumnInfo(name = "country") var country: String,
@@ -43,23 +45,23 @@ data class CommonDetails(
     @ColumnInfo(name = "area") var area: String?,
     @ColumnInfo(name = "type") var type: String,
     @ColumnInfo(name = "period") var period: String?,
-    @ColumnInfo(name = "year") var year: Int?,
+    @ColumnInfo(name = "year") var year: Int?
 )
 
 data class UniqueDetails(
     @ColumnInfo(name = "number") var number: String,
     @ColumnInfo(name = "variant") var variant: Char = 'a',
     @ColumnInfo(name = "vehicle") var vehicle: String?,
-    @ColumnInfo(name = "status") var status: String,
+    @ColumnInfo(name = "notes") var notes: String?,
     @ColumnInfo(name = "date") var date: String?,
     @ColumnInfo(name = "cost") var cost: Double?,
     @ColumnInfo(name = "value") var value: Double?,
-    @ColumnInfo(name = "notes") var notes: String?,
+    @ColumnInfo(name = "status") var status: String?
 )
 
-data class Booleans(
-    @ColumnInfo(name = "keeper") var keeper: Boolean,
-    @ColumnInfo(name = "for_trade") var forTrade: Boolean,
+data class Availability(
+    @ColumnInfo(name = "keeper") var isKeeper: Boolean,
+    @ColumnInfo(name = "for_trade") var isForTrade: Boolean,
 )
 
 data class Source(
@@ -72,8 +74,10 @@ data class Source(
 
 data class Former(
     @ColumnInfo(name = "recipient") var recipient: String?,
-    @ColumnInfo(name = "end_date") var endDate: String?,
+    @ColumnInfo(name = "transaction_date") var endDate: String?,
+    @ColumnInfo(name = "transaction_details") var transactionDetails: String?,
+    @ColumnInfo(name = "price") var price: Double?,
+    @ColumnInfo(name = "transaction_type") var transactionType: String?,
     @ColumnInfo(name = "destination_country") var destinationCountry: String?,
-    @ColumnInfo(name = "price") var price: Double?
 )
 

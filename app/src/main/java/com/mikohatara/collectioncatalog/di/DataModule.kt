@@ -17,13 +17,10 @@ interface DataModule {
 
     @Singleton
     @Binds
-    fun bindsPlateRepository(
-        plateRepository: OfflinePlateRepository
-    ): PlateRepository
+    fun bindsPlateRepository(plateRepository: OfflinePlateRepository): PlateRepository
 }
 
-/*
-class FakePlateRepository @Inject constructor() : PlateRepository {
+/*class FakePlateRepository @Inject constructor() : PlateRepository {
     override val plates: Flow<List<String>> = flowOf(fakePlates)
 
     override suspend fun add(name: String) {

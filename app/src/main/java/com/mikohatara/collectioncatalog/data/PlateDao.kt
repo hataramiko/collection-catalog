@@ -11,19 +11,19 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PlateDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(plate: Plate)
+    suspend fun insertPlate(plate: Plate)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insertAll(vararg plates: Plate)
+    suspend fun insertAllPlates(vararg plates: Plate)
 
     @Update
-    suspend fun update(plate: Plate)
+    suspend fun updatePlate(plate: Plate)
 
     @Update
-    suspend fun updateAll(vararg plates: Plate)
+    suspend fun updateAllPlates(vararg plates: Plate)
 
     @Delete
-    suspend fun delete(plate: Plate)
+    suspend fun deletePlate(plate: Plate)
 
     @Query("SELECT * from plates WHERE number = :number")
     fun getPlate(number: String): Flow<Plate>
