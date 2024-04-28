@@ -22,21 +22,23 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.sample.SampleImage
 import com.mikohatara.collectioncatalog.data.sample.SampleImageSource
-import com.mikohatara.collectioncatalog.ui.item.ItemCard
+import com.mikohatara.collectioncatalog.data.samplePlates
+import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun HomeScreen() {
-    HomeTopAppBar(itemList = SampleImageSource().loadSampleImages())
+    HomeTopAppBar(itemList = samplePlates)
     //HomeBody()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopAppBar(
-    itemList: List<SampleImage>,
+    itemList: List<Plate> = samplePlates,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
