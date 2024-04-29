@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -30,8 +32,8 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun HomeScreen() {
-    //HomeTopAppBar(itemList = samplePlates)
-    HomeBody(samplePlates)
+    HomeTopAppBar(itemList = samplePlates)
+    //HomeBody(samplePlates)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,18 +87,12 @@ fun HomeTopAppBar(
             )
         },
         content = { innerPadding ->
-            LazyColumn(
-                contentPadding = innerPadding,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(0.dp)
-            ) {
-                items(itemList) { item ->
-                    /*ItemCard(
-                        item = item,
-                        modifier = Modifier.padding(6.dp)
-                    )*/
-                }
-            }
+            HomeBody(
+                itemList = itemList,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    //.verticalScroll(rememberScrollState())
+            )
         }
     )
 }
@@ -127,7 +123,6 @@ fun HomeBody(
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
-        //HomeScreen()
-        HomeBody(samplePlates)
+        HomeScreen()
     }
 }
