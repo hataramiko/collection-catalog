@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,22 +24,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.data.Plate
-import com.mikohatara.collectioncatalog.data.sample.SampleImage
-import com.mikohatara.collectioncatalog.data.sample.SampleImageSource
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun HomeScreen() {
-    HomeTopAppBar(itemList = samplePlates)
-    //HomeBody()
+    //HomeTopAppBar(itemList = samplePlates)
+    HomeBody(samplePlates)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopAppBar(
-    itemList: List<Plate> = samplePlates,
+    itemList: List<Plate>,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -92,36 +91,43 @@ fun HomeTopAppBar(
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 items(itemList) { item ->
-                    ItemCard(
+                    /*ItemCard(
                         item = item,
                         modifier = Modifier.padding(6.dp)
-                    )
+                    )*/
                 }
             }
         }
     )
 }
 
-/*
 @Composable
 fun HomeBody(
-    itemList: List<SampleImage>,
-    modifier: Modifier = Modifier
+    itemList: List<Plate>,
+    modifier: Modifier = Modifier,
+    onItemClick: (Plate) -> Unit = {}
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        contentPadding = PaddingValues(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+    ) {
         items(itemList) { item ->
             ItemCard(
-                item = item,
-                modifier = Modifier.padding(6.dp)
-            )
+                item = item
+            ) {
+                onItemClick(item)
+            }
         }
     }
-}*/
+}
 
 @Preview
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
-        HomeScreen()
+        //HomeScreen()
+        HomeBody(samplePlates)
     }
 }

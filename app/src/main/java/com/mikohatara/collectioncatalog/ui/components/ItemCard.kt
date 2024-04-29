@@ -1,17 +1,22 @@
 package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
@@ -22,20 +27,32 @@ import com.mikohatara.collectioncatalog.data.samplePlates
 @Composable
 fun ItemCard(
     item: Plate,
-    //hasImage: Boolean,
+    onClick: () -> Unit
+) {
+    ItemCard(
+        image = true /*item.imagePath*/,
+        width = 520.0 /*item.width*/,
+        title = item.uniqueDetails.number,
+        onClick = onClick
+    )
+}
+
+@Composable
+private fun ItemCard(
+    image: Boolean, // Change this to the image path etc. when possible
+    width: Double,
+    title: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // For testing the if condition below
-    val hasImage = false
-    var imageWidth: Int
-
     Card(
+        onClick = onClick,
         modifier = modifier
             //.height(IntrinsicSize.Min)
     ) {
-        if (/*item.imageResourceId*/hasImage != false) {
-            //imageWidth = defineImageSize(item)
+        if (image != false /* image != null */ ) {
 
+            //imageWidth = defineImageSize(item)
             /*Image(
                 painter = painterResource(item.imageResourceId),
                 contentDescription = null,
@@ -44,53 +61,36 @@ fun ItemCard(
                     .height(IntrinsicSize.Min),
                 contentScale = ContentScale.FillWidth
             )*/
+
             Text(
-                text = "This is an image",
+                text = title,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .height(64.dp)
-                    .fillMaxWidth()
+                    .width(width.dp)
+                    .height((width/5).dp)
+                    .padding((width/13).dp)
             )
         } else {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
             ) {
                 Image(
-                    imageVector = Icons.Rounded.Clear,
-                    contentDescription = null
+                    imageVector = Icons.Rounded.Warning,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(16.dp)
                 )
                 Text(
-                    text = item.uniqueDetails.number,
+                    text = title,
                     modifier = Modifier
-                        .height(64.dp)
-                        .fillMaxWidth()
                 )
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 private fun defineImageSize(item: SampleImage): Int {
     val sizeToGive: Int
@@ -114,5 +114,5 @@ private fun defineImageSize(item: SampleImage): Int {
 @Composable
 fun CardPreview() {
     //ItemCard(SampleImage(R.drawable.j_sa0123_a)) //SampleImage
-    ItemCard(item = samplePlates[0]) //Plate
+    //ItemCard(item = samplePlates[0], onClick = /*TODO*/) //Plate
 }

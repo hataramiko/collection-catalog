@@ -6,9 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-/*@HiltViewModel
+@HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val repository: SamplesRepository
+    repository: PlateRepository
 ) : ViewModel() {
 
-}*/
+}

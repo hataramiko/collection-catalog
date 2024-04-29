@@ -7,17 +7,17 @@ val samplePlates = listOf(
             null,
             null,
             "Sample",
-            null,
+            "1996 - 2001",
             null
         ),
         UniqueDetails(
-            "ABC-123",
+            "ABC-012",
             'a',
             null,
             null,
-            null,
-            null,
-            null,
+            "2023-04-21",
+            5.0,
+            35.0,
             null
         ),
         Availability(
@@ -28,8 +28,8 @@ val samplePlates = listOf(
             null,
             null,
             null,
-            null,
-            null
+            "Online",
+            "Finland"
         )
     ),
     Plate(
@@ -38,43 +38,43 @@ val samplePlates = listOf(
             null,
             null,
             "Sample",
-            null,
+            "1996 - 2001",
             null
         ),
         UniqueDetails(
-            "DEF-456",
-            'a',
+            "ABC-012",
+            'b',
             null,
             null,
-            null,
-            null,
-            null,
+            "2023-04-21",
+            5.0,
+            35.0,
             null
         ),
         Availability(
-            true,
+            false,
             true
         ),
         Source(
             null,
             null,
             null,
-            null,
-            null
+            "Online",
+            "Finland"
         )
     ),
     Plate(
         CommonDetails(
-            "Finland",
-            null,
-            null,
+            "Japan",
             "Sample",
             null,
+            "Sample",
+            "1998 - ",
             null
         ),
         UniqueDetails(
-            "DEF-456",
-            'b',
+            "見本480 あ12-34",
+            'a',
             null,
             null,
             null,
@@ -96,15 +96,77 @@ val samplePlates = listOf(
     ),
     Plate(
         CommonDetails(
-            "Finland",
-            null,
-            null,
+            "Japan",
             "Sample",
             null,
+            "Sample",
+            "1998 - ",
             null
         ),
         UniqueDetails(
-            "GHI-789",
+            "見本50A さ01-23",
+            'a',
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ),
+        Availability(
+            true,
+            false
+        ),
+        Source(
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    ),
+    Plate(
+        CommonDetails(
+            "Soviet Union",
+            "Sample",
+            null,
+            "Sample",
+            "1998 - ",
+            null
+        ),
+        UniqueDetails(
+            "1234 АБВ",
+            'a',
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ),
+        Availability(
+            true,
+            false
+        ),
+        Source(
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+    ),
+    Plate(
+        CommonDetails(
+            "Soviet Union",
+            "Sample",
+            null,
+            "Sample",
+            "1998 - ",
+            null
+        ),
+        UniqueDetails(
+            "А 1234 БВ",
             'a',
             null,
             null,
