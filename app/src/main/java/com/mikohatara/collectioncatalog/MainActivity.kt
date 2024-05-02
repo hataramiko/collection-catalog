@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavGraph
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -16,7 +17,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CollectionCatalogTheme {
-                CollectionCatalogApp()
+                //CollectionCatalogApp()
+                CollectionCatalogNavGraph()
             }
         }
     }

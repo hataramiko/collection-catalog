@@ -40,6 +40,8 @@ fun CollectionCatalogApp() {
         // navGraph?
     }
 
+    //CollectionCatalogNavHost(navController = navController)
+
     /*CollectionCatalogTheme {
         //CenterAlignedTopAppBar(title = "Collection Catalog", canNavigateBack = true)
         HomeScreen()

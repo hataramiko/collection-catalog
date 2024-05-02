@@ -1,12 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -32,14 +31,15 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun HomeScreen() {
-    HomeTopAppBar(itemList = samplePlates)
+    HomeScreenContent(itemList = samplePlates, onNavTestClicked = {})
     //HomeBody(samplePlates)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopAppBar(
+fun HomeScreenContent(
     itemList: List<Plate>,
+    onNavTestClicked: (Plate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -50,7 +50,7 @@ fun HomeTopAppBar(
             androidx.compose.material3.TopAppBar(
                 title = {
                     Text(
-                        "title",
+                        "Plates", // database tableName?
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         //modifier = Modifier.padding(16.dp)
@@ -77,7 +77,7 @@ fun HomeTopAppBar(
                             contentDescription = "Add"
                         )
                     }
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {  }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "More actions")

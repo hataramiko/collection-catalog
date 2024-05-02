@@ -1,47 +1,44 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
-import com.mikohatara.collectioncatalog.ui.home.HomeBody
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun ItemScreen(
+    item: Plate,
+    //onBack: () -> Unit,
     modifier: Modifier = Modifier,
     //viewModel: ItemScreenViewModel //= hiltViewModel()
 ) {
-    ItemScreenTopAppBar(item = samplePlates[0])
+    ItemScreenContent(item)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemScreenTopAppBar(
+fun ItemScreenContent(
     item: Plate,
     modifier: Modifier = Modifier
 ) {
@@ -94,7 +91,15 @@ fun ItemScreenTopAppBar(
 private fun Image() {
     /*if (imageNotNull) {
         Image(painter = , contentDescription = )
-    }*/
+    } else {*/
+        Image(
+            imageVector = Icons.Rounded.Clear,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(128.dp)
+        )
+    //}
 }
 
 @Composable
@@ -105,63 +110,108 @@ private fun ItemInformation(
 ) {
     Column {
         Image()
+
+        Text(text = "Details")
         ItemInformationField(
-            header = "Country",
+            label = "Country",
             entry = item.commonDetails.country
         )
         ItemInformationField(
-            header = "Region",
+            label = "Region",
             entry = item.commonDetails.region.toString()
         )
+        item.commonDetails.area?.let {
+            ItemInformationField(
+                label = "Region",
+                entry = item.commonDetails.region.toString()
+            )
+        }
         ItemInformationField(
-            header = "Number",
+            label = "Area",
+            entry = item.commonDetails.area.toString()
+        )
+        ItemInformationField(
+            label = "Type",
+            entry = item.commonDetails.type
+        )
+        ItemInformationField(
+            label = "Period",
+            entry = item.commonDetails.period.toString()
+        )
+        ItemInformationField(
+            label = "Year",
+            entry = item.commonDetails.year.toString()
+        )
+
+        Text(text = "Unique Details")
+        ItemInformationField(
+            label = "Number",
             entry = item.uniqueDetails.number
         )
-    }
-}
 
-@Composable
-private fun ItemScreenContent() {
-    Column(modifier = Modifier.fillMaxSize()) {
-
+        Text(text = "Source")
+        ItemInformationField(
+            label = "Name",
+            entry = item.source.sourceName.toString()
+        )
+        ItemInformationField(
+            label = "Alias",
+            entry = item.source.sourceAlias.toString()
+        )
+        ItemInformationField(
+            label = "Details",
+            entry = item.source.sourceDetails.toString()
+        )
+        ItemInformationField(
+            label = "Type",
+            entry = item.source.sourceType.toString()
+        )
+        ItemInformationField(
+            label = "Country",
+            entry = item.source.sourceCountry.toString()
+        )
     }
 }
 
 @Composable
 private fun ItemInformationField(
-    header: String,
+    label: String,
     entry: String
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Column {
-            Text(
-                text = header,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-            )
-            Text(text = entry)
+    if (entry != "null" || entry == null) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Column {
+                Text(
+                    text = label,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                )
+                Text(text = entry)
+            }
         }
     }
+
+
+
 }
 
 @Preview
 @Composable
 fun ItemScreenPreview() {
     CollectionCatalogTheme {
-        //ItemScreen()
-        //ItemScreenContent()
+        ItemScreen(samplePlates[4])
 
         /*ItemInformationField(
             "Number",
             samplePlates[2].uniqueDetails.number
         )*/
 
-        ItemInformation(
+        /*ItemInformation(
             item = samplePlates[2],
             fields = samplePlates
-        )
+        )*/
     }
 }
