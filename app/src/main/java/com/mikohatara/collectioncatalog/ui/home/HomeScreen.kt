@@ -30,8 +30,13 @@ import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
-fun HomeScreen() {
-    HomeScreenContent(itemList = samplePlates, onNavTestClicked = {})
+fun HomeScreen(
+    onNavigateToItemScreen: () -> Unit
+) {
+    HomeScreenContent(
+        itemList = samplePlates,
+        onNavTestClicked = onNavigateToItemScreen
+    )
     //HomeBody(samplePlates)
 }
 
@@ -39,7 +44,7 @@ fun HomeScreen() {
 @Composable
 fun HomeScreenContent(
     itemList: List<Plate>,
-    onNavTestClicked: (Plate) -> Unit,
+    onNavTestClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -77,7 +82,11 @@ fun HomeScreenContent(
                             contentDescription = "Add"
                         )
                     }
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = {
+                        Log.d("NavTest", "MoreVert Clicked")
+                        Log.d("NavTest2", "" + onNavTestClicked())
+                        //onNavTestClicked()
+                    }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "More actions")
@@ -114,6 +123,7 @@ fun HomeBody(
                 item = item
             ) {
                 onItemClick(item)
+                Log.d("ItemCard", "" + onItemClick(item))
             }
         }
     }
@@ -123,6 +133,6 @@ fun HomeBody(
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
-        HomeScreen()
+        //HomeScreen()
     }
 }

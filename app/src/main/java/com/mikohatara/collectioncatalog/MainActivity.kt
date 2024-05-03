@@ -17,8 +17,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CollectionCatalogTheme {
-                //CollectionCatalogApp()
-                CollectionCatalogNavGraph()
+                CollectionCatalogApp()
             }
         }
     }

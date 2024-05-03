@@ -27,27 +27,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavGraph
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionCatalogApp() {
-    val navController = rememberNavController()
-
-    NavHost(navController = navController, startDestination = "home" /*, graph =*/ ) {
-        composable("home") { HomeScreen() }
-        // more destinations
-        // navGraph?
-    }
-
-    //CollectionCatalogNavHost(navController = navController)
-
-    /*CollectionCatalogTheme {
-        //CenterAlignedTopAppBar(title = "Collection Catalog", canNavigateBack = true)
-        HomeScreen()
-    }*/
-
-    //HomeScreen()
+    CollectionCatalogNavGraph()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,23 +63,3 @@ fun CenterAlignedTopAppBar(
         }
     )
 }
-
-
-
-/*
-@Composable
-fun NavigationBar() {
-    var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf("Collection", "Stats")
-
-    NavigationBar{
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                icon = { Icon(Icons.Default.Home, contentDescription = item) },
-                label = { Text(item) },
-                selected = selectedItem == index,
-                onClick = { selectedItem = index }
-            )
-        }
-    }
-}*/

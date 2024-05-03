@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
@@ -41,15 +42,17 @@ fun CollectionCatalogNavGraph(
         modifier = Modifier
     ) {
 
-        composable(CollectionCatalogDestinations.HOME_ROUTE) { entry ->
-            HomeScreen()
+        composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
+            HomeScreen(onNavigateToItemScreen = { navActions.navigateToItemScreen() })
         }
 
-        composable(startDestination) {
+        /*composable(startDestination) {
             HomeScreen()
-        }
+        }*/
 
-        composable(CollectionCatalogDestinations.ITEM_ROUTE) {
+        composable(CollectionCatalogDestinations.ITEM_ROUTE_TEST) {
+            //val context = LocalContext.current
+            
             ItemScreen(
                 item = samplePlates[3],
                 //onBack = { navController.popBackStack() }

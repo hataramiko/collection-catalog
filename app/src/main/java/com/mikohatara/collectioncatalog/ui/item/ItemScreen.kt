@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
@@ -171,6 +172,8 @@ private fun ItemInformation(
             entry = item.source.sourceCountry.toString()
         )
     }
+
+    //fields = listOf(Plate())
 }
 
 @Composable
@@ -202,7 +205,7 @@ private fun ItemInformationField(
 @Composable
 fun ItemScreenPreview() {
     CollectionCatalogTheme {
-        ItemScreen(samplePlates[4])
+        //ItemScreen(samplePlates[4])
 
         /*ItemInformationField(
             "Number",
