@@ -8,14 +8,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
@@ -43,18 +42,31 @@ fun CollectionCatalogNavGraph(
     ) {
 
         composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
-            HomeScreen(onNavigateToItemScreen = { navActions.navigateToItemScreen() })
+            HomeScreen(
+                //onNavigateToItemScreen = { navActions.navigateToItemScreen() },
+                /*onItemClick = { item -> navActions.navigateToItemScreen(item) }*/
+                onItemClick = { navActions.navigateToItemScreen(item = it) }
+            )
         }
 
-        /*composable(startDestination) {
-            HomeScreen()
-        }*/
-
-        composable(CollectionCatalogDestinations.ITEM_ROUTE_TEST) {
-            //val context = LocalContext.current
+        composable(
+            CollectionCatalogDestinations.ITEM_ROUTE,
+            /*arguments = listOf(navArgument("itemPrimaryKeys") {
+                type = NavType.StringArrayType
+            })*/
+            /*
+            Navigation destination that matches request NavDeepLinkRequest
+            { uri=android-app://androidx.navigation/item/Plate
+            (commonDetails=CommonDetails(), uniqueDetails=UniqueDetails(),
+            availability=Availability(), source=Source()) }
+            cannot be found in the navigation graph ComposeNavGraph(0x0)
+            startDestination={Destination(0x78d845ec) route=home}
+            */
+        ) {
             
             ItemScreen(
                 item = samplePlates[3],
+                navController
                 //onBack = { navController.popBackStack() }
             )
         }

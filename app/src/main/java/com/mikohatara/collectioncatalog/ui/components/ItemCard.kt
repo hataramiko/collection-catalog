@@ -1,15 +1,12 @@
 package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -22,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.sample.SampleImage
-import com.mikohatara.collectioncatalog.data.samplePlates
 
 @Composable
 fun ItemCard(

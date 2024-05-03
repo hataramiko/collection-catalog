@@ -31,20 +31,22 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun HomeScreen(
-    onNavigateToItemScreen: () -> Unit
+    //onNavigateToItemScreen: () -> Unit,
+    onItemClick: (Plate) -> Unit
 ) {
     HomeScreenContent(
         itemList = samplePlates,
-        onNavTestClicked = onNavigateToItemScreen
+        //onNavTestClicked = onNavigateToItemScreen,
+        onItemClick = onItemClick
     )
-    //HomeBody(samplePlates)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
     itemList: List<Plate>,
-    onNavTestClicked: () -> Unit,
+    //onNavTestClicked: () -> Unit,
+    onItemClick: (Plate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -84,7 +86,6 @@ fun HomeScreenContent(
                     }
                     IconButton(onClick = {
                         Log.d("NavTest", "MoreVert Clicked")
-                        Log.d("NavTest2", "" + onNavTestClicked())
                         //onNavTestClicked()
                     }) {
                         Icon(
@@ -99,8 +100,9 @@ fun HomeScreenContent(
             HomeBody(
                 itemList = itemList,
                 modifier = Modifier
-                    .padding(innerPadding)
+                    .padding(innerPadding),
                     //.verticalScroll(rememberScrollState())
+                onItemClick = onItemClick
             )
         }
     )
@@ -110,7 +112,7 @@ fun HomeScreenContent(
 fun HomeBody(
     itemList: List<Plate>,
     modifier: Modifier = Modifier,
-    onItemClick: (Plate) -> Unit = {}
+    onItemClick: (Plate) -> Unit
 ) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
@@ -123,7 +125,7 @@ fun HomeBody(
                 item = item
             ) {
                 onItemClick(item)
-                Log.d("ItemCard", "" + onItemClick(item))
+                //Log.d("ItemCard", "" + onItemClick(item))
             }
         }
     }

@@ -1,10 +1,13 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -19,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,17 +34,20 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 @Composable
 fun ItemScreen(
     item: Plate,
+    navController: NavController,
     //onBack: () -> Unit,
     modifier: Modifier = Modifier,
     //viewModel: ItemScreenViewModel //= hiltViewModel()
 ) {
-    ItemScreenContent(item)
+    ItemScreenContent(item, navController)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreenContent(
     item: Plate,
+    navController: NavController,
+    //onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -54,7 +61,7 @@ fun ItemScreenContent(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"
@@ -79,7 +86,6 @@ fun ItemScreenContent(
         content = { innerPadding ->
             ItemInformation(
                 item = item,
-                fields = samplePlates,
                 modifier = Modifier
                     .padding(innerPadding)
                     //.verticalScroll(rememberScrollState())
@@ -97,6 +103,7 @@ private fun Image() {
             imageVector = Icons.Rounded.Clear,
             contentDescription = null,
             modifier = Modifier
+                .background(Color.LightGray)
                 .fillMaxWidth()
                 .height(128.dp)
         )
@@ -106,10 +113,9 @@ private fun Image() {
 @Composable
 private fun ItemInformation(
     item: Plate,
-    fields: List<Plate>,
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(modifier = modifier) {
         Image()
 
         Text(text = "Details")
