@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
+import javax.xml.transform.OutputKeys
 
 @Composable
 fun ItemScreen(
@@ -202,9 +203,6 @@ private fun ItemInformationField(
             }
         }
     }
-
-
-
 }
 
 @Preview

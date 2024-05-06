@@ -45,13 +45,19 @@ fun CollectionCatalogNavGraph(
             HomeScreen(
                 //onNavigateToItemScreen = { navActions.navigateToItemScreen() },
                 /*onItemClick = { item -> navActions.navigateToItemScreen(item) }*/
-                onItemClick = { navActions.navigateToItemScreen(item = it) }
+
+                /*onItemClick = { navActions.navigateToItemScreen(item = it) }*/
+
+                onItemClick = { item -> navActions.navigateToItemScreen(
+                        item.uniqueDetails.number, item.uniqueDetails.variant
+                )}
+
             )
         }
 
         composable(
             CollectionCatalogDestinations.ITEM_ROUTE,
-            /*arguments = listOf(navArgument("itemPrimaryKeys") {
+            /*arguments = listOf(navArgument("itemKey") {
                 type = NavType.StringArrayType
             })*/
             /*
@@ -63,9 +69,8 @@ fun CollectionCatalogNavGraph(
             startDestination={Destination(0x78d845ec) route=home}
             */
         ) {
-            
             ItemScreen(
-                item = samplePlates[3],
+                item = samplePlates[2],
                 navController
                 //onBack = { navController.popBackStack() }
             )

@@ -24,6 +24,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
@@ -31,6 +32,7 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun HomeScreen(
+    viewModel: HomeScreenViewModel = hiltViewModel(),
     //onNavigateToItemScreen: () -> Unit,
     onItemClick: (Plate) -> Unit
 ) {
@@ -125,7 +127,7 @@ fun HomeBody(
                 item = item
             ) {
                 onItemClick(item)
-                //Log.d("ItemCard", "" + onItemClick(item))
+                Log.d("ItemCard", item.toString())
             }
         }
     }
