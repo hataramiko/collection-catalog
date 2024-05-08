@@ -43,7 +43,6 @@ fun CollectionCatalogNavGraph(
 
         composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
             HomeScreen(
-                //onNavigateToItemScreen = { navActions.navigateToItemScreen() },
                 /*onItemClick = { item -> navActions.navigateToItemScreen(item) }*/
 
                 /*onItemClick = { navActions.navigateToItemScreen(item = it) }*/
@@ -51,28 +50,20 @@ fun CollectionCatalogNavGraph(
                 onItemClick = { item -> navActions.navigateToItemScreen(
                         item.uniqueDetails.number, item.uniqueDetails.variant
                 )}
-
             )
         }
 
         composable(
             CollectionCatalogDestinations.ITEM_ROUTE,
+
             /*arguments = listOf(navArgument("itemKey") {
                 type = NavType.StringArrayType
             })*/
-            /*
-            Navigation destination that matches request NavDeepLinkRequest
-            { uri=android-app://androidx.navigation/item/Plate
-            (commonDetails=CommonDetails(), uniqueDetails=UniqueDetails(),
-            availability=Availability(), source=Source()) }
-            cannot be found in the navigation graph ComposeNavGraph(0x0)
-            startDestination={Destination(0x78d845ec) route=home}
-            */
         ) {
             ItemScreen(
-                item = samplePlates[2],
-                navController
-                //onBack = { navController.popBackStack() }
+                //item = samplePlates[2],
+                //navController
+                onBack = { navController.popBackStack() }
             )
         }
     }

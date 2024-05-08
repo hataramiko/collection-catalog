@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
@@ -33,12 +35,12 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    //onNavigateToItemScreen: () -> Unit,
     onItemClick: (Plate) -> Unit
 ) {
+    val uiState by viewModel.homeScreenUiState.collectAsStateWithLifecycle()
+
     HomeScreenContent(
-        itemList = samplePlates,
-        //onNavTestClicked = onNavigateToItemScreen,
+        itemList = uiState.items,
         onItemClick = onItemClick
     )
 }
@@ -47,7 +49,6 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     itemList: List<Plate>,
-    //onNavTestClicked: () -> Unit,
     onItemClick: (Plate) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -137,6 +138,6 @@ fun HomeBody(
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
-        //HomeScreen()
+        HomeScreenContent(samplePlates, onItemClick = {})
     }
 }

@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +22,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
@@ -34,21 +39,27 @@ import javax.xml.transform.OutputKeys
 
 @Composable
 fun ItemScreen(
-    item: Plate,
-    navController: NavController,
-    //onBack: () -> Unit,
-    modifier: Modifier = Modifier,
-    //viewModel: ItemScreenViewModel //= hiltViewModel()
+    viewModel: ItemScreenViewModel = hiltViewModel(),
+    //navController: NavController,
+    onBack: () -> Unit,
 ) {
-    ItemScreenContent(item, navController)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var item: Plate? = uiState.item
+
+    if (item == null) {
+        Log.d("item null check", "item was null, setting a samplePlate")
+        item = samplePlates[3]
+    }
+
+    ItemScreenContent(item, onBack)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreenContent(
     item: Plate,
-    navController: NavController,
-    //onBack: () -> Unit,
+    //navController: NavController,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -62,7 +73,7 @@ fun ItemScreenContent(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { /*navController.popBackStack()*/ onBack() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"
