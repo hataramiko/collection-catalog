@@ -12,7 +12,7 @@ val samplePlates = listOf(
         ),
         UniqueDetails(
             "ABC-012",
-            'a',
+            "a",
             null,
             null,
             "2023-04-21",
@@ -43,7 +43,7 @@ val samplePlates = listOf(
         ),
         UniqueDetails(
             "ABC-012",
-            'b',
+            "b",
             null,
             null,
             "2023-04-21",
@@ -74,7 +74,7 @@ val samplePlates = listOf(
         ),
         UniqueDetails(
             "見本480 あ12-34",
-            'a',
+            "a",
             null,
             null,
             null,
@@ -105,7 +105,7 @@ val samplePlates = listOf(
         ),
         UniqueDetails(
             "見本50A さ01-23",
-            'a',
+            "a",
             null,
             null,
             null,
@@ -136,7 +136,7 @@ val samplePlates = listOf(
         ),
         UniqueDetails(
             "1234 АБВ",
-            'a',
+            "a",
             null,
             null,
             null,
@@ -167,7 +167,7 @@ val samplePlates = listOf(
         ),
         UniqueDetails(
             "А 1234 БВ",
-            'a',
+            "a",
             null,
             null,
             null,

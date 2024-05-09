@@ -2,12 +2,9 @@ package com.mikohatara.collectioncatalog.ui.item
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
-import com.mikohatara.collectioncatalog.ui.home.HomeScreenUiState
-import com.mikohatara.collectioncatalog.ui.home.HomeScreenViewModel
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,14 +26,11 @@ class ItemScreenViewModel @Inject constructor(
 
     private val plateNumber: String =
         savedStateHandle[CollectionCatalogDestinationArgs.PLATE_NUMBER]!! //?
+    private val numberVariant: String =
+        savedStateHandle[CollectionCatalogDestinationArgs.NUMBER_VARIANT]!!
 
     //private val plateNumber: String =
         //checkNotNull(savedStateHandle[CollectionCatalogDestinationArgs.PLATE_NUMBER])
-
-    private val _plateVariant:
-            String = savedStateHandle[CollectionCatalogDestinationArgs.PLATE_VARIANT.toString()]!!
-
-    val plateVariant: Char = _plateVariant.single()
     /*private val plateVariant: Char =
         savedStateHandle[CollectionCatalogDestinationArgs.PLATE_VARIANT.toString()]!!*/
 
@@ -55,20 +49,8 @@ class ItemScreenViewModel @Inject constructor(
 
     //private val item: Flow<Plate> = plateRepository.getPlateStream()
 
-/*
-    val uiState: StateFlow<ItemScreenUiState> = plateRepository
-        .plates.map<List<Plate>, ItemScreenUiState>(::Success)
-        .catch { emit(Error(it)) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
-
-    fun addItemScreen() {
-        viewModelScope.launch {
-            plateRepository.add(plate)
-        }
-    }*/
-
     val uiState: StateFlow<ItemScreenUiState> =
-        plateRepository.getPlateStream(plateNumber, plateVariant).map { ItemScreenUiState(it) }
+        plateRepository.getPlateStream(plateNumber, numberVariant).map { ItemScreenUiState(it) }
             .filterNotNull()
             .stateIn(
                 scope = viewModelScope,

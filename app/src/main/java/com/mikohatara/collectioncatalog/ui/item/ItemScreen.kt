@@ -45,6 +45,7 @@ fun ItemScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var item: Plate? = uiState.item
+    Log.d("item from uiState", item.toString())
 
     if (item == null) {
         Log.d("item null check", "item was null, setting a samplePlate")

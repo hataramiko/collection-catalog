@@ -50,7 +50,7 @@ data class CommonDetails(
 
 data class UniqueDetails(
     @ColumnInfo(name = "number") var number: String,
-    @ColumnInfo(name = "variant") var variant: Char = 'a',
+    @ColumnInfo(name = "variant") var variant: String,
     @ColumnInfo(name = "vehicle") var vehicle: String?,
     @ColumnInfo(name = "notes") var notes: String?,
     @ColumnInfo(name = "date") var date: String?,
