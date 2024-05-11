@@ -5,15 +5,21 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 interface PlateRepository {
-    fun getPlateStream(number: String, variant: String): Flow<Plate> //
+    fun getPlateData(number: String, variant: String): Plate
+    fun getPlateStream(number: String, variant: String): Flow<Plate?> //
     fun getAllPlatesStream(): Flow<List<Plate>>
 }
 
 class OfflinePlateRepository @Inject constructor(
     private val plateDao: PlateDao
 ) : PlateRepository {
-    override fun getPlateStream(number: String, variant: String):
-        Flow<Plate> = plateDao.getPlate(number, variant) //
+
+    override fun getPlateData(number: String, variant: String):
+        Plate = plateDao.getPlateData(number, variant)
+
+    override fun getPlateStream(number: String, variant: String): Flow<Plate?> {
+        return plateDao.getPlate(number, variant).map { it }
+    }
 
     override fun getAllPlatesStream(): Flow<List<Plate>> = plateDao.getAllPlates()
 }

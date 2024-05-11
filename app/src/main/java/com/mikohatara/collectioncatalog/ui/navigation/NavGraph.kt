@@ -55,10 +55,10 @@ fun CollectionCatalogNavGraph(
 
         composable(
             CollectionCatalogDestinations.ITEM_ROUTE,
-
-            /*arguments = listOf(navArgument("itemKey") {
-                type = NavType.StringArrayType
-            })*/
+            /*arguments = listOf(
+                navArgument("number") { type = NavType.StringType },
+                navArgument("variant") { type = NavType.StringType }
+            )*/
         ) {
             ItemScreen(
                 //item = samplePlates[2],

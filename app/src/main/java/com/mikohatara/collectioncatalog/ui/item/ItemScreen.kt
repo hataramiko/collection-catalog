@@ -3,12 +3,10 @@ package com.mikohatara.collectioncatalog.ui.item
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -29,28 +27,29 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
-import javax.xml.transform.OutputKeys
 
 @Composable
 fun ItemScreen(
-    viewModel: ItemScreenViewModel = hiltViewModel(),
+    viewModel: ItemViewModel = hiltViewModel(),
     //navController: NavController,
     onBack: () -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var item: Plate? = uiState.item
-    Log.d("item from uiState", item.toString())
+    //val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState: ItemUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Log.d("uiState plateNumber", viewModel.plateNumber)
+    Log.d("uiState numberVariant", viewModel.numberVariant)
 
-    if (item == null) {
-        Log.d("item null check", "item was null, setting a samplePlate")
-        item = samplePlates[3]
-    }
+    val item: Plate = uiState.item!!
+    Log.d("uiState item", item.toString())
+
+    /*if (item == null) {
+        Log.d("item == null", "item was null, setting a samplePlate")
+        item = samplePlates[2]
+    }*/
 
     ItemScreenContent(item, onBack)
 }
