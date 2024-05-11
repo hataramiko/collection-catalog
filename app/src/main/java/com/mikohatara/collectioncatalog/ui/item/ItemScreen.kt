@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -22,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -127,10 +130,17 @@ private fun ItemInformation(
     item: Plate,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+    ) {
         Image()
 
-        Text(text = "Details")
+        Text(
+            text = "Details",
+            modifier = Modifier
+                .padding(8.dp)
+        )
         ItemInformationField(
             label = "Country",
             entry = item.commonDetails.country
@@ -139,7 +149,7 @@ private fun ItemInformation(
             label = "Region",
             entry = item.commonDetails.region.toString()
         )
-        item.commonDetails.area?.let {
+        item.commonDetails.area?.let { /********************/
             ItemInformationField(
                 label = "Region",
                 entry = item.commonDetails.region.toString()
@@ -162,13 +172,21 @@ private fun ItemInformation(
             entry = item.commonDetails.year.toString()
         )
 
-        Text(text = "Unique Details")
+        Text(
+            text = "Unique Details",
+            modifier = Modifier
+                .padding(8.dp)
+        )
         ItemInformationField(
             label = "Number",
             entry = item.uniqueDetails.number
         )
 
-        Text(text = "Source")
+        Text(
+            text = "Source",
+            modifier = Modifier
+                .padding(8.dp)
+        )
         ItemInformationField(
             label = "Name",
             entry = item.source.sourceName.toString()
@@ -202,15 +220,18 @@ private fun ItemInformationField(
     if (entry != "null" || entry == null) {
         Card(
             modifier = Modifier
+                .padding(horizontal = (8.dp), vertical = (4.dp))
                 .fillMaxWidth()
         ) {
             Column {
                 Text(
-                    text = label,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
+                    text = label
                 )
-                Text(text = entry)
+                Text(
+                    text = entry,
+                    modifier = Modifier
+                        .padding(8.dp)
+                )
             }
         }
     }
