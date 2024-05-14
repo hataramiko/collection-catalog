@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
+import com.mikohatara.collectioncatalog.ui.components.HomeScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
@@ -56,8 +57,8 @@ fun HomeScreenContent(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            androidx.compose.material3.TopAppBar(
+        topBar = { HomeScreenTopAppBar(scrollBehavior) },
+            /*androidx.compose.material3.TopAppBar(
                 title = {
                     Text(
                         "Plates", // database tableName?
@@ -98,7 +99,7 @@ fun HomeScreenContent(
                 },
                 scrollBehavior = scrollBehavior
             )
-        },
+        },*/
         content = { innerPadding ->
             HomeBody(
                 itemList = itemList,

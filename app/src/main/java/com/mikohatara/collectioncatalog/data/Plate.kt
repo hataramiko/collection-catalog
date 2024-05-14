@@ -40,17 +40,17 @@ data class FormerPlate(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 data class CommonDetails(
-    @ColumnInfo(name = "country") var country: String,
+    @ColumnInfo(name = "country") var country: String, /********** NOT NULL **********/
     @ColumnInfo(name = "region") var region: String?,
     @ColumnInfo(name = "area") var area: String?,
-    @ColumnInfo(name = "type") var type: String,
+    @ColumnInfo(name = "type") var type: String, /********** NOT NULL **********/
     @ColumnInfo(name = "period") var period: String?,
     @ColumnInfo(name = "year") var year: Int?
 )
 
 data class UniqueDetails(
-    @ColumnInfo(name = "number") var number: String,
-    @ColumnInfo(name = "variant") var variant: String,
+    @ColumnInfo(name = "number") var number: String, /********** NOT NULL **********/
+    @ColumnInfo(name = "variant") var variant: String, /********** NOT NULL **********/
     @ColumnInfo(name = "vehicle") var vehicle: String?,
     @ColumnInfo(name = "notes") var notes: String?,
     @ColumnInfo(name = "date") var date: String?,
@@ -60,8 +60,8 @@ data class UniqueDetails(
 )
 
 data class Availability(
-    @ColumnInfo(name = "keeper") var isKeeper: Boolean,
-    @ColumnInfo(name = "for_trade") var isForTrade: Boolean,
+    @ColumnInfo(name = "keeper") var isKeeper: Boolean, /********** NOT NULL **********/
+    @ColumnInfo(name = "for_trade") var isForTrade: Boolean, /********** NOT NULL **********/
 )
 
 data class Source(

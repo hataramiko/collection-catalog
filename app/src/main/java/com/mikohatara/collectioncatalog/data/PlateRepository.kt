@@ -5,6 +5,29 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 interface PlateRepository {
+    suspend fun addPlate(
+        country: String,
+        region: String?,
+        area: String?,
+        type: String,
+        period: String?,
+        year: Int?,
+        number: String,
+        variant: String,
+        vehicle: String?,
+        notes: String?,
+        date: String?,
+        cost: Double?,
+        value: Double?,
+        status: String?,
+        isKeeper: Boolean,
+        isForTrade: Boolean,
+        sourceName: String?,
+        sourceAlias: String?,
+        sourceDetails: String?,
+        sourceType: String?,
+        sourceCountry: String?
+    ): Plate
     fun getPlateData(number: String, variant: String): Plate
     fun getPlateStream(number: String, variant: String): Flow<Plate?> //
     fun getAllPlatesStream(): Flow<List<Plate>>
@@ -13,6 +36,39 @@ interface PlateRepository {
 class OfflinePlateRepository @Inject constructor(
     private val plateDao: PlateDao
 ) : PlateRepository {
+
+    override suspend fun addPlate(
+        country: String,
+        region: String?,
+        area: String?,
+        type: String,
+        period: String?,
+        year: Int?,
+        number: String,
+        variant: String,
+        vehicle: String?,
+        notes: String?,
+        date: String?,
+        cost: Double?,
+        value: Double?,
+        status: String?,
+        isKeeper: Boolean,
+        isForTrade: Boolean,
+        sourceName: String?,
+        sourceAlias: String?,
+        sourceDetails: String?,
+        sourceType: String?,
+        sourceCountry: String?
+    ): Plate {
+        val plate = Plate(
+            CommonDetails(country, region, area, type, period, year),
+            UniqueDetails(number, variant, vehicle, notes, date, cost, value, status),
+            Availability(isKeeper, isForTrade),
+            Source(sourceName, sourceAlias, sourceDetails, sourceType, sourceCountry)
+        )
+        plateDao.insertPlate(plate)
+        return plate
+    }
 
     override fun getPlateData(number: String, variant: String):
         Plate = plateDao.getPlateData(number, variant)

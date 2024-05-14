@@ -33,12 +33,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
+import com.mikohatara.collectioncatalog.ui.components.ItemScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun ItemScreen(
     viewModel: ItemViewModel = hiltViewModel(),
-    //navController: NavController,
     onBack: () -> Unit,
 ) {
     //val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -61,13 +61,12 @@ fun ItemScreen(
 @Composable
 fun ItemScreenContent(
     item: Plate,
-    //navController: NavController,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(
+        topBar = { ItemScreenTopAppBar(item.uniqueDetails.number, onBack) },
+            /*TopAppBar(
                 title = {
                     Text(
                         item.uniqueDetails.number,
@@ -97,7 +96,7 @@ fun ItemScreenContent(
                     }
                 }
             )
-        },
+        },*/
         content = { innerPadding ->
             ItemInformation(
                 item = item,

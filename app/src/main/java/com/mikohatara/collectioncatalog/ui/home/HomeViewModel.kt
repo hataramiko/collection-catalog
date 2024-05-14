@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 data class HomeUiState(
-    val items: List<Plate> = emptyList() //listOf()
+    val items: List<Plate> = emptyList()
 )
 
 @HiltViewModel
