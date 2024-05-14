@@ -1,5 +1,8 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +15,31 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AddItemUiState(
+    val newItemDetails: NewItemDetails = NewItemDetails()
+)
+
+@HiltViewModel
+class AddItemViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val plateRepository: PlateRepository
+) : ViewModel() {
+
+    /*private val _uiState = MutableStateFlow(AddItemUiState())
+    var uiState: StateFlow<AddItemUiState> = _uiState.asStateFlow()*/
+
+    var uiState by mutableStateOf(AddItemUiState())
+        private set
+
+    fun updateUiState(newItemDetails: NewItemDetails) {
+        uiState = AddItemUiState(newItemDetails = newItemDetails)
+    }
+
+    private fun AddItem() = viewModelScope.launch {
+        //plateRepository.addPlate()
+    }
+}
+
+data class NewItemDetails(
     val country: String = "",
     //val region: String? = null,
     //val area: String? = null,
@@ -23,17 +51,3 @@ data class AddItemUiState(
     val isKeeper: Boolean = false,
     val isForTrade: Boolean = false,
 )
-
-@HiltViewModel
-class AddItemViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val plateRepository: PlateRepository
-) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(AddItemUiState())
-    val uiState: StateFlow<AddItemUiState> = _uiState.asStateFlow()
-
-    private fun AddItem() = viewModelScope.launch {
-        //plateRepository.addPlate()
-    }
-}

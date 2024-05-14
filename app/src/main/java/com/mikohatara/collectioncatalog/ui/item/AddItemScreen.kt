@@ -3,26 +3,17 @@ package com.mikohatara.collectioncatalog.ui.item
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.components.AddItemScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
@@ -31,15 +22,19 @@ fun AddItemScreen(
     viewModel: AddItemViewModel = hiltViewModel(),
     onBack: () -> Unit,
 ) {
-    val uiState: AddItemUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiState
 
-    AddItemScreenContent(uiState, onBack)
+    AddItemScreenContent(
+        uiState,
+        onValueChange = viewModel::updateUiState,
+        onBack
+    )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemScreenContent(
     uiState: AddItemUiState,
+    onValueChange: (NewItemDetails) -> Unit,
     onBack: () -> Unit,
 ) {
     Scaffold(
@@ -47,7 +42,9 @@ fun AddItemScreenContent(
         content = { innerPadding ->
             InputForm(
                 uiState,
-                modifier = Modifier.padding(innerPadding)
+                //newItemDetails = uiState.newItemDetails,
+                modifier = Modifier.padding(innerPadding),
+                onValueChange
             )
         }
     )
@@ -56,14 +53,16 @@ fun AddItemScreenContent(
 @Composable
 private fun InputForm(
     uiState: AddItemUiState,
-    modifier: Modifier = Modifier
+    //newItemDetails: NewItemDetails,
+    modifier: Modifier = Modifier,
+    onValueChange: (NewItemDetails) -> Unit = {},
 ) {
     Column(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = uiState.country,
-            onValueChange = { },
+            value = uiState.newItemDetails.country,
+            onValueChange = { onValueChange(uiState.newItemDetails.copy(country = it)) },
             //keyboardActions = ,
             label = { Text("Country") },
             modifier = Modifier.fillMaxWidth(),
@@ -71,8 +70,8 @@ private fun InputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = uiState.type,
-            onValueChange = { },
+            value = uiState.newItemDetails.type,
+            onValueChange = { onValueChange(uiState.newItemDetails.copy(type = it)) },
             //keyboardActions = ,
             label = { Text("Type") },
             modifier = Modifier.fillMaxWidth(),
@@ -80,8 +79,8 @@ private fun InputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = uiState.number,
-            onValueChange = { },
+            value = uiState.newItemDetails.number,
+            onValueChange = { onValueChange(uiState.newItemDetails.copy(number = it)) },
             //keyboardActions = ,
             label = { Text("Number") },
             modifier = Modifier.fillMaxWidth(),
@@ -89,8 +88,8 @@ private fun InputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = uiState.variant,
-            onValueChange = { },
+            value = uiState.newItemDetails.variant,
+            onValueChange = { onValueChange(uiState.newItemDetails.copy(variant = it)) },
             //keyboardActions = ,
             label = { Text("Variant") },
             modifier = Modifier.fillMaxWidth(),
@@ -108,18 +107,23 @@ private fun InputForm(
     }
 }
 
+/*
 @Composable
-private fun AddItemTextField() {
+private fun TextField(
+    value: String,
+    onValueChange: (NewItemDetails) -> Unit = {},
+    label: String
+) {
     OutlinedTextField(
-        value = samplePlates[0].commonDetails.country,
-        onValueChange = { },
+        value = value,
+        onValueChange = { onValueChange(uiState.newItemDetails.copy()) },
         //keyboardActions = ,
-        label = null,//{ Text() },
+        label = label,
         modifier = Modifier.fillMaxWidth(),
         enabled = true,
         singleLine = true
     )
-}
+}*/
 
 @Preview
 @Composable
