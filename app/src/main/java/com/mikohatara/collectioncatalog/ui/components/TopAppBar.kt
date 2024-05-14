@@ -23,6 +23,7 @@ import com.mikohatara.collectioncatalog.data.Plate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopAppBar(
+    onAddItem: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     TopAppBar(
@@ -49,7 +50,7 @@ fun HomeScreenTopAppBar(
                     contentDescription = "Search"
                 )
             }
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { onAddItem() }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add"

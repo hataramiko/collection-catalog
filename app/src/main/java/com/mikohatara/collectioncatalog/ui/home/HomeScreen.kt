@@ -36,12 +36,14 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreenContent(
         itemList = uiState.items,
+        onAddItem = onAddItem,
         onItemClick = onItemClick
     )
 }
@@ -50,6 +52,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     itemList: List<Plate>,
+    onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -57,7 +60,10 @@ fun HomeScreenContent(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { HomeScreenTopAppBar(scrollBehavior) },
+        topBar = { HomeScreenTopAppBar(
+            onAddItem = onAddItem,
+            scrollBehavior = scrollBehavior
+        ) },
             /*androidx.compose.material3.TopAppBar(
                 title = {
                     Text(
@@ -139,6 +145,6 @@ fun HomeBody(
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
-        HomeScreenContent(samplePlates, onItemClick = {})
+        HomeScreenContent(samplePlates, onAddItem = {}, onItemClick = {})
     }
 }

@@ -18,6 +18,7 @@ import androidx.navigation.navArgument
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
+import com.mikohatara.collectioncatalog.ui.item.AddItemScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemScreen
 import kotlinx.coroutines.CoroutineScope
 
@@ -43,26 +44,22 @@ fun CollectionCatalogNavGraph(
 
         composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
             HomeScreen(
-                /*onItemClick = { item -> navActions.navigateToItemScreen(item) }*/
-
-                /*onItemClick = { navActions.navigateToItemScreen(item = it) }*/
-
+                onAddItem = { navActions.navigateToAddItemScreen() },
                 onItemClick = { item -> navActions.navigateToItemScreen(
-                        item.uniqueDetails.number, item.uniqueDetails.variant
-                )}
+                    item.uniqueDetails.number,
+                    item.uniqueDetails.variant
+                ) }
             )
         }
 
-        composable(
-            CollectionCatalogDestinations.ITEM_ROUTE,
-            /*arguments = listOf(
-                navArgument("number") { type = NavType.StringType },
-                navArgument("variant") { type = NavType.StringType }
-            )*/
-        ) {
+        composable(CollectionCatalogDestinations.ITEM_ROUTE) {
             ItemScreen(
-                //item = samplePlates[2],
-                //navController
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(CollectionCatalogDestinations.ADD_ITEM_ROUTE) {
+            AddItemScreen(
                 onBack = { navController.popBackStack() }
             )
         }
