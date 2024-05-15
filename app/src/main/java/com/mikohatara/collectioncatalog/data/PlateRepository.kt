@@ -6,28 +6,29 @@ import javax.inject.Inject
 
 interface PlateRepository {
     suspend fun addPlate(
-        country: String,
-        region: String?,
-        area: String?,
+        /*country: String,
+        region: String? = null,
+        area: String? = null,
         type: String,
-        period: String?,
-        year: Int?,
+        period: String? = null,
+        year: Int? = null,
         number: String,
         variant: String,
-        vehicle: String?,
-        notes: String?,
-        date: String?,
-        cost: Double?,
-        value: Double?,
-        status: String?,
+        vehicle: String? = null,
+        notes: String? = null,
+        date: String? = null,
+        cost: Double? = null,
+        value: Double? = null,
+        status: String? = null,
         isKeeper: Boolean,
         isForTrade: Boolean,
-        sourceName: String?,
-        sourceAlias: String?,
-        sourceDetails: String?,
-        sourceType: String?,
-        sourceCountry: String?
-    ): Plate
+        sourceName: String? = null,
+        sourceAlias: String? = null,
+        sourceDetails: String? = null,
+        sourceType: String? = null,
+        sourceCountry: String? = null*/
+        plate: Plate
+    )/*: Plate*/
     fun getPlateData(number: String, variant: String): Plate
     fun getPlateStream(number: String, variant: String): Flow<Plate?> //
     fun getAllPlatesStream(): Flow<List<Plate>>
@@ -38,7 +39,7 @@ class OfflinePlateRepository @Inject constructor(
 ) : PlateRepository {
 
     override suspend fun addPlate(
-        country: String,
+        /*country: String,
         region: String?,
         area: String?,
         type: String,
@@ -58,8 +59,10 @@ class OfflinePlateRepository @Inject constructor(
         sourceAlias: String?,
         sourceDetails: String?,
         sourceType: String?,
-        sourceCountry: String?
-    ): Plate {
+        sourceCountry: String?*/
+        plate: Plate
+    ) = plateDao.insertPlate(plate)
+    /*: Plate {
         val plate = Plate(
             CommonDetails(country, region, area, type, period, year),
             UniqueDetails(number, variant, vehicle, notes, date, cost, value, status),
@@ -68,7 +71,7 @@ class OfflinePlateRepository @Inject constructor(
         )
         plateDao.insertPlate(plate)
         return plate
-    }
+    }*/
 
     override fun getPlateData(number: String, variant: String):
         Plate = plateDao.getPlateData(number, variant)

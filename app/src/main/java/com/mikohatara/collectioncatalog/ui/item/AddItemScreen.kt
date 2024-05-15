@@ -10,22 +10,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikohatara.collectioncatalog.ui.components.AddItemScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddItemScreen(
     viewModel: AddItemViewModel = hiltViewModel(),
-    onBack: () -> Unit,
+    onBack: () -> Unit
 ) {
     val uiState = viewModel.uiState
 
     AddItemScreenContent(
         uiState,
+        viewModel,
         onValueChange = viewModel::updateUiState,
         onBack
     )
@@ -34,9 +38,12 @@ fun AddItemScreen(
 @Composable
 fun AddItemScreenContent(
     uiState: AddItemUiState,
+    viewModel: AddItemViewModel,
     onValueChange: (NewItemDetails) -> Unit,
     onBack: () -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = { AddItemScreenTopAppBar(onBack) },
         content = { innerPadding ->
@@ -44,7 +51,13 @@ fun AddItemScreenContent(
                 uiState,
                 //newItemDetails = uiState.newItemDetails,
                 modifier = Modifier.padding(innerPadding),
-                onValueChange
+                onValueChange,
+                onAdd = {
+                    coroutineScope.launch {
+                        viewModel.addItem()
+                        onBack()
+                    }
+                }
             )
         }
     )
@@ -56,6 +69,7 @@ private fun InputForm(
     //newItemDetails: NewItemDetails,
     modifier: Modifier = Modifier,
     onValueChange: (NewItemDetails) -> Unit = {},
+    onAdd: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -97,7 +111,7 @@ private fun InputForm(
             singleLine = true
         )
         Button(
-            onClick = {  },
+            onClick = onAdd,
             //enabled = uiState.hasValidEntry,
             modifier = Modifier.fillMaxWidth()
         ) {
