@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
@@ -35,16 +36,21 @@ import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ItemScreen(
     viewModel: ItemViewModel = hiltViewModel(),
     onBack: () -> Unit,
+    onDelete: () -> Unit
 ) {
     //val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val uiState: ItemUiState by viewModel.uiState.collectAsStateWithLifecycle()
     Log.d("uiState plateNumber", viewModel.plateNumber)
     Log.d("uiState numberVariant", viewModel.numberVariant)
+
+    val coroutineScope = rememberCoroutineScope()
 
     val item: Plate = uiState.item!!
     Log.d("uiState item", item.toString())
@@ -54,18 +60,30 @@ fun ItemScreen(
         item = samplePlates[2]
     }*/
 
-    ItemScreenContent(item, onBack)
+    ItemScreenContent(item, viewModel, coroutineScope, onBack, onDelete)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreenContent(
     item: Plate,
+    viewModel: ItemViewModel,
+    coroutineScope: CoroutineScope,
     onBack: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        topBar = { ItemScreenTopAppBar(item.uniqueDetails.number, onBack) },
+        topBar = { ItemScreenTopAppBar(
+            item.uniqueDetails.number,
+            onBack,
+            onDelete = {
+                coroutineScope.launch {
+                    viewModel.deleteItem()
+                    onBack()
+                }
+            }
+        ) },
             /*TopAppBar(
                 title = {
                     Text(

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
@@ -70,7 +71,8 @@ fun HomeScreenTopAppBar(
 @Composable
 fun ItemScreenTopAppBar(
     title: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onDelete: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -93,6 +95,12 @@ fun ItemScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit"
+                )
+            }
+            IconButton(onClick = { onDelete() }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete"
                 )
             }
             IconButton(onClick = { /*TODO*/ }) {

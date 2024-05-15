@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.ClipData.Item
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ItemUiState(
@@ -46,6 +48,10 @@ class ItemViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = ItemUiState(item = samplePlates[5])
             )
+
+    suspend fun deleteItem() /*= viewModelScope.launch*/ {
+        plateRepository.deletePlate(uiState.value.item!!)
+    }
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L

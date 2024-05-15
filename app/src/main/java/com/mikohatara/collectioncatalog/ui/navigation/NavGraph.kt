@@ -54,7 +54,8 @@ fun CollectionCatalogNavGraph(
 
         composable(CollectionCatalogDestinations.ITEM_ROUTE) {
             ItemScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onDelete = {  }
             )
         }
 
