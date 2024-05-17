@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -72,7 +73,7 @@ private fun InputForm(
     onAdd: () -> Unit
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier.padding(8.dp)
     ) {
         OutlinedTextField(
             value = uiState.newItemDetails.country,
@@ -113,7 +114,9 @@ private fun InputForm(
         Button(
             onClick = onAdd,
             //enabled = uiState.hasValidEntry,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         ) {
             Text(text = "Add ")
             Text(text = "ABC-012")

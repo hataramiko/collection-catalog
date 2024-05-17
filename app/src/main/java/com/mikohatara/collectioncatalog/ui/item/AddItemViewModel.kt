@@ -50,11 +50,11 @@ class AddItemViewModel @Inject constructor(
 
 data class NewItemDetails(
     val country: String = "",
-    //val region: String? = null,
-    //val area: String? = null,
+    val region: String? = null,
+    val area: String? = null,
     val type: String = "",
-    //val period: String? = null,
-    //val year: Int? = null,
+    val period: String? = null,
+    val year: Int? = null,
     val number: String = "",
     val variant: String = "",
     val isKeeper: Boolean = false,

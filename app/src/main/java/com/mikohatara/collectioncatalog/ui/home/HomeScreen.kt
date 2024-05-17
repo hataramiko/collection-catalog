@@ -64,48 +64,6 @@ fun HomeScreenContent(
             onAddItem = onAddItem,
             scrollBehavior = scrollBehavior
         ) },
-            /*androidx.compose.material3.TopAppBar(
-                title = {
-                    Text(
-                        "Plates", // database tableName?
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        //modifier = Modifier.padding(16.dp)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Menu"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search"
-                        )
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add"
-                        )
-                    }
-                    IconButton(onClick = {
-                        Log.d("NavTest", "MoreVert Clicked")
-                        //onNavTestClicked()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More actions")
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
-        },*/
         content = { innerPadding ->
             HomeBody(
                 itemList = itemList,

@@ -35,10 +35,7 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
     }
 
     fun navigateToItemScreen(number: String, variant: String) {
-        Log.d("navNumber", number)
-        Log.d("navVariant", variant.toString())
         navController.navigate("$ITEM_SCREEN/$number/$variant")
-        Log.d("navController.navigate", "$ITEM_SCREEN/$number/$variant")
     }
 
     fun navigateToAddItemScreen() {

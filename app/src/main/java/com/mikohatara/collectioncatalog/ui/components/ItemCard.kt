@@ -16,9 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
-import com.mikohatara.collectioncatalog.data.sample.SampleImage
 
 @Composable
 fun ItemCard(
@@ -88,6 +86,7 @@ private fun ItemCard(
     }
 }
 
+/*
 private fun defineImageSize(item: SampleImage): Int {
     val sizeToGive: Int
 
@@ -104,7 +103,7 @@ private fun defineImageSize(item: SampleImage): Int {
     }
 
     return sizeToGive
-}
+}*/
 
 @Preview
 @Composable
