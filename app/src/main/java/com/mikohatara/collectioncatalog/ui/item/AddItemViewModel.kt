@@ -5,18 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.mikohatara.collectioncatalog.data.Availability
+import com.mikohatara.collectioncatalog.data.Grading
 import com.mikohatara.collectioncatalog.data.CommonDetails
+import com.mikohatara.collectioncatalog.data.Measurements
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.Source
 import com.mikohatara.collectioncatalog.data.UniqueDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AddItemUiState(
@@ -63,7 +59,8 @@ data class NewItemDetails(
 
 fun NewItemDetails.toItem(): Plate = Plate(
     CommonDetails(country, null, null, type, null, null),
-    UniqueDetails(number, variant, null, null, null, null, null, null),
-    Availability(isKeeper, isForTrade),
-    Source(null, null, null, null, null)
+    UniqueDetails(number, variant, null, null, null, null, null, null, null),
+    Grading(isKeeper, isForTrade, null),
+    Source(null, null, null, null, null),
+    Measurements(null, null, null)
 )

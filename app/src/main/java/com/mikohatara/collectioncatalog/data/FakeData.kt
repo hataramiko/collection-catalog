@@ -15,14 +15,16 @@ val samplePlates = listOf(
             "a",
             null,
             null,
+            null,
             "2023-04-21",
             5.0,
             35.0,
             null
         ),
-        Availability(
+        Grading(
             true,
-            false
+            false,
+            null
         ),
         Source(
             null,
@@ -30,6 +32,11 @@ val samplePlates = listOf(
             null,
             "Online",
             "Finland"
+        ),
+        Measurements(
+            null,
+            null,
+            null
         )
     ),
     Plate(
@@ -46,14 +53,16 @@ val samplePlates = listOf(
             "b",
             null,
             null,
+            null,
             "2023-04-21",
             5.0,
             35.0,
             null
         ),
-        Availability(
+        Grading(
             false,
-            true
+            true,
+            null
         ),
         Source(
             null,
@@ -61,6 +70,11 @@ val samplePlates = listOf(
             null,
             "Online",
             "Finland"
+        ),
+        Measurements(
+            null,
+            null,
+            null
         )
     ),
     Plate(
@@ -80,11 +94,13 @@ val samplePlates = listOf(
             null,
             null,
             null,
+            null,
             null
         ),
-        Availability(
+        Grading(
             true,
-            false
+            false,
+            null
         ),
         Source(
             null,
@@ -92,7 +108,12 @@ val samplePlates = listOf(
             null,
             null,
             null
-        )
+        ),
+        Measurements(
+            null,
+            null,
+            null
+        ),
     ),
     Plate(
         CommonDetails(
@@ -111,11 +132,13 @@ val samplePlates = listOf(
             null,
             null,
             null,
+            null,
             null
         ),
-        Availability(
+        Grading(
             true,
-            false
+            false,
+            null
         ),
         Source(
             null,
@@ -123,7 +146,12 @@ val samplePlates = listOf(
             null,
             null,
             null
-        )
+        ),
+        Measurements(
+            null,
+            null,
+            null
+        ),
     ),
     Plate(
         CommonDetails(
@@ -142,15 +170,22 @@ val samplePlates = listOf(
             null,
             null,
             null,
+            null,
             null
         ),
-        Availability(
+        Grading(
             true,
-            false
+            false,
+            null
         ),
         Source(
             null,
             null,
+            null,
+            null,
+            null
+        ),
+        Measurements(
             null,
             null,
             null
@@ -173,11 +208,13 @@ val samplePlates = listOf(
             null,
             null,
             null,
+            null,
             null
         ),
-        Availability(
+        Grading(
             true,
-            false
+            false,
+            null
         ),
         Source(
             null,
@@ -185,6 +222,11 @@ val samplePlates = listOf(
             null,
             null,
             null
-        )
+        ),
+        Measurements(
+            null,
+            null,
+            null
+        ),
     )
 )

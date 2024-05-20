@@ -1,24 +1,18 @@
 package com.mikohatara.collectioncatalog.data
 
 import androidx.room.ColumnInfo
-import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Ignore
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
-import androidx.room.Query
-import androidx.room.Update
-import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "plates", primaryKeys = ["number", "variant"])
 data class Plate(
     @Embedded var commonDetails: CommonDetails,
     @Embedded var uniqueDetails: UniqueDetails,
-    @Embedded var availability: Availability,
+    @Embedded var grading: Grading,
     @Embedded var source: Source,
+    @Embedded var measurements: Measurements
 )
 
 @Entity(tableName = "wishlist")
@@ -34,7 +28,8 @@ data class FormerPlate(
     @Embedded var commonDetails: CommonDetails,
     @Embedded var uniqueDetails: UniqueDetails,
     @Embedded var source: Source,
-    @Embedded var former: Former?
+    @Embedded var former: Former?,
+    @Embedded var measurements: Measurements
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,17 +46,25 @@ data class CommonDetails(
 data class UniqueDetails(
     @ColumnInfo(name = "number") var number: String, /********** NOT NULL **********/
     @ColumnInfo(name = "variant") var variant: String, /********** NOT NULL **********/
+    @ColumnInfo(name = "image_path") var imagePath: String?,
     @ColumnInfo(name = "vehicle") var vehicle: String?,
     @ColumnInfo(name = "notes") var notes: String?,
     @ColumnInfo(name = "date") var date: String?,
     @ColumnInfo(name = "cost") var cost: Double?,
     @ColumnInfo(name = "value") var value: Double?,
-    @ColumnInfo(name = "status") var status: String?
+    @ColumnInfo(name = "status") var status: String?,
 )
 
-data class Availability(
+data class Grading(
     @ColumnInfo(name = "keeper") var isKeeper: Boolean, /********** NOT NULL **********/
     @ColumnInfo(name = "for_trade") var isForTrade: Boolean, /********** NOT NULL **********/
+    @ColumnInfo(name = "condition") var condition: String?,
+)
+
+data class Measurements(
+    @ColumnInfo(name = "width") var width: Double?,
+    @ColumnInfo(name = "height") var height: Double?,
+    @ColumnInfo(name = "weight") var weight: Double?
 )
 
 data class Source(
