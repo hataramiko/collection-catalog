@@ -72,6 +72,7 @@ fun HomeScreenTopAppBar(
 fun ItemScreenTopAppBar(
     title: String,
     onBack: () -> Unit,
+    onAddPhoto: () -> Unit,
     onDelete: () -> Unit
 ) {
     TopAppBar(
@@ -91,7 +92,7 @@ fun ItemScreenTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { onAddPhoto() }) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit"
