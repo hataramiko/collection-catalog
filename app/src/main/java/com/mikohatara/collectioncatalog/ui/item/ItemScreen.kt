@@ -1,45 +1,31 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.net.Uri
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenTopAppBar
@@ -63,15 +49,9 @@ fun ItemScreen(
     val item: Plate = uiState.item!!
     Log.d("uiState item", item.toString())
 
-    /*if (item == null) {
-        Log.d("item == null", "item was null, setting a samplePlate")
-        item = samplePlates[2]
-    }*/
-
     ItemScreenContent(item, viewModel, coroutineScope, onBack, onDelete)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemScreenContent(
     item: Plate,
@@ -81,22 +61,11 @@ fun ItemScreenContent(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var photoUri: Uri? by remember { mutableStateOf(null) }
-
-    val photoPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()) { uri ->
-        photoUri = uri
-    }
 
     Scaffold(
         topBar = { ItemScreenTopAppBar(
             item.uniqueDetails.number,
             onBack,
-            onAddPhoto = {
-                photoPicker.launch(PickVisualMediaRequest(
-                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                ))
-            },
             onDelete = {
                 coroutineScope.launch {
                     viewModel.deleteItem()
@@ -104,42 +73,10 @@ fun ItemScreenContent(
                 }
             }
         ) },
-            /*TopAppBar(
-                title = {
-                    Text(
-                        item.uniqueDetails.number,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /*navController.popBackStack()*/ onBack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit"
-                        )
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More actions")
-                    }
-                }
-            )
-        },*/
         content = { innerPadding ->
             ItemInformation(
                 item = item,
-                photoUri = photoUri,
-                modifier = Modifier
+                modifier = modifier
                     .padding(innerPadding)
                     //.verticalScroll(rememberScrollState())
             )
@@ -148,31 +85,22 @@ fun ItemScreenContent(
 }
 
 @Composable
-private fun Image(photoUri: Uri?) {
+private fun Image(imagePath: String?) {
 
-    if (photoUri != null) {
-        val painter = rememberAsyncImagePainter(
-            ImageRequest
-                .Builder(LocalContext.current)
-                .data(data = photoUri)
-                .build()
-        )
+    Log.d("imagePath in ItemScreen", imagePath.toString())
+
+    if (imagePath != null) {
 
         AsyncImage(
-            model = photoUri,
-            contentDescription = null,
-        )
-
-        /*
-        Image(
-            painter = painter,
+            model = ImageRequest
+                .Builder(LocalContext.current)
+                .data(imagePath)
+                .build(),
             contentDescription = null,
             modifier = Modifier
-                .background(Color.LightGray)
-                .height(256.dp)
-                .fillMaxWidth(),
-            contentScale = ContentScale.FillWidth
-        )*/
+                .fillMaxHeight()
+                .fillMaxWidth()
+        )
     } else {
         Image(
             imageVector = Icons.Rounded.Clear,
@@ -188,14 +116,13 @@ private fun Image(photoUri: Uri?) {
 @Composable
 private fun ItemInformation(
     item: Plate,
-    photoUri: Uri?,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
-        Image(photoUri)
+        Image(item.uniqueDetails.imagePath)
 
         Text(
             text = "Details",
@@ -269,8 +196,6 @@ private fun ItemInformation(
             entry = item.source.sourceCountry.toString()
         )
     }
-
-    //fields = listOf(Plate())
 }
 
 @Composable

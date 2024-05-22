@@ -1,7 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -53,13 +55,14 @@ data class NewItemDetails(
     val year: Int? = null,
     val number: String = "",
     val variant: String = "",
+    val imagePath: String? = null,
     val isKeeper: Boolean = false,
     val isForTrade: Boolean = false,
 )
 
 fun NewItemDetails.toItem(): Plate = Plate(
     CommonDetails(country, null, null, type, null, null),
-    UniqueDetails(number, variant, null, null, null, null, null, null, null),
+    UniqueDetails(number, variant, imagePath, null, null, null, null, null, null),
     Grading(isKeeper, isForTrade, null),
     Source(null, null, null, null, null),
     Measurements(null, null, null)

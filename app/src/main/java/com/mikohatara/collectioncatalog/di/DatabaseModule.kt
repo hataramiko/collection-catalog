@@ -30,7 +30,7 @@ class DatabaseModule {
             CollectionDatabase::class.java,
             "Plate"
         )
-            //.fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration() // TODO work out migration
             .build()
     }
 }

@@ -24,8 +24,8 @@ fun ItemCard(
     onClick: () -> Unit
 ) {
     ItemCard(
-        image = true /*item.imagePath*/,
-        width = 520.0 /*item.width*/,
+        image = true /*item.uniqueDetails.imagePath*/,
+        width = 520.0 /*item.measurements.width*/,
         title = item.uniqueDetails.number,
         onClick = onClick
     )
