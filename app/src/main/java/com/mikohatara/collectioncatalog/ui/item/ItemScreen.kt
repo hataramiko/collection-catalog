@@ -26,12 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.getFilePathFromUri
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
 fun ItemScreen(
@@ -41,13 +45,11 @@ fun ItemScreen(
 ) {
     //val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val uiState: ItemUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.d("uiState plateNumber", viewModel.plateNumber)
-    Log.d("uiState numberVariant", viewModel.numberVariant)
 
     val coroutineScope = rememberCoroutineScope()
 
     val item: Plate = uiState.item!!
-    Log.d("uiState item", item.toString())
+    //Log.d("uiState item", item.toString())
 
     ItemScreenContent(item, viewModel, coroutineScope, onBack, onDelete)
 }
@@ -94,7 +96,7 @@ private fun Image(imagePath: String?) {
         AsyncImage(
             model = ImageRequest
                 .Builder(LocalContext.current)
-                .data(imagePath)
+                .data(data = File(imagePath))
                 .build(),
             contentDescription = null,
             modifier = Modifier

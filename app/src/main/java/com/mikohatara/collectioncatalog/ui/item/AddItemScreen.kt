@@ -116,19 +116,18 @@ private fun InputForm(
     onValueChange: (NewItemDetails) -> Unit = {},
     onAdd: () -> Unit
 ) {
-    var imageUri: Uri? by remember { mutableStateOf(null) }
+    /*var imageUri: Uri? by remember { mutableStateOf(null) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()) { uri ->
         imageUri = uri
-    }
+    }*/
 
     Column(
         modifier = modifier//.padding(8.dp)
     ) {
-        //ItemImage(/*imageUri = null, {}*/)
         val imagePath: String? = ItemImage(uiState)
-        Log.d("imagePath in AddItemScreen", imagePath.toString())
+        //Log.d("imagePath in AddItemScreen", imagePath.toString())
 
         val updateUiState: (NewItemDetails) -> Unit = {
             onValueChange(uiState.newItemDetails.copy(imagePath = imagePath))
