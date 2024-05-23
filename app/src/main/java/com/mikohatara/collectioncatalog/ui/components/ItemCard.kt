@@ -1,7 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,10 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.data.Plate
+import java.io.File
 
 @Composable
 fun ItemCard(
@@ -24,7 +31,7 @@ fun ItemCard(
     onClick: () -> Unit
 ) {
     ItemCard(
-        image = true /*item.uniqueDetails.imagePath*/,
+        imagePath = item.uniqueDetails.imagePath,
         width = 520.0 /*item.measurements.width*/,
         title = item.uniqueDetails.number,
         onClick = onClick
@@ -33,7 +40,7 @@ fun ItemCard(
 
 @Composable
 private fun ItemCard(
-    image: Boolean, // Change this to the image path etc. when possible
+    imagePath: String?,
     width: Double,
     title: String,
     onClick: () -> Unit,
@@ -44,26 +51,30 @@ private fun ItemCard(
         modifier = modifier
             //.height(IntrinsicSize.Min)
     ) {
-        if (image != false /* image != null */ ) {
+        if (imagePath != null) {
 
             //imageWidth = defineImageSize(item)
-            /*Image(
-                painter = painterResource(item.imageResourceId),
-                contentDescription = null,
-                modifier = Modifier
-                    //.width(imageWidth.dp)
-                    .height(IntrinsicSize.Min),
-                contentScale = ContentScale.FillWidth
-            )*/
 
-            Text(
+            AsyncImage(
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(data = File(imagePath))
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier,
+                    //.width(imageWidth.dp)
+                    //.height(IntrinsicSize.Min),
+                contentScale = ContentScale.FillWidth
+            )
+
+            /*Text(
                 text = title,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .width(width.dp)
                     .height((width/5).dp)
                     .padding((width/13).dp)
-            )
+            )*/
         } else {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
