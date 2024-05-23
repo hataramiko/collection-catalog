@@ -56,14 +56,15 @@ data class NewItemDetails(
     val number: String = "",
     val variant: String = "",
     val imagePath: String? = null,
+    val width: Double? = null,
     val isKeeper: Boolean = false,
     val isForTrade: Boolean = false,
 )
 
 fun NewItemDetails.toItem(): Plate = Plate(
-    CommonDetails(country, null, null, type, null, null),
+    CommonDetails(country, region, area, type, period, year),
     UniqueDetails(number, variant, imagePath, null, null, null, null, null, null),
     Grading(isKeeper, isForTrade, null),
     Source(null, null, null, null, null),
-    Measurements(null, null, null)
+    Measurements(width, null, null)
 )

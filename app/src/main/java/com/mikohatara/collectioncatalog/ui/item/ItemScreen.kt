@@ -135,44 +135,62 @@ private fun ItemInformation(
             label = "Country",
             entry = item.commonDetails.country
         )
-        ItemInformationField(
-            label = "Region",
-            entry = item.commonDetails.region.toString()
-        )
-        item.commonDetails.area?.let { /********************/
+        item.commonDetails.region?.let { // toString() ???
             ItemInformationField(
                 label = "Region",
-                entry = item.commonDetails.region.toString()
+                entry = it // item.commonDetails.region!! ???
             )
         }
-        ItemInformationField(
-            label = "Area",
-            entry = item.commonDetails.area.toString()
-        )
+        item.commonDetails.area?.let {
+            ItemInformationField(
+                label = "Area",
+                entry = it
+            )
+        }
         ItemInformationField(
             label = "Type",
             entry = item.commonDetails.type
         )
-        ItemInformationField(
-            label = "Period",
-            entry = item.commonDetails.period.toString()
-        )
-        ItemInformationField(
-            label = "Year",
-            entry = item.commonDetails.year.toString()
-        )
+        item.commonDetails.period?.let {
+            ItemInformationField(
+                label = "Period",
+                entry = it
+            )
+        }
+        item.commonDetails.year?.let {
+            ItemInformationField(
+                label = "Year",
+                entry = it.toString() // item.commonDetails.year.toString() ??
+            )
+        }
 
-        Text(
+        /*Text(
             text = "Unique Details",
             modifier = Modifier
                 .padding(8.dp)
-        )
+        )*/
         ItemInformationField(
             label = "Number",
             entry = item.uniqueDetails.number
         )
+        ItemInformationField(
+            label = "Variant",
+            entry = item.uniqueDetails.variant
+        )
+        item.measurements.width?.let {
+            ItemInformationField(
+                label = "Width",
+                entry = it.toString()
+            )
+        }
+        item.uniqueDetails.imagePath?.let {
+            ItemInformationField(
+                label = "imagePath debug",
+                entry = it
+            )
+        }
 
-        Text(
+        /*Text(
             text = "Source",
             modifier = Modifier
                 .padding(8.dp)
@@ -196,7 +214,7 @@ private fun ItemInformation(
         ItemInformationField(
             label = "Country",
             entry = item.source.sourceCountry.toString()
-        )
+        )*/
     }
 }
 

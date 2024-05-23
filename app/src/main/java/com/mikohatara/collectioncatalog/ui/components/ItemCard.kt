@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -80,7 +81,7 @@ private fun ItemCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp)
+                    .height(80.dp)
             ) {
                 Image(
                     imageVector = Icons.Rounded.Warning,
@@ -89,7 +90,7 @@ private fun ItemCard(
                         .padding(16.dp)
                 )
                 Text(
-                    text = title,
+                    text = "$title\nNo image",
                     modifier = Modifier
                 )
             }

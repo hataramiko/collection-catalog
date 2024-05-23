@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Button
@@ -16,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,9 +29,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -116,15 +127,10 @@ private fun InputForm(
     onValueChange: (NewItemDetails) -> Unit = {},
     onAdd: () -> Unit
 ) {
-    /*var imageUri: Uri? by remember { mutableStateOf(null) }
-
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()) { uri ->
-        imageUri = uri
-    }*/
-
     Column(
-        modifier = modifier//.padding(8.dp)
+        modifier = modifier
+            //.padding(8.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         val imagePath: String? = ItemImage(uiState)
         //Log.d("imagePath in AddItemScreen", imagePath.toString())
@@ -140,8 +146,32 @@ private fun InputForm(
         OutlinedTextField(
             value = uiState.newItemDetails.country,
             onValueChange = { onValueChange(uiState.newItemDetails.copy(country = it)) },
-            //keyboardActions = ,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            ),
             label = { Text("Country") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true,
+            singleLine = true
+        )
+        OutlinedTextField(
+            value = uiState.newItemDetails.region ?: "",
+            onValueChange = { onValueChange(uiState.newItemDetails.copy(region = it)) },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            ),
+            label = { Text("Region") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true,
+            singleLine = true
+        )
+        OutlinedTextField(
+            value = uiState.newItemDetails.area ?: "",
+            onValueChange = { onValueChange(uiState.newItemDetails.copy(area = it)) },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            ),
+            label = { Text("Area") },
             modifier = Modifier.fillMaxWidth(),
             enabled = true,
             singleLine = true
@@ -149,7 +179,9 @@ private fun InputForm(
         OutlinedTextField(
             value = uiState.newItemDetails.type,
             onValueChange = { onValueChange(uiState.newItemDetails.copy(type = it)) },
-            //keyboardActions = ,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            ),
             label = { Text("Type") },
             modifier = Modifier.fillMaxWidth(),
             enabled = true,
@@ -158,7 +190,10 @@ private fun InputForm(
         OutlinedTextField(
             value = uiState.newItemDetails.number,
             onValueChange = { onValueChange(uiState.newItemDetails.copy(number = it)) },
-            //keyboardActions = ,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Characters,
+                imeAction = ImeAction.Next
+            ),
             label = { Text("Number") },
             modifier = Modifier.fillMaxWidth(),
             enabled = true,
@@ -167,12 +202,42 @@ private fun InputForm(
         OutlinedTextField(
             value = uiState.newItemDetails.variant,
             onValueChange = { onValueChange(uiState.newItemDetails.copy(variant = it)) },
-            //keyboardActions = ,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done //Next
+            ),
             label = { Text("Variant") },
             modifier = Modifier.fillMaxWidth(),
             enabled = true,
             singleLine = true
         )
+        OutlinedTextField(
+            value = uiState.newItemDetails.imagePath.toString(),
+            onValueChange = { onValueChange(uiState.newItemDetails.copy(imagePath = it)) },
+            //keyboardOptions = ,
+            label = { Text("imagePath debug") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = false,
+            singleLine = true
+        )
+        /*OutlinedTextField(
+            value = uiState.newItemDetails.width.toString(),
+            onValueChange = {
+                if (!it.isDigitsOnly()) {
+                    onValueChange(uiState.newItemDetails.copy(width = 0.0))
+                } else {
+                    onValueChange(uiState.newItemDetails.copy(width = it.toDouble()))
+                }
+            },
+            //onValueChange = { onValueChange(uiState.newItemDetails.copy(width = it.toDouble())) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                //imeAction = ImeAction.Done
+            ),
+            label = { Text("Width") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = true,
+            singleLine = true
+        )*/
         Button(
             onClick = onAdd,
             //enabled = uiState.hasValidEntry,
@@ -180,7 +245,7 @@ private fun InputForm(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Text(text = "Add " + uiState.newItemDetails.number)
+            Text(text = "Add ${uiState.newItemDetails.number}")
         }
     }
 }
