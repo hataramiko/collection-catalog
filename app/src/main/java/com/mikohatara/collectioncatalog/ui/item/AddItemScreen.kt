@@ -219,16 +219,14 @@ private fun InputForm(
             enabled = false,
             singleLine = true
         )
-        /*OutlinedTextField(
+        OutlinedTextField(
             value = uiState.newItemDetails.width.toString(),
+            // The solution below essentially negates nullability for the width.
+            // TODO come up with a better solution
+            // Have to reassess whether to use Double or Int anyway...
             onValueChange = {
-                if (!it.isDigitsOnly()) {
-                    onValueChange(uiState.newItemDetails.copy(width = 0.0))
-                } else {
-                    onValueChange(uiState.newItemDetails.copy(width = it.toDouble()))
-                }
+                onValueChange(uiState.newItemDetails.copy(width = it.toDoubleOrNull() ?: 0.0))
             },
-            //onValueChange = { onValueChange(uiState.newItemDetails.copy(width = it.toDouble())) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 //imeAction = ImeAction.Done
@@ -237,7 +235,7 @@ private fun InputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = true,
             singleLine = true
-        )*/
+        )
         Button(
             onClick = onAdd,
             //enabled = uiState.hasValidEntry,

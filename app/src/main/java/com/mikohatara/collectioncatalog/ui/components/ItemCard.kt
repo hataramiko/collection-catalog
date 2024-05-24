@@ -33,7 +33,7 @@ fun ItemCard(
 ) {
     ItemCard(
         imagePath = item.uniqueDetails.imagePath,
-        width = 520.0 /*item.measurements.width*/,
+        width = item.measurements.width,
         title = item.uniqueDetails.number,
         onClick = onClick
     )
@@ -42,7 +42,7 @@ fun ItemCard(
 @Composable
 private fun ItemCard(
     imagePath: String?,
-    width: Double,
+    width: Double?,
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -53,6 +53,13 @@ private fun ItemCard(
             //.height(IntrinsicSize.Min)
     ) {
         if (imagePath != null) {
+            var imageWidth: Double
+
+            if (width == null || width == 0.0) {
+                imageWidth = 520.0
+            } else {
+                imageWidth = width
+            }
 
             //imageWidth = defineImageSize(item)
 
@@ -62,8 +69,8 @@ private fun ItemCard(
                     .data(data = File(imagePath))
                     .build(),
                 contentDescription = null,
-                modifier = Modifier,
-                    //.width(imageWidth.dp)
+                modifier = Modifier
+                    .width(imageWidth.dp),
                     //.height(IntrinsicSize.Min),
                 contentScale = ContentScale.FillWidth
             )
