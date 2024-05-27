@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -59,7 +62,7 @@ fun HomeScreenContent(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { HomeScreenTopAppBar(
             onAddItem = onAddItem,
             scrollBehavior = scrollBehavior
@@ -67,7 +70,7 @@ fun HomeScreenContent(
         content = { innerPadding ->
             HomeBody(
                 itemList = itemList,
-                modifier = Modifier
+                modifier = modifier
                     .padding(innerPadding),
                     //.verticalScroll(rememberScrollState())
                 onItemClick = onItemClick
@@ -82,6 +85,10 @@ fun HomeBody(
     modifier: Modifier = Modifier,
     onItemClick: (Plate) -> Unit
 ) {
+    val maxWidth = getMaxWidth(itemList)
+
+    //val maxWidth = itemList.maxOf { it.measurements.width ?: 0.0 }
+
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,13 +97,32 @@ fun HomeBody(
     ) {
         items(itemList) { item ->
             ItemCard(
-                item = item
+                item = item,
+                maxWidth = maxWidth
             ) {
                 onItemClick(item)
                 Log.d("ItemCard", item.toString())
             }
         }
     }
+}
+
+private fun getMaxWidth(items: List<Plate>): Double {
+    var maxWidth = 0.0
+
+    for (item in items) {
+        var itemWidth = item.measurements.width
+
+        if (itemWidth == null) {
+            itemWidth = 0.0
+        }
+
+        if (itemWidth > maxWidth) {
+            maxWidth = itemWidth
+        }
+    }
+
+    return maxWidth
 }
 
 @Preview

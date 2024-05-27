@@ -1,14 +1,13 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
@@ -17,10 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.data.Plate
@@ -29,12 +30,14 @@ import java.io.File
 @Composable
 fun ItemCard(
     item: Plate,
+    maxWidth: Double,
     onClick: () -> Unit
 ) {
     ItemCard(
         imagePath = item.uniqueDetails.imagePath,
         width = item.measurements.width,
         title = item.uniqueDetails.number,
+        maxImageWidth = maxWidth,
         onClick = onClick
     )
 }
@@ -44,24 +47,26 @@ private fun ItemCard(
     imagePath: String?,
     width: Double?,
     title: String,
+    maxImageWidth: Double,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val scale = screenWidth / maxImageWidth
+
     Card(
         onClick = onClick,
         modifier = modifier
+            //.widthIn(max = Dp(maxImageWidth.toFloat()))
             //.height(IntrinsicSize.Min)
     ) {
         if (imagePath != null) {
-            var imageWidth: Double
 
-            if (width == null || width == 0.0) {
-                imageWidth = 520.0
-            } else {
-                imageWidth = width
-            }
+            //val imageWidth = (width ?: maxImageWidth) / maxImageWidth * maxImageWidth
+            //val imageWidth = ((width?.div(maxImageWidth) ?: maxImageWidth) * maxImageWidth)
 
-            //imageWidth = defineImageSize(item)
+            val imageWidth = (width ?: maxImageWidth) * scale
+            Log.d("ItemCard", "ItemCard: $imageWidth")
 
             AsyncImage(
                 model = ImageRequest
@@ -72,17 +77,8 @@ private fun ItemCard(
                 modifier = Modifier
                     .width(imageWidth.dp),
                     //.height(IntrinsicSize.Min),
-                contentScale = ContentScale.FillWidth
+                contentScale = ContentScale.FillWidth,
             )
-
-            /*Text(
-                text = title,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .width(width.dp)
-                    .height((width/5).dp)
-                    .padding((width/13).dp)
-            )*/
         } else {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
