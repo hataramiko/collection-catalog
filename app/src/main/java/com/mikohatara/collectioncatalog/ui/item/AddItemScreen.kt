@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -203,7 +204,7 @@ private fun InputForm(
             value = uiState.newItemDetails.variant,
             onValueChange = { onValueChange(uiState.newItemDetails.copy(variant = it)) },
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done //Next
+                imeAction = ImeAction.Next
             ),
             label = { Text("Variant") },
             modifier = Modifier.fillMaxWidth(),
@@ -229,7 +230,7 @@ private fun InputForm(
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
-                //imeAction = ImeAction.Done
+                imeAction = ImeAction.Done
             ),
             label = { Text("Width") },
             modifier = Modifier.fillMaxWidth(),

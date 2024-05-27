@@ -51,7 +51,13 @@ fun ItemScreen(
     val item: Plate = uiState.item!!
     //Log.d("uiState item", item.toString())
 
-    ItemScreenContent(item, viewModel, coroutineScope, onBack, onDelete)
+    ItemScreenContent(
+        item,
+        viewModel,
+        coroutineScope,
+        onBack,
+        onDelete
+    )
 }
 
 @Composable

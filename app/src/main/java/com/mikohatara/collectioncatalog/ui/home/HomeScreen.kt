@@ -3,6 +3,7 @@ package com.mikohatara.collectioncatalog.ui.home
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -85,23 +86,33 @@ fun HomeBody(
     modifier: Modifier = Modifier,
     onItemClick: (Plate) -> Unit
 ) {
-    val maxWidth = getMaxWidth(itemList)
+    if (itemList.isEmpty()) {
+        Text(
+            text = "Collection is empty.\nPress + to add an item",
+            modifier = modifier
+                .widthIn(min = Dp.Infinity)
+        )
+        Log.d("HomeBody is null", itemList.toString())
+    } else {
+        //val maxWidth = getMaxWidth(itemList)
+        val maxWidth = itemList.maxOfOrNull { it.measurements.width ?: 0.0 } ?: 0.0
+        //Log.d("maxWidth", maxWidth.toString())
 
-    //val maxWidth = itemList.maxOf { it.measurements.width ?: 0.0 }
-
-    LazyColumn(
-        contentPadding = PaddingValues(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-    ) {
-        items(itemList) { item ->
-            ItemCard(
-                item = item,
-                maxWidth = maxWidth
-            ) {
-                onItemClick(item)
-                Log.d("ItemCard", item.toString())
+        LazyColumn(
+            contentPadding = PaddingValues(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxWidth()
+        ) {
+            items(itemList) { item ->
+                ItemCard(
+                    item = item,
+                    maxWidth = maxWidth
+                ) {
+                    onItemClick(item)
+                    Log.d("ItemCard", item.toString())
+                }
             }
         }
     }

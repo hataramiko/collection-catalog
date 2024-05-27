@@ -57,16 +57,12 @@ private fun ItemCard(
     Card(
         onClick = onClick,
         modifier = modifier
-            //.widthIn(max = Dp(maxImageWidth.toFloat()))
             //.height(IntrinsicSize.Min)
     ) {
         if (imagePath != null) {
 
-            //val imageWidth = (width ?: maxImageWidth) / maxImageWidth * maxImageWidth
-            //val imageWidth = ((width?.div(maxImageWidth) ?: maxImageWidth) * maxImageWidth)
-
             val imageWidth = (width ?: maxImageWidth) * scale
-            Log.d("ItemCard", "ItemCard: $imageWidth")
+            //Log.d("ItemCard", "ItemCard: $imageWidth")
 
             AsyncImage(
                 model = ImageRequest
@@ -74,7 +70,7 @@ private fun ItemCard(
                     .data(data = File(imagePath))
                     .build(),
                 contentDescription = null,
-                modifier = Modifier
+                modifier = modifier
                     .width(imageWidth.dp),
                     //.height(IntrinsicSize.Min),
                 contentScale = ContentScale.FillWidth,
@@ -82,47 +78,32 @@ private fun ItemCard(
         } else {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .height(80.dp)
             ) {
                 Image(
                     imageVector = Icons.Rounded.Warning,
                     contentDescription = null,
-                    modifier = Modifier
+                    modifier = modifier
                         .padding(16.dp)
                 )
                 Text(
-                    text = "$title\nNo image",
-                    modifier = Modifier
+                    text = "$title\nNo image"
                 )
             }
         }
     }
 }
 
-/*
-private fun defineImageSize(item: SampleImage): Int {
-    val sizeToGive: Int
-
-    if (item == SampleImage(R.drawable.j_sa0123_a) ||
-        item == SampleImage(R.drawable.j_a1234_a)
-    ) {
-            sizeToGive = 256
-    } else if (item == SampleImage(R.drawable.fin_abc012_a) ||
-        item == SampleImage(R.drawable.fin_abc012_b)
-    ) {
-            sizeToGive = 300
-    } else {
-        sizeToGive = 400
-    }
-
-    return sizeToGive
-}*/
-
 @Preview
 @Composable
 fun CardPreview() {
-    //ItemCard(SampleImage(R.drawable.j_sa0123_a)) //SampleImage
-    //ItemCard(item = samplePlates[0], onClick = /*TODO*/) //Plate
+    ItemCard(
+        imagePath = null,
+        width = 440.0,
+        title = "ABCD56789",
+        maxImageWidth = 520.0,
+        onClick = {}
+    )
 }
