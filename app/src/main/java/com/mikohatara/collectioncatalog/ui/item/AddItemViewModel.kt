@@ -41,6 +41,10 @@ class AddItemViewModel @Inject constructor(
         plateRepository.addPlate(uiState.newItemDetails.toItem())
     }
 
+    suspend fun updateItem() {
+        plateRepository.updatePlate(uiState.newItemDetails.toItem())
+    }
+
     /*private fun AddItem() = viewModelScope.launch {
         //plateRepository.addPlate()
     }*/

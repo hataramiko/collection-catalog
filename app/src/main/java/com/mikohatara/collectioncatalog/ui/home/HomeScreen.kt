@@ -94,7 +94,7 @@ fun HomeBody(
         )
         Log.d("HomeBody is null", itemList.toString())
     } else {
-        //val maxWidth = getMaxWidth(itemList)
+
         val maxWidth = itemList.maxOfOrNull { it.measurements.width ?: 0.0 } ?: 0.0
         //Log.d("maxWidth", maxWidth.toString())
 
@@ -116,24 +116,6 @@ fun HomeBody(
             }
         }
     }
-}
-
-private fun getMaxWidth(items: List<Plate>): Double {
-    var maxWidth = 0.0
-
-    for (item in items) {
-        var itemWidth = item.measurements.width
-
-        if (itemWidth == null) {
-            itemWidth = 0.0
-        }
-
-        if (itemWidth > maxWidth) {
-            maxWidth = itemWidth
-        }
-    }
-
-    return maxWidth
 }
 
 @Preview

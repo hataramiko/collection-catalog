@@ -3,6 +3,7 @@ package com.mikohatara.collectioncatalog.ui.components
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -10,6 +11,13 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,7 +47,7 @@ fun HomeScreenTopAppBar(
         navigationIcon = {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-                    imageVector = Icons.Default.Menu,
+                    imageVector = Icons.Rounded.Menu,
                     contentDescription = "Menu"
                 )
             }
@@ -47,19 +55,19 @@ fun HomeScreenTopAppBar(
         actions = {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = Icons.Rounded.Search,
                     contentDescription = "Search"
                 )
             }
             IconButton(onClick = { onAddItem() }) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Icons.Rounded.Add,
                     contentDescription = "Add"
                 )
             }
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-                    imageVector = Icons.Default.MoreVert,
+                    imageVector = Icons.Rounded.MoreVert,
                     contentDescription = "More actions")
             }
         },
@@ -71,7 +79,9 @@ fun HomeScreenTopAppBar(
 @Composable
 fun ItemScreenTopAppBar(
     title: String,
+    item: Plate,
     onBack: () -> Unit,
+    onEdit: (Plate) -> Unit,
     onDelete: () -> Unit
 ) {
     TopAppBar(
@@ -85,27 +95,27 @@ fun ItemScreenTopAppBar(
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = "Back"
                 )
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { onEdit(item) }) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
+                    imageVector = Icons.Rounded.Edit,
                     contentDescription = "Edit"
                 )
             }
             IconButton(onClick = { onDelete() }) {
                 Icon(
-                    imageVector = Icons.Default.Delete,
+                    imageVector = Icons.Rounded.Delete,
                     contentDescription = "Delete"
                 )
             }
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-                    imageVector = Icons.Default.MoreVert,
+                    imageVector = Icons.Rounded.MoreVert,
                     contentDescription = "More actions"
                 )
             }
@@ -125,7 +135,7 @@ fun AddItemScreenTopAppBar(
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = "Back"
                 )
             }

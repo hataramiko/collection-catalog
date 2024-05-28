@@ -41,6 +41,7 @@ import java.io.File
 fun ItemScreen(
     viewModel: ItemViewModel = hiltViewModel(),
     onBack: () -> Unit,
+    onEdit: (Plate) -> Unit,
     onDelete: () -> Unit
 ) {
     //val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -56,6 +57,7 @@ fun ItemScreen(
         viewModel,
         coroutineScope,
         onBack,
+        onEdit,
         onDelete
     )
 }
@@ -66,6 +68,7 @@ fun ItemScreenContent(
     viewModel: ItemViewModel,
     coroutineScope: CoroutineScope,
     onBack: () -> Unit,
+    onEdit: (Plate) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -73,7 +76,9 @@ fun ItemScreenContent(
     Scaffold(
         topBar = { ItemScreenTopAppBar(
             item.uniqueDetails.number,
+            item,
             onBack,
+            onEdit,
             onDelete = {
                 coroutineScope.launch {
                     viewModel.deleteItem()
@@ -95,7 +100,7 @@ fun ItemScreenContent(
 @Composable
 private fun Image(imagePath: String?) {
 
-    Log.d("imagePath in ItemScreen", imagePath.toString())
+    //Log.d("imagePath in ItemScreen", imagePath.toString())
 
     if (imagePath != null) {
 

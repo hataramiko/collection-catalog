@@ -9,16 +9,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.mikohatara.collectioncatalog.data.Plate
-import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.item.AddItemScreen
+import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemScreen
 import kotlinx.coroutines.CoroutineScope
 
@@ -39,7 +36,7 @@ fun CollectionCatalogNavGraph(
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = Modifier
+        modifier = modifier
     ) {
 
         composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
@@ -55,6 +52,10 @@ fun CollectionCatalogNavGraph(
         composable(CollectionCatalogDestinations.ITEM_ROUTE) {
             ItemScreen(
                 onBack = { navController.popBackStack() },
+                onEdit = { item -> navActions.navigateToItemEntryScreen(
+                    item.uniqueDetails.number,
+                    item.uniqueDetails.variant
+                ) },
                 onDelete = {  }
             )
         }
@@ -63,6 +64,12 @@ fun CollectionCatalogNavGraph(
             AddItemScreen(
                 onBack = { navController.popBackStack() }
             )
+        }
+
+        composable(CollectionCatalogDestinations.ITEM_ENTRY_ROUTE) {
+            ItemEntryScreen {
+                //onBack = { navController.popBackStack() }
+            }
         }
     }
 }
