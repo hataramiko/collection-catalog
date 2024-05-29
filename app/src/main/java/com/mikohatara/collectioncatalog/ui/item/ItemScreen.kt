@@ -72,7 +72,6 @@ fun ItemScreenContent(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Scaffold(
         topBar = { ItemScreenTopAppBar(
             item.uniqueDetails.number,

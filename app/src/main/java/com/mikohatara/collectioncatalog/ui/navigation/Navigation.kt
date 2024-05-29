@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.navigation
 
+import android.util.Log
 import androidx.navigation.NavHostController
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.NUMBER_VARIANT
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
@@ -44,7 +45,6 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
     }
 
     fun navigateToItemEntryScreen(number: String, variant: String) {
-        //navController.navigate("$ITEM_ENTRY_SCREEN/$number?/$variant?")
         navController.navigate("$ITEM_ENTRY_SCREEN/$number/$variant")
     }
 }

@@ -45,9 +45,6 @@ class ItemEntryViewModel @Inject constructor(
     private val numberVariant: String? =
         savedStateHandle.get<String>(CollectionCatalogDestinationArgs.NUMBER_VARIANT)
 
-    /*private val _uiState = MutableStateFlow(ItemEntryUiState())
-    val uiState: StateFlow<ItemEntryUiState> = _uiState.asStateFlow()*/
-
     var uiState by mutableStateOf(ItemEntryUiState())
         private set
 
@@ -57,43 +54,31 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 
-    fun updateUiState(item: Plate, itemDetails: ItemDetails, isNew: Boolean) {
-        uiState = ItemEntryUiState(
-            item = item,
-            itemDetails = itemDetails,
-            isNew = isNew
-        )
+    fun updateUiState(itemDetails: ItemDetails) {
+        uiState = ItemEntryUiState(itemDetails = itemDetails)
     }
 
     fun saveEntry() = viewModelScope.launch {
-        /*if (!uiState.value.isNew) {
+        if (!uiState.isNew) {
             updateItem()
         } else {
             addNewItem()
-        }*/
+        }
     }
-
-
-
 
     suspend fun addNewItem() = viewModelScope.launch {
         plateRepository.addPlate(uiState.item!!)
     }
 
-    suspend fun updateItem() {
-        /*if (plateNumber == null || numberVariant == null) {
-            throw RuntimeException(
-                "updateItem() was called but either plateNumber or numberVariant is null"
-            )
-        }*/
+    suspend fun updateItem() = viewModelScope.launch {
+        var plate: Plate = uiState.itemDetails.toPlate()
+        Log.d("ItemEntryViewModel", plate.toString())
 
-        viewModelScope.launch {
-            plateRepository.updatePlate(uiState.item!!)
-        }
+        plateRepository.updatePlate(plate)
     }
 
-    private fun loadItem(plateNumber: String, numberVariant: String) = viewModelScope.launch {
-        plateRepository.getPlateStream(plateNumber, numberVariant).let {
+    private fun loadItem(plateNumber: String?, numberVariant: String?) = viewModelScope.launch {
+        plateRepository.getPlateStream(plateNumber!!, numberVariant!!).let {
             uiState = ItemEntryUiState(
                 item = it.firstOrNull(),
                 itemDetails = it.firstOrNull()!!.toItemDetails(),

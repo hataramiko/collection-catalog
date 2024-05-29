@@ -27,9 +27,6 @@ class AddItemViewModel @Inject constructor(
     private val plateRepository: PlateRepository
 ) : ViewModel() {
 
-    /*private val _uiState = MutableStateFlow(AddItemUiState())
-    var uiState: StateFlow<AddItemUiState> = _uiState.asStateFlow()*/
-
     var uiState by mutableStateOf(AddItemUiState())
         private set
 
@@ -40,14 +37,6 @@ class AddItemViewModel @Inject constructor(
     suspend fun addItem() {
         plateRepository.addPlate(uiState.newItemDetails.toItem())
     }
-
-    suspend fun updateItem() {
-        plateRepository.updatePlate(uiState.newItemDetails.toItem())
-    }
-
-    /*private fun AddItem() = viewModelScope.launch {
-        //plateRepository.addPlate()
-    }*/
 }
 
 data class NewItemDetails(

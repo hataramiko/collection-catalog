@@ -32,6 +32,7 @@ import com.mikohatara.collectioncatalog.data.Plate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopAppBar(
+    //onNewAdd: () -> Unit,
     onAddItem: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
@@ -53,7 +54,7 @@ fun HomeScreenTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { /*onNewAdd()*/ }) {
                 Icon(
                     imageVector = Icons.Rounded.Search,
                     contentDescription = "Search"
@@ -154,5 +155,26 @@ fun AddItemScreenTopAppBar(
                 )
             }
         }*/
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ItemEntryTopAppBar(
+    title: String,
+    onBack: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(title)
+        },
+        navigationIcon = {
+            IconButton(onClick = { onBack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        }
     )
 }
