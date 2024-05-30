@@ -1,7 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.content.ClipData.Item
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,14 +8,10 @@ import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ItemUiState(

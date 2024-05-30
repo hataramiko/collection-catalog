@@ -6,9 +6,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
@@ -26,6 +23,4 @@ interface DataModule {
     override suspend fun add(name: String) {
         throw NotImplementedError()
     }
-}
-
-val fakePlates = listOf("ABC-123", "DEF-456", "GHI-789")*/
+}*/

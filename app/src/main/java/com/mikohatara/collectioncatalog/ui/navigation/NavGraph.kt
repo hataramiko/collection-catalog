@@ -9,18 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.item.AddItemScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemScreen
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.NUMBER_VARIANT
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
 import kotlinx.coroutines.CoroutineScope
 
 @Composable

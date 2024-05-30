@@ -1,15 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mikohatara.collectioncatalog.data.CommonDetails
 import com.mikohatara.collectioncatalog.data.Grading
 import com.mikohatara.collectioncatalog.data.Measurements
@@ -18,15 +14,8 @@ import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.Source
 import com.mikohatara.collectioncatalog.data.UniqueDetails
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.NUMBER_VARIANT
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -73,11 +62,11 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 
-    suspend fun addNewItem() = viewModelScope.launch {
+    private suspend fun addNewItem() = viewModelScope.launch {
         plateRepository.addPlate(uiState.itemDetails.toPlate())
     }
 
-    suspend fun updateItem() = viewModelScope.launch {
+    private suspend fun updateItem() = viewModelScope.launch {
         plateRepository.updatePlate(uiState.itemDetails.toPlate())
     }
 

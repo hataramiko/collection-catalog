@@ -1,18 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.components
 
-import android.util.Log
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Menu
@@ -25,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.mikohatara.collectioncatalog.data.Plate
 
@@ -56,21 +46,22 @@ fun HomeScreenTopAppBar(
         actions = {
             IconButton(onClick = { onNewAdd() }) {
                 Icon(
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = "Search"
+                    imageVector = Icons.Rounded.AddCircle,
+                    contentDescription = "Add"
                 )
-            }
+            }/*
             IconButton(onClick = { onAddItem() }) {
                 Icon(
                     imageVector = Icons.Rounded.Add,
                     contentDescription = "Add"
                 )
-            }
+            }*//*
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Rounded.MoreVert,
-                    contentDescription = "More actions")
-            }
+                    contentDescription = null
+                )
+            }*/
         },
         scrollBehavior = scrollBehavior
     )
@@ -113,48 +104,14 @@ fun ItemScreenTopAppBar(
                     imageVector = Icons.Rounded.Delete,
                     contentDescription = "Delete"
                 )
-            }
+            }/*
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Rounded.MoreVert,
-                    contentDescription = "More actions"
+                    contentDescription = null
                 )
-            }
+            }*/
         }
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddItemScreenTopAppBar(
-    onBack: () -> Unit
-) {
-    TopAppBar(
-        title = {
-            Text(text = "Add new")
-        },
-        navigationIcon = {
-            IconButton(onClick = { onBack() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-        }/*,
-        actions = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit"
-                )
-            }
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More actions"
-                )
-            }
-        }*/
     )
 }
 
@@ -166,7 +123,39 @@ fun ItemEntryTopAppBar(
 ) {
     TopAppBar(
         title = {
-            Text(title)
+            Text(
+                title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { onBack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },/*
+        actions = {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    imageVector = Icons.Rounded.MoreVert,
+                    contentDescription = null
+                )
+            }
+        }*/
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddItemScreenTopAppBar(
+    onBack: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(text = "Add new")
         },
         navigationIcon = {
             IconButton(onClick = { onBack() }) {

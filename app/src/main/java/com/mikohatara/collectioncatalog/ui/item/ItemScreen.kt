@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -26,12 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenTopAppBar
-import com.mikohatara.collectioncatalog.ui.components.getFilePathFromUri
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

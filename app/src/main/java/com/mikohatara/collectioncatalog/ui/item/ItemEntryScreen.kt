@@ -1,11 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -15,13 +13,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
-import com.mikohatara.collectioncatalog.ui.components.ItemImage
+import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 
 @Composable
 fun ItemEntryScreen(
@@ -46,7 +43,7 @@ fun ItemEntryScreenContent(
     onBack: () -> Unit
 ) {
     val topBarTitle: String = if (!uiState.isNew) {
-        "Edit " + uiState.item?.uniqueDetails?.number // TODO fix "Edit null"
+        "Edit ${uiState.item?.uniqueDetails?.number}"
     } else {
         "Add new"
     }
@@ -78,13 +75,11 @@ private fun EntryForm(
         modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
-        /*
-        val imagePath: String? = ItemImage(uiState)
+        val imagePath: String? = pickItemImage()
         val updateUiState: (ItemDetails) -> Unit = {
             onValueChange(uiState.itemDetails.copy(imagePath = imagePath))
         }
         updateUiState.invoke(uiState.itemDetails)
-        */
 
         Row {
             OutlinedTextField(
@@ -207,7 +202,7 @@ private fun EntryForm(
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Done
                 ),
                 label = { Text("Width") },
                 modifier = Modifier.weight(1f),

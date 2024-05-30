@@ -1,14 +1,12 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.mikohatara.collectioncatalog.data.Grading
 import com.mikohatara.collectioncatalog.data.CommonDetails
+import com.mikohatara.collectioncatalog.data.Grading
 import com.mikohatara.collectioncatalog.data.Measurements
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository

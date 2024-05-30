@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.navigation
 
-import android.util.Log
 import androidx.navigation.NavHostController
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.NUMBER_VARIANT
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
