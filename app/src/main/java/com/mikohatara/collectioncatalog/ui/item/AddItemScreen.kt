@@ -94,36 +94,8 @@ fun AddItemScreenContent(
 }
 
 @Composable
-private fun Image(imageUri: Uri?) {
-
-    if (imageUri != null) {
-        /*val painter = rememberAsyncImagePainter(
-            ImageRequest
-                .Builder(LocalContext.current)
-                .data(data = imageUri)
-                .build()
-        )*/
-
-        AsyncImage(
-            model = imageUri,
-            contentDescription = null,
-        )
-    } else {
-        androidx.compose.foundation.Image(
-            imageVector = Icons.Rounded.Clear,
-            contentDescription = null,
-            modifier = Modifier
-                .background(Color.LightGray)
-                .fillMaxWidth()
-                .height(128.dp)
-        )
-    }
-}
-
-@Composable
 private fun InputForm(
     uiState: AddItemUiState,
-    //newItemDetails: NewItemDetails,
     modifier: Modifier = Modifier,
     onValueChange: (NewItemDetails) -> Unit = {},
     onAdd: () -> Unit

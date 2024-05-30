@@ -18,6 +18,8 @@ import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.Source
 import com.mikohatara.collectioncatalog.data.UniqueDetails
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.NUMBER_VARIANT
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,14 +50,19 @@ class ItemEntryViewModel @Inject constructor(
     var uiState by mutableStateOf(ItemEntryUiState())
         private set
 
-    init {
-        if (plateNumber != null && numberVariant != null) {
+    init { // TODO this works for now, but should be improved
+        if (plateNumber != "{plateNumber}" && numberVariant != "{numberVariant}") {
             loadItem(plateNumber, numberVariant)
+        } else {
+            uiState = ItemEntryUiState(isNew = true)
         }
     }
 
     fun updateUiState(itemDetails: ItemDetails) {
-        uiState = ItemEntryUiState(itemDetails = itemDetails)
+        val item = uiState.item
+        val isNew = uiState.isNew
+
+        uiState = ItemEntryUiState(item = item, itemDetails = itemDetails, isNew = isNew)
     }
 
     fun saveEntry() = viewModelScope.launch {
@@ -67,14 +74,11 @@ class ItemEntryViewModel @Inject constructor(
     }
 
     suspend fun addNewItem() = viewModelScope.launch {
-        plateRepository.addPlate(uiState.item!!)
+        plateRepository.addPlate(uiState.itemDetails.toPlate())
     }
 
     suspend fun updateItem() = viewModelScope.launch {
-        var plate: Plate = uiState.itemDetails.toPlate()
-        Log.d("ItemEntryViewModel", plate.toString())
-
-        plateRepository.updatePlate(plate)
+        plateRepository.updatePlate(uiState.itemDetails.toPlate())
     }
 
     private fun loadItem(plateNumber: String?, numberVariant: String?) = viewModelScope.launch {
@@ -89,39 +93,77 @@ class ItemEntryViewModel @Inject constructor(
 }
 
 data class ItemDetails(
+    // CommonDetails
     val country: String = "",
     val region: String? = null,
     val area: String? = null,
     val type: String = "",
     val period: String? = null,
     val year: Int? = null,
+    // UniqueDetails
     val number: String = "",
     val variant: String = "",
     val imagePath: String? = null,
-    val width: Double? = null,
+    val vehicle: String? = null,
+    val notes: String? = null,
+    val date: String? = null,
+    val cost: Double? = null,
+    val value: Double? = null,
+    val status: String? = null,
+    // Grading
     val isKeeper: Boolean = false,
     val isForTrade: Boolean = false,
+    val condition: String? = null,
+    // Source
+    val sourceName: String? = null,
+    val sourceAlias: String? = null,
+    val sourceDetails: String? = null,
+    val sourceType: String? = null,
+    val sourceCountry: String? = null,
+    // Measurements
+    val width: Double? = null,
+    val height: Double? = null,
+    val weight: Double? = null,
 )
 
 fun ItemDetails.toPlate(): Plate = Plate(
     CommonDetails(country, region, area, type, period, year),
-    UniqueDetails(number, variant, imagePath, null, null, null, null, null, null),
-    Grading(isKeeper, isForTrade, null),
-    Source(null, null, null, null, null),
-    Measurements(width, null, null)
+    UniqueDetails(number, variant, imagePath, vehicle, notes, date, cost, value, status),
+    Grading(isKeeper, isForTrade, condition),
+    Source(sourceName, sourceAlias, sourceDetails, sourceType, sourceCountry),
+    Measurements(width, height, weight)
 )
 
 fun Plate.toItemDetails(): ItemDetails = ItemDetails(
+    // CommonDetails
     country = commonDetails.country,
     region = commonDetails.region,
     area = commonDetails.area,
     type = commonDetails.type,
     period = commonDetails.period,
     year = commonDetails.year,
+    // UniqueDetails
     number = uniqueDetails.number,
     variant = uniqueDetails.variant,
     imagePath = uniqueDetails.imagePath,
-    width = measurements.width,
+    vehicle = uniqueDetails.vehicle,
+    notes = uniqueDetails.notes,
+    date = uniqueDetails.date,
+    cost = uniqueDetails.cost,
+    value = uniqueDetails.value,
+    status = uniqueDetails.status,
+    // Grading
     isKeeper = grading.isKeeper,
-    isForTrade = grading.isForTrade
+    isForTrade = grading.isForTrade,
+    condition = grading.condition,
+    // Source
+    sourceName = source.sourceName,
+    sourceAlias = source.sourceAlias,
+    sourceDetails = source.sourceDetails,
+    sourceType = source.sourceType,
+    sourceCountry = source.sourceCountry,
+    // Measurements
+    width = measurements.width,
+    height = measurements.height,
+    weight = measurements.weight,
 )

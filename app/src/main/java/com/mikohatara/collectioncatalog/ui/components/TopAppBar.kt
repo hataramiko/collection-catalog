@@ -32,7 +32,7 @@ import com.mikohatara.collectioncatalog.data.Plate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopAppBar(
-    //onNewAdd: () -> Unit,
+    onNewAdd: () -> Unit,
     onAddItem: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
@@ -54,7 +54,7 @@ fun HomeScreenTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /*onNewAdd()*/ }) {
+            IconButton(onClick = { onNewAdd() }) {
                 Icon(
                     imageVector = Icons.Rounded.Search,
                     contentDescription = "Search"

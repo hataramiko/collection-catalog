@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.NUMBER_VARIANT
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ADD_ITEM_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ADD_ITEM_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HOME_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_ENTRY_SCREEN
@@ -44,7 +45,11 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
         navController.navigate(ADD_ITEM_ROUTE)
     }
 
-    fun navigateToItemEntryScreen(number: String, variant: String) {
-        navController.navigate("$ITEM_ENTRY_SCREEN/$number/$variant")
+    fun navigateToItemEntryScreen(number: String?, variant: String?) {
+        if (number == null || variant == null) { // TODO probably should improve this whole thing
+            navController.navigate(ITEM_ENTRY_ROUTE)
+        } else {
+            navController.navigate("$ITEM_ENTRY_SCREEN/$number/$variant")
+        }
     }
 }

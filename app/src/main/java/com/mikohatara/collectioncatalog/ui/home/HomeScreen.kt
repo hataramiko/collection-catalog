@@ -40,7 +40,7 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    //onNewAdd: () -> Unit,
+    onNewAdd: () -> Unit,
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit
 ) {
@@ -48,7 +48,7 @@ fun HomeScreen(
 
     HomeScreenContent(
         itemList = uiState.items,
-        //onNewAdd = onNewAdd,
+        onNewAdd = onNewAdd,
         onAddItem = onAddItem,
         onItemClick = onItemClick
     )
@@ -58,7 +58,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     itemList: List<Plate>,
-    //onNewAdd: () -> Unit,
+    onNewAdd: () -> Unit,
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
     modifier: Modifier = Modifier
@@ -68,7 +68,7 @@ fun HomeScreenContent(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { HomeScreenTopAppBar(
-            //onNewAdd = onNewAdd,
+            onNewAdd = onNewAdd,
             onAddItem = onAddItem,
             scrollBehavior = scrollBehavior
         ) },
@@ -126,6 +126,6 @@ fun HomeBody(
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
-        HomeScreenContent(samplePlates, /*onNewAdd = {},*/ onAddItem = {}, onItemClick = {})
+        HomeScreenContent(samplePlates, onNewAdd = {}, onAddItem = {}, onItemClick = {})
     }
 }
