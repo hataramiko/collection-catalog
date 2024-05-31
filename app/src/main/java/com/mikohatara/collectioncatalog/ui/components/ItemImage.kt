@@ -33,11 +33,11 @@ fun pickItemImage(oldImagePath: String?): String? {
     var imageUri: Uri? by remember { mutableStateOf(null) }
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()) { uri ->
-        imageUri = uri
+        if (uri != null) imageUri = uri
     }
     val newImagePath: String? = imageUri?.let { filePathFromUri(it, LocalContext.current) }
 
-    if (imageUri == null && oldImagePath != null) {
+    if (imageUri != null) {
         Card(
             onClick = {
                 photoPicker.launch(PickVisualMediaRequest(
@@ -49,31 +49,31 @@ fun pickItemImage(oldImagePath: String?): String? {
                 .fillMaxSize()
         ) {
             AsyncImage(
-                model = oldImagePath, // TODO change to imagePath, figure out old vs new imagePaths
-                contentDescription = null,
-                modifier = Modifier.fillMaxHeight()
-            )
-        }
-        return null
-
-    } else if (imageUri != null) {
-        Card(
-            onClick = {
-                photoPicker.launch(PickVisualMediaRequest(
-                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                ))
-            },
-            shape = RoundedCornerShape(0.dp),
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            AsyncImage(
-                model = imageUri, // TODO change to imagePath, figure out old vs new imagePaths
+                model = imageUri,
                 contentDescription = null,
                 modifier = Modifier.fillMaxHeight()
             )
         }
         return newImagePath
+
+    } else if (oldImagePath != null) {
+        Card(
+            onClick = {
+                photoPicker.launch(PickVisualMediaRequest(
+                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                ))
+            },
+            shape = RoundedCornerShape(0.dp),
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            AsyncImage(
+                model = oldImagePath,
+                contentDescription = null,
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+        return oldImagePath
 
     } else {
         Card(
