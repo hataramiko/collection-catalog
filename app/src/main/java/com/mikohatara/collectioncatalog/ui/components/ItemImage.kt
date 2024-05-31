@@ -5,7 +5,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,39 +29,52 @@ import coil.compose.AsyncImage
 import com.mikohatara.collectioncatalog.util.filePathFromUri
 
 @Composable
-fun pickItemImage(): String? {
-
+fun pickItemImage(oldImagePath: String?): String? {
     var imageUri: Uri? by remember { mutableStateOf(null) }
-
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()) { uri ->
         imageUri = uri
     }
-    val imagePath: String? = imageUri?.let { filePathFromUri(it, LocalContext.current) }
+    val newImagePath: String? = imageUri?.let { filePathFromUri(it, LocalContext.current) }
 
-    /*if (imageUri != null && isInEditMode == true) {
-        /*val painter = rememberAsyncImagePainter(
-            ImageRequest
-                .Builder(LocalContext.current)
-                .data(data = imageUri)
-                .build()
-        )*/
+    if (imageUri == null && oldImagePath != null) {
+        Card(
+            onClick = {
+                photoPicker.launch(PickVisualMediaRequest(
+                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                ))
+            },
+            shape = RoundedCornerShape(0.dp),
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            AsyncImage(
+                model = oldImagePath, // TODO change to imagePath, figure out old vs new imagePaths
+                contentDescription = null,
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+        return null
 
-        AsyncImage(
-            model = imageUri,
-            contentDescription = null,
-            //modifier = Modifier.fillMaxWidth(),
-            //contentScale = ContentScale.FillWidth
-        )
-    } else */if (imageUri != null) {
+    } else if (imageUri != null) {
+        Card(
+            onClick = {
+                photoPicker.launch(PickVisualMediaRequest(
+                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                ))
+            },
+            shape = RoundedCornerShape(0.dp),
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            AsyncImage(
+                model = imageUri, // TODO change to imagePath, figure out old vs new imagePaths
+                contentDescription = null,
+                modifier = Modifier.fillMaxHeight()
+            )
+        }
+        return newImagePath
 
-        AsyncImage(
-            model = imageUri,
-            contentDescription = null,
-            //modifier = Modifier.fillMaxWidth(),
-            //contentScale = ContentScale.FillWidth
-        )
-        return imagePath
     } else {
         Card(
             onClick = {
@@ -73,7 +89,9 @@ fun pickItemImage(): String? {
         ) {
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
                 Image(imageVector = Icons.Rounded.Clear, contentDescription = null)
                 Text(text = "Press here to add an image")

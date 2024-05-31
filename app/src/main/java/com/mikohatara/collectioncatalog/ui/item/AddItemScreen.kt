@@ -80,14 +80,14 @@ private fun InputForm(
             //.padding(8.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        val imagePath: String? = pickItemImage()
+        //val imagePath: String? = pickItemImage()
         //Log.d("imagePath in AddItemScreen", imagePath.toString())
 
-        val updateUiState: (NewItemDetails) -> Unit = {
+        /*val updateUiState: (NewItemDetails) -> Unit = {
             onValueChange(uiState.newItemDetails.copy(imagePath = imagePath))
-        }
+        }*/
 
-        updateUiState.invoke(uiState.newItemDetails)
+        //updateUiState.invoke(uiState.newItemDetails)
 
         Log.d("imagePath in uiState", uiState.newItemDetails.imagePath.toString())
         

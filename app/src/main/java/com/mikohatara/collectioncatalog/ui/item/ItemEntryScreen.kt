@@ -75,7 +75,7 @@ private fun EntryForm(
         modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
-        val imagePath: String? = pickItemImage()
+        val imagePath: String? = pickItemImage(uiState.item?.uniqueDetails?.imagePath)
         val updateUiState: (ItemDetails) -> Unit = {
             onValueChange(uiState.itemDetails.copy(imagePath = imagePath))
         }
@@ -105,6 +105,14 @@ private fun EntryForm(
                 singleLine = true
             )
         }
+        OutlinedTextField(
+            value = uiState.itemDetails.imagePath.toString(),
+            onValueChange = {  },
+            label = { Text("imagePath debug") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = false,
+            singleLine = false
+        )
         OutlinedTextField(
             value = uiState.itemDetails.country,
             onValueChange = { onValueChange(uiState.itemDetails.copy(country = it)) },
