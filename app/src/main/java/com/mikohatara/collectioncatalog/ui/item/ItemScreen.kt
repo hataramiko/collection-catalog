@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
@@ -93,35 +94,6 @@ fun ItemScreenContent(
 }
 
 @Composable
-private fun Image(imagePath: String?) {
-
-    //Log.d("imagePath in ItemScreen", imagePath.toString())
-
-    if (imagePath != null) {
-
-        AsyncImage(
-            model = ImageRequest
-                .Builder(LocalContext.current)
-                .data(data = File(imagePath))
-                .build(),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-        )
-    } else {
-        Image(
-            imageVector = Icons.Rounded.Clear,
-            contentDescription = null,
-            modifier = Modifier
-                .background(Color.LightGray)
-                .fillMaxWidth()
-                .height(128.dp)
-        )
-    }
-}
-
-@Composable
 private fun ItemInformation(
     item: Plate,
     modifier: Modifier = Modifier
@@ -130,7 +102,7 @@ private fun ItemInformation(
         modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
-        Image(item.uniqueDetails.imagePath)
+        ItemImage(item.uniqueDetails.imagePath)
 
         Text(
             text = "Details",

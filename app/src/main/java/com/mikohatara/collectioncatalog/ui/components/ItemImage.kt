@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +27,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.util.filePathFromUri
+import java.io.File
+
+@Composable
+fun ItemImage(imagePath: String?) {
+
+    if (imagePath != null) {
+
+        AsyncImage(
+            model = ImageRequest
+                .Builder(LocalContext.current)
+                .data(data = File(imagePath))
+                .build(),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxSize()
+        )
+    } else {
+
+        Card(
+            shape = RoundedCornerShape(0.dp),
+            modifier = Modifier
+                .height(100.dp)
+                .fillMaxWidth()
+        ) {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Image(imageVector = Icons.Rounded.Warning, contentDescription = null)
+                Text(text = "No image")
+            }
+        }
+    }
+}
 
 @Composable
 fun pickItemImage(oldImagePath: String?): String? {
