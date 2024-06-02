@@ -41,8 +41,7 @@ fun CollectionCatalogNavGraph(
 
         composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
             HomeScreen(
-                onNewAdd = { navActions.navigateToItemEntryScreen(null, null) },
-                onAddItem = { navActions.navigateToAddItemScreen() },
+                onAddItem = { navActions.navigateToItemEntryScreen(null, null) },
                 onItemClick = { item -> navActions.navigateToItemScreen(
                     item.uniqueDetails.number,
                     item.uniqueDetails.variant

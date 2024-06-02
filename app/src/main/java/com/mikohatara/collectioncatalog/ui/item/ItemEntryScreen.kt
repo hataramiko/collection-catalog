@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -86,6 +87,7 @@ private fun EntryForm(
                 value = uiState.itemDetails.number,
                 onValueChange = { onValueChange(uiState.itemDetails.copy(number = it)) },
                 keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Characters,
                     imeAction = ImeAction.Next
                 ),
                 label = { Text("Number") },

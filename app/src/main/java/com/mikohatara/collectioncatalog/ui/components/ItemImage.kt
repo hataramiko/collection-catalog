@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -42,8 +43,8 @@ fun ItemImage(imagePath: String?) {
                 .data(data = File(imagePath))
                 .build(),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillWidth
         )
     } else {
 
@@ -56,8 +57,7 @@ fun ItemImage(imagePath: String?) {
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 Image(imageVector = Icons.Rounded.Warning, contentDescription = null)
                 Text(text = "No image")
@@ -83,13 +83,13 @@ fun pickItemImage(oldImagePath: String?): String? {
                 ))
             },
             shape = RoundedCornerShape(0.dp),
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             AsyncImage(
                 model = imageUri,
                 contentDescription = null,
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillWidth
             )
         }
         return newImagePath
@@ -102,13 +102,13 @@ fun pickItemImage(oldImagePath: String?): String? {
                 ))
             },
             shape = RoundedCornerShape(0.dp),
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             AsyncImage(
                 model = oldImagePath,
                 contentDescription = null,
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillWidth
             )
         }
         return oldImagePath
@@ -128,8 +128,7 @@ fun pickItemImage(oldImagePath: String?): String? {
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 Image(imageVector = Icons.Rounded.Clear, contentDescription = null)
                 Text(text = "Press here to add an image")
