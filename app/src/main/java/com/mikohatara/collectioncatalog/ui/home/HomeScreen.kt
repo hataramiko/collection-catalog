@@ -56,6 +56,7 @@ fun HomeScreenContent(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { HomeScreenTopAppBar(
+            title = "Plates (${itemList.size})",
             onAddItem = onAddItem,
             scrollBehavior = scrollBehavior
         ) },

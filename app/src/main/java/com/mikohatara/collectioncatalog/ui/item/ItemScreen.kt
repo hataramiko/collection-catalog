@@ -16,7 +16,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -27,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
@@ -69,9 +73,11 @@ fun ItemScreenContent(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var isInspectingImage by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         topBar = { ItemScreenTopAppBar(
-            item.uniqueDetails.number,
+            "${item.uniqueDetails.number} : ${item.uniqueDetails.variant}",
             item,
             onBack,
             onEdit,
@@ -85,31 +91,58 @@ fun ItemScreenContent(
         content = { innerPadding ->
             ItemInformation(
                 item = item,
+                onInspectImage = { isInspectingImage = true },
                 modifier = modifier
                     .padding(innerPadding)
                     //.verticalScroll(rememberScrollState())
             )
         }
     )
+
+    if (isInspectingImage) {
+        InspectItemImage(
+            imagePath = item.uniqueDetails.imagePath,
+            onBack = { isInspectingImage = false }
+        )
+    }
 }
 
 @Composable
 private fun ItemInformation(
     item: Plate,
+    onInspectImage: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
-        ItemImage(item.uniqueDetails.imagePath)
+        ItemImage(item.uniqueDetails.imagePath, onInspectImage)
 
         Text(
             text = "Details",
             modifier = Modifier
                 .padding(8.dp)
         )
-        ItemInformationField(
+        Card(modifier = Modifier.padding(horizontal = (8.dp), vertical = (4.dp))) {
+            ItemInformationField(
+                label = "Country",
+                entry = item.commonDetails.country
+            )
+            item.commonDetails.region?.let { // toString() ???
+                ItemInformationField(
+                    label = "Region",
+                    entry = it // item.commonDetails.region!! ???
+                )
+            }
+            item.commonDetails.area?.let {
+                ItemInformationField(
+                    label = "Area",
+                    entry = it
+                )
+            }
+        }
+        /*ItemInformationField(
             label = "Country",
             entry = item.commonDetails.country
         )
@@ -124,7 +157,7 @@ private fun ItemInformation(
                 label = "Area",
                 entry = it
             )
-        }
+        }*/
         ItemInformationField(
             label = "Type",
             entry = item.commonDetails.type
@@ -147,14 +180,6 @@ private fun ItemInformation(
             modifier = Modifier
                 .padding(8.dp)
         )*/
-        ItemInformationField(
-            label = "Number",
-            entry = item.uniqueDetails.number
-        )
-        ItemInformationField(
-            label = "Variant",
-            entry = item.uniqueDetails.variant
-        )
         item.measurements.width?.let {
             ItemInformationField(
                 label = "Width",

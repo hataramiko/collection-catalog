@@ -19,13 +19,14 @@ import com.mikohatara.collectioncatalog.data.Plate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopAppBar(
+    title: String,
     onAddItem: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     TopAppBar(
         title = {
             Text(
-                "Plates", // database tableName?
+                title, // database tableName?
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 //modifier = Modifier.padding(16.dp)

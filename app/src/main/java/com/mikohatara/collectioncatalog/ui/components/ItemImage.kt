@@ -1,13 +1,18 @@
 package com.mikohatara.collectioncatalog.ui.components
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,11 +26,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -33,7 +49,7 @@ import com.mikohatara.collectioncatalog.util.filePathFromUri
 import java.io.File
 
 @Composable
-fun ItemImage(imagePath: String?) {
+fun ItemImage(imagePath: String?, onInspectImage: () -> Unit) {
 
     if (imagePath != null) {
 
@@ -43,9 +59,12 @@ fun ItemImage(imagePath: String?) {
                 .data(data = File(imagePath))
                 .build(),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .clickable { onInspectImage() }
+                .fillMaxSize(),
             contentScale = ContentScale.FillWidth
         )
+
     } else {
 
         Card(
@@ -136,4 +155,86 @@ fun pickItemImage(oldImagePath: String?): String? {
         }
         return null
     }
+}
+
+@Composable
+fun InspectItemImage(
+    imagePath: String?,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (imagePath != null) {
+        Box(
+            modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Scrim(onBack, Modifier.fillMaxSize())
+            ZoomableImage(imagePath, Modifier.aspectRatio(1f))
+        }
+    }
+}
+
+@Composable
+private fun Scrim(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier
+            .pointerInput(onBack) { detectTapGestures { onBack() } }
+            .semantics(mergeDescendants = true) {
+                onClick {
+                    onBack()
+                    true
+                }
+            }
+            .onKeyEvent {
+                if (it.key == Key.Escape) {
+                    onBack()
+                    true
+                } else {
+                    false
+                }
+            }
+            .background(Color.Black)
+    )
+}
+
+@Composable
+private fun ZoomableImage(
+    imagePath: String,
+    modifier: Modifier = Modifier
+) {
+    var zoomed by remember { mutableStateOf(false) }
+    var zoomOffset by remember { mutableStateOf(Offset.Zero) }
+
+    AsyncImage(
+        model = ImageRequest
+            .Builder(LocalContext.current)
+            .data(data = File(imagePath))
+            .build(),
+        contentDescription = null,
+        modifier = modifier
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onDoubleTap = { tapOffset ->
+                        zoomOffset = if (zoomed) Offset.Zero else
+                            calculateOffset(tapOffset, size)
+                        zoomed = !zoomed
+                    }
+                )
+            }
+            .graphicsLayer {
+                scaleX = if (zoomed) 2f else 1f
+                scaleY = if (zoomed) 2f else 1f
+                translationX = zoomOffset.x
+                translationY = zoomOffset.y
+            }
+    )
+}
+
+private fun calculateOffset(tapOffset: Offset, size: IntSize): Offset {
+    val offsetX = (-(tapOffset.x - (size.width / 2f)) * 2f)
+        .coerceIn(-size.width / 2f, size.width / 2f)
+    return Offset(offsetX, 0f)
 }
