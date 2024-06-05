@@ -20,6 +20,7 @@ import com.mikohatara.collectioncatalog.data.Plate
 @Composable
 fun HomeScreenTopAppBar(
     title: String,
+    onOpenDrawer: () -> Unit,
     onAddItem: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
@@ -33,7 +34,7 @@ fun HomeScreenTopAppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onOpenDrawer) {
                 Icon(
                     imageVector = Icons.Rounded.Menu,
                     contentDescription = "Menu"

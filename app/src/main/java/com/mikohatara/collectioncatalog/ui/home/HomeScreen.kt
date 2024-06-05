@@ -32,14 +32,16 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onAddItem: () -> Unit,
-    onItemClick: (Plate) -> Unit
+    onItemClick: (Plate) -> Unit,
+    onOpenDrawer: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreenContent(
         itemList = uiState.items,
         onAddItem = onAddItem,
-        onItemClick = onItemClick
+        onItemClick = onItemClick,
+        onOpenDrawer = onOpenDrawer
     )
 }
 
@@ -49,6 +51,7 @@ fun HomeScreenContent(
     itemList: List<Plate>,
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
+    onOpenDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -57,6 +60,7 @@ fun HomeScreenContent(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { HomeScreenTopAppBar(
             title = "Plates (${itemList.size})",
+            onOpenDrawer = onOpenDrawer,
             onAddItem = onAddItem,
             scrollBehavior = scrollBehavior
         ) },
@@ -114,6 +118,6 @@ fun HomeBody(
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
-        HomeScreenContent(samplePlates, onAddItem = {}, onItemClick = {})
+        HomeScreenContent(samplePlates, onAddItem = {}, onItemClick = {}, onOpenDrawer = {})
     }
 }

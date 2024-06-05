@@ -13,10 +13,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemScreen
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun CollectionCatalogNavGraph(
@@ -39,13 +41,16 @@ fun CollectionCatalogNavGraph(
     ) {
 
         composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
-            HomeScreen(
-                onAddItem = { navActions.navigateToItemEntryScreen(null, null) },
-                onItemClick = { item -> navActions.navigateToItemScreen(
-                    item.uniqueDetails.number,
-                    item.uniqueDetails.variant
-                ) }
-            )
+            ModalMenuDrawer(drawerState, currentRoute, navActions) {
+                HomeScreen(
+                    onAddItem = { navActions.navigateToItemEntryScreen(null, null) },
+                    onItemClick = { item -> navActions.navigateToItemScreen(
+                        item.uniqueDetails.number,
+                        item.uniqueDetails.variant
+                    ) },
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                )
+            }
         }
 
         composable(CollectionCatalogDestinations.ITEM_ROUTE) {
