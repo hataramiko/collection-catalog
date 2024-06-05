@@ -138,23 +138,3 @@ fun ItemEntryTopAppBar(
         }*/
     )
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddItemScreenTopAppBar(
-    onBack: () -> Unit
-) {
-    TopAppBar(
-        title = {
-            Text(text = "Add new")
-        },
-        navigationIcon = {
-            IconButton(onClick = { onBack() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-        }
-    )
-}

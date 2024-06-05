@@ -14,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
-import com.mikohatara.collectioncatalog.ui.item.AddItemScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemScreen
 import kotlinx.coroutines.CoroutineScope
@@ -57,12 +56,6 @@ fun CollectionCatalogNavGraph(
                     item.uniqueDetails.variant
                 ) },
                 onDelete = {  }
-            )
-        }
-
-        composable(CollectionCatalogDestinations.ADD_ITEM_ROUTE) {
-            AddItemScreen(
-                onBack = { navController.popBackStack() }
             )
         }
 
