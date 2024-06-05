@@ -81,7 +81,7 @@ private fun ItemCard(
                     .height(80.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.round_no_image),
+                    painter = painterResource(R.drawable.rounded_no_image),
                     contentDescription = null,
                     modifier = modifier
                         .padding(20.dp)

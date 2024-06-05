@@ -92,6 +92,9 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // Zoomable
+    implementation(libs.usuiat.zoomable)
 }
 
 // Hilt - Allow references to generated code
