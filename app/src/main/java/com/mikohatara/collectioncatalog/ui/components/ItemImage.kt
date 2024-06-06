@@ -10,10 +10,12 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
@@ -37,9 +39,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.R
@@ -82,7 +86,7 @@ fun ItemImage(imagePath: String?, onInspectImage: () -> Unit) {
                     painter = painterResource(R.drawable.rounded_no_image),
                     contentDescription = null
                 )
-                Text(text = "No image")
+                Text(stringResource(R.string.no_image))
             }
         }
     }
@@ -98,14 +102,17 @@ fun pickItemImage(oldImagePath: String?): String? {
     val newImagePath: String? = imageUri?.let { filePathFromUri(it, LocalContext.current) }
 
     if (imageUri != null) {
+
         Card(
             onClick = {
                 photoPicker.launch(PickVisualMediaRequest(
                     mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
                 ))
             },
-            shape = RoundedCornerShape(0.dp),
-            modifier = Modifier.fillMaxSize()
+            //shape = RoundedCornerShape(0.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp)
         ) {
             AsyncImage(
                 model = imageUri,
@@ -114,17 +121,21 @@ fun pickItemImage(oldImagePath: String?): String? {
                 contentScale = ContentScale.FillWidth
             )
         }
+        ChangeImageHint()
         return newImagePath
 
     } else if (oldImagePath != null) {
+
         Card(
             onClick = {
                 photoPicker.launch(PickVisualMediaRequest(
                     mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
                 ))
             },
-            shape = RoundedCornerShape(0.dp),
-            modifier = Modifier.fillMaxSize()
+            //shape = RoundedCornerShape(0.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp)
         ) {
             AsyncImage(
                 model = oldImagePath,
@@ -133,19 +144,22 @@ fun pickItemImage(oldImagePath: String?): String? {
                 contentScale = ContentScale.FillWidth
             )
         }
+        ChangeImageHint()
         return oldImagePath
 
     } else {
+
         Card(
             onClick = {
                 photoPicker.launch(PickVisualMediaRequest(
                     mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
                 ))
             },
-            shape = RoundedCornerShape(0.dp),
+            //shape = RoundedCornerShape(0.dp),
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth()
+                .padding(horizontal = 8.dp)
         ) {
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -156,7 +170,7 @@ fun pickItemImage(oldImagePath: String?): String? {
                     painter = painterResource(R.drawable.rounded_add_image),
                     contentDescription = null
                 )
-                Text(text = "Press here to select an image")
+                Text(stringResource(R.string.press_to_add_image))
             }
         }
         return null
@@ -238,4 +252,24 @@ private fun ZoomableImage(
             .fillMaxSize()
             .zoomable(zoomState = zoomState)
     )
+}
+
+@Composable
+private fun ChangeImageHint() {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.rounded_info),
+            contentDescription = null,
+            modifier = Modifier
+                .size(22.dp)
+                .padding(end = 4.dp, top = 1.dp)
+        )
+        Text(
+            stringResource(R.string.press_to_change_image),
+            fontSize = 12.5.sp
+        )
+    }
 }

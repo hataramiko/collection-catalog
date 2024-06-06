@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Collection Catalog</string>
+    <string name="no_image">画像無し</string>
+    <string name="settings">設定</string>
+    <string name="press_to_add_image">タップして画像を選ぶ</string>
+    <string name="press_to_change_image">画像をタップして換えられる</string>
+    <string name="add_item_title">新規作成</string>
+    <string name="edit_item_title"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を編集</string>
+    <string name="save_added_item"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を保存</string>
+    <string name="save_edited_item"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を保存</string>
+</resources>

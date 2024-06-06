@@ -13,11 +13,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 
@@ -44,9 +46,14 @@ fun ItemEntryScreenContent(
     onBack: () -> Unit
 ) {
     val topBarTitle: String = if (!uiState.isNew) {
-        "Edit ${uiState.item?.uniqueDetails?.number}"
+        stringResource(R.string.edit_item_title, uiState.itemDetails.number)
     } else {
-        "Add new"
+        stringResource(R.string.add_item_title)
+    }
+    val saveButtonText: String = if (!uiState.isNew) {
+        stringResource(R.string.save_edited_item, uiState.itemDetails.number)
+    } else { //.item?.uniqueDetails?.number.toString()
+        stringResource(R.string.save_added_item, uiState.itemDetails.number)
     }
 
     Scaffold(
@@ -54,6 +61,7 @@ fun ItemEntryScreenContent(
         content = { innerPadding ->
             EntryForm(
                 uiState,
+                saveButtonText,
                 modifier = Modifier.padding(innerPadding),
                 onValueChange,
                 onSave = {
@@ -68,6 +76,7 @@ fun ItemEntryScreenContent(
 @Composable
 private fun EntryForm(
     uiState: ItemEntryUiState,
+    saveButtonText: String,
     modifier: Modifier,
     onValueChange: (ItemDetails) -> Unit = {},
     onSave: () -> Unit
@@ -255,7 +264,7 @@ private fun EntryForm(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Text(text = "Save ${uiState.itemDetails.number}")
+            Text(saveButtonText)
         }
     }
 }

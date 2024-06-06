@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Collection Catalog</string>
+    <string name="no_image">Ei kuvaa</string>
+    <string name="settings">Asetukset</string>
+    <string name="press_to_add_image">Valitse kuva painamalla tästä</string>
+    <string name="press_to_change_image">Vaihda kuvaa painamalla sitä</string>
+    <string name="add_item_title">Lisää uusi</string>
+    <string name="edit_item_title">Muokkaa <xliff:g name="item_title" example="ABC-123">%s</xliff:g></string>
+    <string name="save_added_item">Lisää <xliff:g name="item_title" example="ABC-123">%s</xliff:g></string>
+    <string name="save_edited_item">Tallenna <xliff:g name="item_title" example="ABC-123">%s</xliff:g></string>
+</resources>
