@@ -3,8 +3,6 @@ package com.mikohatara.collectioncatalog.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AddCircle
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -13,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +61,7 @@ fun HomeScreenTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemScreenTopAppBar(
+fun ItemSummaryTopAppBar(
     title: String,
     item: Plate,
     onBack: () -> Unit,
@@ -87,13 +87,13 @@ fun ItemScreenTopAppBar(
         actions = {
             IconButton(onClick = { onEdit(item) }) {
                 Icon(
-                    imageVector = Icons.Rounded.Edit,
+                    painter = painterResource(R.drawable.rounded_edit),
                     contentDescription = "Edit"
                 )
             }
             IconButton(onClick = { onDelete() }) {
                 Icon(
-                    imageVector = Icons.Rounded.Delete,
+                    painter = painterResource(R.drawable.rounded_delete_forever),
                     contentDescription = "Delete"
                 )
             }/*

@@ -22,27 +22,27 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
-import com.mikohatara.collectioncatalog.ui.components.ItemScreenTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun ItemScreen(
-    viewModel: ItemViewModel = hiltViewModel(),
+fun ItemSummaryScreen(
+    viewModel: ItemSummaryViewModel = hiltViewModel(),
     onBack: () -> Unit,
     onEdit: (Plate) -> Unit,
     onDelete: () -> Unit
 ) {
     //val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val uiState: ItemUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState: ItemSummaryUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
 
     val item: Plate = uiState.item!!
     //Log.d("uiState item", item.toString())
 
-    ItemScreenContent(
+    ItemSummaryScreenContent(
         item,
         viewModel,
         coroutineScope,
@@ -53,9 +53,9 @@ fun ItemScreen(
 }
 
 @Composable
-fun ItemScreenContent(
+fun ItemSummaryScreenContent(
     item: Plate,
-    viewModel: ItemViewModel,
+    viewModel: ItemSummaryViewModel,
     coroutineScope: CoroutineScope,
     onBack: () -> Unit,
     onEdit: (Plate) -> Unit,
@@ -65,7 +65,7 @@ fun ItemScreenContent(
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { ItemScreenTopAppBar(
+        topBar = { ItemSummaryTopAppBar(
             "${item.uniqueDetails.number} : ${item.uniqueDetails.variant}",
             item,
             onBack,
@@ -237,7 +237,7 @@ private fun ItemInformationField(
 
 @Preview
 @Composable
-fun ItemScreenPreview() {
+fun ItemSummaryScreenPreview() {
     CollectionCatalogTheme {
         //ItemScreen(samplePlates[4])
 

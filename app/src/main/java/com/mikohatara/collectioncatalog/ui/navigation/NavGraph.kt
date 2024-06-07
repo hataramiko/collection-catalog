@@ -16,7 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
-import com.mikohatara.collectioncatalog.ui.item.ItemScreen
+import com.mikohatara.collectioncatalog.ui.item.ItemSummaryScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -53,8 +53,8 @@ fun CollectionCatalogNavGraph(
             }
         }
 
-        composable(CollectionCatalogDestinations.ITEM_ROUTE) {
-            ItemScreen(
+        composable(CollectionCatalogDestinations.ITEM_SUMMARY_ROUTE) {
+            ItemSummaryScreen(
                 onBack = { navController.popBackStack() },
                 onEdit = { item -> navActions.navigateToItemEntryScreen(
                     item.uniqueDetails.number,

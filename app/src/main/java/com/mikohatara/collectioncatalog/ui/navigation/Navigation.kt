@@ -6,12 +6,12 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HOME_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_ENTRY_SCREEN
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_SCREEN
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_SUMMARY_SCREEN
 
 
 object CollectionCatalogScreens {
     const val HOME_SCREEN = "home"
-    const val ITEM_SCREEN = "item"
+    const val ITEM_SUMMARY_SCREEN = "item"
     const val ITEM_ENTRY_SCREEN = "itemEntry"
 }
 
@@ -22,7 +22,7 @@ object CollectionCatalogDestinationArgs {
 
 object CollectionCatalogDestinations {
     const val HOME_ROUTE = HOME_SCREEN
-    const val ITEM_ROUTE = "$ITEM_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
+    const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
     const val ITEM_ENTRY_ROUTE = "$ITEM_ENTRY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
 }
 
@@ -33,7 +33,7 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
     }
 
     fun navigateToItemScreen(number: String, variant: String) {
-        navController.navigate("$ITEM_SCREEN/$number/$variant")
+        navController.navigate("$ITEM_SUMMARY_SCREEN/$number/$variant")
     }
 
     fun navigateToItemEntryScreen(number: String?, variant: String?) {

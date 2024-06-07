@@ -14,12 +14,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-data class ItemUiState(
+data class ItemSummaryUiState(
     val item: Plate? = null //?: samplePlates[0]
 )
 
 @HiltViewModel
-class ItemViewModel @Inject constructor(
+class ItemSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val plateRepository: PlateRepository
 ) : ViewModel() {
@@ -34,13 +34,13 @@ class ItemViewModel @Inject constructor(
     val numberVariant: String =
         savedStateHandle.get<String>(CollectionCatalogDestinationArgs.NUMBER_VARIANT)!!
 
-    val uiState: StateFlow<ItemUiState> =
+    val uiState: StateFlow<ItemSummaryUiState> =
         plateRepository.getPlateStream(plateNumber, numberVariant)
-            .map { ItemUiState(item = it) }
+            .map { ItemSummaryUiState(item = it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = ItemUiState(item = samplePlates[5])
+                initialValue = ItemSummaryUiState(item = samplePlates[5])
             )
 
     suspend fun deleteItem() /*= viewModelScope.launch*/ {
@@ -53,7 +53,7 @@ class ItemViewModel @Inject constructor(
 }
 
 /*
-sealed interface ItemScreenUiState {
+sealed interface ItemSummaryScreenUiState {
     object Loading : ItemScreenUiState
     data class Error(val throwable: Throwable) : ItemScreenUiState
     data class Success(val data: List<Plate>) : ItemScreenUiState
