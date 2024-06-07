@@ -9,4 +9,8 @@
     <string name="edit_item_title"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を編集</string>
     <string name="save_added_item"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を保存</string>
     <string name="save_edited_item"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を保存</string>
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+    <string name="delete">削除</string>
+    <string name="deletion_dialog">よろしいですか？</string>
 </resources>

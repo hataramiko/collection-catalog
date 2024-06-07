@@ -129,7 +129,7 @@ private fun EntryForm(
                             label = { Text("Variant") },
                             modifier = Modifier
                                 .padding(start = 8.dp)
-                                .weight(0.6f),
+                                .weight(0.7f),
                             enabled = uiState.isNew,
                             singleLine = true
                         )

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
@@ -63,6 +64,7 @@ fun ItemSummaryScreenContent(
     modifier: Modifier = Modifier
 ) {
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
+    var isDeletionDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = { ItemSummaryTopAppBar(
@@ -70,11 +72,11 @@ fun ItemSummaryScreenContent(
             item,
             onBack,
             onEdit,
-            onDelete = {
-                coroutineScope.launch {
+            onDelete = { isDeletionDialog = true
+                /*coroutineScope.launch {
                     viewModel.deleteItem()
                     onBack()
-                }
+                }*/
             }
         ) },
         content = { innerPadding ->
@@ -92,6 +94,19 @@ fun ItemSummaryScreenContent(
         InspectItemImage(
             imagePath = item.uniqueDetails.imagePath,
             onBack = { isInspectingImage = false }
+        )
+    }
+
+    if (isDeletionDialog) {
+        DeletionDialog(
+            onConfirm = {
+                isDeletionDialog = false
+                coroutineScope.launch {
+                    viewModel.deleteItem()
+                    onBack()
+                }
+            },
+            onCancel = { isDeletionDialog = false }
         )
     }
 }
