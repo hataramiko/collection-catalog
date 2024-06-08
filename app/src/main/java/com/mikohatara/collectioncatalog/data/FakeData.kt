@@ -228,5 +228,43 @@ val samplePlates = listOf(
             null,
             null
         ),
+    ),
+    Plate(
+        CommonDetails(
+            "Germany",
+            "Bayern",
+            "Münich",
+            "Passenger",
+            "1995 - ",
+            2024
+        ),
+        UniqueDetails(
+            "MUC AB12",
+            "a",
+            null,
+            "Some Mercedez",
+            "New Münich region code.",
+            "2024-06-01",
+            5.0,
+            35.0,
+            "In storage"
+        ),
+        Grading(
+            true,
+            false,
+            null
+        ),
+        Source(
+            "Hermann Freimann",
+            "pl8dlr",
+            "eBay",
+            "Online",
+            "Germany"
+        ),
+        Measurements(
+            52.0,
+            null,
+            null
+        )
     )
 )

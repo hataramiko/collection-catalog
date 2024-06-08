@@ -269,7 +269,7 @@ private fun ChangeImageHint() {
         )
         Text(
             stringResource(R.string.press_to_change_image),
-            fontSize = 12.5.sp
+            fontSize = 12.sp
         )
     }
 }

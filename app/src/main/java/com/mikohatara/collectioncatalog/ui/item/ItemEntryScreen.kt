@@ -28,7 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.ui.components.IconAbc123
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.ItemScreenLabel
+import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
@@ -96,15 +99,11 @@ private fun EntryForm(
         }
         updateUiState.invoke(uiState.itemDetails)
 
-        Card(
-            modifier = EntryFormModifiers.card
-        ) {
-            Row(
-                modifier = EntryFormModifiers.row
-            ) {
-                IconAbc123(modifier = EntryFormModifiers.icon)
+        Card(modifier = ItemScreenModifiers.card) {
+            Row(modifier = ItemScreenModifiers.row) {
+                IconAbc123()
                 Column(
-                    modifier = EntryFormModifiers.column
+                    modifier = ItemScreenModifiers.column
                 ) {
                     Row {
                         OutlinedTextField(
@@ -149,18 +148,19 @@ private fun EntryForm(
         }
 
         Card(
-            modifier = EntryFormModifiers.card
+            modifier = ItemScreenModifiers.card
         ) {
+            //ItemScreenLabel("Details")
             Row(
-                modifier = EntryFormModifiers.row
+                modifier = ItemScreenModifiers.row
             ) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_globe),
                     contentDescription = null,
-                    modifier = EntryFormModifiers.icon
+                    modifier = ItemScreenModifiers.icon
                 )
                 Column(
-                    modifier = EntryFormModifiers.column
+                    modifier = ItemScreenModifiers.column
                 ) {
                     OutlinedTextField(
                         value = uiState.itemDetails.country,
@@ -201,13 +201,13 @@ private fun EntryForm(
                     )
                 }
             }
-            Row(modifier = EntryFormModifiers.row) {
+            Row(modifier = ItemScreenModifiers.row) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_category),
                     contentDescription = null,
-                    modifier = EntryFormModifiers.icon
+                    modifier = ItemScreenModifiers.icon
                 )
-                Column(modifier = EntryFormModifiers.column) {
+                Column(modifier = ItemScreenModifiers.column) {
                     OutlinedTextField(
                         value = uiState.itemDetails.type,
                         onValueChange = { onValueChange(uiState.itemDetails.copy(type = it)) },
@@ -250,14 +250,14 @@ private fun EntryForm(
             }
         }
 
-        Card(modifier = EntryFormModifiers.card) {
-            Row(modifier = EntryFormModifiers.row) {
+        Card(modifier = ItemScreenModifiers.card) {
+            Row(modifier = ItemScreenModifiers.row) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_ruler),
                     contentDescription = null,
-                    modifier = EntryFormModifiers.icon
+                    modifier = ItemScreenModifiers.icon
                 )
-                Column(modifier = EntryFormModifiers.column) {
+                Column(modifier = ItemScreenModifiers.column) {
                     Row {
                         OutlinedTextField(
                             value = uiState.itemDetails.width.toString(),
@@ -266,7 +266,7 @@ private fun EntryForm(
                             },
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Done
+                                imeAction = ImeAction.Next
                             ),
                             label = { Text("Width") },
                             modifier = Modifier
@@ -324,12 +324,95 @@ private fun EntryForm(
         isForTrade
         condition
         */
+        Card(ItemScreenModifiers.card) {
+            ItemScreenLabel(stringResource(R.string.source))
+            Row(ItemScreenModifiers.row) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_person_check),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+                Column(ItemScreenModifiers.column) {
+                    OutlinedTextField(
+                        value = uiState.itemDetails.sourceName ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceName = it)) },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Name") },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        enabled = true,
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.sourceAlias ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceAlias = it)) },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Alias") },
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth(),
+                        enabled = true,
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.sourceDetails ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Details") },
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth(),
+                        enabled = true,
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.sourceType ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceType = it)) },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Type") },
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth(),
+                        enabled = true,
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.sourceCountry ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        label = { Text("Country") },
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth(),
+                        enabled = true,
+                        singleLine = true
+                    )
+                }
+            }
+        }
         /*
-        sourceName
-        sourceAlias
-        sourceDetails
-        sourceType
-        sourceCountry
+        Card(ItemScreenModifiers.card) {
+            Row(ItemScreenModifiers.row) {
+                Icon(
+                    painter = painterResource(R.drawable.),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+                Column(ItemScreenModifiers.column) {
+
+                }
+            }
+        }
         */
         Button(
             onClick = onSave,
@@ -348,29 +431,6 @@ private fun EntryForm(
             Text(saveButtonText)
         }
     }
-}
-
-@Composable
-private fun IconAbc123(modifier: Modifier) {
-    Box(modifier = modifier) {
-        Icon(
-            painter = painterResource(R.drawable.rounded_abc),
-            contentDescription = null,
-            modifier = Modifier.absoluteOffset(y = (-5).dp)
-        )
-        Icon(
-            painter = painterResource(R.drawable.rounded_123),
-            contentDescription = null,
-            modifier = Modifier.absoluteOffset(y = 6.dp)
-        )
-    }
-}
-
-private data object EntryFormModifiers {
-    val card: Modifier = Modifier.padding(16.dp)
-    val row: Modifier = Modifier.padding(vertical = 18.dp)
-    val icon: Modifier = Modifier.padding(18.dp)
-    val column: Modifier = Modifier.padding(end = 16.dp)
 }
 
 @Preview

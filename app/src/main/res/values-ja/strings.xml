@@ -13,4 +13,5 @@
     <string name="no">いいえ</string>
     <string name="delete">削除</string>
     <string name="deletion_dialog">よろしいですか？</string>
+    <string name="source">源</string>
 </resources>

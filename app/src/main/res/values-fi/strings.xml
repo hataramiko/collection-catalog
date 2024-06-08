@@ -13,4 +13,5 @@
     <string name="no">Ei</string>
     <string name="delete">Poista</string>
     <string name="deletion_dialog">Oletko varma?</string>
+    <string name="source">Lähde</string>
 </resources>
