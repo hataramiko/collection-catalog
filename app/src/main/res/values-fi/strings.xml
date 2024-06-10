@@ -14,4 +14,10 @@
     <string name="delete">Poista</string>
     <string name="deletion_dialog">Oletko varma?</string>
     <string name="source">Lähde</string>
+    <string name="period">Aikaväli</string>
+    <string name="year">Vuosi</string>
+    <string name="reg_no">Rek.tunnus</string>
+    <string name="date">Päiväys</string>
+    <string name="value">Arvo</string>
+    <string name="type">Tyyppi</string>
 </resources>

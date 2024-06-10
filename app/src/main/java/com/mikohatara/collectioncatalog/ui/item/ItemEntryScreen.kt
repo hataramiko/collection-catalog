@@ -1,10 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.content.ClipData.Item
+import android.media.RouteListingPreference
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -15,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,6 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.IconAbc123
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.ItemScreenColumnSpacer
+import com.mikohatara.collectioncatalog.ui.components.ItemScreenRowSpacer
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenLabel
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
@@ -57,7 +61,7 @@ fun ItemEntryScreenContent(
     onValueChange: (ItemDetails) -> Unit,
     onBack: () -> Unit
 ) {
-    val topBarTitle: String = if (!uiState.isNew) { //.item?.uniqueDetails?.number.toString()
+    val topBarTitle: String = if (!uiState.isNew) {
         stringResource(R.string.edit_item_title, uiState.itemDetails.number)
     } else {
         stringResource(R.string.add_item_title)
@@ -99,47 +103,51 @@ private fun EntryForm(
         }
         updateUiState.invoke(uiState.itemDetails)
 
-        Card(modifier = ItemScreenModifiers.card) {
-            Row(modifier = ItemScreenModifiers.row) {
-                IconAbc123()
-                Column(
-                    modifier = ItemScreenModifiers.column
-                ) {
-                    Row {
-                        OutlinedTextField(
-                            value = uiState.itemDetails.number,
-                            onValueChange = { onValueChange(uiState.itemDetails.copy(number = it)) },
-                            keyboardOptions = KeyboardOptions(
-                                capitalization = KeyboardCapitalization.Characters,
-                                imeAction = ImeAction.Next
-                            ),
-                            label = { Text("Number") },
-                            modifier = Modifier
-                                .weight(1f),
-                            enabled = uiState.isNew,
-                            singleLine = true
-                        )
-                        OutlinedTextField(
-                            value = uiState.itemDetails.variant,
-                            onValueChange = { onValueChange(uiState.itemDetails.copy(variant = it)) },
-                            keyboardOptions = KeyboardOptions(
-                                imeAction = ImeAction.Next
-                            ),
-                            label = { Text("Variant") },
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .weight(0.7f),
-                            enabled = uiState.isNew,
-                            singleLine = true
-                        )
-                    }
+        Card(ItemScreenModifiers.card) {
+            Column(ItemScreenModifiers.column) {
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    IconAbc123()
+                    OutlinedTextField(
+                        value = uiState.itemDetails.number,
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(number = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Characters,
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text(stringResource(R.string.reg_no)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = uiState.isNew,
+                        singleLine = true
+                    )
+                    ItemScreenRowSpacer()
+                    OutlinedTextField(
+                        value = uiState.itemDetails.variant,
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(variant = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Variant") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.66f),
+                        enabled = uiState.isNew,
+                        singleLine = true
+                    )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
                         value = uiState.itemDetails.imagePath.toString(),
                         onValueChange = {  },
                         label = { Text("imagePath debug") },
                         modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = false,
                         singleLine = false
                     )
@@ -147,273 +155,478 @@ private fun EntryForm(
             }
         }
 
-        Card(
-            modifier = ItemScreenModifiers.card
-        ) {
-            //ItemScreenLabel("Details")
-            Row(
-                modifier = ItemScreenModifiers.row
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_globe),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-                Column(
-                    modifier = ItemScreenModifiers.column
-                ) {
+        Card(ItemScreenModifiers.card) {
+            Column(ItemScreenModifiers.column) {
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_globe),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
                     OutlinedTextField(
                         value = uiState.itemDetails.country,
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(country = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(country = it))
+                        },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
                         label = { Text("Country") },
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
                         value = uiState.itemDetails.region ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(region = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(region = it))
+                        },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
                         label = { Text("Region") },
                         modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
                         value = uiState.itemDetails.area ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(area = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(area = it))
+                        },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
                         label = { Text("Area") },
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
                 }
-            }
-            Row(modifier = ItemScreenModifiers.row) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_category),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-                Column(modifier = ItemScreenModifiers.column) {
+                ItemScreenColumnSpacer()
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_category),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
                     OutlinedTextField(
                         value = uiState.itemDetails.type,
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(type = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(type = it))
+                        },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Type") },
-                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.type)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
-                    Row(modifier = Modifier.padding(top = 8.dp)) {
-                        OutlinedTextField(
-                            value = uiState.itemDetails.period ?: "",
-                            onValueChange = { onValueChange(uiState.itemDetails.copy(period = it)) },
-                            keyboardOptions = KeyboardOptions(
-                                imeAction = ImeAction.Next
-                            ),
-                            label = { Text("Period") },
-                            modifier = Modifier.weight(0.6f),
-                            enabled = true,
-                            singleLine = true
+                }
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_date_range),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.period ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(period = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text(stringResource(R.string.period)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                    ItemScreenRowSpacer()
+                    OutlinedTextField(
+                        value = uiState.itemDetails.year.toString(),
+                        onValueChange = { // TODO handle null values in Int/Double fields
+                            onValueChange(uiState.itemDetails.copy(year = it.toIntOrNull() ?: 0))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text(stringResource(R.string.year)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.66f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                }
+            }
+        }
+
+        Card(ItemScreenModifiers.card) {
+            Column(ItemScreenModifiers.column) {
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_note_stack),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.notes ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(notes = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Notes") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = false
+                    )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
+                    OutlinedTextField(
+                        value = uiState.itemDetails.vehicle ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(vehicle = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Vehicle") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                }
+                ItemScreenColumnSpacer()
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_event),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.date ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(date = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text(stringResource(R.string.date)) },
+                        placeholder = { Text("1922-05-18") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                }
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_currency),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.cost.toString(),
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(
+                                cost = it.toDoubleOrNull() ?: 0.0))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Cost") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                    ItemScreenRowSpacer()
+                    OutlinedTextField(
+                        value = uiState.itemDetails.value.toString(),
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(
+                                value = it.toDoubleOrNull() ?: 0.0))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text(stringResource(R.string.value)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                }
+                ItemScreenColumnSpacer()
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_info),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.status ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(status = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Status") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                }
+            }
+        }
+
+        Card(ItemScreenModifiers.card) {
+            Column(ItemScreenModifiers.column) {
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_stars_layered),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.condition ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(condition = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Condition") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                    ) {
+                        Text("Keeper")
+                        Switch(
+                            checked = uiState.itemDetails.isKeeper,
+                            onCheckedChange = {
+                                onValueChange(uiState.itemDetails.copy(isKeeper = it))
+                            }
                         )
-                        OutlinedTextField(
-                            value = uiState.itemDetails.year.toString(),
-                            onValueChange = { onValueChange(uiState.itemDetails.copy(year = it.toIntOrNull())) },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next
-                            ),
-                            label = { Text("Year") },
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .weight(0.4f),
-                            enabled = false, // TODO handle null values in Int/Double fields
-                            singleLine = true
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                    ) {
+                        Text("For Trade")
+                        Switch(
+                            checked = uiState.itemDetails.isForTrade,
+                            onCheckedChange = {
+                                onValueChange(uiState.itemDetails.copy(isForTrade = it))
+                            }
                         )
                     }
                 }
             }
         }
 
-        Card(modifier = ItemScreenModifiers.card) {
-            Row(modifier = ItemScreenModifiers.row) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_ruler),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-                Column(modifier = ItemScreenModifiers.column) {
-                    Row {
-                        OutlinedTextField(
-                            value = uiState.itemDetails.width.toString(),
-                            onValueChange = {
-                                onValueChange(uiState.itemDetails.copy(width = it.toDoubleOrNull() ?: 0.0))
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next
-                            ),
-                            label = { Text("Width") },
-                            modifier = Modifier
-                                .padding(end = 4.dp)
-                                .weight(1f),
-                            enabled = true,
-                            singleLine = true
-                        )
-                        OutlinedTextField(
-                            value = uiState.itemDetails.height.toString(),
-                            onValueChange = {
-                                onValueChange(uiState.itemDetails.copy(height = it.toDoubleOrNull() ?: 0.0))
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next
-                            ),
-                            label = { Text("Height") },
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp)
-                                .weight(1f),
-                            enabled = false, // TODO handle null values in Int/Double fields
-                            singleLine = true
-                        )
-                        OutlinedTextField(
-                            value = uiState.itemDetails.weight.toString(),
-                            onValueChange = {
-                                onValueChange(uiState.itemDetails.copy(weight = it.toDoubleOrNull() ?: 0.0))
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next
-                            ),
-                            label = { Text("Weight") },
-                            modifier = Modifier
-                                .padding(start = 4.dp)
-                                .weight(1f),
-                            enabled = false, // TODO handle null values in Int/Double fields
-                            singleLine = true
-                        )
-                    }
+        Card(ItemScreenModifiers.card) {
+            Column(ItemScreenModifiers.column) {
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_ruler),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                    OutlinedTextField(
+                        value = uiState.itemDetails.width.toString(),
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(
+                                width = it.toDoubleOrNull() ?: 0.0))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Width") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                    ItemScreenRowSpacer()
+                    OutlinedTextField(
+                        value = uiState.itemDetails.height.toString(),
+                        onValueChange = { // TODO handle null values in Int/Double fields
+                            onValueChange(uiState.itemDetails.copy(
+                                height = it.toDoubleOrNull() ?: 0.0))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Height") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                    ItemScreenRowSpacer()
+                    OutlinedTextField(
+                        value = uiState.itemDetails.weight.toString(),
+                        onValueChange = { // TODO handle null values in Int/Double fields
+                            onValueChange(uiState.itemDetails.copy(
+                                weight = it.toDoubleOrNull() ?: 0.0))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Weight") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
                 }
+                // ImageWidthOffset
+                // MainColor & SecondaryColor
             }
         }
-        /*
-        vehicle
-        notes
-        date
-        cost
-        value
-        status
-        */
-        /*
-        isKeeper
-        isForTrade
-        condition
-        */
+        
         Card(ItemScreenModifiers.card) {
-            ItemScreenLabel(stringResource(R.string.source))
-            Row(ItemScreenModifiers.row) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_person_check),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-                Column(ItemScreenModifiers.column) {
+            Column(ItemScreenModifiers.column) {
+                Row(ItemScreenModifiers.rowWithIcon) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_person_pin_circle),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
                     OutlinedTextField(
                         value = uiState.itemDetails.sourceName ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceName = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(sourceName = it))
+                        },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Name") },
+                        label = { Text("Source Name") },
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
                         value = uiState.itemDetails.sourceAlias ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceAlias = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(sourceAlias = it))
+                        },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Alias") },
+                        label = { Text("Source Alias") },
                         modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
                         value = uiState.itemDetails.sourceDetails ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(sourceDetails = it))
+                        },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Details") },
+                        label = { Text("Source Details") },
                         modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
                         value = uiState.itemDetails.sourceType ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceType = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(sourceType = it))
+                        },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Type") },
+                        label = { Text("Source Type") },
                         modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
                         value = uiState.itemDetails.sourceCountry ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(sourceCountry = it))
+                        },
                         keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Done
+                            imeAction = ImeAction.Next
                         ),
-                        label = { Text("Country") },
+                        label = { Text("Source Country") },
                         modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .weight(1f),
                         enabled = true,
                         singleLine = true
                     )
                 }
             }
         }
-        /*
-        Card(ItemScreenModifiers.card) {
-            Row(ItemScreenModifiers.row) {
-                Icon(
-                    painter = painterResource(R.drawable.),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-                Column(ItemScreenModifiers.column) {
-
-                }
-            }
-        }
-        */
         Button(
             onClick = onSave,
             //enabled = uiState.hasValidEntry,

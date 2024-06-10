@@ -13,5 +13,11 @@
     <string name="no">いいえ</string>
     <string name="delete">削除</string>
     <string name="deletion_dialog">よろしいですか？</string>
-    <string name="source">源</string>
+    <string name="source">供給源</string>
+    <string name="period">期間</string>
+    <string name="year">暦年</string>
+    <string name="reg_no">登録番号</string>
+    <string name="date">日付</string>
+    <string name="value">価値</string>
+    <string name="type">種類</string>
 </resources>
