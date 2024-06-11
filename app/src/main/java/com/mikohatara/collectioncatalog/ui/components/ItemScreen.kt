@@ -40,7 +40,7 @@ fun ItemSummaryVerticalSpacer(isEnd: Boolean) {
     val value: Int = if(isEnd) {
         8
     } else {
-        16
+        8 // To be played with
     }
 
     Spacer(modifier = Modifier.height(value.dp))

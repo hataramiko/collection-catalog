@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -194,6 +195,7 @@ private fun ItemInformation(
                         modifier = Modifier
                     )
                     if(item.commonDetails.period != null || item.commonDetails.year != null) {
+                        ItemSummaryHorizontalDivider()
                         Row {
                             item.commonDetails.period?.let {
                                 StaticTextField(
@@ -293,6 +295,13 @@ private fun ItemInformation(
                                 modifier = Modifier
                             )
                         }
+                        if(
+                            item.uniqueDetails.cost != null ||
+                            item.uniqueDetails.value != null &&
+                            item.uniqueDetails.date != null
+                        ) {
+                            ItemSummaryHorizontalDivider()
+                        }
                         Row {
                             item.uniqueDetails.cost?.let {
                                 StaticTextField(
@@ -310,6 +319,13 @@ private fun ItemInformation(
                             }
                         }
                         item.uniqueDetails.status?.let {
+                            if(
+                                item.uniqueDetails.date != null ||
+                                item.uniqueDetails.cost != null ||
+                                item.uniqueDetails.value != null
+                            ) {
+                                ItemSummaryHorizontalDivider()
+                            }
                             StaticTextField(
                                 label = "Status",
                                 value = it,
@@ -436,6 +452,16 @@ private fun ItemInformation(
                                 modifier = Modifier
                             )
                         }
+                        if(
+                            item.source.sourceName != null ||
+                            item.source.sourceAlias != null &&
+                            item.source.sourceDetails != null ||
+                            item.source.sourceType != null ||
+                            item.source.sourceCountry != null
+                        ) {
+                            //ItemSummaryHorizontalDivider()
+                            HorizontalDivider(Modifier.padding(start = 8.dp, end = 16.dp))
+                        }
                         item.source.sourceDetails?.let {
                             StaticTextField(
                                 label = "Source Details",
@@ -451,6 +477,15 @@ private fun ItemInformation(
                             )
                         }
                         item.source.sourceCountry?.let {
+                            if(
+                                item.source.sourceName != null ||
+                                item.source.sourceAlias != null ||
+                                item.source.sourceDetails != null ||
+                                item.source.sourceType != null
+                            ) {
+                                //ItemSummaryHorizontalDivider()
+                                HorizontalDivider(Modifier.padding(start = 8.dp, end = 16.dp))
+                            }
                             StaticTextField(
                                 label = "Source Country",
                                 value = it,
@@ -504,6 +539,14 @@ private fun StaticSwitch(label: String, value: Boolean) {
             modifier = Modifier.padding(end = 8.dp)
         )
     }
+}
+
+@Composable
+private fun ItemSummaryHorizontalDivider() {
+    HorizontalDivider(
+        color = Color(0, 0, 0, 128),
+        modifier = Modifier.padding(start = 8.dp, end = 16.dp)
+    )
 }
 
 @Preview

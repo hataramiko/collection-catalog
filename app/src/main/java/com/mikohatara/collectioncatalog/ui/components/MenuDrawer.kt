@@ -61,7 +61,7 @@ private fun MenuDrawerContent(
             ) },
             selected = currentRoute == CollectionCatalogDestinations.HOME_ROUTE,
             onClick = {
-                // TODO
+                // TODO Navigation to Wishlist and Former and such
                 onCloseDrawer()
             },
             modifier = modifier
@@ -74,7 +74,7 @@ private fun MenuDrawerContent(
             ) },
             selected = false,
             onClick = {
-                // TODO
+                // TODO Navigation to Statistics
                 onCloseDrawer()
             },
             modifier = modifier
@@ -88,7 +88,7 @@ private fun MenuDrawerContent(
             ) },
             selected = false,
             onClick = {
-                // TODO
+                // TODO Navigation to Settings
                 onCloseDrawer()
             },
             modifier = modifier

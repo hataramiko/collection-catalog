@@ -42,7 +42,7 @@ fun DeletionDialog(
 @Composable
 fun DeletionDialogPreview() {
     CollectionCatalogTheme {
-        DeletionDialog(onConfirm = { /*TODO*/ }) {
+        DeletionDialog(onConfirm = {}) {
             
         }
     }
