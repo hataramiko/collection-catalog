@@ -1,9 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.content.ClipData.Item
-import android.media.RouteListingPreference
 import androidx.compose.foundation.background
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,10 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.IconAbc123
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
-import com.mikohatara.collectioncatalog.ui.components.ItemScreenColumnSpacer
-import com.mikohatara.collectioncatalog.ui.components.ItemScreenRowSpacer
-import com.mikohatara.collectioncatalog.ui.components.ItemScreenLabel
+import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
+import com.mikohatara.collectioncatalog.ui.components.ItemEntryHorizontalSpacer
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
@@ -123,7 +119,7 @@ private fun EntryForm(
                         enabled = uiState.isNew,
                         singleLine = true
                     )
-                    ItemScreenRowSpacer()
+                    ItemEntryHorizontalSpacer()
                     OutlinedTextField(
                         value = uiState.itemDetails.variant,
                         onValueChange = {
@@ -213,7 +209,7 @@ private fun EntryForm(
                         singleLine = true
                     )
                 }
-                ItemScreenColumnSpacer()
+                ItemEntryVerticalSpacer()
                 Row(ItemScreenModifiers.rowWithIcon) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_category),
@@ -257,7 +253,7 @@ private fun EntryForm(
                         enabled = true,
                         singleLine = true
                     )
-                    ItemScreenRowSpacer()
+                    ItemEntryHorizontalSpacer()
                     OutlinedTextField(
                         value = uiState.itemDetails.year.toString(),
                         onValueChange = { // TODO handle null values in Int/Double fields
@@ -319,7 +315,7 @@ private fun EntryForm(
                         singleLine = true
                     )
                 }
-                ItemScreenColumnSpacer()
+                ItemEntryVerticalSpacer()
                 Row(ItemScreenModifiers.rowWithIcon) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_event),
@@ -345,7 +341,7 @@ private fun EntryForm(
                 }
                 Row(ItemScreenModifiers.rowWithIcon) {
                     Icon(
-                        painter = painterResource(R.drawable.rounded_currency),
+                        painter = painterResource(R.drawable.rounded_payments),
                         contentDescription = null,
                         modifier = ItemScreenModifiers.icon
                     )
@@ -366,7 +362,7 @@ private fun EntryForm(
                         enabled = true,
                         singleLine = true
                     )
-                    ItemScreenRowSpacer()
+                    ItemEntryHorizontalSpacer()
                     OutlinedTextField(
                         value = uiState.itemDetails.value.toString(),
                         onValueChange = {
@@ -385,7 +381,7 @@ private fun EntryForm(
                         singleLine = true
                     )
                 }
-                ItemScreenColumnSpacer()
+                ItemEntryVerticalSpacer()
                 Row(ItemScreenModifiers.rowWithIcon) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_info),
@@ -491,7 +487,7 @@ private fun EntryForm(
                         enabled = true,
                         singleLine = true
                     )
-                    ItemScreenRowSpacer()
+                    ItemEntryHorizontalSpacer()
                     OutlinedTextField(
                         value = uiState.itemDetails.height.toString(),
                         onValueChange = { // TODO handle null values in Int/Double fields
@@ -509,7 +505,7 @@ private fun EntryForm(
                         enabled = true,
                         singleLine = true
                     )
-                    ItemScreenRowSpacer()
+                    ItemEntryHorizontalSpacer()
                     OutlinedTextField(
                         value = uiState.itemDetails.weight.toString(),
                         onValueChange = { // TODO handle null values in Int/Double fields

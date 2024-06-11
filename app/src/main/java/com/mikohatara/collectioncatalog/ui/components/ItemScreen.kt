@@ -3,7 +3,6 @@ package com.mikohatara.collectioncatalog.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -27,13 +26,24 @@ fun ItemScreenLabel(label: String) {
 }
 
 @Composable
-fun ItemScreenColumnSpacer() {
+fun ItemEntryVerticalSpacer() {
     Spacer(modifier = Modifier.height(24.dp))
 }
 
 @Composable
-fun ItemScreenRowSpacer() {
+fun ItemEntryHorizontalSpacer() {
     Spacer(modifier = Modifier.width(8.dp))
+}
+
+@Composable
+fun ItemSummaryVerticalSpacer(isEnd: Boolean) {
+    val value: Int = if(isEnd) {
+        8
+    } else {
+        16
+    }
+
+    Spacer(modifier = Modifier.height(value.dp))
 }
 
 @Composable
@@ -54,15 +64,12 @@ fun IconAbc123() {
 
 data object ItemScreenModifiers {
     val card: Modifier = Modifier.padding(16.dp)
+    val label: Modifier = Modifier.padding(start = 76.dp, top = 24.dp, bottom = 0.dp)
+    val icon: Modifier = Modifier.padding(20.dp)
+    // Entry
     val column: Modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
     val rowWithIcon: Modifier = Modifier.padding(top = 8.dp, end = 16.dp)
     val rowNoIcon: Modifier = Modifier.padding(start = 64.dp , top = 8.dp, end = 16.dp)
-
-    val label: Modifier = Modifier.padding(start = 76.dp, top = 24.dp, bottom = 0.dp)
-    val icon: Modifier = Modifier.padding(20.dp)
-
-    val rowOld: Modifier = Modifier.padding(vertical = 18.dp)
-    val columnOld: Modifier = Modifier
-        .fillMaxWidth()
-        .padding(end = 16.dp)
+    // Summary
+    val row: Modifier = Modifier.padding(end = 16.dp, top = 8.dp, bottom = 8.dp)
 }

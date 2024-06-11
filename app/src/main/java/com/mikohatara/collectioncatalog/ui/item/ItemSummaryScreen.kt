@@ -1,13 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,6 +11,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,12 +19,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,13 +33,11 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
-import com.mikohatara.collectioncatalog.ui.components.IconAbc123
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
-import com.mikohatara.collectioncatalog.ui.components.ItemScreenColumnSpacer
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
-import com.mikohatara.collectioncatalog.ui.components.ItemScreenRowSpacer
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.ItemSummaryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -136,45 +130,36 @@ private fun ItemInformation(
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         ItemImage(item.uniqueDetails.imagePath, onInspectImage)
+        ItemSummaryVerticalSpacer(true)
 
         Card(ItemScreenModifiers.card) {
-            Column(ItemScreenModifiers.column) {
-                Row(ItemScreenModifiers.rowWithIcon) {
-                    IconAbc123()
-                    StaticTextField(
-                        label = stringResource(R.string.reg_no),
-                        value = item.uniqueDetails.number,
-                        modifier = Modifier
-                    )
-                }
-            }
-        }
+            ItemSummaryVerticalSpacer(false)
 
-        Card(ItemScreenModifiers.card) {
-            Column(ItemScreenModifiers.column) {
-                Row(ItemScreenModifiers.rowWithIcon) {
+            Row(ItemScreenModifiers.row) {
+                Column {
                     Icon(
                         painter = painterResource(R.drawable.rounded_globe),
                         contentDescription = null,
                         modifier = ItemScreenModifiers.icon
                     )
+                }
+                Card(
+                    colors = CardDefaults
+                        .cardColors(containerColor = Color(0, 0, 0, 15)),
+                ) {
                     StaticTextField(
                         label = "Country",
                         value = item.commonDetails.country,
                         modifier = Modifier
                     )
-                }
-                item.commonDetails.region?.let {
-                    Row(ItemScreenModifiers.rowNoIcon) {
+                    item.commonDetails.region?.let {
                         StaticTextField(
                             label = "Region",
                             value = it,
                             modifier = Modifier
                         )
                     }
-                }
-                item.commonDetails.area?.let {
-                    Row(ItemScreenModifiers.rowNoIcon) {
+                    item.commonDetails.area?.let {
                         StaticTextField(
                             label = "Area",
                             value = it,
@@ -182,134 +167,314 @@ private fun ItemInformation(
                         )
                     }
                 }
-                ItemScreenColumnSpacer()
-                Row(ItemScreenModifiers.rowWithIcon) {
+            }
+
+            Row(ItemScreenModifiers.row) {
+                Column {
                     Icon(
                         painter = painterResource(R.drawable.rounded_category),
                         contentDescription = null,
                         modifier = ItemScreenModifiers.icon
                     )
-                    StaticTextField(
-                        label = stringResource(R.string.type),
-                        value = item.commonDetails.type,
-                        modifier = Modifier
-                    )
-                }
-                if(item.commonDetails.period != null || item.commonDetails.year != null) {
-                    Row(ItemScreenModifiers.rowWithIcon) {
+                    if(item.commonDetails.period != null || item.commonDetails.year != null) {
                         Icon(
                             painter = painterResource(R.drawable.rounded_date_range),
                             contentDescription = null,
                             modifier = ItemScreenModifiers.icon
                         )
-                        item.commonDetails.period?.let {
-                            StaticTextField(
-                                label = stringResource(R.string.period),
-                                value = it,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                        item.commonDetails.year?.let {
-                            ItemScreenRowSpacer()
-                            StaticTextField(
-                                label = stringResource(R.string.year),
-                                value = it.toString(),
-                                modifier = Modifier.weight(0.66f)
-                            )
+                    }
+                }
+                Card(
+                    colors = CardDefaults
+                        .cardColors(containerColor = Color(0, 0, 0, 15)),
+                ) {
+                    StaticTextField(
+                        label = stringResource(R.string.type),
+                        value = item.commonDetails.type,
+                        modifier = Modifier
+                    )
+                    if(item.commonDetails.period != null || item.commonDetails.year != null) {
+                        Row {
+                            item.commonDetails.period?.let {
+                                StaticTextField(
+                                    label = stringResource(R.string.period),
+                                    value = it,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            item.commonDetails.year?.let {
+                                StaticTextField(
+                                    label = stringResource(R.string.year),
+                                    value = it.toString(),
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
                     }
                 }
             }
+            ItemSummaryVerticalSpacer(true)
         }
 
-        /*
+        if(
+            item.uniqueDetails.notes != null ||
+            item.uniqueDetails.vehicle != null ||
+            item.uniqueDetails.date != null ||
+            item.uniqueDetails.cost != null ||
+            item.uniqueDetails.value != null ||
+            item.uniqueDetails.status != null
+        ) {
+            Card(ItemScreenModifiers.card) {
+                ItemSummaryVerticalSpacer(false)
+
+                if(item.uniqueDetails.notes != null || item.uniqueDetails.vehicle != null) {
+                    Row(ItemScreenModifiers.row) {
+                        Column {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_note_stack),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        }
+                        Card(
+                            colors = CardDefaults
+                                .cardColors(containerColor = Color(0, 0, 0, 15)),
+                        ) {
+                            item.uniqueDetails.notes?.let {
+                                StaticTextField(
+                                    label = "Notes",
+                                    value = it,
+                                    modifier = Modifier
+                                )
+                            }
+                            item.uniqueDetails.vehicle?.let {
+                                StaticTextField(
+                                    label = "Vehicle",
+                                    value = it,
+                                    modifier = Modifier
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Row(ItemScreenModifiers.row) {
+                    Column {
+                        if(item.uniqueDetails.date != null) {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_event),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        }
+                        if(item.uniqueDetails.cost != null || item.uniqueDetails.value != null) {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_payments),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        }
+                        if(item.uniqueDetails.status != null) {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_info),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        }
+                    }
+                    Card(
+                        colors = CardDefaults
+                            .cardColors(containerColor = Color(0, 0, 0, 15)),
+                    ) {
+                        item.uniqueDetails.date?.let {
+                            StaticTextField(
+                                label = stringResource(R.string.date),
+                                value = it,
+                                modifier = Modifier
+                            )
+                        }
+                        Row {
+                            item.uniqueDetails.cost?.let {
+                                StaticTextField(
+                                    label = "Cost",
+                                    value = it.toString(),
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            item.uniqueDetails.value?.let {
+                                StaticTextField(
+                                    label = stringResource(R.string.value),
+                                    value = it.toString(),
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                        item.uniqueDetails.status?.let {
+                            StaticTextField(
+                                label = "Status",
+                                value = it,
+                                modifier = Modifier
+                            )
+                        }
+                    }
+                }
+                ItemSummaryVerticalSpacer(true)
+            }
+        }
+
         Card(ItemScreenModifiers.card) {
-            Column(ItemScreenModifiers.column) {
-                item.uniqueDetails.date?.let {
-                    Row(ItemScreenModifiers.rowWithIcon) {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_event),
-                            contentDescription = null,
-                            modifier = ItemScreenModifiers.icon
-                        )
+            ItemSummaryVerticalSpacer(false)
+
+            Row(ItemScreenModifiers.row) {
+                Column {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_stars_layered),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                }
+                Card(
+                    colors = CardDefaults
+                        .cardColors(containerColor = Color(0, 0, 0, 15)),
+                ) {
+                    item.grading.condition?.let {
                         StaticTextField(
-                            label = stringResource(R.string.date),
+                            label = "Condition",
                             value = it,
                             modifier = Modifier
                         )
                     }
-                }
-                if(item.uniqueDetails.cost != null || item.uniqueDetails.value != null) {
-                    Row(ItemScreenModifiers.rowWithIcon) {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_currency),
-                            contentDescription = null,
-                            modifier = ItemScreenModifiers.icon
-                        )
-                    }
-                    item.uniqueDetails.cost?.let {
-                        StaticTextField(
-                            label = "Cost",
-                            value = it.toString(),
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    item.uniqueDetails.cost?.let {
-                        StaticTextField(
-                            label = stringResource(R.string.value),
-                            value = it.toString(),
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
+                    StaticSwitch("Keeper", item.grading.isKeeper)
+                    StaticSwitch("For Trade", item.grading.isForTrade)
                 }
             }
+            ItemSummaryVerticalSpacer(true)
         }
 
-        Card(ItemScreenModifiers.card) {
-            Column(ItemScreenModifiers.column) {
-                item.measurements.width?.let {
-                    Row(ItemScreenModifiers.rowWithIcon) {
+        if(
+            item.measurements.width != null ||
+            item.measurements.height != null ||
+            item.measurements.weight != null
+        ) {
+            Card(ItemScreenModifiers.card) {
+                ItemSummaryVerticalSpacer(false)
+
+                Row(ItemScreenModifiers.row) {
+                    Column {
                         Icon(
                             painter = painterResource(R.drawable.rounded_ruler),
                             contentDescription = null,
                             modifier = ItemScreenModifiers.icon
                         )
-                        StaticTextField(
-                            label = "Width",
-                            value = it.toString(),
-                            modifier = Modifier
-                        )
+                    }
+                    Card(
+                        colors = CardDefaults
+                            .cardColors(containerColor = Color(0, 0, 0, 15)),
+                    ) {
+                        Row {
+                            item.measurements.width?.let {
+                                StaticTextField(
+                                    label = "Width",
+                                    value = it.toString(),
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            item.measurements.height?.let {
+                                StaticTextField(
+                                    label = "Height",
+                                    value = it.toString(),
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            item.measurements.weight?.let {
+                                StaticTextField(
+                                    label = "Weight",
+                                    value = it.toString(),
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
                     }
                 }
+                ItemSummaryVerticalSpacer(true)
             }
-        }*/
+        }
 
-        /*
-        Card(ItemScreenModifiers.card) {
-            Column(ItemScreenModifiers.column) {
-                Row() {
+        if(
+            item.source.sourceName != null ||
+            item.source.sourceAlias != null ||
+            item.source.sourceDetails != null ||
+            item.source.sourceType != null ||
+            item.source.sourceCountry != null
+        ) {
+            Card(ItemScreenModifiers.card) {
+                ItemSummaryVerticalSpacer(false)
 
+                Row(ItemScreenModifiers.row) {
+                    Column {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_person_pin_circle),
+                            contentDescription = null,
+                            modifier = ItemScreenModifiers.icon
+                        )
+                    }
+                    Card(
+                        colors = CardDefaults
+                            .cardColors(containerColor = Color(0, 0, 0, 15)),
+                    ) {
+                        item.source.sourceName?.let {
+                            StaticTextField(
+                                label = "Source Name",
+                                value = it,
+                                modifier = Modifier
+                            )
+                        }
+                        item.source.sourceAlias?.let {
+                            StaticTextField(
+                                label = "Source Alias",
+                                value = it,
+                                modifier = Modifier
+                            )
+                        }
+                        item.source.sourceDetails?.let {
+                            StaticTextField(
+                                label = "Source Details",
+                                value = it,
+                                modifier = Modifier
+                            )
+                        }
+                        item.source.sourceType?.let {
+                            StaticTextField(
+                                label = "Source Type",
+                                value = it,
+                                modifier = Modifier
+                            )
+                        }
+                        item.source.sourceCountry?.let {
+                            StaticTextField(
+                                label = "Source Country",
+                                value = it,
+                                modifier = Modifier
+                            )
+                        }
+                    }
                 }
+                ItemSummaryVerticalSpacer(true)
             }
-        }*/
+        }
     }
 }
 
 @Composable
 private fun StaticTextField(label: String, value: String, modifier: Modifier) {
-
-    //if (entry != "null" || entry != "" || entry != " ") {  }
-
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0, 0, 0, 15)),
+    Column(
         modifier = modifier
             .fillMaxWidth()
     ) {
         Text(
             label,
             color = Color(0, 0, 0, 128),
-            fontSize = 11.sp,
-            fontStyle = FontStyle.Italic,
+            fontSize = 12.sp,
             modifier = Modifier
                 .padding(start = 8.dp)
         )
@@ -319,122 +484,25 @@ private fun StaticTextField(label: String, value: String, modifier: Modifier) {
                 .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 12.dp)
         )
     }
-
-    /*
-    Column() {
-        Row() {
-            Column(modifier = Modifier.weight(1f)) {
-                Box {
-                    Text(
-                        label,
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .padding(start = 20.dp)
-                            .absoluteOffset(y = (-4).dp)
-                    )
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0, 0, 0, 15)),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
-                    ) {
-                        Text(
-                            value,
-                            modifier = Modifier
-                                .padding(start = 20.dp)//, top = 14.dp, bottom = 10.dp)
-                                .padding(vertical = 12.dp)
-                        )
-                    }
-                }
-            }
-            OutlinedTextField(
-                value = value,
-                label = { Text(label) },
-                onValueChange = {},
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }*/
-/*
-    Box(
-        modifier = modifier.heightIn(min = 64.dp)
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0, 0, 0, 15)),
-            modifier = Modifier
-                .height(20.dp)
-                .padding(start = 14.dp)
-        ) {
-            Text(
-                label,
-                fontSize = 10.sp,
-                modifier = Modifier
-                    .absoluteOffset(y = (-1).dp)
-                    .padding(horizontal = 8.dp)//vertical = 12.dp)
-            )
-        }
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0, 0, 0, 15)),
-            modifier = Modifier
-                //.heightIn(min = 64.dp)
-                .fillMaxWidth()
-                .padding(top = 10.dp)
-        ) {
-            /*Card(
-                shape = RoundedCornerShape(0.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0, 0, 0, 15)),
-                modifier = Modifier
-                    .height(16.dp)
-                    .fillMaxWidth()
-            ) {}*/
-            /*Box {
-                Text(
-                    label,
-                    fontSize = 10.sp,
-                    fontStyle = FontStyle.Italic,
-                    modifier = Modifier
-                        .absoluteOffset(y = (-40).dp)
-                        .padding(start = 12.dp)
-                )
-
-            }*/
-            Text(
-                value,
-                modifier = Modifier
-                    .absoluteOffset(y = 3.dp)
-                    .padding(horizontal = 20.dp, vertical = 14.dp)//vertical = 12.dp)
-            )
-        }
-    }
-/*
-    Box() {
-        Text(
-            label,
-            fontSize = 12.sp,
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .absoluteOffset(y = (-4).dp)
-        )
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0, 0, 0, 15)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text(
-                value,
-                modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
-            )
-        }
-    }*/*/
 }
 
-@Preview
 @Composable
-fun StaticTextFieldPreview() {
-    CollectionCatalogTheme {
-        StaticTextField(label = "Details", value = "Passenger", modifier = Modifier)
+private fun StaticSwitch(label: String, value: Boolean) {
+    Row {
+        Text(
+            label,
+            color = Color(0, 0, 0, 128),
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .align(Alignment.CenterVertically)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(
+            checked = value,
+            onCheckedChange = {  },
+            enabled = false,
+            modifier = Modifier.padding(end = 8.dp)
+        )
     }
 }
 
@@ -442,6 +510,6 @@ fun StaticTextFieldPreview() {
 @Composable
 fun ItemSummaryScreenPreview() {
     CollectionCatalogTheme {
-        ItemInformation(item = samplePlates[6], onInspectImage = { /*TODO*/ })
+        ItemInformation(item = samplePlates[6], onInspectImage = {})
     }
 }
