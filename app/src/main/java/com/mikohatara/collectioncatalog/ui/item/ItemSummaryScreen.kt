@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -80,7 +81,7 @@ fun ItemSummaryScreenContent(
 
     Scaffold(
         topBar = { ItemSummaryTopAppBar(
-            "${item.uniqueDetails.number} : ${item.uniqueDetails.variant}",
+            item.uniqueDetails.number,
             item,
             onBack,
             onEdit,
@@ -123,6 +124,14 @@ fun ItemSummaryScreenContent(
     }
 }
 
+/*
+    TODO come up with a dynamic way to display data entries in relation to their neighbors
+
+    The commented out sections don't ensure that the icons come properly aligned.
+    The if else if else if else mess works for now as an "easy" placeholder replacement in
+    that regard, but is a pain to read and maintain. Replace with a proper solution
+*/
+
 @Composable
 private fun ItemInformation(
     item: Plate,
@@ -145,8 +154,8 @@ private fun ItemInformation(
                     )
                 }
                 Card(
-                    colors = CardDefaults
-                        .cardColors(containerColor = Color(0, 0, 0, 15)),
+                    colors = CardDefaults.cardColors
+                        (containerColor = Color(0, 0, 0, 15)),
                 ) {
                     StaticTextField(
                         label = "Country",
@@ -170,6 +179,76 @@ private fun ItemInformation(
                 }
             }
 
+            Column(ItemScreenModifiers.row) {
+                Row {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_category),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                    Card(
+                        shape = if(
+                            item.commonDetails.period != null || item.commonDetails.year != null
+                        ) {
+                            RoundedCornerShape(
+                                topStart = 12.dp,
+                                topEnd = 12.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 0.dp
+                            )
+                        } else {
+                            CardDefaults.shape
+                        },
+                        colors = CardDefaults.cardColors
+                            (containerColor = Color(0, 0, 0, 15))
+                    ) {
+                        StaticTextField(
+                            label = stringResource(R.string.type),
+                            value = item.commonDetails.type,
+                            modifier = Modifier
+                        )
+                    }
+                }
+                if(item.commonDetails.period != null || item.commonDetails.year != null) {
+                    Row {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_date_range),
+                            contentDescription = null,
+                            modifier = ItemScreenModifiers.icon
+                        )
+                        Card(
+                            shape = RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 0.dp,
+                                bottomStart = 12.dp,
+                                bottomEnd = 12.dp
+                            ),
+                            colors = CardDefaults.cardColors
+                                (containerColor = Color(0, 0, 0, 15))
+                        ) {
+                            ItemSummaryHorizontalDivider()
+                            Row {
+                                item.commonDetails.period?.let {
+                                    StaticTextField(
+                                        label = stringResource(R.string.period),
+                                        value = it,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                item.commonDetails.year?.let {
+                                    StaticTextField(
+                                        label = stringResource(R.string.year),
+                                        value = it.toString(),
+                                        modifier = Modifier.weight(0.5f)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            /*
             Row(ItemScreenModifiers.row) {
                 Column {
                     Icon(
@@ -186,8 +265,8 @@ private fun ItemInformation(
                     }
                 }
                 Card(
-                    colors = CardDefaults
-                        .cardColors(containerColor = Color(0, 0, 0, 15)),
+                    colors = CardDefaults.cardColors
+                        (containerColor = Color(0, 0, 0, 15))
                 ) {
                     StaticTextField(
                         label = stringResource(R.string.type),
@@ -208,13 +287,13 @@ private fun ItemInformation(
                                 StaticTextField(
                                     label = stringResource(R.string.year),
                                     value = it.toString(),
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(0.5f)
                                 )
                             }
                         }
                     }
                 }
-            }
+            }*/
             ItemSummaryVerticalSpacer(true)
         }
 
@@ -239,8 +318,8 @@ private fun ItemInformation(
                             )
                         }
                         Card(
-                            colors = CardDefaults
-                                .cardColors(containerColor = Color(0, 0, 0, 15)),
+                            colors = CardDefaults.cardColors
+                                (containerColor = Color(0, 0, 0, 15)),
                         ) {
                             item.uniqueDetails.notes?.let {
                                 StaticTextField(
@@ -260,79 +339,229 @@ private fun ItemInformation(
                     }
                 }
 
-                Row(ItemScreenModifiers.row) {
-                    Column {
-                        if(item.uniqueDetails.date != null) {
-                            Icon(
-                                painter = painterResource(R.drawable.rounded_event),
-                                contentDescription = null,
-                                modifier = ItemScreenModifiers.icon
-                            )
-                        }
-                        if(item.uniqueDetails.cost != null || item.uniqueDetails.value != null) {
-                            Icon(
-                                painter = painterResource(R.drawable.rounded_payments),
-                                contentDescription = null,
-                                modifier = ItemScreenModifiers.icon
-                            )
-                        }
-                        if(item.uniqueDetails.status != null) {
-                            Icon(
-                                painter = painterResource(R.drawable.rounded_info),
-                                contentDescription = null,
-                                modifier = ItemScreenModifiers.icon
-                            )
-                        }
-                    }
-                    Card(
-                        colors = CardDefaults
-                            .cardColors(containerColor = Color(0, 0, 0, 15)),
-                    ) {
+                if(
+                    item.uniqueDetails.date != null ||
+                    item.uniqueDetails.cost != null ||
+                    item.uniqueDetails.value != null ||
+                    item.uniqueDetails.status != null
+                ) {
+                    Column(ItemScreenModifiers.row) {
                         item.uniqueDetails.date?.let {
-                            StaticTextField(
-                                label = stringResource(R.string.date),
-                                value = it,
-                                modifier = Modifier
-                            )
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_event),
+                                    contentDescription = null,
+                                    modifier = ItemScreenModifiers.icon
+                                )
+                                Card(
+                                    shape = if(
+                                        item.uniqueDetails.cost != null ||
+                                        item.uniqueDetails.value != null ||
+                                        item.uniqueDetails.status != null
+                                    ) {
+                                        RoundedCornerShape(
+                                            topStart = 12.dp,
+                                            topEnd = 12.dp,
+                                            bottomStart = 0.dp,
+                                            bottomEnd = 0.dp
+                                        )
+                                    } else {
+                                        CardDefaults.shape
+                                    },
+                                    colors = CardDefaults.cardColors
+                                        (containerColor = Color(0, 0, 0, 15)),
+                                ) {
+                                    StaticTextField(
+                                        label = stringResource(R.string.date),
+                                        value = it,
+                                        modifier = Modifier
+                                    )
+                                }
+                            }
                         }
                         if(
                             item.uniqueDetails.cost != null ||
-                            item.uniqueDetails.value != null &&
-                            item.uniqueDetails.date != null
+                            item.uniqueDetails.value != null
                         ) {
-                            ItemSummaryHorizontalDivider()
-                        }
-                        Row {
-                            item.uniqueDetails.cost?.let {
-                                StaticTextField(
-                                    label = "Cost",
-                                    value = it.toString(),
-                                    modifier = Modifier.weight(1f)
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_payments),
+                                    contentDescription = null,
+                                    modifier = ItemScreenModifiers.icon
                                 )
-                            }
-                            item.uniqueDetails.value?.let {
-                                StaticTextField(
-                                    label = stringResource(R.string.value),
-                                    value = it.toString(),
-                                    modifier = Modifier.weight(1f)
-                                )
+                                Card(
+                                    shape = if(
+                                        item.uniqueDetails.date != null &&
+                                        item.uniqueDetails.status != null
+                                    ) {
+                                        RoundedCornerShape(0.dp)
+                                    } else if(
+                                        item.uniqueDetails.date != null &&
+                                        item.uniqueDetails.status == null
+                                    ) {
+                                        RoundedCornerShape(
+                                            topStart = 0.dp,
+                                            topEnd = 0.dp,
+                                            bottomStart = 12.dp,
+                                            bottomEnd = 12.dp
+                                        )
+                                    } else if(
+                                        item.uniqueDetails.date == null &&
+                                        item.uniqueDetails.status != null
+                                    ) {
+                                        RoundedCornerShape(
+                                            topStart = 12.dp,
+                                            topEnd = 12.dp,
+                                            bottomStart = 0.dp,
+                                            bottomEnd = 0.dp
+                                        )
+                                    } else {
+                                        CardDefaults.shape
+                                    },
+                                    colors = CardDefaults.cardColors
+                                        (containerColor = Color(0, 0, 0, 15)),
+                                ) {
+                                    if(item.uniqueDetails.date != null) {
+                                        ItemSummaryHorizontalDivider()
+                                    }
+                                    Row {
+                                        item.uniqueDetails.cost?.let {
+                                            StaticTextField(
+                                                label = "Cost",
+                                                value = it.toString(),
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                        }
+                                        item.uniqueDetails.value?.let {
+                                            StaticTextField(
+                                                label = stringResource(R.string.value),
+                                                value = it.toString(),
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                         item.uniqueDetails.status?.let {
-                            if(
-                                item.uniqueDetails.date != null ||
-                                item.uniqueDetails.cost != null ||
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_info),
+                                    contentDescription = null,
+                                    modifier = ItemScreenModifiers.icon
+                                )
+                                Card(
+                                    shape = if(
+                                        item.uniqueDetails.date != null ||
+                                        item.uniqueDetails.cost != null ||
+                                        item.uniqueDetails.value != null
+                                    ) {
+                                        RoundedCornerShape(
+                                            topStart = 0.dp,
+                                            topEnd = 0.dp,
+                                            bottomStart = 12.dp,
+                                            bottomEnd = 12.dp
+                                        )
+                                    } else {
+                                        CardDefaults.shape
+                                    },
+                                    colors = CardDefaults.cardColors
+                                        (containerColor = Color(0, 0, 0, 15)),
+                                ) {
+                                    if(
+                                        item.uniqueDetails.date != null ||
+                                        item.uniqueDetails.cost != null ||
+                                        item.uniqueDetails.value != null
+                                    ) {
+                                        ItemSummaryHorizontalDivider()
+                                    }
+                                    StaticTextField(
+                                        label = "Status",
+                                        value = it,
+                                        modifier = Modifier
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    /*
+                    Row(ItemScreenModifiers.row) {
+                        Column {
+                            if(item.uniqueDetails.date != null) {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_event),
+                                    contentDescription = null,
+                                    modifier = ItemScreenModifiers.icon
+                                )
+                            }
+                            if(item.uniqueDetails.cost != null ||
                                 item.uniqueDetails.value != null
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_payments),
+                                    contentDescription = null,
+                                    modifier = ItemScreenModifiers.icon
+                                )
+                            }
+                            if(item.uniqueDetails.status != null) {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_info),
+                                    contentDescription = null,
+                                    modifier = ItemScreenModifiers.icon
+                                )
+                            }
+                        }
+                        Card(
+                            colors = CardDefaults.cardColors
+                                (containerColor = Color(0, 0, 0, 15)),
+                        ) {
+                            item.uniqueDetails.date?.let {
+                                StaticTextField(
+                                    label = stringResource(R.string.date),
+                                    value = it,
+                                    modifier = Modifier
+                                )
+                            }
+                            if(
+                                item.uniqueDetails.cost != null ||
+                                item.uniqueDetails.value != null &&
+                                item.uniqueDetails.date != null
                             ) {
                                 ItemSummaryHorizontalDivider()
                             }
-                            StaticTextField(
-                                label = "Status",
-                                value = it,
-                                modifier = Modifier
-                            )
+                            Row {
+                                item.uniqueDetails.cost?.let {
+                                    StaticTextField(
+                                        label = "Cost",
+                                        value = it.toString(),
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                item.uniqueDetails.value?.let {
+                                    StaticTextField(
+                                        label = stringResource(R.string.value),
+                                        value = it.toString(),
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            item.uniqueDetails.status?.let {
+                                if(
+                                    item.uniqueDetails.date != null ||
+                                    item.uniqueDetails.cost != null ||
+                                    item.uniqueDetails.value != null
+                                ) {
+                                    ItemSummaryHorizontalDivider()
+                                }
+                                StaticTextField(
+                                    label = "Status",
+                                    value = it,
+                                    modifier = Modifier
+                                )
+                            }
                         }
-                    }
+                    }*/
                 }
                 ItemSummaryVerticalSpacer(true)
             }
@@ -350,8 +579,8 @@ private fun ItemInformation(
                     )
                 }
                 Card(
-                    colors = CardDefaults
-                        .cardColors(containerColor = Color(0, 0, 0, 15)),
+                    colors = CardDefaults.cardColors
+                        (containerColor = Color(0, 0, 0, 15)),
                 ) {
                     item.grading.condition?.let {
                         StaticTextField(
@@ -384,8 +613,8 @@ private fun ItemInformation(
                         )
                     }
                     Card(
-                        colors = CardDefaults
-                            .cardColors(containerColor = Color(0, 0, 0, 15)),
+                        colors = CardDefaults.cardColors
+                            (containerColor = Color(0, 0, 0, 15)),
                     ) {
                         Row {
                             item.measurements.width?.let {
@@ -419,8 +648,8 @@ private fun ItemInformation(
         if(
             item.source.sourceName != null ||
             item.source.sourceAlias != null ||
-            item.source.sourceDetails != null ||
             item.source.sourceType != null ||
+            item.source.sourceDetails != null ||
             item.source.sourceCountry != null
         ) {
             Card(ItemScreenModifiers.card) {
@@ -435,8 +664,8 @@ private fun ItemInformation(
                         )
                     }
                     Card(
-                        colors = CardDefaults
-                            .cardColors(containerColor = Color(0, 0, 0, 15)),
+                        colors = CardDefaults.cardColors
+                            (containerColor = Color(0, 0, 0, 15)),
                     ) {
                         item.source.sourceName?.let {
                             StaticTextField(
@@ -455,19 +684,12 @@ private fun ItemInformation(
                         if(
                             item.source.sourceName != null ||
                             item.source.sourceAlias != null &&
-                            item.source.sourceDetails != null ||
                             item.source.sourceType != null ||
+                            item.source.sourceDetails != null ||
                             item.source.sourceCountry != null
                         ) {
                             //ItemSummaryHorizontalDivider()
                             HorizontalDivider(Modifier.padding(start = 8.dp, end = 16.dp))
-                        }
-                        item.source.sourceDetails?.let {
-                            StaticTextField(
-                                label = "Source Details",
-                                value = it,
-                                modifier = Modifier
-                            )
                         }
                         item.source.sourceType?.let {
                             StaticTextField(
@@ -476,12 +698,19 @@ private fun ItemInformation(
                                 modifier = Modifier
                             )
                         }
+                        item.source.sourceDetails?.let {
+                            StaticTextField(
+                                label = "Source Details",
+                                value = it,
+                                modifier = Modifier
+                            )
+                        }
                         item.source.sourceCountry?.let {
                             if(
                                 item.source.sourceName != null ||
                                 item.source.sourceAlias != null ||
-                                item.source.sourceDetails != null ||
-                                item.source.sourceType != null
+                                item.source.sourceType != null ||
+                                item.source.sourceDetails != null
                             ) {
                                 //ItemSummaryHorizontalDivider()
                                 HorizontalDivider(Modifier.padding(start = 8.dp, end = 16.dp))

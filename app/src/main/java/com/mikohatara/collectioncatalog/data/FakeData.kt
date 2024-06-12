@@ -235,7 +235,7 @@ val samplePlates = listOf(
             "Bayern",
             "Münich",
             "Passenger",
-            "1995 - ",
+            "1995 - 2052",
             2024
         ),
         UniqueDetails(

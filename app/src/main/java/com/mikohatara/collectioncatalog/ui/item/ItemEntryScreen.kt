@@ -28,10 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.IconAbc123
+import com.mikohatara.collectioncatalog.ui.components.ItemEntryHorizontalSpacer
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
-import com.mikohatara.collectioncatalog.ui.components.ItemEntryHorizontalSpacer
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
@@ -266,7 +266,7 @@ private fun EntryForm(
                         label = { Text(stringResource(R.string.year)) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.66f),
+                            .weight(0.5f),
                         enabled = true,
                         singleLine = true
                     )
@@ -572,23 +572,6 @@ private fun EntryForm(
                 }
                 Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
-                        value = uiState.itemDetails.sourceDetails ?: "",
-                        onValueChange = {
-                            onValueChange(uiState.itemDetails.copy(sourceDetails = it))
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next
-                        ),
-                        label = { Text("Source Details") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        enabled = true,
-                        singleLine = true
-                    )
-                }
-                Row(ItemScreenModifiers.rowNoIcon) {
-                    OutlinedTextField(
                         value = uiState.itemDetails.sourceType ?: "",
                         onValueChange = {
                             onValueChange(uiState.itemDetails.copy(sourceType = it))
@@ -606,12 +589,29 @@ private fun EntryForm(
                 }
                 Row(ItemScreenModifiers.rowNoIcon) {
                     OutlinedTextField(
+                        value = uiState.itemDetails.sourceDetails ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(sourceDetails = it))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        label = { Text("Source Details") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        enabled = true,
+                        singleLine = true
+                    )
+                }
+                Row(ItemScreenModifiers.rowNoIcon) {
+                    OutlinedTextField(
                         value = uiState.itemDetails.sourceCountry ?: "",
                         onValueChange = {
                             onValueChange(uiState.itemDetails.copy(sourceCountry = it))
                         },
                         keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next
+                            imeAction = ImeAction.Done
                         ),
                         label = { Text("Source Country") },
                         modifier = Modifier
