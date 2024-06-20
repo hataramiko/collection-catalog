@@ -18,7 +18,7 @@ fun DeletionDialog(
     onCancel: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { /*TODO*/ },
+        onDismissRequest = { onCancel() },
         icon = { Icon(
             painter = painterResource(R.drawable.rounded_warning),
             contentDescription = null
@@ -27,12 +27,12 @@ fun DeletionDialog(
         text = { Text(stringResource(R.string.deletion_dialog)) },
         dismissButton = {
             TextButton(onClick = { onCancel() }) {
-                Text(stringResource(R.string.no))
+                Text(stringResource(R.string.cancel))
             }
         },
         confirmButton = {
             Button(onClick = { onConfirm() }) {
-                Text(stringResource(R.string.yes))
+                Text(stringResource(R.string.delete))
             }
         }
     )

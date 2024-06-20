@@ -20,4 +20,9 @@
     <string name="date">Date</string>
     <string name="value">Value</string>
     <string name="type">Type</string>
+    <string name="plates">Plates</string>
+    <string name="sort_by">Sort By</string>
+    <string name="filter">Filter</string>
+    <string name="cancel">Cancel</string>
+    <string name="cost">Cost</string>
 </resources>

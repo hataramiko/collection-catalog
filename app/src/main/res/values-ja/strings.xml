@@ -20,4 +20,9 @@
     <string name="date">日付</string>
     <string name="value">価値</string>
     <string name="type">種類</string>
+    <string name="plates">プレート</string>
+    <string name="sort_by">並べ替え</string>
+    <string name="filter">絞り込み</string>
+    <string name="cancel">キャンセル</string>
+    <string name="cost">費用</string>
 </resources>

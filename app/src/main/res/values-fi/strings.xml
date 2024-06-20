@@ -20,4 +20,9 @@
     <string name="date">Päiväys</string>
     <string name="value">Arvo</string>
     <string name="type">Tyyppi</string>
+    <string name="plates">Kilvet</string>
+    <string name="sort_by">Järjestä</string>
+    <string name="filter">Rajaa</string>
+    <string name="cancel">Peruuta</string>
+    <string name="cost">Menot</string>
 </resources>

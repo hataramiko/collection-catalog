@@ -77,7 +77,7 @@ fun ItemSummaryScreenContent(
     modifier: Modifier = Modifier
 ) {
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
-    var isDeletionDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = { ItemSummaryTopAppBar(
@@ -85,7 +85,7 @@ fun ItemSummaryScreenContent(
             item,
             onBack,
             onEdit,
-            onDelete = { isDeletionDialog = true
+            onDelete = { showDeletionDialog = true
                 /*coroutineScope.launch {
                     viewModel.deleteItem()
                     onBack()
@@ -110,16 +110,16 @@ fun ItemSummaryScreenContent(
         )
     }
 
-    if (isDeletionDialog) {
+    if (showDeletionDialog) {
         DeletionDialog(
             onConfirm = {
-                isDeletionDialog = false
+                showDeletionDialog = false
                 coroutineScope.launch {
                     viewModel.deleteItem()
                     onBack()
                 }
             },
-            onCancel = { isDeletionDialog = false }
+            onCancel = { showDeletionDialog = false }
         )
     }
 }
