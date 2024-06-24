@@ -12,7 +12,7 @@
     <string name="yes">Kyllä</string>
     <string name="no">Ei</string>
     <string name="delete">Poista</string>
-    <string name="deletion_dialog">Oletko varma?</string>
+    <string name="deletion_dialog">Tätä toimintoa ei voi kumota.</string>
     <string name="source">Lähde</string>
     <string name="period">Aikaväli</string>
     <string name="year">Vuosi</string>

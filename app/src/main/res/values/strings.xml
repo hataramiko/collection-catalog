@@ -12,7 +12,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="delete">Delete</string>
-    <string name="deletion_dialog">Are you sure?</string>
+    <string name="deletion_dialog">This action cannot be undone.</string>
     <string name="source">Source</string>
     <string name="period">Period</string>
     <string name="year">Year</string>

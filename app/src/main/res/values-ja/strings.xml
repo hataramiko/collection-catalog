@@ -12,7 +12,7 @@
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
     <string name="delete">削除</string>
-    <string name="deletion_dialog">よろしいですか？</string>
+    <string name="deletion_dialog">このアイテムを削除すると、元に戻せません。</string>
     <string name="source">供給源</string>
     <string name="period">期間</string>
     <string name="year">暦年</string>

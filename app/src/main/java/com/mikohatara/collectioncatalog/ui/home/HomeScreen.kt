@@ -5,24 +5,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +32,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -90,7 +86,9 @@ fun HomeScreenContent(
                 modifier = modifier
                     .padding(innerPadding),
                     //.verticalScroll(rememberScrollState())
-                onItemClick = onItemClick
+                onItemClick = onItemClick,
+                onSortByClick = { showBottomSheet = true },
+                onFilterClick = { showBottomSheet = true } // TODO fix
             )
 
             if(showBottomSheet) {
@@ -104,10 +102,11 @@ fun HomeScreenContent(
 fun HomeBody(
     itemList: List<Plate>,
     modifier: Modifier = Modifier,
-    onItemClick: (Plate) -> Unit
+    onItemClick: (Plate) -> Unit,
+    onSortByClick: () -> Unit,
+    onFilterClick: () -> Unit
 ) {
     val maxWidth = itemList.maxOfOrNull { it.measurements.width ?: 0.0 } ?: 0.0
-    //Log.d("maxWidth", maxWidth.toString())
 
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
@@ -117,7 +116,7 @@ fun HomeBody(
             .fillMaxWidth()
     ) {
         item {
-            TopRow()
+            TopRow(onSortByClick, onFilterClick)
         }
         if (itemList.isEmpty()) {
             item {
@@ -144,7 +143,10 @@ fun HomeBody(
 }
 
 @Composable
-private fun TopRow() {
+private fun TopRow(
+    onSortByClick: () -> Unit,
+    onFilterClick: () -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -152,7 +154,7 @@ private fun TopRow() {
             .padding(bottom = 8.dp)
     ) {
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { onSortByClick() },
             modifier = Modifier.weight(1f)
         ) {
             Icon(
@@ -163,7 +165,7 @@ private fun TopRow() {
         }
         Spacer(modifier = Modifier.width(8.dp))
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { onFilterClick() },
             modifier = Modifier.weight(1f)
         ) {
             Icon(
