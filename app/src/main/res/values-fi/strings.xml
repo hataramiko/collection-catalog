@@ -25,4 +25,6 @@
     <string name="filter">Rajaa</string>
     <string name="cancel">Peruuta</string>
     <string name="cost">Menot</string>
+    <string name="image_loading">Ladataan kuvaa</string>
+    <string name="loading">Ladataan</string>
 </resources>

@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -102,35 +106,37 @@ fun HomeBody(
     modifier: Modifier = Modifier,
     onItemClick: (Plate) -> Unit
 ) {
-    if (itemList.isEmpty()) {
-        Text(
-            text = "Collection is empty.\nPress + to add an item",
-            modifier = modifier
-                .widthIn(min = Dp.Infinity)
-        )
-        Log.d("HomeBody is null", itemList.toString())
-    } else {
+    val maxWidth = itemList.maxOfOrNull { it.measurements.width ?: 0.0 } ?: 0.0
+    //Log.d("maxWidth", maxWidth.toString())
 
-        val maxWidth = itemList.maxOfOrNull { it.measurements.width ?: 0.0 } ?: 0.0
-        //Log.d("maxWidth", maxWidth.toString())
-
-        LazyColumn(
-            contentPadding = PaddingValues(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
-                .fillMaxWidth()
-        ) {
+    LazyColumn(
+        contentPadding = PaddingValues(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        item {
+            TopRow()
+        }
+        if (itemList.isEmpty()) {
             item {
-                TopRow()
+                Text(
+                    text = "Collection is empty.\nPress + to add an item",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 200.dp)
+                )
             }
+            Log.d("itemList is empty", itemList.toString())
+        } else {
             items(itemList) { item ->
                 ItemCard(
                     item = item,
                     maxWidth = maxWidth
                 ) {
                     onItemClick(item)
-                    Log.d("ItemCard", item.toString())
                 }
             }
         }
@@ -143,6 +149,7 @@ private fun TopRow() {
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(bottom = 8.dp)
     ) {
         OutlinedButton(
             onClick = { /*TODO*/ },
@@ -166,7 +173,11 @@ private fun TopRow() {
             Text(stringResource(R.string.filter))
         }
     }
-    //HorizontalDivider(modifier = Modifier.padding(top = 6.dp))
+    HorizontalDivider(
+        modifier = Modifier
+            .padding(bottom = 4.dp)
+            .requiredWidth(1024.dp)
+    )
 }
 
 @Preview

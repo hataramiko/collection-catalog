@@ -25,4 +25,6 @@
     <string name="filter">絞り込み</string>
     <string name="cancel">キャンセル</string>
     <string name="cost">費用</string>
+    <string name="image_loading">画像ロード中</string>
+    <string name="loading">ロード中</string>
 </resources>
