@@ -19,7 +19,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +36,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
-import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.components.HomeScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
@@ -54,6 +52,7 @@ fun HomeScreen(
 
     HomeScreenContent(
         itemList = uiState.items,
+        viewModel = viewModel,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
         onOpenDrawer = onOpenDrawer
@@ -64,6 +63,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     itemList: List<Plate>,
+    viewModel: HomeViewModel,
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
     onOpenDrawer: () -> Unit,
@@ -92,7 +92,10 @@ fun HomeScreenContent(
             )
 
             if(showBottomSheet) {
-                SortByBottomSheet(onDismiss = { showBottomSheet = false })
+                SortByBottomSheet(
+                    onDismiss = { showBottomSheet = false },
+                    viewModel = viewModel
+                )
             }
         }
     )
@@ -186,6 +189,6 @@ private fun TopRow(
 @Composable
 fun HomeScreenPreview() {
     CollectionCatalogTheme {
-        HomeScreenContent(samplePlates, onAddItem = {}, onItemClick = {}, onOpenDrawer = {})
+        //HomeScreenContent(samplePlates, onAddItem = {}, onItemClick = {}, onOpenDrawer = {})
     }
 }

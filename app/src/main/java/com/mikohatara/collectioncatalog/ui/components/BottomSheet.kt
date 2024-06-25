@@ -20,13 +20,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.ui.home.HomeViewModel
+import com.mikohatara.collectioncatalog.ui.home.SortBy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortByBottomSheet(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    viewModel: HomeViewModel
 ) {
-    val sortByOptions = listOf("Country asc.", "Country desc.", "Date asc.", "Date desc.")
+    val sortByOptions = viewModel.sortByOptions
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(sortByOptions[0]) }
 
     ModalBottomSheet(
@@ -49,7 +52,15 @@ fun SortByBottomSheet(
                         .fillMaxWidth()
                         .selectable(
                             selected = (option == selectedOption),
-                            onClick = { onOptionSelected(option) },
+                            onClick = {
+                                onOptionSelected(option)
+                                when (option) {
+                                    SortBy.COUNTRY_ASC -> viewModel.setSortBy(SortBy.COUNTRY_ASC)
+                                    SortBy.COUNTRY_DESC -> viewModel.setSortBy(SortBy.COUNTRY_DESC)
+                                    SortBy.DATE_ASC -> viewModel.setSortBy(SortBy.DATE_ASC)
+                                    SortBy.DATE_DESC -> viewModel.setSortBy(SortBy.DATE_DESC)
+                                }
+                            },
                             role = Role.RadioButton
                         )
                 ) {
@@ -60,7 +71,7 @@ fun SortByBottomSheet(
                             .padding(start = 28.dp, top = 12.dp, bottom = 12.dp)
                     )
                     Text(
-                        text = option,
+                        text = option.toString(),
                         modifier = Modifier.padding(start = 16.dp)
                     )
                 }
