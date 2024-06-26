@@ -88,6 +88,10 @@ fun FilterBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onDismiss() }
     ) {
-
+        Text(
+            stringResource(R.string.filter),
+            modifier = Modifier.padding(start = 32.dp, bottom = 16.dp)
+        )
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
     }
 }

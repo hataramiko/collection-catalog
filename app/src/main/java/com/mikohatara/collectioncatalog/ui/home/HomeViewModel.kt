@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.util.Comparator
 import javax.inject.Inject
 
 data class HomeUiState(
@@ -40,21 +42,28 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setSortBy(sortBy: SortBy) {
-        val sortedItems = _uiState.value.items.sortedWith(compareBy
+        val items = _uiState.value.items
+        val sortedItems = when (sortBy) {
+            SortBy.COUNTRY_ASC -> items.sortedBy { it.commonDetails.country }/*.sortedWith(
+                compareBy<Plate> { it.commonDetails.country }
+                    .thenBy { it.commonDetails.region }
+                    .thenBy { it.commonDetails.area }
+            )*/
+            SortBy.COUNTRY_DESC -> items.sortedByDescending { it.commonDetails.country }
+            SortBy.DATE_ASC -> items.sortedBy { it.uniqueDetails.date }
+            SortBy.DATE_DESC -> items.sortedByDescending { it.uniqueDetails.date }
+        }
+            /*_uiState.value.items.sortedWith(compareBy
             { item ->
                 when (sortBy) {
                     SortBy.COUNTRY_ASC -> item.commonDetails.country
-                    SortBy.COUNTRY_DESC -> descendingStringComparator().compare(item.commonDetails.country, "") // TODO fix
+                    SortBy.COUNTRY_DESC -> item.commonDetails.country.reversed()
                     SortBy.DATE_ASC -> item.uniqueDetails.date
-                    SortBy.DATE_DESC -> item.uniqueDetails.date
+                    SortBy.DATE_DESC -> item.uniqueDetails.date?.reversed()
                 }
             }
-        )
+        )*/
         _uiState.value = _uiState.value.copy(items = sortedItems, sortBy = sortBy)
-    }
-
-    private fun descendingStringComparator(): Comparator<String> {
-        return compareBy { it.reversed() }
     }
 
     /*
