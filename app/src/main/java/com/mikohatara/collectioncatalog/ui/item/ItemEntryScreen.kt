@@ -167,7 +167,7 @@ private fun EntryForm(
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Country") },
+                        label = { Text(stringResource(R.string.country)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
@@ -184,7 +184,7 @@ private fun EntryForm(
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Region") },
+                        label = { Text(stringResource(R.string.region)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
@@ -201,7 +201,7 @@ private fun EntryForm(
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Area") },
+                        label = { Text(stringResource(R.string.area)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
@@ -355,7 +355,7 @@ private fun EntryForm(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
                         ),
-                        label = { Text("Cost") },
+                        label = { Text(stringResource(R.string.cost)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),

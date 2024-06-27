@@ -3,7 +3,7 @@
     <string name="app_name">Collection Catalog</string>
     <string name="settings">Settings</string>
     <string name="no_image">No image</string>
-    <string name="press_to_add_image">Press here to select an image</string>
+    <string name="press_to_add_image">Press here to add an image</string>
     <string name="press_to_change_image">Change the image by pressing on it</string>
     <string name="add_item_title">Add new</string>
     <string name="edit_item_title">Edit <xliff:g name="item_title" example="ABC-123">%s</xliff:g></string>
@@ -27,4 +27,14 @@
     <string name="cost">Cost</string>
     <string name="image_loading">Loading image</string>
     <string name="loading">Loading</string>
+    <string name="country">Country</string>
+    <string name="region">Region</string>
+    <string name="area">Area</string>
+    <string name="subdivision">Subdivision</string>
+    <string name="sort_by_date_newest">Most recent date</string>
+    <string name="sort_by_date_oldest">Earliest date</string>
+    <string name="sort_by_country_asc">Country &amp; Region, ascending</string>
+    <string name="sort_by_country_desc">Country &amp; Region, descending</string>
+    <string name="sort_by_country_and_type_asc">Country &amp; Type, ascending</string>
+    <string name="sort_by_country_and_type_desc">Country &amp; Type, descending</string>
 </resources>

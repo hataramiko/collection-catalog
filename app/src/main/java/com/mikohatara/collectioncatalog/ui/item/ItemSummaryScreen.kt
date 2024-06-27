@@ -158,20 +158,20 @@ private fun ItemInformation(
                         (containerColor = Color(0, 0, 0, 15)),
                 ) {
                     StaticTextField(
-                        label = "Country",
+                        label = stringResource(R.string.country),
                         value = item.commonDetails.country,
                         modifier = Modifier
                     )
                     item.commonDetails.region?.let {
                         StaticTextField(
-                            label = "Region",
+                            label = stringResource(R.string.region),
                             value = it,
                             modifier = Modifier
                         )
                     }
                     item.commonDetails.area?.let {
                         StaticTextField(
-                            label = "Area",
+                            label = stringResource(R.string.area),
                             value = it,
                             modifier = Modifier
                         )
@@ -427,7 +427,7 @@ private fun ItemInformation(
                                     Row {
                                         item.uniqueDetails.cost?.let {
                                             StaticTextField(
-                                                label = "Cost",
+                                                label = stringResource(R.string.cost),
                                                 value = it.toString(),
                                                 modifier = Modifier.weight(1f)
                                             )

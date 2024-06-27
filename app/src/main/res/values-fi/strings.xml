@@ -3,7 +3,7 @@
     <string name="app_name">Collection Catalog</string>
     <string name="no_image">Ei kuvaa</string>
     <string name="settings">Asetukset</string>
-    <string name="press_to_add_image">Valitse kuva painamalla tästä</string>
+    <string name="press_to_add_image">Lisää kuva painamalla tästä</string>
     <string name="press_to_change_image">Vaihda kuvaa painamalla sitä</string>
     <string name="add_item_title">Lisää uusi</string>
     <string name="edit_item_title">Muokkaa <xliff:g name="item_title" example="ABC-123">%s</xliff:g></string>
@@ -27,4 +27,14 @@
     <string name="cost">Menot</string>
     <string name="image_loading">Ladataan kuvaa</string>
     <string name="loading">Ladataan</string>
+    <string name="country">Valtio</string>
+    <string name="region">Alue</string>
+    <string name="area">Alue</string>
+    <string name="subdivision">Aluejako</string>
+    <string name="sort_by_date_newest">Uusin päiväys</string>
+    <string name="sort_by_date_oldest">Vanhin päiväys</string>
+    <string name="sort_by_country_asc">Valtio ja alue, nouseva</string>
+    <string name="sort_by_country_desc">Valtio ja alue, laskeva</string>
+    <string name="sort_by_country_and_type_asc">Valtio ja tyyppi, nouseva</string>
+    <string name="sort_by_country_and_type_desc">Valtio ja tyyppi, laskeva</string>
 </resources>

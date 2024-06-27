@@ -1,6 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
-import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.util.Comparator
 import javax.inject.Inject
 
 data class HomeUiState(
@@ -26,6 +25,9 @@ class HomeViewModel @Inject constructor(
     private val plateRepository: PlateRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    val showSortByBottomSheet = mutableStateOf(false)
+    val showFilterBottomSheet = mutableStateOf(false)
+
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -50,9 +52,23 @@ class HomeViewModel @Inject constructor(
                     .thenBy(nullsLast()) { it.commonDetails.region }
                     .thenBy(nullsLast()) { it.commonDetails.area }
             )
-            SortBy.COUNTRY_DESC -> items.sortedByDescending { it.commonDetails.country }
-            SortBy.DATE_ASC -> items.sortedBy { it.uniqueDetails.date }
-            SortBy.DATE_DESC -> items.sortedByDescending { it.uniqueDetails.date }
+            SortBy.COUNTRY_DESC -> items.sortedWith(
+                compareByDescending<Plate> { it.commonDetails.country }
+                    .thenByDescending { it.commonDetails.region }
+                    .thenByDescending { it.commonDetails.area }
+            )
+            SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedWith(
+                compareBy<Plate> { it.commonDetails.country }
+                    .thenBy { it.commonDetails.type }
+            )
+            SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedWith(
+                compareByDescending<Plate> { it.commonDetails.country }
+                    .thenByDescending { it.commonDetails.type }
+            )
+            SortBy.DATE_NEWEST -> items.sortedByDescending { it.uniqueDetails.date }
+            SortBy.DATE_OLDEST -> items.sortedWith(
+                compareBy(nullsLast()) { it.uniqueDetails.date }
+            )
         }
         _uiState.value = _uiState.value.copy(items = sortedItems, sortBy = sortBy)
     }
@@ -94,7 +110,7 @@ class HomeViewModel @Inject constructor(
     fun setSortBy(sortBy: SortBy) {
         _sortBy.value = sortBy
         Log.d("sort by; viewmodel", _sortBy.value.toString())
-        Log.d("uistate list setSortBy", uiState.value.toString())
+        Log.d("uiState list setSortBy", uiState.value.toString())
     }*/
 
     /*
@@ -106,6 +122,8 @@ class HomeViewModel @Inject constructor(
 enum class SortBy {
     COUNTRY_ASC,
     COUNTRY_DESC,
-    DATE_ASC,
-    DATE_DESC
+    COUNTRY_AND_TYPE_ASC,
+    COUNTRY_AND_TYPE_DESC,
+    DATE_NEWEST,
+    DATE_OLDEST
 }

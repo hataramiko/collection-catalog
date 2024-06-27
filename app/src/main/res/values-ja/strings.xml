@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Collection Catalog</string>
-    <string name="no_image">画像無し</string>
+    <string name="no_image">画像なし</string>
     <string name="settings">設定</string>
-    <string name="press_to_add_image">タップして画像を選ぶ</string>
+    <string name="press_to_add_image">タップして画像を追加</string>
     <string name="press_to_change_image">画像をタップして換える</string>
     <string name="add_item_title">新規作成</string>
     <string name="edit_item_title"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を編集</string>
@@ -27,4 +27,14 @@
     <string name="cost">費用</string>
     <string name="image_loading">画像ロード中</string>
     <string name="loading">ロード中</string>
+    <string name="country">国家</string>
+    <string name="region">地方</string>
+    <string name="area">地域</string>
+    <string name="subdivision">行政区画</string>
+    <string name="sort_by_date_newest">日付が最も新しい</string>
+    <string name="sort_by_date_oldest">日付が最も古い</string>
+    <string name="sort_by_country_asc">国家も地域も昇順</string>
+    <string name="sort_by_country_desc">国家も地域も降順</string>
+    <string name="sort_by_country_and_type_asc">国家も種類も昇順</string>
+    <string name="sort_by_country_and_type_desc">国家も種類も降順</string>
 </resources>

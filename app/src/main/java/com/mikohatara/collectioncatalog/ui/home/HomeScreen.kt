@@ -21,9 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -36,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.HomeScreenTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
@@ -70,7 +68,6 @@ fun HomeScreenContent(
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -87,14 +84,19 @@ fun HomeScreenContent(
                     .padding(innerPadding),
                     //.verticalScroll(rememberScrollState())
                 onItemClick = onItemClick,
-                onSortByClick = { showBottomSheet = true },
-                onFilterClick = { showBottomSheet = true } // TODO fix
+                onSortByClick = { viewModel.showSortByBottomSheet.value = true },
+                onFilterClick = { viewModel.showFilterBottomSheet.value = true }
             )
 
-            if(showBottomSheet) {
+            if(viewModel.showSortByBottomSheet.value) {
                 SortByBottomSheet(
-                    onDismiss = { showBottomSheet = false },
+                    onDismiss = { viewModel.showSortByBottomSheet.value = false },
                     viewModel = viewModel
+                )
+            }
+            if (viewModel.showFilterBottomSheet.value) {
+                FilterBottomSheet(
+                    onDismiss = { viewModel.showFilterBottomSheet.value = false }
                 )
             }
         }
