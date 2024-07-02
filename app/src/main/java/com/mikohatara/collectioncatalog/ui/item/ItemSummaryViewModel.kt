@@ -24,15 +24,12 @@ class ItemSummaryViewModel @Inject constructor(
     private val plateRepository: PlateRepository
 ) : ViewModel() {
 
-    /*val plateNumber: String =
-        savedStateHandle[CollectionCatalogDestinationArgs.PLATE_NUMBER]!! //?
-    val numberVariant: String =
-        savedStateHandle[CollectionCatalogDestinationArgs.NUMBER_VARIANT]!!*/
-
-    val plateNumber: String =
+    private val plateNumber: String =
         savedStateHandle.get<String>(CollectionCatalogDestinationArgs.PLATE_NUMBER)!!
-    val numberVariant: String =
+        //savedStateHandle[CollectionCatalogDestinationArgs.PLATE_NUMBER]!!
+    private val numberVariant: String =
         savedStateHandle.get<String>(CollectionCatalogDestinationArgs.NUMBER_VARIANT)!!
+        //savedStateHandle[CollectionCatalogDestinationArgs.NUMBER_VARIANT]!!
 
     val uiState: StateFlow<ItemSummaryUiState> =
         plateRepository.getPlateStream(plateNumber, numberVariant)
@@ -51,10 +48,3 @@ class ItemSummaryViewModel @Inject constructor(
         private const val TIMEOUT_MILLIS = 5_000L
     }
 }
-
-/*
-sealed interface ItemSummaryScreenUiState {
-    object Loading : ItemScreenUiState
-    data class Error(val throwable: Throwable) : ItemScreenUiState
-    data class Success(val data: List<Plate>) : ItemScreenUiState
-}*/

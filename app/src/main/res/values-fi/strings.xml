@@ -37,4 +37,6 @@
     <string name="sort_by_country_desc">Valtio ja alue, laskeva</string>
     <string name="sort_by_country_and_type_asc">Valtio ja tyyppi, nouseva</string>
     <string name="sort_by_country_and_type_desc">Valtio ja tyyppi, laskeva</string>
+    <string name="reset">Nollaa</string>
+    <string name="filter_apply">Käytä</string>
 </resources>

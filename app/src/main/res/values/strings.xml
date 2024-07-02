@@ -37,4 +37,6 @@
     <string name="sort_by_country_desc">Country &amp; Region, descending</string>
     <string name="sort_by_country_and_type_asc">Country &amp; Type, ascending</string>
     <string name="sort_by_country_and_type_desc">Country &amp; Type, descending</string>
+    <string name="reset">Reset</string>
+    <string name="filter_apply">Apply</string>
 </resources>

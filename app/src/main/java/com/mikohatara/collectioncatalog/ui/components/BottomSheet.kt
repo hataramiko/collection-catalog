@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -117,6 +118,7 @@ fun FilterBottomSheet(
 ) {
     val filterOptions = listOf("Country, Region", "Type")
     val countries = viewModel.getCountries()
+    val types = viewModel.getTypes()
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() }
@@ -128,7 +130,12 @@ fun FilterBottomSheet(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
+            //CheckboxSubmenu()
             Column {
+                Text(
+                    stringResource(R.string.country),
+                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
+                )
                 countries.forEach { option ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -137,7 +144,7 @@ fun FilterBottomSheet(
                             .clickable { viewModel.toggleCountryFilter(option) }
                     ) {
                         Checkbox(
-                            checked = viewModel.uiState.value.countryFilter.any { it == option },
+                            checked = uiState.countryFilter.any { it == option },
                             onCheckedChange = null,
                             modifier = Modifier
                                 .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
@@ -145,6 +152,43 @@ fun FilterBottomSheet(
                         Text(option)
                     }
                 }
+                HorizontalDivider(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                )
+                Text(
+                    stringResource(R.string.type),
+                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
+                )
+                types.forEach { option ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.toggleTypeFilter(option) }
+                    ) {
+                        Checkbox(
+                            checked = uiState.typeFilter.any { it == option },
+                            onCheckedChange = null,
+                            modifier = Modifier
+                                .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
+                        )
+                        Text(option)
+                    }
+                }
+                /*HorizontalDivider(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                )
+                Text(
+                    stringResource(R.string.type),
+                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
+                )
+                FilterChip(
+                    selected = ,
+                    onClick = { /*TODO*/ },
+                    label = { Text("Keeper") }
+                )*/
             }
         }
         /*
@@ -179,7 +223,6 @@ fun FilterBottomSheet(
         }*/
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Row(
-            //horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
@@ -190,7 +233,7 @@ fun FilterBottomSheet(
                 modifier = Modifier
                     .weight(0.9f)
             ) {
-                Text(text = "Reset")
+                Text(stringResource(R.string.reset))
             }
             Spacer(modifier = Modifier.width(8.dp))
             Button(
@@ -198,7 +241,7 @@ fun FilterBottomSheet(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                Text(text = "Filter")
+                Text(stringResource(R.string.filter_apply))
             }
         }
     }
@@ -240,3 +283,25 @@ private fun Header(label: String, hasBackNavigation: Boolean) {
         )
     }
 }
+/*
+@Composable
+private fun CheckboxSubmenu(options: Set<String>) {
+    Column {
+        options.forEach { option ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { viewModel.toggleCountryFilter(option) }
+            ) {
+                Checkbox(
+                    checked = viewModel.uiState.value.countryFilter.any { it == option },
+                    onCheckedChange = null,
+                    modifier = Modifier
+                        .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
+                )
+                Text(option)
+            }
+        }
+    }
+}*/

@@ -7,12 +7,12 @@
     <string name="press_to_change_image">画像をタップして換える</string>
     <string name="add_item_title">新規作成</string>
     <string name="edit_item_title"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を編集</string>
-    <string name="save_added_item"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を保存</string>
+    <string name="save_added_item"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を作成</string>
     <string name="save_edited_item"><xliff:g name="item_title" example="ABC-123">%s</xliff:g> を保存</string>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
     <string name="delete">削除</string>
-    <string name="deletion_dialog">このアイテムを削除すると、元に戻せません。</string>
+    <string name="deletion_dialog">アイテムを削除すると、元に戻せません。</string>
     <string name="source">供給源</string>
     <string name="period">期間</string>
     <string name="year">暦年</string>
@@ -37,4 +37,6 @@
     <string name="sort_by_country_desc">国家も地域も降順</string>
     <string name="sort_by_country_and_type_asc">国家も種類も昇順</string>
     <string name="sort_by_country_and_type_desc">国家も種類も降順</string>
+    <string name="reset">リセット</string>
+    <string name="filter_apply">適用する</string>
 </resources>

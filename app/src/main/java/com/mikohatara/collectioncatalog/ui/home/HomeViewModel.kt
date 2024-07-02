@@ -21,6 +21,7 @@ data class HomeUiState(
     val items: List<Plate> = emptyList(),
     val sortBy: SortBy = SortBy.COUNTRY_ASC,
     val countryFilter: Set<String> = emptySet(),
+    val typeFilter: Set<String> = emptySet()
     //val filters: FilterData = FilterData()
     //val isLoading: Boolean = false
 )
@@ -56,6 +57,7 @@ class HomeViewModel @Inject constructor(
                 compareBy<Plate> { it.commonDetails.country }
                     .thenBy(nullsLast()) { it.commonDetails.region }
                     .thenBy(nullsLast()) { it.commonDetails.area }
+                    .thenBy { it.uniqueDetails.number }
             )
             SortBy.COUNTRY_DESC -> items.sortedWith(
                 compareByDescending<Plate> { it.commonDetails.country }
@@ -82,9 +84,13 @@ class HomeViewModel @Inject constructor(
         val items = _uiState.value.items
         val filteredItems = ArrayList<Plate>()
         val countryFilter = _uiState.value.countryFilter
+        val typeFilter = _uiState.value.typeFilter
 
         for (item in items) {
-            if (countryFilter.any { it == item.commonDetails.country }) {
+            if (
+                countryFilter.any { it == item.commonDetails.country } ||
+                typeFilter.any { it == item.commonDetails.type }
+            ) {
                 filteredItems.add(item)
             }
         }
@@ -101,6 +107,16 @@ class HomeViewModel @Inject constructor(
             filter + country
         }
         _uiState.update { it.copy(countryFilter = newFilter) }
+    }
+
+    fun toggleTypeFilter(type: String) = viewModelScope.launch {
+        val filter = _uiState.value.typeFilter
+        val newFilter: Set<String> = if (filter.any { it == type }) {
+            filter - type
+        } else {
+            filter + type
+        }
+        _uiState.update { it.copy(typeFilter = newFilter) }
     }
 
     fun resetFilter() {
@@ -144,5 +160,6 @@ enum class SortBy {
 }
 
 data class FilterData(
-    val country: Set<String> = emptySet()
+    val country: Set<String> = emptySet(),
+    val type: Set<String> = emptySet()
 )
