@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -12,11 +13,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class HomeUiState(
     val items: List<Plate> = emptyList(),
-    val sortBy: SortBy = SortBy.COUNTRY_ASC
+    val sortBy: SortBy = SortBy.COUNTRY_ASC,
+    val countryFilter: Set<String> = emptySet(),
+    //val filters: FilterData = FilterData()
     //val isLoading: Boolean = false
 )
 
@@ -73,50 +78,60 @@ class HomeViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(items = sortedItems, sortBy = sortBy)
     }
 
-    /*
-    private val _sortBy = MutableStateFlow(SortBy.COUNTRY_DESC)
-    val sortBy: StateFlow<SortBy> = _sortBy.asStateFlow()*/
+    fun setFilter() {
+        val items = _uiState.value.items
+        val filteredItems = ArrayList<Plate>()
+        val countryFilter = _uiState.value.countryFilter
 
+        for (item in items) {
+            if (countryFilter.any { it == item.commonDetails.country }) {
+                filteredItems.add(item)
+            }
+        }
+
+        _uiState.value = _uiState.value.copy(items = filteredItems)
+        setSortBy(uiState.value.sortBy)
+    }
+
+    fun toggleCountryFilter(country: String) = viewModelScope.launch {
+        val filter = _uiState.value.countryFilter
+        val newFilter: Set<String> = if (filter.any { it == country }) {
+            filter - country
+        } else {
+            filter + country
+        }
+        _uiState.update { it.copy(countryFilter = newFilter) }
+    }
+
+    fun resetFilter() {
+        _uiState.update { it.copy(countryFilter = emptySet()) }
+        setFilter()
+        getPlates()
+    }
+
+    fun getCountries(): List<String>/*Set<String>*/ {
+        val countries = uiState.value.items.map { it.commonDetails.country }.distinct()
+        return countries
+
+        //return uiState.value.items.map { it.commonDetails.country }.toSet()
+    }
+
+    fun getTypes(): Set<String> {
+        return uiState.value.items.map { it.commonDetails.type }.toSet()
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     /*
-    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<HomeUiState> =
         plateRepository.getAllPlatesByCountryAscStream()
-            //.map { HomeUiState(it) }
-            //.map { items -> HomeUiState(items.sortedBy { it.commonDetails.country }) }
-            .flatMapLatest { items ->
-                when (_sortBy.value) {
-                    SortBy.COUNTRY_ASC -> flowOf(HomeUiState(items.sortedBy {
-                        it.commonDetails.country
-                    }))
-                    SortBy.COUNTRY_DESC -> flowOf(HomeUiState(items.sortedByDescending {
-                        it.commonDetails.country
-                    }))
-                    SortBy.DATE_ASC -> flowOf(HomeUiState(items.sortedBy {
-                        it.uniqueDetails.date
-                    }))
-                    SortBy.DATE_DESC -> flowOf(HomeUiState(items.sortedByDescending {
-                        it.uniqueDetails.date
-                    }))
-                    else -> flowOf(HomeUiState(items))
-                }
-            }
+            .map { HomeUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = HomeUiState()
             )*/
-
-    /*
-    fun setSortBy(sortBy: SortBy) {
-        _sortBy.value = sortBy
-        Log.d("sort by; viewmodel", _sortBy.value.toString())
-        Log.d("uiState list setSortBy", uiState.value.toString())
-    }*/
-
-    /*
-    companion object {
-        private const val TIMEOUT_MILLIS = 5_000L
-    }*/
 }
 
 enum class SortBy {
@@ -127,3 +142,7 @@ enum class SortBy {
     DATE_NEWEST,
     DATE_OLDEST
 }
+
+data class FilterData(
+    val country: Set<String> = emptySet()
+)

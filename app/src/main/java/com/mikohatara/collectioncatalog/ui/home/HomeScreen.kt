@@ -50,6 +50,7 @@ fun HomeScreen(
 
     HomeScreenContent(
         itemList = uiState.items,
+        uiState = uiState,
         viewModel = viewModel,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
@@ -61,6 +62,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     itemList: List<Plate>,
+    uiState: HomeUiState,
     viewModel: HomeViewModel,
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
@@ -91,12 +93,15 @@ fun HomeScreenContent(
             if(viewModel.showSortByBottomSheet.value) {
                 SortByBottomSheet(
                     onDismiss = { viewModel.showSortByBottomSheet.value = false },
+                    uiState = uiState,
                     viewModel = viewModel
                 )
             }
             if (viewModel.showFilterBottomSheet.value) {
                 FilterBottomSheet(
-                    onDismiss = { viewModel.showFilterBottomSheet.value = false }
+                    onDismiss = { viewModel.showFilterBottomSheet.value = false },
+                    uiState = uiState,
+                    viewModel = viewModel
                 )
             }
         }
