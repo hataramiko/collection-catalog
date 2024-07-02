@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.home
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -21,7 +20,9 @@ data class HomeUiState(
     val items: List<Plate> = emptyList(),
     val sortBy: SortBy = SortBy.COUNTRY_ASC,
     val countryFilter: Set<String> = emptySet(),
-    val typeFilter: Set<String> = emptySet()
+    val typeFilter: Set<String> = emptySet(),
+    val isKeeperFilter: Boolean = false,
+    val isForTradeFilter: Boolean = false
     //val filters: FilterData = FilterData()
     //val isLoading: Boolean = false
 )
@@ -82,9 +83,25 @@ class HomeViewModel @Inject constructor(
 
     fun setFilter() {
         val items = _uiState.value.items
-        val filteredItems = ArrayList<Plate>()
+
         val countryFilter = _uiState.value.countryFilter
         val typeFilter = _uiState.value.typeFilter
+        val isKeeperFilter = _uiState.value.isKeeperFilter
+        val isForTradeFilter = _uiState.value.isForTradeFilter
+
+        val filteredItems = items.filter { item ->
+            val passCountryFilter = countryFilter.isEmpty()
+                    || countryFilter.any { it == item.commonDetails.country }
+            val passTypeFilter = typeFilter.isEmpty()
+                    || typeFilter.any { it == item.commonDetails.type }
+            val passIsKeeperFilter = !isKeeperFilter || item.grading.isKeeper
+            val passIsForTradeFilter = !isForTradeFilter || item.grading.isForTrade
+
+            passCountryFilter && passTypeFilter && passIsKeeperFilter && passIsForTradeFilter
+        }
+
+        /*
+        val filteredItems = ArrayList<Plate>()
 
         for (item in items) {
             if (
@@ -93,7 +110,10 @@ class HomeViewModel @Inject constructor(
             ) {
                 filteredItems.add(item)
             }
-        }
+            if (isKeeperFilter && item.grading.isKeeper) {
+                filteredItems.add(item)
+            }
+        }*/
 
         _uiState.value = _uiState.value.copy(items = filteredItems)
         setSortBy(uiState.value.sortBy)
@@ -119,8 +139,31 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(typeFilter = newFilter) }
     }
 
+    fun toggleIsKeeperFilter() = viewModelScope.launch {
+        val filter = if (!_uiState.value.isKeeperFilter) {
+            true
+        } else {
+            false
+        }
+        _uiState.update { it.copy(isKeeperFilter = filter) }
+    }
+
+    fun toggleIsForTradeFilter() = viewModelScope.launch {
+        val filter = if (!_uiState.value.isForTradeFilter) {
+            true
+        } else {
+            false
+        }
+        _uiState.update { it.copy(isForTradeFilter = filter) }
+    }
+
     fun resetFilter() {
-        _uiState.update { it.copy(countryFilter = emptySet()) }
+        _uiState.update { it.copy(
+            countryFilter = emptySet(),
+            typeFilter = emptySet(),
+            isKeeperFilter = false,
+            isForTradeFilter = false
+        ) }
         setFilter()
         getPlates()
     }
@@ -161,5 +204,7 @@ enum class SortBy {
 
 data class FilterData(
     val country: Set<String> = emptySet(),
-    val type: Set<String> = emptySet()
+    val type: Set<String> = emptySet(),
+    val isKeeper: Boolean = false,
+    val isForTrade: Boolean = false
 )

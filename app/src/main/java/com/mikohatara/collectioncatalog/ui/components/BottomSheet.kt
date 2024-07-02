@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -16,10 +17,12 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -176,19 +179,55 @@ fun FilterBottomSheet(
                         Text(option)
                     }
                 }
-                /*HorizontalDivider(modifier = Modifier
+                HorizontalDivider(modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
                 )
                 Text(
-                    stringResource(R.string.type),
-                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
+                    "Boolean",
+                    modifier = Modifier.padding(start = 32.dp, top = 12.dp)
                 )
-                FilterChip(
-                    selected = ,
-                    onClick = { /*TODO*/ },
-                    label = { Text("Keeper") }
-                )*/
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp, vertical = 8.dp)
+                ) {
+                    FilterChip(
+                        selected = uiState.isKeeperFilter,
+                        onClick = { viewModel.toggleIsKeeperFilter() },
+                        label = { Text("Keeper") },
+                        leadingIcon = if (uiState.isKeeperFilter) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Rounded.Done,
+                                    contentDescription = null
+                                )
+                            }
+                        } else {
+                            null
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    FilterChip(
+                        selected = uiState.isForTradeFilter,
+                        onClick = { viewModel.toggleIsForTradeFilter() },
+                        label = { Text("For trade") },
+                        leadingIcon = if (uiState.isForTradeFilter) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Rounded.Done,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        } else {
+                            null
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
             }
         }
         /*
