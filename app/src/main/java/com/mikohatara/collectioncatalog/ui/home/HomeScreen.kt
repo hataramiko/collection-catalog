@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -169,9 +170,13 @@ private fun TopRow(
         ) {
             Icon(
                 painter = painterResource(R.drawable.rounded_swap_vert),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.padding(end = 4.dp)
             )
-            Text(stringResource(R.string.sort_by))
+            Text(
+                stringResource(R.string.sort_by),
+                modifier = Modifier.padding(end = 4.dp)
+            )
         }
         Spacer(modifier = Modifier.width(8.dp))
         OutlinedButton(
@@ -180,9 +185,13 @@ private fun TopRow(
         ) {
             Icon(
                 painter = painterResource(R.drawable.rounded_filter),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.padding(end = 6.dp)
             )
-            Text(stringResource(R.string.filter))
+            Text(
+                stringResource(R.string.filter),
+                modifier = Modifier.padding(end = 4.dp)
+            )
         }
     }
     HorizontalDivider(

@@ -90,10 +90,10 @@ class HomeViewModel @Inject constructor(
         val isForTradeFilter = _uiState.value.isForTradeFilter
 
         val filteredItems = items.filter { item ->
-            val passCountryFilter = countryFilter.isEmpty()
-                    || countryFilter.any { it == item.commonDetails.country }
-            val passTypeFilter = typeFilter.isEmpty()
-                    || typeFilter.any { it == item.commonDetails.type }
+            val passCountryFilter = countryFilter.isEmpty() ||
+                    countryFilter.any { it == item.commonDetails.country }
+            val passTypeFilter = typeFilter.isEmpty() ||
+                    typeFilter.any { it == item.commonDetails.type }
             val passIsKeeperFilter = !isKeeperFilter || item.grading.isKeeper
             val passIsForTradeFilter = !isForTradeFilter || item.grading.isForTrade
 

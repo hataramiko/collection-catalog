@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -57,7 +58,12 @@ fun SortByBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onDismiss() }
     ) {
-        Header(stringResource(R.string.sort_by), false)
+        Header(
+            stringResource(R.string.sort_by),
+            false,
+            onReset = {},
+            false
+        )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Column(
             modifier = Modifier
@@ -126,7 +132,12 @@ fun FilterBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onDismiss() }
     ) {
-        Header(stringResource(R.string.filter), false)
+        Header(
+            stringResource(R.string.filter),
+            false,
+            onReset = { viewModel.resetFilter() },
+            true
+        )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Box(
             modifier = Modifier
@@ -157,7 +168,7 @@ fun FilterBottomSheet(
                 }
                 HorizontalDivider(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 8.dp)
                 )
                 Text(
                     stringResource(R.string.type),
@@ -181,7 +192,7 @@ fun FilterBottomSheet(
                 }
                 HorizontalDivider(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 8.dp)
                 )
                 Text(
                     "Boolean",
@@ -190,7 +201,7 @@ fun FilterBottomSheet(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 32.dp, vertical = 8.dp)
+                        .padding(start = 32.dp, end = 32.dp, top = 4.dp, bottom = 12.dp)
                 ) {
                     FilterChip(
                         selected = uiState.isKeeperFilter,
@@ -267,6 +278,7 @@ fun FilterBottomSheet(
                 .height(64.dp)
                 .padding(8.dp)
         ) {
+            /* TODO potentially replace the Reset button in the Header with this
             TextButton(
                 onClick = { viewModel.resetFilter() },
                 modifier = Modifier
@@ -274,9 +286,12 @@ fun FilterBottomSheet(
             ) {
                 Text(stringResource(R.string.reset))
             }
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))*/
             Button(
-                onClick = { viewModel.setFilter() },
+                onClick = {
+                    viewModel.setFilter()
+                    onDismiss()
+                },
                 modifier = Modifier
                     .weight(1f)
             ) {
@@ -287,7 +302,12 @@ fun FilterBottomSheet(
 }
 
 @Composable
-private fun Header(label: String, hasBackNavigation: Boolean) {
+private fun Header(
+    label: String,
+    hasBackNavigation: Boolean,
+    onReset: () -> Unit,
+    hasReset: Boolean
+) {
     if (hasBackNavigation) {
         Row(
             verticalAlignment = Alignment.Bottom,
@@ -312,6 +332,40 @@ private fun Header(label: String, hasBackNavigation: Boolean) {
                     .padding(start = 16.dp, bottom = 16.dp)
             )
         }
+    } else if (hasReset) {
+        Row(
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(
+                label,
+                fontSize = 20.sp,
+                modifier = Modifier
+                    //.fillMaxWidth()
+                    .padding(start = 34.dp, bottom = 16.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                onClick = { onReset() },
+                modifier = Modifier
+                    .absoluteOffset(y = (-5).dp)
+                    .padding(end = 8.dp)
+            ) {
+                //Spacer(modifier = Modifier.width(32.dp))
+                /*Icon(
+                    painter = painterResource(R.drawable.rounded_refresh),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .rotate(45f)
+                        .scale(scaleX = -1f, scaleY = 1f)
+                )*/
+                Text(
+                    stringResource(R.string.reset),
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+            }
+        }
     } else {
         Text(
             label,
@@ -322,6 +376,7 @@ private fun Header(label: String, hasBackNavigation: Boolean) {
         )
     }
 }
+
 /*
 @Composable
 private fun CheckboxSubmenu(options: Set<String>) {
