@@ -54,7 +54,6 @@ fun ItemSummaryScreen(
     val uiState: ItemSummaryUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val item: Plate = uiState.item!!
-    //Log.d("uiState item", item.toString())
 
     ItemSummaryScreenContent(
         item,

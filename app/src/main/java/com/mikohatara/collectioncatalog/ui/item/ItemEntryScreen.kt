@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -92,12 +93,99 @@ private fun EntryForm(
         stringResource(R.string.save_added_item, uiState.itemDetails.number)
     }
 
-    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+    ) {
         val imagePath: String? = pickItemImage(uiState.item?.uniqueDetails?.imagePath)
         val updateUiState: (ItemDetails) -> Unit = {
             onValueChange(uiState.itemDetails.copy(imagePath = imagePath))
         }
         updateUiState.invoke(uiState.itemDetails)
+
+        /*
+        EntryFormCard/*(uiState.itemDetails)*/ { //itemDetails ->
+            EntryFormField(
+                icon = { IconAbc123() },
+                label = stringResource(R.string.reg_no),
+                value = uiState.itemDetails.number,
+                onValueChange = { onValueChange(uiState.itemDetails.copy(number = it)) }
+            )
+            EntryFormField(
+                icon = { /*NULL*/ },
+                label = "Variant",
+                value = uiState.itemDetails.variant,
+                onValueChange = { onValueChange(uiState.itemDetails.copy(variant = it)) }
+            )
+            EntryFormField(
+                icon = { /*NULL*/ },
+                label = "imagePath debug",
+                value = uiState.itemDetails.imagePath.toString(),
+                onValueChange = { /*NULL*/ },
+                enabled = false,
+                singleLine = false
+            )
+        }
+
+        EntryFormCard {
+            EntryFormField(
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_globe),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                },
+                label = stringResource(R.string.country),
+                value = uiState.itemDetails.country,
+                onValueChange = { onValueChange(uiState.itemDetails.copy(country = it)) }
+            )
+            EntryFormField(
+                icon = { /*NULL*/ },
+                label = stringResource(R.string.region),
+                value = uiState.itemDetails.region ?: "",
+                onValueChange = { onValueChange(uiState.itemDetails.copy(region = it)) }
+            )
+            EntryFormField(
+                icon = { /*NULL*/ },
+                label = stringResource(R.string.area),
+                value = uiState.itemDetails.area ?: "",
+                onValueChange = { onValueChange(uiState.itemDetails.copy(area = it)) }
+            )
+            EntryFormField(
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_category),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                },
+                label = stringResource(R.string.type),
+                value = uiState.itemDetails.type,
+                onValueChange = { onValueChange(uiState.itemDetails.copy(type = it)) }
+            )
+            EntryFormField(
+                icon = { /*NULL*/ },
+                label = "",
+                value = "" ?: "",
+                onValueChange = {  }
+            )
+            EntryFormField(
+                icon = { /*NULL*/ },
+                label = "",
+                value = "" ?: "",
+                onValueChange = {  }
+            )
+        }
+
+        EntryFormCard {
+            EntryFormField(
+                icon = { /*NULL*/ },
+                label = "",
+                value = "" ?: "",
+                onValueChange = {  }
+            )
+        }*/
 
         Card(ItemScreenModifiers.card) {
             Column(ItemScreenModifiers.column) {
@@ -244,6 +332,7 @@ private fun EntryForm(
                             onValueChange(uiState.itemDetails.copy(period = it))
                         },
                         keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
                         ),
                         label = { Text(stringResource(R.string.period)) },
@@ -255,8 +344,8 @@ private fun EntryForm(
                     )
                     ItemEntryHorizontalSpacer()
                     OutlinedTextField(
-                        value = uiState.itemDetails.year.toString(),
-                        onValueChange = { // TODO handle null values in Int/Double fields
+                        value = uiState.itemDetails.year?.toString() ?: "",
+                        onValueChange = {
                             onValueChange(uiState.itemDetails.copy(year = it.toIntOrNull() ?: 0))
                         },
                         keyboardOptions = KeyboardOptions(
@@ -328,6 +417,7 @@ private fun EntryForm(
                             onValueChange(uiState.itemDetails.copy(date = it))
                         },
                         keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
                         ),
                         label = { Text(stringResource(R.string.date)) },
@@ -346,7 +436,7 @@ private fun EntryForm(
                         modifier = ItemScreenModifiers.icon
                     )
                     OutlinedTextField(
-                        value = uiState.itemDetails.cost.toString(),
+                        value = uiState.itemDetails.cost?.toString() ?: "",
                         onValueChange = {
                             onValueChange(uiState.itemDetails.copy(
                                 cost = it.toDoubleOrNull() ?: 0.0))
@@ -364,7 +454,7 @@ private fun EntryForm(
                     )
                     ItemEntryHorizontalSpacer()
                     OutlinedTextField(
-                        value = uiState.itemDetails.value.toString(),
+                        value = uiState.itemDetails.value?.toString() ?: "",
                         onValueChange = {
                             onValueChange(uiState.itemDetails.copy(
                                 value = it.toDoubleOrNull() ?: 0.0))
@@ -471,7 +561,7 @@ private fun EntryForm(
                         modifier = ItemScreenModifiers.icon
                     )
                     OutlinedTextField(
-                        value = uiState.itemDetails.width.toString(),
+                        value = uiState.itemDetails.width?.toString() ?: "",
                         onValueChange = {
                             onValueChange(uiState.itemDetails.copy(
                                 width = it.toDoubleOrNull() ?: 0.0))
@@ -489,8 +579,8 @@ private fun EntryForm(
                     )
                     ItemEntryHorizontalSpacer()
                     OutlinedTextField(
-                        value = uiState.itemDetails.height.toString(),
-                        onValueChange = { // TODO handle null values in Int/Double fields
+                        value = uiState.itemDetails.height?.toString() ?: "",
+                        onValueChange = {
                             onValueChange(uiState.itemDetails.copy(
                                 height = it.toDoubleOrNull() ?: 0.0))
                         },
@@ -507,8 +597,8 @@ private fun EntryForm(
                     )
                     ItemEntryHorizontalSpacer()
                     OutlinedTextField(
-                        value = uiState.itemDetails.weight.toString(),
-                        onValueChange = { // TODO handle null values in Int/Double fields
+                        value = uiState.itemDetails.weight?.toString() ?: "",
+                        onValueChange = {
                             onValueChange(uiState.itemDetails.copy(
                                 weight = it.toDoubleOrNull() ?: 0.0))
                         },
@@ -524,8 +614,6 @@ private fun EntryForm(
                         singleLine = true
                     )
                 }
-                // ImageWidthOffset
-                // MainColor & SecondaryColor
             }
         }
         
@@ -623,6 +711,7 @@ private fun EntryForm(
                 }
             }
         }
+
         Button(
             onClick = onSave,
             //enabled = uiState.hasValidEntry,
@@ -635,10 +724,50 @@ private fun EntryForm(
             } else {
                 painterResource(R.drawable.rounded_save)
             },
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
             )
             Text(saveButtonText)
         }
+    }
+}
+
+@Composable
+private fun EntryFormCard(
+    //itemDetails: ItemDetails,
+    content: @Composable (/*ItemDetails*/) -> Unit
+) {
+    Card(ItemScreenModifiers.card) {
+        Column(ItemScreenModifiers.column) {
+            content(/*itemDetails*/)
+        }
+    }
+}
+
+@Composable
+private fun EntryFormField(
+    icon: @Composable /*BoxScope.*/() -> Unit,
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    enabled: Boolean = true,
+    singleLine: Boolean = true
+) {
+    Row(
+
+    ) {
+        icon()
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            label = { Text(label) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            enabled = enabled,
+            singleLine = singleLine
+        )
     }
 }
 
