@@ -62,6 +62,11 @@ fun IconAbc123() {
     }
 }
 
+@Composable
+fun IconBlank() {
+    Box(modifier = ItemScreenModifiers.icon.width(24.dp))
+}
+
 data object ItemScreenModifiers {
     val card: Modifier = Modifier.padding(16.dp)
     val label: Modifier = Modifier.padding(start = 76.dp, top = 24.dp, bottom = 0.dp)
