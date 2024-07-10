@@ -12,10 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Done
@@ -125,7 +124,6 @@ fun FilterBottomSheet(
     uiState: HomeUiState,
     viewModel: HomeViewModel
 ) {
-    val filterOptions = listOf("Country, Region", "Type")
     val countries = viewModel.getCountries()
     val types = viewModel.getTypes()
 
@@ -142,103 +140,73 @@ fun FilterBottomSheet(
         Box(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
+                //.verticalScroll(rememberScrollState()) // if Column instead of LazyColumn
         ) {
-            //CheckboxSubmenu()
-            Column {
-                Text(
-                    stringResource(R.string.country),
-                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
-                )
-                countries.forEach { option ->
+            LazyColumn {
+                item {
+                    CheckboxList(
+                        label = stringResource(R.string.country),
+                        options = countries,
+                        activeFilters = uiState.countryFilter,
+                        onToggleFilter = { viewModel.toggleCountryFilter(it) }
+                    )
+                    FilterHorizontalDivider()
+                }
+                item {
+                    CheckboxList(
+                        label = stringResource(R.string.type),
+                        options = types,
+                        activeFilters = uiState.typeFilter,
+                        onToggleFilter = { viewModel.toggleTypeFilter(it) }
+                    )
+                    FilterHorizontalDivider()
+                }
+                item {
+                    Text(
+                        "Boolean",
+                        modifier = Modifier.padding(start = 32.dp, top = 12.dp)
+                    )
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { viewModel.toggleCountryFilter(option) }
+                            .padding(start = 32.dp, end = 32.dp, top = 4.dp, bottom = 12.dp)
                     ) {
-                        Checkbox(
-                            checked = uiState.countryFilter.any { it == option },
-                            onCheckedChange = null,
-                            modifier = Modifier
-                                .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
+                        FilterChip(
+                            selected = uiState.isKeeperFilter,
+                            onClick = { viewModel.toggleIsKeeperFilter() },
+                            label = { Text("Keeper") },
+                            leadingIcon = if (uiState.isKeeperFilter) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Done,
+                                        contentDescription = null
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                            modifier = Modifier.weight(1f)
                         )
-                        Text(option)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        FilterChip(
+                            selected = uiState.isForTradeFilter,
+                            onClick = { viewModel.toggleIsForTradeFilter() },
+                            label = { Text("For trade") },
+                            leadingIcon = if (uiState.isForTradeFilter) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Done,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
-                HorizontalDivider(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 8.dp)
-                )
-                Text(
-                    stringResource(R.string.type),
-                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
-                )
-                types.forEach { option ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { viewModel.toggleTypeFilter(option) }
-                    ) {
-                        Checkbox(
-                            checked = uiState.typeFilter.any { it == option },
-                            onCheckedChange = null,
-                            modifier = Modifier
-                                .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
-                        )
-                        Text(option)
-                    }
-                }
-                HorizontalDivider(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 8.dp)
-                )
-                Text(
-                    "Boolean",
-                    modifier = Modifier.padding(start = 32.dp, top = 12.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 32.dp, end = 32.dp, top = 4.dp, bottom = 12.dp)
-                ) {
-                    FilterChip(
-                        selected = uiState.isKeeperFilter,
-                        onClick = { viewModel.toggleIsKeeperFilter() },
-                        label = { Text("Keeper") },
-                        leadingIcon = if (uiState.isKeeperFilter) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Rounded.Done,
-                                    contentDescription = null
-                                )
-                            }
-                        } else {
-                            null
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    FilterChip(
-                        selected = uiState.isForTradeFilter,
-                        onClick = { viewModel.toggleIsForTradeFilter() },
-                        label = { Text("For trade") },
-                        leadingIcon = if (uiState.isForTradeFilter) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Rounded.Done,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                )
-                            }
-                        } else {
-                            null
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
             }
         }
         /*
@@ -375,6 +343,46 @@ private fun Header(
                 .padding(start = 34.dp, bottom = 16.dp)
         )
     }
+}
+
+@Composable
+private fun CheckboxList(
+    label: String,
+    options: Set<String>,
+    activeFilters: Set<String>,
+    onToggleFilter: (String) -> Unit
+) {
+    Text(
+        label,
+        modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
+    )
+    options.forEach { option ->
+        val onClick = remember { Modifier.clickable { onToggleFilter(option) } }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(onClick)
+        ) {
+            Checkbox(
+                checked = activeFilters.any { it == option },
+                onCheckedChange = null,
+                modifier = Modifier
+                    .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
+            )
+            Text(option)
+        }
+    }
+}
+
+@Composable
+private fun FilterHorizontalDivider() {
+    HorizontalDivider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 8.dp)
+    )
 }
 
 /*

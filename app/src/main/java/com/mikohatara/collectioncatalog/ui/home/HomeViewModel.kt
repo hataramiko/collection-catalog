@@ -100,21 +100,6 @@ class HomeViewModel @Inject constructor(
             passCountryFilter && passTypeFilter && passIsKeeperFilter && passIsForTradeFilter
         }
 
-        /*
-        val filteredItems = ArrayList<Plate>()
-
-        for (item in items) {
-            if (
-                countryFilter.any { it == item.commonDetails.country } ||
-                typeFilter.any { it == item.commonDetails.type }
-            ) {
-                filteredItems.add(item)
-            }
-            if (isKeeperFilter && item.grading.isKeeper) {
-                filteredItems.add(item)
-            }
-        }*/
-
         _uiState.value = _uiState.value.copy(items = filteredItems)
         setSortBy(uiState.value.sortBy)
     }
@@ -168,29 +153,16 @@ class HomeViewModel @Inject constructor(
         getPlates()
     }
 
-    fun getCountries(): List<String>/*Set<String>*/ {
-        val countries = uiState.value.items.map { it.commonDetails.country }.distinct()
-        return countries
+    fun getCountries(): Set<String>/*List<String>*/ {
+        return uiState.value.items.map { it.commonDetails.country }.toSet()
 
-        //return uiState.value.items.map { it.commonDetails.country }.toSet()
+        /*val countries = uiState.value.items.map { it.commonDetails.country }.distinct()
+        return countries*/
     }
 
     fun getTypes(): Set<String> {
         return uiState.value.items.map { it.commonDetails.type }.toSet()
     }
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    /*
-    val uiState: StateFlow<HomeUiState> =
-        plateRepository.getAllPlatesByCountryAscStream()
-            .map { HomeUiState(it) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = HomeUiState()
-            )*/
 }
 
 enum class SortBy {

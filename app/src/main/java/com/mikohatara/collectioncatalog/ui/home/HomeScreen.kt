@@ -140,7 +140,9 @@ fun HomeBody(
             }
             Log.d("itemList is empty", itemList.toString())
         } else {
-            items(itemList) { item ->
+            items(items = itemList, key = {
+                it.uniqueDetails.number + it.uniqueDetails.variant
+            }) { item ->
                 ItemCard(
                     item = item,
                     maxWidth = maxWidth
