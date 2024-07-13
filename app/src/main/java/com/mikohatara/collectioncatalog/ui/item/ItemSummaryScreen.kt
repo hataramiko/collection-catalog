@@ -2,18 +2,14 @@ package com.mikohatara.collectioncatalog.ui.item
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -84,31 +79,22 @@ fun ItemSummaryScreenContent(
             item,
             onBack,
             onEdit,
-            onDelete = { showDeletionDialog = true
-                /*coroutineScope.launch {
-                    viewModel.deleteItem()
-                    onBack()
-                }*/
-            }
+            onDelete = { showDeletionDialog = true }
         ) },
         content = { innerPadding ->
-            ItemInformation(
+            ItemSummary(
                 item = item,
                 onInspectImage = { isInspectingImage = true },
-                modifier = modifier
-                    .padding(innerPadding)
-                    //.verticalScroll(rememberScrollState())
+                modifier = modifier.padding(innerPadding)
             )
         }
     )
-
     if (isInspectingImage) {
         InspectItemImage(
             imagePath = item.uniqueDetails.imagePath,
             onBack = { isInspectingImage = false }
         )
     }
-
     if (showDeletionDialog) {
         DeletionDialog(
             onConfirm = {
@@ -123,16 +109,8 @@ fun ItemSummaryScreenContent(
     }
 }
 
-/*
-    TODO come up with a dynamic way to display data entries in relation to their neighbors
-
-    The commented out sections don't ensure that the icons come properly aligned.
-    The if else if else if else mess works for now as an "easy" placeholder replacement in
-    that regard, but is a pain to read and maintain. Replace with a proper solution
-*/
-
 @Composable
-private fun ItemInformation(
+private fun ItemSummary(
     item: Plate,
     onInspectImage: () -> Unit,
     modifier: Modifier = Modifier
@@ -141,606 +119,123 @@ private fun ItemInformation(
         ItemImage(item.uniqueDetails.imagePath, onInspectImage)
         ItemSummaryVerticalSpacer(true)
 
-        Card(ItemScreenModifiers.card) {
-            ItemSummaryVerticalSpacer(false)
+        ItemSummarySection(
+            item = item,
+            SectionType.COMMON_DETAILS,
+            sectionDetails = listOf(
+                item.commonDetails.country,
+                item.commonDetails.region,
+                item.commonDetails.area,
+                item.commonDetails.type,
+                item.commonDetails.period,
+                item.commonDetails.year
+            )
+        )
+        ItemSummarySection(
+            item = item,
+            SectionType.UNIQUE_DETAILS,
+            sectionDetails = listOf(
+                item.uniqueDetails.notes,
+                item.uniqueDetails.vehicle,
+                item.uniqueDetails.date,
+                item.uniqueDetails.cost,
+                item.uniqueDetails.value,
+                item.uniqueDetails.status,
+                item.grading.isKeeper,
+                item.grading.isForTrade
+            )
+        )
+        ItemSummarySection(
+            item = item,
+            SectionType.PHYSICAL_ATTRIBUTES,
+            sectionDetails = listOf(
+                item.measurements.width,
+                item.measurements.height,
+                item.measurements.weight
+            )
+        )
+        ItemSummarySection(
+            item = item,
+            SectionType.SOURCE_INFO,
+            sectionDetails = listOf(
+                item.source.sourceName,
+                item.source.sourceAlias,
+                item.source.sourceType,
+                item.source.sourceDetails,
+                item.source.sourceCountry
+            )
+        )
+    }
+}
 
-            Row(ItemScreenModifiers.row) {
-                Column {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_globe),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                }
-                Card(
-                    colors = CardDefaults.cardColors
-                        (containerColor = Color(0, 0, 0, 15)),
-                ) {
-                    StaticTextField(
-                        label = stringResource(R.string.country),
-                        value = item.commonDetails.country,
-                        modifier = Modifier
-                    )
-                    item.commonDetails.region?.let {
-                        StaticTextField(
-                            label = stringResource(R.string.region),
-                            value = it,
-                            modifier = Modifier
-                        )
-                    }
-                    item.commonDetails.area?.let {
-                        StaticTextField(
-                            label = stringResource(R.string.area),
-                            value = it,
-                            modifier = Modifier
-                        )
-                    }
-                }
-            }
-
-            Column(ItemScreenModifiers.row) {
-                Row {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_category),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                    Card(
-                        shape = if(
-                            item.commonDetails.period != null || item.commonDetails.year != null
-                        ) {
-                            RoundedCornerShape(
-                                topStart = 12.dp,
-                                topEnd = 12.dp,
-                                bottomStart = 0.dp,
-                                bottomEnd = 0.dp
-                            )
-                        } else {
-                            CardDefaults.shape
-                        },
-                        colors = CardDefaults.cardColors
-                            (containerColor = Color(0, 0, 0, 15))
-                    ) {
-                        StaticTextField(
-                            label = stringResource(R.string.type),
-                            value = item.commonDetails.type,
-                            modifier = Modifier
-                        )
-                    }
-                }
-                if(item.commonDetails.period != null || item.commonDetails.year != null) {
-                    Row {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_date_range),
-                            contentDescription = null,
-                            modifier = ItemScreenModifiers.icon
-                        )
-                        Card(
-                            shape = RoundedCornerShape(
-                                topStart = 0.dp,
-                                topEnd = 0.dp,
-                                bottomStart = 12.dp,
-                                bottomEnd = 12.dp
-                            ),
-                            colors = CardDefaults.cardColors
-                                (containerColor = Color(0, 0, 0, 15))
-                        ) {
-                            ItemSummaryHorizontalDivider()
-                            Row {
-                                item.commonDetails.period?.let {
-                                    StaticTextField(
-                                        label = stringResource(R.string.period),
-                                        value = it,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-                                item.commonDetails.year?.let {
-                                    StaticTextField(
-                                        label = stringResource(R.string.year),
-                                        value = it.toString(),
-                                        modifier = Modifier.weight(0.5f)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            /*
-            Row(ItemScreenModifiers.row) {
-                Column {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_category),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                    if(item.commonDetails.period != null || item.commonDetails.year != null) {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_date_range),
-                            contentDescription = null,
-                            modifier = ItemScreenModifiers.icon
-                        )
-                    }
-                }
-                Card(
-                    colors = CardDefaults.cardColors
-                        (containerColor = Color(0, 0, 0, 15))
-                ) {
-                    StaticTextField(
-                        label = stringResource(R.string.type),
-                        value = item.commonDetails.type,
-                        modifier = Modifier
-                    )
-                    if(item.commonDetails.period != null || item.commonDetails.year != null) {
-                        ItemSummaryHorizontalDivider()
-                        Row {
-                            item.commonDetails.period?.let {
-                                StaticTextField(
-                                    label = stringResource(R.string.period),
-                                    value = it,
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            item.commonDetails.year?.let {
-                                StaticTextField(
-                                    label = stringResource(R.string.year),
-                                    value = it.toString(),
-                                    modifier = Modifier.weight(0.5f)
-                                )
-                            }
-                        }
-                    }
-                }
-            }*/
-            ItemSummaryVerticalSpacer(true)
-        }
-
-        if(
-            item.uniqueDetails.notes != null ||
-            item.uniqueDetails.vehicle != null ||
-            item.uniqueDetails.date != null ||
-            item.uniqueDetails.cost != null ||
-            item.uniqueDetails.value != null ||
-            item.uniqueDetails.status != null
-        ) {
-            Card(ItemScreenModifiers.card) {
-                ItemSummaryVerticalSpacer(false)
-
-                if(item.uniqueDetails.notes != null || item.uniqueDetails.vehicle != null) {
-                    Row(ItemScreenModifiers.row) {
-                        Column {
-                            Icon(
-                                painter = painterResource(R.drawable.rounded_note_stack),
-                                contentDescription = null,
-                                modifier = ItemScreenModifiers.icon
-                            )
-                        }
-                        Card(
-                            colors = CardDefaults.cardColors
-                                (containerColor = Color(0, 0, 0, 15)),
-                        ) {
-                            item.uniqueDetails.notes?.let {
-                                StaticTextField(
-                                    label = "Notes",
-                                    value = it,
-                                    modifier = Modifier
-                                )
-                            }
-                            item.uniqueDetails.vehicle?.let {
-                                StaticTextField(
-                                    label = "Vehicle",
-                                    value = it,
-                                    modifier = Modifier
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if(
-                    item.uniqueDetails.date != null ||
-                    item.uniqueDetails.cost != null ||
-                    item.uniqueDetails.value != null ||
-                    item.uniqueDetails.status != null
-                ) {
-                    Column(ItemScreenModifiers.row) {
-                        item.uniqueDetails.date?.let {
-                            Row {
-                                Icon(
-                                    painter = painterResource(R.drawable.rounded_event),
-                                    contentDescription = null,
-                                    modifier = ItemScreenModifiers.icon
-                                )
-                                Card(
-                                    shape = if(
-                                        item.uniqueDetails.cost != null ||
-                                        item.uniqueDetails.value != null ||
-                                        item.uniqueDetails.status != null
-                                    ) {
-                                        RoundedCornerShape(
-                                            topStart = 12.dp,
-                                            topEnd = 12.dp,
-                                            bottomStart = 0.dp,
-                                            bottomEnd = 0.dp
-                                        )
-                                    } else {
-                                        CardDefaults.shape
-                                    },
-                                    colors = CardDefaults.cardColors
-                                        (containerColor = Color(0, 0, 0, 15)),
-                                ) {
-                                    StaticTextField(
-                                        label = stringResource(R.string.date),
-                                        value = it,
-                                        modifier = Modifier
-                                    )
-                                }
-                            }
-                        }
-                        if(
-                            item.uniqueDetails.cost != null ||
-                            item.uniqueDetails.value != null
-                        ) {
-                            Row {
-                                Icon(
-                                    painter = painterResource(R.drawable.rounded_payments),
-                                    contentDescription = null,
-                                    modifier = ItemScreenModifiers.icon
-                                )
-                                Card(
-                                    shape = if(
-                                        item.uniqueDetails.date != null &&
-                                        item.uniqueDetails.status != null
-                                    ) {
-                                        RoundedCornerShape(0.dp)
-                                    } else if(
-                                        item.uniqueDetails.date != null &&
-                                        item.uniqueDetails.status == null
-                                    ) {
-                                        RoundedCornerShape(
-                                            topStart = 0.dp,
-                                            topEnd = 0.dp,
-                                            bottomStart = 12.dp,
-                                            bottomEnd = 12.dp
-                                        )
-                                    } else if(
-                                        item.uniqueDetails.date == null &&
-                                        item.uniqueDetails.status != null
-                                    ) {
-                                        RoundedCornerShape(
-                                            topStart = 12.dp,
-                                            topEnd = 12.dp,
-                                            bottomStart = 0.dp,
-                                            bottomEnd = 0.dp
-                                        )
-                                    } else {
-                                        CardDefaults.shape
-                                    },
-                                    colors = CardDefaults.cardColors
-                                        (containerColor = Color(0, 0, 0, 15)),
-                                ) {
-                                    if(item.uniqueDetails.date != null) {
-                                        ItemSummaryHorizontalDivider()
-                                    }
-                                    Row {
-                                        item.uniqueDetails.cost?.let {
-                                            StaticTextField(
-                                                label = stringResource(R.string.cost),
-                                                value = it.toString(),
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                        }
-                                        item.uniqueDetails.value?.let {
-                                            StaticTextField(
-                                                label = stringResource(R.string.value),
-                                                value = it.toString(),
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        item.uniqueDetails.status?.let {
-                            Row {
-                                Icon(
-                                    painter = painterResource(R.drawable.rounded_info),
-                                    contentDescription = null,
-                                    modifier = ItemScreenModifiers.icon
-                                )
-                                Card(
-                                    shape = if(
-                                        item.uniqueDetails.date != null ||
-                                        item.uniqueDetails.cost != null ||
-                                        item.uniqueDetails.value != null
-                                    ) {
-                                        RoundedCornerShape(
-                                            topStart = 0.dp,
-                                            topEnd = 0.dp,
-                                            bottomStart = 12.dp,
-                                            bottomEnd = 12.dp
-                                        )
-                                    } else {
-                                        CardDefaults.shape
-                                    },
-                                    colors = CardDefaults.cardColors
-                                        (containerColor = Color(0, 0, 0, 15)),
-                                ) {
-                                    if(
-                                        item.uniqueDetails.date != null ||
-                                        item.uniqueDetails.cost != null ||
-                                        item.uniqueDetails.value != null
-                                    ) {
-                                        ItemSummaryHorizontalDivider()
-                                    }
-                                    StaticTextField(
-                                        label = "Status",
-                                        value = it,
-                                        modifier = Modifier
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    /*
-                    Row(ItemScreenModifiers.row) {
-                        Column {
-                            if(item.uniqueDetails.date != null) {
-                                Icon(
-                                    painter = painterResource(R.drawable.rounded_event),
-                                    contentDescription = null,
-                                    modifier = ItemScreenModifiers.icon
-                                )
-                            }
-                            if(item.uniqueDetails.cost != null ||
-                                item.uniqueDetails.value != null
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.rounded_payments),
-                                    contentDescription = null,
-                                    modifier = ItemScreenModifiers.icon
-                                )
-                            }
-                            if(item.uniqueDetails.status != null) {
-                                Icon(
-                                    painter = painterResource(R.drawable.rounded_info),
-                                    contentDescription = null,
-                                    modifier = ItemScreenModifiers.icon
-                                )
-                            }
-                        }
-                        Card(
-                            colors = CardDefaults.cardColors
-                                (containerColor = Color(0, 0, 0, 15)),
-                        ) {
-                            item.uniqueDetails.date?.let {
-                                StaticTextField(
-                                    label = stringResource(R.string.date),
-                                    value = it,
-                                    modifier = Modifier
-                                )
-                            }
-                            if(
-                                item.uniqueDetails.cost != null ||
-                                item.uniqueDetails.value != null &&
-                                item.uniqueDetails.date != null
-                            ) {
-                                ItemSummaryHorizontalDivider()
-                            }
-                            Row {
-                                item.uniqueDetails.cost?.let {
-                                    StaticTextField(
-                                        label = "Cost",
-                                        value = it.toString(),
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-                                item.uniqueDetails.value?.let {
-                                    StaticTextField(
-                                        label = stringResource(R.string.value),
-                                        value = it.toString(),
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
-                            }
-                            item.uniqueDetails.status?.let {
-                                if(
-                                    item.uniqueDetails.date != null ||
-                                    item.uniqueDetails.cost != null ||
-                                    item.uniqueDetails.value != null
-                                ) {
-                                    ItemSummaryHorizontalDivider()
-                                }
-                                StaticTextField(
-                                    label = "Status",
-                                    value = it,
-                                    modifier = Modifier
-                                )
-                            }
-                        }
-                    }*/
-                }
-                ItemSummaryVerticalSpacer(true)
-            }
-        }
-
-        Card(ItemScreenModifiers.card) {
-            ItemSummaryVerticalSpacer(false)
-
-            Row(ItemScreenModifiers.row) {
-                Column {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_stars_layered),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                }
-                Card(
-                    colors = CardDefaults.cardColors
-                        (containerColor = Color(0, 0, 0, 15)),
-                ) {
-                    item.grading.condition?.let {
-                        StaticTextField(
-                            label = "Condition",
-                            value = it,
-                            modifier = Modifier
-                        )
-                    }
-                    StaticSwitch("Keeper", item.grading.isKeeper)
-                    StaticSwitch("For Trade", item.grading.isForTrade)
-                }
-            }
-            ItemSummaryVerticalSpacer(true)
-        }
-
-        if(
-            item.measurements.width != null ||
-            item.measurements.height != null ||
-            item.measurements.weight != null
-        ) {
-            Card(ItemScreenModifiers.card) {
-                ItemSummaryVerticalSpacer(false)
-
-                Row(ItemScreenModifiers.row) {
-                    Column {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_ruler),
-                            contentDescription = null,
-                            modifier = ItemScreenModifiers.icon
-                        )
-                    }
-                    Card(
-                        colors = CardDefaults.cardColors
-                            (containerColor = Color(0, 0, 0, 15)),
-                    ) {
-                        Row {
-                            item.measurements.width?.let {
-                                StaticTextField(
-                                    label = "Width",
-                                    value = it.toString(),
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            item.measurements.height?.let {
-                                StaticTextField(
-                                    label = "Height",
-                                    value = it.toString(),
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            item.measurements.weight?.let {
-                                StaticTextField(
-                                    label = "Weight",
-                                    value = it.toString(),
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                        }
-                    }
-                }
-                ItemSummaryVerticalSpacer(true)
-            }
-        }
-
-        if(
-            item.source.sourceName != null ||
-            item.source.sourceAlias != null ||
-            item.source.sourceType != null ||
-            item.source.sourceDetails != null ||
-            item.source.sourceCountry != null
-        ) {
-            Card(ItemScreenModifiers.card) {
-                ItemSummaryVerticalSpacer(false)
-
-                Row(ItemScreenModifiers.row) {
-                    Column {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_person_pin_circle),
-                            contentDescription = null,
-                            modifier = ItemScreenModifiers.icon
-                        )
-                    }
-                    Card(
-                        colors = CardDefaults.cardColors
-                            (containerColor = Color(0, 0, 0, 15)),
-                    ) {
-                        item.source.sourceName?.let {
-                            StaticTextField(
-                                label = "Source Name",
-                                value = it,
-                                modifier = Modifier
-                            )
-                        }
-                        item.source.sourceAlias?.let {
-                            StaticTextField(
-                                label = "Source Alias",
-                                value = it,
-                                modifier = Modifier
-                            )
-                        }
-                        if(
-                            item.source.sourceName != null ||
-                            item.source.sourceAlias != null &&
-                            item.source.sourceType != null ||
-                            item.source.sourceDetails != null ||
-                            item.source.sourceCountry != null
-                        ) {
-                            //ItemSummaryHorizontalDivider()
-                            HorizontalDivider(Modifier.padding(start = 8.dp, end = 16.dp))
-                        }
-                        item.source.sourceType?.let {
-                            StaticTextField(
-                                label = "Source Type",
-                                value = it,
-                                modifier = Modifier
-                            )
-                        }
-                        item.source.sourceDetails?.let {
-                            StaticTextField(
-                                label = "Source Details",
-                                value = it,
-                                modifier = Modifier
-                            )
-                        }
-                        item.source.sourceCountry?.let {
-                            if(
-                                item.source.sourceName != null ||
-                                item.source.sourceAlias != null ||
-                                item.source.sourceType != null ||
-                                item.source.sourceDetails != null
-                            ) {
-                                //ItemSummaryHorizontalDivider()
-                                HorizontalDivider(Modifier.padding(start = 8.dp, end = 16.dp))
-                            }
-                            StaticTextField(
-                                label = "Source Country",
-                                value = it,
-                                modifier = Modifier
-                            )
-                        }
-                    }
-                }
-                ItemSummaryVerticalSpacer(true)
+@Composable
+private fun ItemSummarySection(
+    item: Plate,
+    sectionType: SectionType,
+    sectionDetails: List<Any?>
+) {
+    if (sectionDetails.any { it !is Boolean && it != null || it is Boolean && it != false }) {
+        SummaryCard {
+            when (sectionType) {
+                SectionType.COMMON_DETAILS -> CommonDetailsCard(item)
+                SectionType.UNIQUE_DETAILS -> UniqueDetailsCard(item)
+                SectionType.PHYSICAL_ATTRIBUTES -> PhysicalAttributesCard(item)
+                SectionType.SOURCE_INFO -> SourceInfoCard(item)
             }
         }
     }
 }
 
 @Composable
-private fun StaticTextField(label: String, value: String, modifier: Modifier) {
+private fun SummaryCard(
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun SummaryCardSection(
+    icon: @Composable (() -> Unit)?,
+    content: @Composable () -> Unit
+) {
+    Row {
+        icon?.invoke()
+        Card(
+            modifier = Modifier
+                .padding(top = 8.dp, end = 16.dp, bottom = 8.dp),
+            colors = CardDefaults
+                .cardColors(containerColor = Color(0, 0, 0, 25))
+        ) {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun ItemInfoField(
+    label: String?,
+    value: String,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        Text(
-            label,
-            color = Color(0, 0, 0, 128),
-            fontSize = 12.sp,
-            modifier = Modifier
-                .padding(start = 8.dp)
-        )
+        label?.let {
+            Text(
+                label,
+                color = Color(0, 0, 0, 128),
+                fontSize = 12.sp,
+                modifier = Modifier
+                    .padding(start = 8.dp)
+            )
+        }
         Text(
             value,
             modifier = Modifier
@@ -750,37 +245,283 @@ private fun StaticTextField(label: String, value: String, modifier: Modifier) {
 }
 
 @Composable
-private fun StaticSwitch(label: String, value: Boolean) {
-    Row {
-        Text(
-            label,
-            color = Color(0, 0, 0, 128),
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .align(Alignment.CenterVertically)
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Switch(
-            checked = value,
-            onCheckedChange = {  },
-            enabled = false,
-            modifier = Modifier.padding(end = 8.dp)
-        )
+private fun CommonDetailsCard(
+    item: Plate
+) {
+    val countryRegionArea = listOf(
+        item.commonDetails.country,
+        item.commonDetails.region,
+        item.commonDetails.area
+    )
+
+    if (countryRegionArea.any { it != null }) {
+        SummaryCardSection(
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_globe),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+            }
+        ) {
+            item.commonDetails.country?.let {
+                ItemInfoField(
+                    label = stringResource(R.string.country),
+                    value = it
+                )
+            }
+            item.commonDetails.region?.let {
+                ItemInfoField(
+                    label = stringResource(R.string.region),
+                    value = it
+                )
+            }
+            item.commonDetails.area?.let {
+                ItemInfoField(
+                    label = stringResource(R.string.area),
+                    value = it
+                )
+            }
+        }
+    }
+    if (item.commonDetails.type != null) {
+        SummaryCardSection(
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_category),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+            }
+        ) {
+            item.commonDetails.type?.let {
+                ItemInfoField(
+                    label = stringResource(R.string.type),
+                    value = it
+                )
+            }
+        }
+    }
+    if (item.commonDetails.period != null || item.commonDetails.year != null) {
+        SummaryCardSection(
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_date_range),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+            }
+        ) {
+            Row {
+                item.commonDetails.period?.let {
+                    ItemInfoField(
+                        label = stringResource(R.string.period),
+                        value = it,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                item.commonDetails.year?.let {
+                    ItemInfoField(
+                        label = stringResource(R.string.year),
+                        value = it.toString(),
+                        modifier = Modifier.weight(0.8f)
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun ItemSummaryHorizontalDivider() {
-    HorizontalDivider(
-        color = Color(0, 0, 0, 128),
-        modifier = Modifier.padding(start = 8.dp, end = 16.dp)
-    )
+private fun UniqueDetailsCard(
+    item: Plate
+) {
+    if (item.uniqueDetails.notes != null || item.uniqueDetails.vehicle != null) {
+        SummaryCardSection(
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_note_stack),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+            }
+        ) {
+            item.uniqueDetails.notes?.let {
+                ItemInfoField(
+                    label = "Notes",
+                    value = it
+                )
+            }
+            item.uniqueDetails.vehicle?.let {
+                ItemInfoField(
+                    label = "Vehicle",
+                    value = it
+                )
+            }
+        }
+    }
+    if (item.uniqueDetails.date != null) {
+        SummaryCardSection(
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_event),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+            }
+        ) {
+            item.uniqueDetails.date?.let {
+                ItemInfoField(
+                    label = stringResource(R.string.date),
+                    value = it
+                )
+            }
+        }
+    }
+    if (item.uniqueDetails.cost != null || item.uniqueDetails.value != null) {
+        SummaryCardSection(
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_payments),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+            }
+        ) {
+            Row {
+                item.uniqueDetails.cost?.let {
+                    ItemInfoField(
+                        label = stringResource(R.string.cost),
+                        value = it.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                item.uniqueDetails.value?.let {
+                    ItemInfoField(
+                        label = stringResource(R.string.value),
+                        value = it.toString(),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    }
+    if (item.uniqueDetails.status != null) {
+        SummaryCardSection(
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_pin_dist),
+                    contentDescription = null,
+                    modifier = ItemScreenModifiers.icon
+                )
+            }
+        ) {
+            item.uniqueDetails.status?.let {
+                ItemInfoField(
+                    label = "Status",
+                    value = it
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PhysicalAttributesCard(
+    item: Plate
+) {
+    SummaryCardSection(
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.rounded_ruler),
+                contentDescription = null,
+                modifier = ItemScreenModifiers.icon
+            )
+        }
+    ) {
+        Row {
+            item.measurements.width?.let {
+                ItemInfoField(
+                    label = "Width",
+                    value = it.toString(),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            item.measurements.height?.let {
+                ItemInfoField(
+                    label = "Height",
+                    value = it.toString(),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            item.measurements.weight?.let {
+                ItemInfoField(
+                    label = "Weight",
+                    value = it.toString(),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SourceInfoCard(
+    item: Plate
+) {
+    SummaryCardSection(
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.rounded_person_pin_circle),
+                contentDescription = null,
+                modifier = ItemScreenModifiers.icon
+            )
+        }
+    ) {
+        item.source.sourceName?.let {
+            ItemInfoField(
+                label = "Source Name",
+                value = it
+            )
+        }
+        item.source.sourceAlias?.let {
+            ItemInfoField(
+                label = "Source Alias",
+                value = it
+            )
+        }
+        item.source.sourceType?.let {
+            ItemInfoField(
+                label = "Source Type",
+                value = it
+            )
+        }
+        item.source.sourceDetails?.let {
+            ItemInfoField(
+                label = "Source Details",
+                value = it
+            )
+        }
+        item.source.sourceCountry?.let {
+            ItemInfoField(
+                label = "Source Country",
+                value = it
+            )
+        }
+    }
 }
 
 @Preview
 @Composable
 fun ItemSummaryScreenPreview() {
     CollectionCatalogTheme {
-        ItemInformation(item = samplePlates[6], onInspectImage = {})
+        ItemSummary(item = samplePlates[6], onInspectImage = {})
     }
+}
+
+private enum class SectionType {
+    COMMON_DETAILS,
+    UNIQUE_DETAILS,
+    PHYSICAL_ATTRIBUTES,
+    SOURCE_INFO
 }

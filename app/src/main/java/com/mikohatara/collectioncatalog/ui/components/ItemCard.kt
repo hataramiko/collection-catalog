@@ -79,6 +79,7 @@ private fun ItemCard(
                     model = ImageRequest
                         .Builder(LocalContext.current)
                         .data(data = File(imagePath))
+                        .crossfade(true)
                         .build(),
                     contentDescription = null,
                     modifier = modifier

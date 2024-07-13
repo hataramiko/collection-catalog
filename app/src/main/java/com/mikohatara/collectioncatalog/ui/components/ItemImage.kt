@@ -56,11 +56,11 @@ import java.io.File
 fun ItemImage(imagePath: String?, onInspectImage: () -> Unit) {
 
     if (imagePath != null) {
-
         AsyncImage(
             model = ImageRequest
                 .Builder(LocalContext.current)
                 .data(data = File(imagePath))
+                .crossfade(true)
                 .build(),
             contentDescription = null,
             modifier = Modifier
@@ -68,9 +68,7 @@ fun ItemImage(imagePath: String?, onInspectImage: () -> Unit) {
                 .fillMaxSize(),
             contentScale = ContentScale.FillWidth
         )
-
     } else {
-
         Card(
             shape = RoundedCornerShape(0.dp),
             modifier = Modifier
@@ -115,7 +113,11 @@ fun pickItemImage(oldImagePath: String?): String? {
                 .padding(horizontal = 8.dp)
         ) {
             AsyncImage(
-                model = imageUri,
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(imageUri)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillWidth
@@ -138,7 +140,11 @@ fun pickItemImage(oldImagePath: String?): String? {
                 .padding(horizontal = 8.dp)
         ) {
             AsyncImage(
-                model = oldImagePath,
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(data = File(oldImagePath))
+                    .crossfade(true)
+                    .build(),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillWidth
@@ -241,6 +247,7 @@ private fun ZoomableImage(
         model = ImageRequest
             .Builder(LocalContext.current)
             .data(data = File(imagePath))
+            .crossfade(true)
             .build(),
         contentDescription = null,
         contentScale = ContentScale.FillWidth,
