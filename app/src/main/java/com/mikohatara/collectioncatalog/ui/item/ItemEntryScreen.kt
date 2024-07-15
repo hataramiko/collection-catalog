@@ -456,7 +456,7 @@ private fun EntryFormCard(
     content: @Composable () -> Unit
 ) {
     Card(modifier = Modifier.padding(16.dp)) {
-        Column(modifier = Modifier.padding(top = 10.dp, bottom = 18.dp, end = 16.dp)) {
+        Column(modifier = Modifier.padding(top = 4.dp, bottom = 12.dp, end = 16.dp)) {
             content()
         }
     }

@@ -58,12 +58,8 @@ fun SortByBottomSheet(
         onDismissRequest = { onDismiss() }
     ) {
         Header(
-            stringResource(R.string.sort_by),
-            false,
-            onReset = {},
-            false
+            stringResource(R.string.sort_by)
         )
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Column(
             modifier = Modifier
                 .selectableGroup()
@@ -132,11 +128,11 @@ fun FilterBottomSheet(
     ) {
         Header(
             stringResource(R.string.filter),
-            false,
-            onReset = { viewModel.resetFilter() },
-            true
+            onReset = {
+                viewModel.resetFilter()
+                onDismiss()
+            }
         )
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -146,7 +142,7 @@ fun FilterBottomSheet(
                 item {
                     CheckboxList(
                         label = stringResource(R.string.country),
-                        options = countries,
+                        filterOptions = countries,
                         activeFilters = uiState.countryFilter,
                         onToggleFilter = { viewModel.toggleCountryFilter(it) }
                     )
@@ -155,7 +151,7 @@ fun FilterBottomSheet(
                 item {
                     CheckboxList(
                         label = stringResource(R.string.type),
-                        options = types,
+                        filterOptions = types,
                         activeFilters = uiState.typeFilter,
                         onToggleFilter = { viewModel.toggleTypeFilter(it) }
                     )
@@ -272,16 +268,15 @@ fun FilterBottomSheet(
 @Composable
 private fun Header(
     label: String,
-    hasBackNavigation: Boolean,
-    onReset: () -> Unit,
-    hasReset: Boolean
+    hasBackNavigation: Boolean = false,
+    onReset: (() -> Unit)? = null
 ) {
-    if (hasBackNavigation) {
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
+    Row(
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        if (hasBackNavigation) {
             IconButton(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
@@ -292,33 +287,29 @@ private fun Header(
                     contentDescription = null
                 )
             }
-            Text(
-                label,
-                fontSize = 20.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, bottom = 16.dp)
-            )
+        } else {
+            Spacer(modifier = Modifier.width(18.dp))
         }
-    } else if (hasReset) {
-        Row(
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Text(
-                label,
-                fontSize = 20.sp,
-                modifier = Modifier
-                    //.fillMaxWidth()
-                    .padding(start = 34.dp, bottom = 16.dp)
-            )
+
+        Text(
+            label,
+            fontSize = 20.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(start = 16.dp, bottom = 16.dp)
+        )
+
+        if (onReset != null) {
             Spacer(modifier = Modifier.weight(1f))
             TextButton(
                 onClick = { onReset() },
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
                     .absoluteOffset(y = (-5).dp)
                     .padding(end = 8.dp)
             ) {
-                //Spacer(modifier = Modifier.width(32.dp))
                 /*Icon(
                     painter = painterResource(R.drawable.rounded_refresh),
                     contentDescription = null,
@@ -334,21 +325,14 @@ private fun Header(
                 )
             }
         }
-    } else {
-        Text(
-            label,
-            fontSize = 20.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 34.dp, bottom = 16.dp)
-        )
     }
+    HorizontalDivider(modifier = Modifier.fillMaxWidth())
 }
 
 @Composable
 private fun CheckboxList(
     label: String,
-    options: Set<String>,
+    filterOptions: Set<String>,
     activeFilters: Set<String>,
     onToggleFilter: (String) -> Unit
 ) {
@@ -356,7 +340,7 @@ private fun CheckboxList(
         label,
         modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
     )
-    options.forEach { option ->
+    filterOptions.forEach { option ->
         val onClick = remember { Modifier.clickable { onToggleFilter(option) } }
 
         Row(
