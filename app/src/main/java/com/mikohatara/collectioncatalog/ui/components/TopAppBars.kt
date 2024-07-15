@@ -12,13 +12,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenTopAppBar(
+fun HomeTopAppBar(
     title: String,
     onOpenDrawer: () -> Unit,
     onAddItem: () -> Unit,
@@ -137,5 +138,23 @@ fun ItemEntryTopAppBar(
                 )
             }
         }*/
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StatsTopAppBar(
+    onOpenDrawer: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.statistics)) },
+        navigationIcon = {
+            IconButton(onClick = onOpenDrawer) {
+                Icon(
+                    imageVector = Icons.Rounded.Menu,
+                    contentDescription = null
+                )
+            }
+        }
     )
 }

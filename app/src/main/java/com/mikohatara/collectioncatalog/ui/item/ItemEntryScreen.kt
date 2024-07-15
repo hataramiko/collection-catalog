@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -475,6 +476,8 @@ private fun EntryFormField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next
 ) {
+    val rememberedValue = remember(value) { value }
+
     Row(modifier = modifier.padding(vertical = 4.dp)) {
         if (icon != null) {
             icon()
@@ -482,7 +485,7 @@ private fun EntryFormField(
             Spacer(modifier = Modifier.width(8.dp))
         }
         OutlinedTextField(
-            value = value,
+            value = rememberedValue,
             onValueChange = onValueChange,
             keyboardOptions = KeyboardOptions(
                 capitalization = capitalization,

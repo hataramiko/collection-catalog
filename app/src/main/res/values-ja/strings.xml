@@ -39,4 +39,5 @@
     <string name="sort_by_country_and_type_desc">国家も種類も降順</string>
     <string name="reset">リセット</string>
     <string name="filter_apply">適用する</string>
+    <string name="statistics">統計</string>
 </resources>

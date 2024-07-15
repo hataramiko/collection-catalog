@@ -34,7 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
-import com.mikohatara.collectioncatalog.ui.components.HomeScreenTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
@@ -73,7 +73,7 @@ fun HomeScreenContent(
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { HomeScreenTopAppBar(
+        topBar = { HomeTopAppBar(
             title = stringResource(R.string.plates) + " (${itemList.size})",
             onOpenDrawer = onOpenDrawer,
             onAddItem = onAddItem,

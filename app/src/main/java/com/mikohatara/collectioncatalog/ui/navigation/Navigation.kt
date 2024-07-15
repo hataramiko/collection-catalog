@@ -3,15 +3,18 @@ package com.mikohatara.collectioncatalog.ui.navigation
 import androidx.navigation.NavHostController
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.NUMBER_VARIANT
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HOME_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_ENTRY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_SUMMARY_SCREEN
-
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.STATS_SCREEN
 
 object CollectionCatalogScreens {
     const val HOME_SCREEN = "home"
-    const val ITEM_SUMMARY_SCREEN = "item"
+    const val STATS_SCREEN = "stats"
+    const val ITEM_SUMMARY_SCREEN = "itemSummary"
     const val ITEM_ENTRY_SCREEN = "itemEntry"
 }
 
@@ -22,6 +25,7 @@ object CollectionCatalogDestinationArgs {
 
 object CollectionCatalogDestinations {
     const val HOME_ROUTE = HOME_SCREEN
+    const val STATS_ROUTE = STATS_SCREEN
     const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
     const val ITEM_ENTRY_ROUTE = "$ITEM_ENTRY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
 }
@@ -29,10 +33,14 @@ object CollectionCatalogDestinations {
 class CollectionCatalogNavigationActions(private val navController: NavHostController) {
 
     fun navigateToHomeScreen() {
-
+        navController.navigate(HOME_ROUTE)
     }
 
-    fun navigateToItemScreen(number: String, variant: String) {
+    fun navigateToStatsScreen() {
+        navController.navigate(STATS_ROUTE)
+    }
+
+    fun navigateToItemSummaryScreen(number: String, variant: String) {
         navController.navigate("$ITEM_SUMMARY_SCREEN/$number/$variant")
     }
 

@@ -17,6 +17,7 @@ import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemSummaryScreen
+import com.mikohatara.collectioncatalog.ui.stats.StatsScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -39,12 +40,11 @@ fun CollectionCatalogNavGraph(
         startDestination = startDestination,
         modifier = modifier
     ) {
-
         composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
             ModalMenuDrawer(drawerState, currentRoute, navActions) {
                 HomeScreen(
                     onAddItem = { navActions.navigateToItemEntryScreen(null, null) },
-                    onItemClick = { item -> navActions.navigateToItemScreen(
+                    onItemClick = { item -> navActions.navigateToItemSummaryScreen(
                         item.uniqueDetails.number,
                         item.uniqueDetails.variant
                     ) },
@@ -52,7 +52,6 @@ fun CollectionCatalogNavGraph(
                 )
             }
         }
-
         composable(CollectionCatalogDestinations.ITEM_SUMMARY_ROUTE) {
             ItemSummaryScreen(
                 onBack = { navController.popBackStack() },
@@ -63,11 +62,17 @@ fun CollectionCatalogNavGraph(
                 onDelete = {  }
             )
         }
-
         composable(CollectionCatalogDestinations.ITEM_ENTRY_ROUTE) {
             ItemEntryScreen(
                 onBack = { navController.popBackStack() }
             )
+        }
+        composable(CollectionCatalogDestinations.STATS_ROUTE) {
+            ModalMenuDrawer(drawerState, currentRoute, navActions) {
+                StatsScreen(
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                )
+            }
         }
     }
 }
