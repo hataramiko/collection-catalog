@@ -17,6 +17,7 @@ import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemSummaryScreen
+import com.mikohatara.collectioncatalog.ui.settings.SettingsScreen
 import com.mikohatara.collectioncatalog.ui.stats.StatsScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -73,6 +74,11 @@ fun CollectionCatalogNavGraph(
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )
             }
+        }
+        composable(CollectionCatalogDestinations.SETTINGS_ROUTE) {
+            SettingsScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }

@@ -158,3 +158,21 @@ fun StatsTopAppBar(
         }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsTopAppBar(
+    onBack: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.settings)) },
+        navigationIcon = {
+            IconButton(onClick = { onBack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        }
+    )
+}

@@ -5,15 +5,18 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HOME_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_ENTRY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_SUMMARY_SCREEN
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.SETTINGS_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.STATS_SCREEN
 
 object CollectionCatalogScreens {
     const val HOME_SCREEN = "home"
     const val STATS_SCREEN = "stats"
+    const val SETTINGS_SCREEN = "settings"
     const val ITEM_SUMMARY_SCREEN = "itemSummary"
     const val ITEM_ENTRY_SCREEN = "itemEntry"
 }
@@ -26,6 +29,7 @@ object CollectionCatalogDestinationArgs {
 object CollectionCatalogDestinations {
     const val HOME_ROUTE = HOME_SCREEN
     const val STATS_ROUTE = STATS_SCREEN
+    const val SETTINGS_ROUTE = SETTINGS_SCREEN
     const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
     const val ITEM_ENTRY_ROUTE = "$ITEM_ENTRY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
 }
@@ -38,6 +42,10 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
 
     fun navigateToStatsScreen() {
         navController.navigate(STATS_ROUTE)
+    }
+
+    fun navigateToSettingsScreen() {
+        navController.navigate(SETTINGS_ROUTE)
     }
 
     fun navigateToItemSummaryScreen(number: String, variant: String) {

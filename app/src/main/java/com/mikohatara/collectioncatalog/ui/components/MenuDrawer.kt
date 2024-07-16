@@ -111,7 +111,7 @@ private fun MenuDrawerContent(
                 },
                 selected = false,
                 onClick = {
-                    // TODO Navigation to Settings
+                    navActions.navigateToSettingsScreen()
                     onCloseDrawer()
                 },
                 modifier = modifier
