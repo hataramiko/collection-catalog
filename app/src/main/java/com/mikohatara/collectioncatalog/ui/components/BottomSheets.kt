@@ -44,6 +44,22 @@ import com.mikohatara.collectioncatalog.ui.home.HomeUiState
 import com.mikohatara.collectioncatalog.ui.home.HomeViewModel
 import com.mikohatara.collectioncatalog.ui.home.SortBy
 
+enum class BottomSheetType {
+    SORT_BY,
+    FILTER
+}
+
+@Composable
+fun BottomSheet(
+    type: BottomSheetType,
+    onDismiss: () -> Unit
+) {
+    /*when (type) {
+        BottomSheetType.SORT_BY -> SortByBottomSheet(onDismiss)
+        BottomSheetType.FILTER -> FilterBottomSheet(onDismiss)
+    }*/
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortByBottomSheet(
@@ -301,7 +317,7 @@ private fun Header(
         )
 
         if (onReset != null) {
-            Spacer(modifier = Modifier.weight(1f))
+            //Spacer(modifier = Modifier.weight(1f))
             TextButton(
                 onClick = { onReset() },
                 modifier = Modifier

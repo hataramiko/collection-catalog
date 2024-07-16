@@ -36,6 +36,8 @@ import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
+import com.mikohatara.collectioncatalog.util.isBlankOrZero
+import com.mikohatara.collectioncatalog.util.isValidYear
 
 @Composable
 fun ItemEntryScreen(
@@ -130,7 +132,6 @@ private fun EntryForm(
                 )
             }
         }
-
         item {
             EntryFormCard {
                 EntryFormField(
@@ -190,8 +191,11 @@ private fun EntryForm(
                         icon = null,
                         label = stringResource(R.string.year),
                         value = uiState.itemDetails.year?.toString() ?: "",
-                        onValueChange = {
-                            onValueChange(uiState.itemDetails.copy(year = it.toIntOrNull() ?: 0))
+                        onValueChange = { newValue ->
+                            onValueChange(
+                                uiState.itemDetails.copy(
+                                    year = if (newValue.isValidYear()) newValue.toInt() else null)
+                            )
                         },
                         modifier = Modifier.weight(0.5f),
                         keyboardType = KeyboardType.Number
@@ -199,7 +203,6 @@ private fun EntryForm(
                 }
             }
         }
-
         item {
             EntryFormCard {
                 EntryFormField(
@@ -249,7 +252,7 @@ private fun EntryForm(
                         },
                         label = stringResource(R.string.cost),
                         value = uiState.itemDetails.cost?.toString() ?: "",
-                        onValueChange = { onValueChange(
+                        onValueChange = { onValueChange( // TODO improve input logic
                             uiState.itemDetails.copy(cost = it.toDoubleOrNull() ?: 0.0))
                         },
                         modifier = Modifier.weight(1f),
@@ -259,8 +262,11 @@ private fun EntryForm(
                         icon = null,
                         label = stringResource(R.string.value),
                         value = uiState.itemDetails.value?.toString() ?: "",
-                        onValueChange = { onValueChange(
-                            uiState.itemDetails.copy(value = it.toDoubleOrNull() ?: 0.0))
+                        onValueChange = { newValue ->
+                            onValueChange(uiState.itemDetails.copy(
+                                value = if (newValue.isBlankOrZero()) null
+                                else newValue.toDoubleOrNull())
+                            )
                         },
                         modifier = Modifier.weight(0.725f),
                         keyboardType = KeyboardType.Number,
@@ -282,7 +288,6 @@ private fun EntryForm(
                 )
             }
         }
-
         item {
             EntryFormCard {
                 EntryFormField(
@@ -327,7 +332,6 @@ private fun EntryForm(
                 }
             }
         }
-
         item {
             EntryFormCard {
                 Row {
@@ -341,8 +345,11 @@ private fun EntryForm(
                         },
                         label = "Width",
                         value = uiState.itemDetails.width?.toString() ?: "",
-                        onValueChange = { onValueChange(
-                            uiState.itemDetails.copy(width = it.toDoubleOrNull() ?: 0.0))
+                        onValueChange = { newValue ->
+                            onValueChange(uiState.itemDetails.copy(
+                                width = if (newValue.isBlankOrZero()) null
+                                else newValue.toDoubleOrNull())
+                            )
                         },
                         modifier = Modifier.weight(1f),
                         keyboardType = KeyboardType.Number
@@ -351,8 +358,11 @@ private fun EntryForm(
                         icon = null,
                         label = "Height",
                         value = uiState.itemDetails.height?.toString() ?: "",
-                        onValueChange = { onValueChange(
-                            uiState.itemDetails.copy(height = it.toDoubleOrNull() ?: 0.0))
+                        onValueChange = { newValue ->
+                            onValueChange(uiState.itemDetails.copy(
+                                height = if (newValue.isBlankOrZero()) null
+                                else newValue.toDoubleOrNull())
+                            )
                         },
                         modifier = Modifier.weight(0.725f),
                         keyboardType = KeyboardType.Number
@@ -368,14 +378,16 @@ private fun EntryForm(
                     },
                     label = "Weight",
                     value = uiState.itemDetails.weight?.toString() ?: "",
-                    onValueChange = { onValueChange(
-                        uiState.itemDetails.copy(weight = it.toDoubleOrNull() ?: 0.0))
+                    onValueChange = { newValue ->
+                        onValueChange(uiState.itemDetails.copy(
+                            weight = if (newValue.isBlankOrZero()) null
+                            else newValue.toDoubleOrNull())
+                        )
                     },
                     keyboardType = KeyboardType.Number
                 )
             }
         }
-        
         item {
             EntryFormCard {
                 EntryFormField(
@@ -417,7 +429,6 @@ private fun EntryForm(
                 )
             }
         }
-
         item {
             Button(
                 onClick = onSave,
@@ -476,16 +487,13 @@ private fun EntryFormField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next
 ) {
-    val rememberedValue = remember(value) { value }
+    val currentValue = remember(value) { value }
 
     Row(modifier = modifier.padding(vertical = 4.dp)) {
-        if (icon != null) {
-            icon()
-        } else {
-            Spacer(modifier = Modifier.width(8.dp))
-        }
+        if (icon != null) icon() else Spacer(modifier = Modifier.width(8.dp))
+
         OutlinedTextField(
-            value = rememberedValue,
+            value = currentValue,
             onValueChange = onValueChange,
             keyboardOptions = KeyboardOptions(
                 capitalization = capitalization,

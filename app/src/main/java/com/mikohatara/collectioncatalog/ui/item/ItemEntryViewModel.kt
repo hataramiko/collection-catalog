@@ -6,14 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mikohatara.collectioncatalog.data.CommonDetails
-import com.mikohatara.collectioncatalog.data.Grading
-import com.mikohatara.collectioncatalog.data.Measurements
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
-import com.mikohatara.collectioncatalog.data.Source
-import com.mikohatara.collectioncatalog.data.UniqueDetails
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs
+import com.mikohatara.collectioncatalog.util.toItemDetails
+import com.mikohatara.collectioncatalog.util.toPlate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -113,46 +110,4 @@ data class ItemDetails(
     val width: Double? = null,
     val height: Double? = null,
     val weight: Double? = null,
-)
-
-fun ItemDetails.toPlate(): Plate = Plate(
-    CommonDetails(country, region, area, type, period, year),
-    UniqueDetails(number, variant, imagePath, vehicle, notes, date, cost, value, status),
-    Grading(isKeeper, isForTrade, condition),
-    Source(sourceName, sourceAlias, sourceDetails, sourceType, sourceCountry),
-    Measurements(width, height, weight)
-)
-
-fun Plate.toItemDetails(): ItemDetails = ItemDetails(
-    // CommonDetails
-    country = commonDetails.country,
-    region = commonDetails.region,
-    area = commonDetails.area,
-    type = commonDetails.type,
-    period = commonDetails.period,
-    year = commonDetails.year,
-    // UniqueDetails
-    number = uniqueDetails.number,
-    variant = uniqueDetails.variant,
-    imagePath = uniqueDetails.imagePath,
-    vehicle = uniqueDetails.vehicle,
-    notes = uniqueDetails.notes,
-    date = uniqueDetails.date,
-    cost = uniqueDetails.cost,
-    value = uniqueDetails.value,
-    status = uniqueDetails.status,
-    // Grading
-    isKeeper = grading.isKeeper,
-    isForTrade = grading.isForTrade,
-    condition = grading.condition,
-    // Source
-    sourceName = source.sourceName,
-    sourceAlias = source.sourceAlias,
-    sourceDetails = source.sourceDetails,
-    sourceType = source.sourceType,
-    sourceCountry = source.sourceCountry,
-    // Measurements
-    width = measurements.width,
-    height = measurements.height,
-    weight = measurements.weight,
 )
