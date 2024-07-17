@@ -18,12 +18,12 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val items: List<Plate> = emptyList(),
-    val sortBy: SortBy = SortBy.COUNTRY_ASC,
+    val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC, // TODO get default value from preferences
     val countryFilter: Set<String> = emptySet(),
     val typeFilter: Set<String> = emptySet(),
     val isKeeperFilter: Boolean = false,
     val isForTradeFilter: Boolean = false
-    //val filters: FilterData = FilterData()
+    //val filters: FilterData = FilterData() // TODO combine all filters into the data class
     //val isLoading: Boolean = false
 )
 
@@ -125,20 +125,12 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleIsKeeperFilter() = viewModelScope.launch {
-        val filter = if (!_uiState.value.isKeeperFilter) {
-            true
-        } else {
-            false
-        }
+        val filter = !_uiState.value.isKeeperFilter
         _uiState.update { it.copy(isKeeperFilter = filter) }
     }
 
     fun toggleIsForTradeFilter() = viewModelScope.launch {
-        val filter = if (!_uiState.value.isForTradeFilter) {
-            true
-        } else {
-            false
-        }
+        val filter = !_uiState.value.isForTradeFilter
         _uiState.update { it.copy(isForTradeFilter = filter) }
     }
 
@@ -153,15 +145,14 @@ class HomeViewModel @Inject constructor(
         getPlates()
     }
 
-    fun getCountries(): Set<String>/*List<String>*/ {
+    fun getCountries(): Set<String> {
         return uiState.value.items.map { it.commonDetails.country }.toSet()
-
-        /*val countries = uiState.value.items.map { it.commonDetails.country }.distinct()
-        return countries*/
     }
 
     fun getTypes(): Set<String> {
-        return uiState.value.items.map { it.commonDetails.type }.toSet()
+        return uiState.value.items.map { it.commonDetails.type }
+            .sortedWith(compareBy { it }) //sortedBy { it }
+            .toSet()
     }
 }
 

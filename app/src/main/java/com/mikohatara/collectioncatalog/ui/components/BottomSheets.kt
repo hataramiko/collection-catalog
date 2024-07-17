@@ -31,7 +31,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,7 +67,6 @@ fun SortByBottomSheet(
     viewModel: HomeViewModel
 ) {
     val sortByOptions = viewModel.sortByOptions
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(sortByOptions[0]) }
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() }
@@ -87,9 +85,8 @@ fun SortByBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .selectable(
-                            selected = (option == selectedOption),
+                            selected = (option == uiState.sortBy),
                             onClick = {
-                                onOptionSelected(option)
                                 when (option) {
                                     SortBy.COUNTRY_ASC -> viewModel.setSortBy(SortBy.COUNTRY_ASC)
                                     SortBy.COUNTRY_DESC -> viewModel.setSortBy(SortBy.COUNTRY_DESC)
@@ -107,7 +104,7 @@ fun SortByBottomSheet(
                         )
                 ) {
                     RadioButton(
-                        selected = (option == selectedOption),
+                        selected = (option == uiState.sortBy),
                         onClick = null,
                         modifier = Modifier
                             .padding(start = 32.dp, top = 12.dp, end = 16.dp, bottom = 12.dp)
@@ -228,7 +225,7 @@ fun FilterBottomSheet(
             filterOptions.forEach { option ->
                 Column(
                     modifier = Modifier
-                        .clickable { /*TODO*/ }
+                        .clickable {  }
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
