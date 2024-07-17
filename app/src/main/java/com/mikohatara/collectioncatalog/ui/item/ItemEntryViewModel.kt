@@ -20,6 +20,7 @@ data class ItemEntryUiState(
     val item: Plate? = null,
     val itemDetails: ItemDetails = ItemDetails(),
     val isNew: Boolean = false,
+    val hasUnsavedChanges: Boolean = false
 )
 
 @HiltViewModel
@@ -47,8 +48,18 @@ class ItemEntryViewModel @Inject constructor(
     fun updateUiState(itemDetails: ItemDetails) {
         val item = uiState.item
         val isNew = uiState.isNew
+        val initialDetails = if (isNew) ItemDetails() else item?.toItemDetails()
 
-        uiState = ItemEntryUiState(item = item, itemDetails = itemDetails, isNew = isNew)
+        uiState = if (itemDetails != initialDetails) {
+            ItemEntryUiState(
+                item = item,
+                itemDetails = itemDetails,
+                isNew = isNew,
+                hasUnsavedChanges = true
+            )
+        } else {
+            ItemEntryUiState(item = item, itemDetails = itemDetails, isNew = isNew)
+        }
     }
 
     fun saveEntry() = viewModelScope.launch {
@@ -57,6 +68,10 @@ class ItemEntryViewModel @Inject constructor(
         } else {
             addNewItem()
         }
+    }
+
+    private fun setHasUnsavedChanges(hasUnsavedChanges: Boolean) {
+        uiState = uiState.copy(hasUnsavedChanges = hasUnsavedChanges)
     }
 
     private suspend fun addNewItem() = viewModelScope.launch {

@@ -40,4 +40,8 @@
     <string name="reset">リセット</string>
     <string name="filter_apply">適用する</string>
     <string name="statistics">統計</string>
+    <string name="discard_dialog_title">変更を破棄しますか？</string>
+    <string name="discard_dialog_text">このまま戻ると、変更は破棄される。</string>
+    <string name="discard">破棄</string>
+    <string name="keep_editing">編集を続ける</string>
 </resources>

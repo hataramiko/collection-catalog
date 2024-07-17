@@ -48,6 +48,31 @@ fun DeletionDialog(
     )
 }
 
+@Composable
+fun DiscardDialog(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text(stringResource(R.string.discard_dialog_title)) },
+        text = { Text(stringResource(R.string.discard_dialog_text)) },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text(stringResource(R.string.keep_editing))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) {
+                Text(
+                    stringResource(R.string.discard),
+                    color = Color(0xFFF44336)
+                )
+            }
+        }
+    )
+}
+
 @Preview
 @Composable
 fun DeletionDialogPreview() {

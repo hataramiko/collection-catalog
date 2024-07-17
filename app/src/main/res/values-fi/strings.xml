@@ -40,4 +40,8 @@
     <string name="reset">Nollaa</string>
     <string name="filter_apply">Käytä</string>
     <string name="statistics">Tilastot</string>
+    <string name="discard_dialog_title">Hylkää muutokset?</string>
+    <string name="discard_dialog_text">Muutoksia ei ole tallennettu.</string>
+    <string name="discard">Hylkää</string>
+    <string name="keep_editing">Jatka muokkausta</string>
 </resources>

@@ -40,4 +40,8 @@
     <string name="reset">Reset</string>
     <string name="filter_apply">Apply</string>
     <string name="statistics">Statistics</string>
+    <string name="discard_dialog_title">Discard changes?</string>
+    <string name="discard_dialog_text">Changes made remain unsaved.</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep editing</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -29,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
 import com.mikohatara.collectioncatalog.ui.components.IconAbc123
 import com.mikohatara.collectioncatalog.ui.components.IconBlank
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
@@ -61,14 +67,19 @@ fun ItemEntryScreenContent(
     onValueChange: (ItemDetails) -> Unit,
     onBack: () -> Unit
 ) {
+    var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
+    val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
     val topBarTitle: String = if (!uiState.isNew) {
         stringResource(R.string.edit_item_title, uiState.itemDetails.number)
     } else {
         stringResource(R.string.add_item_title)
     }
+    BackHandler(enabled = true) {
+        onBackBehavior()
+    }
 
     Scaffold(
-        topBar = { ItemEntryTopAppBar(topBarTitle, onBack) },
+        topBar = { ItemEntryTopAppBar(title = topBarTitle, onBack = onBackBehavior) },
         content = { innerPadding ->
             EntryForm(
                 uiState,
@@ -81,6 +92,15 @@ fun ItemEntryScreenContent(
             )
         }
     )
+    if (showDiscardDialog) {
+        DiscardDialog(
+            onConfirm = {
+                showDiscardDialog = false
+                onBack()
+            },
+            onCancel = { showDiscardDialog = false }
+        )
+    }
 }
 
 @Composable
