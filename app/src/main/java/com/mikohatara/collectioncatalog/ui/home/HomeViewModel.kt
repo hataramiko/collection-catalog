@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -39,6 +40,19 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     val sortByOptions = SortBy.entries.toList()
+
+    /*
+    // For testing TopRow scroll handling
+    private var lastScrollIndex = 0
+    private val _isScrollingUp = MutableStateFlow(false)
+    val isScrollingUp: StateFlow<Boolean> = _isScrollingUp.asStateFlow()
+
+    fun updateScrollPosition(newScrollIndex: Int) {
+        if (newScrollIndex == lastScrollIndex) return
+
+        _isScrollingUp.value = newScrollIndex > lastScrollIndex
+        lastScrollIndex = newScrollIndex
+    }*/
 
     init {
         getPlates()

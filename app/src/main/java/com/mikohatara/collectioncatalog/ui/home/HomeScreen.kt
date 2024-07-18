@@ -1,28 +1,41 @@
 package com.mikohatara.collectioncatalog.ui.home
 
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -81,6 +94,7 @@ fun HomeScreenContent(
         ) },
         content = { innerPadding ->
             HomeBody(
+                viewModel = viewModel,
                 itemList = itemList,
                 modifier = modifier
                     .padding(innerPadding),
@@ -89,7 +103,6 @@ fun HomeScreenContent(
                 onSortByClick = { viewModel.showSortByBottomSheet.value = true },
                 onFilterClick = { viewModel.showFilterBottomSheet.value = true }
             )
-
             if(viewModel.showSortByBottomSheet.value) {
                 SortByBottomSheet(
                     onDismiss = { viewModel.showSortByBottomSheet.value = false },
@@ -108,8 +121,10 @@ fun HomeScreenContent(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeBody(
+    viewModel: HomeViewModel,
     itemList: List<Plate>,
     modifier: Modifier = Modifier,
     onItemClick: (Plate) -> Unit,
@@ -117,16 +132,24 @@ fun HomeBody(
     onFilterClick: () -> Unit
 ) {
     val maxWidth = itemList.maxOfOrNull { it.measurements.width ?: 0.0 } ?: 0.0
+    /*
+    // For testing TopRow scroll handling
+    val listState = rememberLazyListState()
+    val itemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
+    val scrollState = viewModel.isScrollingUp.collectAsState()
+
+    viewModel.updateScrollPosition(itemIndex.value)*/
 
     LazyColumn(
+        //state = listState,
         contentPadding = PaddingValues(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
             .fillMaxWidth()
     ) {
-        item {
-            TopRow(onSortByClick, onFilterClick)
+        /*stickyHeader*/item {
+            TopRow(/*scrollState, */onSortByClick, onFilterClick)
         }
         if (itemList.isEmpty()) {
             item {
@@ -156,50 +179,78 @@ fun HomeBody(
 
 @Composable
 private fun TopRow(
+    //scrollState: State<Boolean?>,
     onSortByClick: () -> Unit,
-    onFilterClick: () -> Unit
+    onFilterClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
+    /*
+    // For testing scroll handling
+    val position by animateFloatAsState(if (scrollState.value == true) -1024f else 0f)*/
+
+    /*
+    *   Did some changes to the structure, paddings, and background colors
+    *   for testing the scroll behavior stuff commented out here and in the ViewModel.
+    *
+    *   TODO
+    *   - test with firstVisibleItemOffset
+    *   - try FAB approach, utilizing -''-Index?
+    *
+    * */
+
+    Column(
+        //modifier = Modifier.graphicsLayer { translationY = (position) }
     ) {
-        OutlinedButton(
-            onClick = { onSortByClick() },
-            modifier = Modifier.weight(1f)
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                //.padding(bottom = 8.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            Icon(
-                painter = painterResource(R.drawable.rounded_swap_vert),
-                contentDescription = null,
-                modifier = Modifier.padding(end = 4.dp)
-            )
-            Text(
-                stringResource(R.string.sort_by),
-                modifier = Modifier.padding(end = 4.dp)
-            )
+            OutlinedButton(
+                onClick = { onSortByClick() },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_swap_vert),
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Text(
+                    stringResource(R.string.sort_by),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            OutlinedButton(
+                onClick = { onFilterClick() },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_filter),
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 6.dp)
+                )
+                Text(
+                    stringResource(R.string.filter),
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+            }
         }
-        Spacer(modifier = Modifier.width(8.dp))
-        OutlinedButton(
-            onClick = { onFilterClick() },
-            modifier = Modifier.weight(1f)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.rounded_filter),
-                contentDescription = null,
-                modifier = Modifier.padding(end = 6.dp)
-            )
-            Text(
-                stringResource(R.string.filter),
-                modifier = Modifier.padding(end = 4.dp)
-            )
-        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .background(MaterialTheme.colorScheme.background)
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                //.padding(bottom = 4.dp)
+                .requiredWidth(1024.dp)
+        )
     }
-    HorizontalDivider(
-        modifier = Modifier
-            .padding(bottom = 4.dp)
-            .requiredWidth(1024.dp)
-    )
 }
 
 @Preview
