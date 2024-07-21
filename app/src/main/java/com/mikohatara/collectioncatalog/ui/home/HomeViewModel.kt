@@ -41,7 +41,6 @@ class HomeViewModel @Inject constructor(
 
     val sortByOptions = SortBy.entries.toList()
 
-    /*
     // For testing TopRow scroll handling
     private var lastScrollIndex = 0
     private val _isScrollingUp = MutableStateFlow(false)
@@ -52,7 +51,7 @@ class HomeViewModel @Inject constructor(
 
         _isScrollingUp.value = newScrollIndex > lastScrollIndex
         lastScrollIndex = newScrollIndex
-    }*/
+    }
 
     init {
         getPlates()

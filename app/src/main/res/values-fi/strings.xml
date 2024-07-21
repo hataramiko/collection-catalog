@@ -44,4 +44,9 @@
     <string name="discard_dialog_text">Muutoksia ei ole tallennettu.</string>
     <string name="discard">Hylkää</string>
     <string name="keep_editing">Jatka muokkausta</string>
+    <plurals name="statistics_intro">
+        <item quantity="one">%d kilpi.</item>
+        <item quantity="other">%d kilpeä.</item>
+    </plurals>
+    <string name="statistics_intro_empty">Ei kilpiä.</string>
 </resources>

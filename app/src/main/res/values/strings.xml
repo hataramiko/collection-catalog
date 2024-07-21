@@ -44,4 +44,9 @@
     <string name="discard_dialog_text">Changes made remain unsaved.</string>
     <string name="discard">Discard</string>
     <string name="keep_editing">Keep editing</string>
+    <plurals name="statistics_intro">
+        <item quantity="one">%d plate.</item>
+        <item quantity="other">%d plates.</item>
+    </plurals>
+    <string name="statistics_intro_empty">No plates.</string>
 </resources>

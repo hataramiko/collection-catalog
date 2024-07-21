@@ -44,4 +44,8 @@
     <string name="discard_dialog_text">このまま戻ると、変更は破棄される。</string>
     <string name="discard">破棄</string>
     <string name="keep_editing">編集を続ける</string>
+    <plurals name="statistics_intro">
+        <item quantity="other">プレートが%d枚</item>
+    </plurals>
+    <string name="statistics_intro_empty">プレートがない。</string>
 </resources>
