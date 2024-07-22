@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
-import com.mikohatara.collectioncatalog.ui.home.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +25,10 @@ class StatsViewModel @Inject constructor(
 
     init {
         getItems()
+    }
+
+    fun getCountries(): Set<String> {
+        return uiState.value.items.map { it.commonDetails.country }.toSet()
     }
 
     private fun getItems() {

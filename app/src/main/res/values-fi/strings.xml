@@ -30,7 +30,7 @@
     <string name="country">Valtio</string>
     <string name="region">Alue</string>
     <string name="area">Alue</string>
-    <string name="subdivision">Aluejako</string>
+    <string name="subdivision">Hallintoalue</string>
     <string name="sort_by_date_newest">Uusin päiväys</string>
     <string name="sort_by_date_oldest">Vanhin päiväys</string>
     <string name="sort_by_country_asc">Valtio ja alue, nouseva</string>
@@ -49,4 +49,11 @@
         <item quantity="other">%d kilpeä.</item>
     </plurals>
     <string name="statistics_intro_empty">Ei kilpiä.</string>
+    <string name="width">Leveys</string>
+    <string name="height">Korkeus</string>
+    <string name="weight">Paino</string>
+    <string name="condition">Kunto</string>
+    <string name="location">Sijainti</string>
+    <string name="vehicle">Ajoneuvo</string>
+    <string name="notes">Lisätietoja</string>
 </resources>

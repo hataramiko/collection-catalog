@@ -12,13 +12,13 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
-    SettingsScreenContent(
+    SettingsScreen(
         onBack = onBack
     )
 }
 
 @Composable
-fun SettingsScreenContent(
+private fun SettingsScreen(
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -29,7 +29,7 @@ fun SettingsScreenContent(
             )
         },
         content = { innerPadding ->
-            SettingsBody(
+            SettingsScreenContent(
                 modifier = Modifier.padding(innerPadding)
             )
         }
@@ -37,7 +37,7 @@ fun SettingsScreenContent(
 }
 
 @Composable
-private fun SettingsBody(
+private fun SettingsScreenContent(
     modifier: Modifier = Modifier
 ) {
 

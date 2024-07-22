@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -54,7 +53,7 @@ fun ItemEntryScreen(
 ) {
     val uiState = viewModel.uiState
 
-    ItemEntryScreenContent(
+    ItemEntryScreen(
         uiState,
         viewModel,
         onValueChange = viewModel::updateUiState,
@@ -63,7 +62,7 @@ fun ItemEntryScreen(
 }
 
 @Composable
-fun ItemEntryScreenContent(
+private fun ItemEntryScreen(
     uiState: ItemEntryUiState,
     viewModel: ItemEntryViewModel,
     onValueChange: (ItemDetails) -> Unit,
@@ -83,7 +82,7 @@ fun ItemEntryScreenContent(
     Scaffold(
         topBar = { ItemEntryTopAppBar(title = topBarTitle, onBack = onBackBehavior) },
         content = { innerPadding ->
-            EntryForm(
+            ItemEntryScreenContent(
                 uiState,
                 modifier = Modifier.padding(innerPadding),
                 onValueChange,
@@ -106,7 +105,7 @@ fun ItemEntryScreenContent(
 }
 
 @Composable
-private fun EntryForm(
+private fun ItemEntryScreenContent(
     uiState: ItemEntryUiState,
     modifier: Modifier,
     onValueChange: (ItemDetails) -> Unit = {},
@@ -236,14 +235,14 @@ private fun EntryForm(
                         modifier = ItemScreenModifiers.icon
                     )
                 },
-                label = "Notes",
+                label = stringResource(R.string.notes),
                 value = uiState.itemDetails.notes ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(notes = it)) },
                 singleLine = false
             )
             EntryFormField(
                 icon = { IconBlank() },
-                label = "Vehicle",
+                label = stringResource(R.string.vehicle),
                 value = uiState.itemDetails.vehicle ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(vehicle = it)) },
                 singleLine = false
@@ -305,7 +304,7 @@ private fun EntryForm(
                         modifier = ItemScreenModifiers.icon
                     )
                 },
-                label = "Status",
+                label = stringResource(R.string.location),
                 value = uiState.itemDetails.status ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(status = it)) }
             )
@@ -319,7 +318,7 @@ private fun EntryForm(
                         modifier = ItemScreenModifiers.icon
                     )
                 },
-                label = "Condition",
+                label = stringResource(R.string.condition),
                 value = uiState.itemDetails.condition ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(condition = it)) }
             )
@@ -362,7 +361,7 @@ private fun EntryForm(
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = "Width",
+                    label = stringResource(R.string.width),
                     value = uiState.itemDetails.width?.toString() ?: "",
                     onValueChange = { newValue ->
                         onValueChange(uiState.itemDetails.copy(
@@ -375,7 +374,7 @@ private fun EntryForm(
                 )
                 EntryFormField(
                     icon = null,
-                    label = "Height",
+                    label = stringResource(R.string.height),
                     value = uiState.itemDetails.height?.toString() ?: "",
                     onValueChange = { newValue ->
                         onValueChange(uiState.itemDetails.copy(
@@ -395,7 +394,7 @@ private fun EntryForm(
                         modifier = ItemScreenModifiers.icon
                     )
                 },
-                label = "Weight",
+                label = stringResource(R.string.weight),
                 value = uiState.itemDetails.weight?.toString() ?: "",
                 onValueChange = { newValue ->
                     onValueChange(uiState.itemDetails.copy(
@@ -526,7 +525,7 @@ private fun EntryFormField(
 @Composable
 fun EntryFormPreview() {
     CollectionCatalogTheme {
-        EntryForm(uiState = ItemEntryUiState(), modifier = Modifier.background(Color.LightGray)) {
+        ItemEntryScreenContent(uiState = ItemEntryUiState(), modifier = Modifier.background(Color.LightGray)) {
             
         }
     }

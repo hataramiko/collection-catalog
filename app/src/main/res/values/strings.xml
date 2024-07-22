@@ -49,4 +49,11 @@
         <item quantity="other">%d plates.</item>
     </plurals>
     <string name="statistics_intro_empty">No plates.</string>
+    <string name="width">Width</string>
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+    <string name="condition">Condition</string>
+    <string name="location">Location</string>
+    <string name="vehicle">Vehicle</string>
+    <string name="notes">Notes</string>
 </resources>

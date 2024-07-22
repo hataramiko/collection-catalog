@@ -50,7 +50,7 @@ fun ItemSummaryScreen(
     val coroutineScope = rememberCoroutineScope()
     val item: Plate = uiState.item!!
 
-    ItemSummaryScreenContent(
+    ItemSummaryScreen(
         item,
         viewModel,
         coroutineScope,
@@ -61,7 +61,7 @@ fun ItemSummaryScreen(
 }
 
 @Composable
-fun ItemSummaryScreenContent(
+private fun ItemSummaryScreen(
     item: Plate,
     viewModel: ItemSummaryViewModel,
     coroutineScope: CoroutineScope,
@@ -82,7 +82,7 @@ fun ItemSummaryScreenContent(
             onDelete = { showDeletionDialog = true }
         ) },
         content = { innerPadding ->
-            ItemSummary(
+            ItemSummaryScreenContent(
                 item = item,
                 onInspectImage = { isInspectingImage = true },
                 modifier = modifier.padding(innerPadding)
@@ -110,7 +110,7 @@ fun ItemSummaryScreenContent(
 }
 
 @Composable
-private fun ItemSummary(
+private fun ItemSummaryScreenContent(
     item: Plate,
     onInspectImage: () -> Unit,
     modifier: Modifier = Modifier
@@ -348,13 +348,13 @@ private fun UniqueDetailsCard(
         ) {
             item.uniqueDetails.notes?.let {
                 ItemInfoField(
-                    label = "Notes",
+                    label = stringResource(R.string.notes),
                     value = it
                 )
             }
             item.uniqueDetails.vehicle?.let {
                 ItemInfoField(
-                    label = "Vehicle",
+                    label = stringResource(R.string.vehicle),
                     value = it
                 )
             }
@@ -418,7 +418,7 @@ private fun UniqueDetailsCard(
         ) {
             item.uniqueDetails.status?.let {
                 ItemInfoField(
-                    label = "Status",
+                    label = stringResource(R.string.location),
                     value = it
                 )
             }
@@ -442,21 +442,21 @@ private fun PhysicalAttributesCard(
         Row {
             item.measurements.width?.let {
                 ItemInfoField(
-                    label = "Width",
+                    label = stringResource(R.string.width),
                     value = it.toString(),
                     modifier = Modifier.weight(1f)
                 )
             }
             item.measurements.height?.let {
                 ItemInfoField(
-                    label = "Height",
+                    label = stringResource(R.string.height),
                     value = it.toString(),
                     modifier = Modifier.weight(1f)
                 )
             }
             item.measurements.weight?.let {
                 ItemInfoField(
-                    label = "Weight",
+                    label = stringResource(R.string.weight),
                     value = it.toString(),
                     modifier = Modifier.weight(1f)
                 )
@@ -515,7 +515,7 @@ private fun SourceInfoCard(
 @Composable
 fun ItemSummaryScreenPreview() {
     CollectionCatalogTheme {
-        ItemSummary(item = samplePlates[6], onInspectImage = {})
+        ItemSummaryScreenContent(item = samplePlates[6], onInspectImage = {})
     }
 }
 
