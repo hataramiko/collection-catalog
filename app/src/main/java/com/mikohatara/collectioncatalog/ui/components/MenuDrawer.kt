@@ -2,7 +2,6 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
@@ -17,12 +16,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
-import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -75,6 +72,36 @@ private fun MenuDrawerContent(
                 },
                 modifier = modifier
             )
+            /* TODO implement Wishlist
+            NavigationDrawerItem(
+                label = { Text("Wishlist") },
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_list_alt),
+                        contentDescription = null
+                    )
+                },
+                selected = false,
+                onClick = {
+                    onCloseDrawer()
+                },
+                modifier = modifier
+            )*/
+            /* TODO implement Former
+            NavigationDrawerItem(
+                label = { Text("Former") },
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_history),
+                        contentDescription = null
+                    )
+                },
+                selected = false,
+                onClick = {
+                    onCloseDrawer()
+                },
+                modifier = modifier
+            )*/
             NavigationDrawerItem(
                 label = { Text(stringResource(R.string.statistics)) },
                 icon = {
@@ -95,12 +122,34 @@ private fun MenuDrawerContent(
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp, vertical = 8.dp)
             )
-            Spacer(modifier = modifier.weight(1f))
+            /* TODO create system for labels/runs
+            Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Text(stringResource(R.string.labels))
+                Spacer(modifier = Modifier.weight(1f))
+                /*TextButton(
+                    onClick = {}
+                ) {*/
+                    Text(stringResource(R.string.edit))
+                //}
+            }
+            NavigationDrawerItem(
+                label = { Text(stringResource(R.string.create_label)) },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = null
+                    )
+                },
+                selected = false,
+                onClick = {},
+                modifier = modifier
+            )*/
+            /*Spacer(modifier = modifier.weight(1f))
             HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp, vertical = 8.dp)
-            )
+            )*/
             NavigationDrawerItem(
                 label = { Text(stringResource(R.string.settings)) },
                 icon = {
@@ -122,23 +171,11 @@ private fun MenuDrawerContent(
 
 @Composable
 private fun Header() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            //.background(Color(0, 0, 0, 13))
-    ) {
+    Box(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "Collection Catalog",
             modifier = Modifier.padding(32.dp)
         )
     }
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
-}
-
-@Preview
-@Composable
-fun MenuDrawerPreview() {
-    CollectionCatalogTheme {
-        //ModalMenuDrawer()
-    }
 }

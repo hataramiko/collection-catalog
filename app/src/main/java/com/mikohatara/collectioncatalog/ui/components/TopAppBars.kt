@@ -7,6 +7,8 @@ import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -144,9 +146,10 @@ fun ItemEntryTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsTopAppBar(
-    onOpenDrawer: () -> Unit
+    onOpenDrawer: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior
 ) {
-    TopAppBar(
+    LargeTopAppBar(
         title = { Text(stringResource(R.string.statistics)) },
         navigationIcon = {
             IconButton(onClick = onOpenDrawer) {
@@ -155,16 +158,18 @@ fun StatsTopAppBar(
                     contentDescription = null
                 )
             }
-        }
+        },
+        scrollBehavior = scrollBehavior
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsTopAppBar(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior
 ) {
-    TopAppBar(
+    MediumTopAppBar(
         title = { Text(stringResource(R.string.settings)) },
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
@@ -173,6 +178,7 @@ fun SettingsTopAppBar(
                     contentDescription = "Back"
                 )
             }
-        }
+        },
+        scrollBehavior = scrollBehavior
     )
 }

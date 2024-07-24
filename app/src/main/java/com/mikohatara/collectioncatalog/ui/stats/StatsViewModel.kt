@@ -28,7 +28,12 @@ class StatsViewModel @Inject constructor(
     }
 
     fun getCountries(): Set<String> {
-        return uiState.value.items.map { it.commonDetails.country }.toSet()
+        return uiState.value.items.map { it.commonDetails.country }
+            .sortedWith(compareByDescending<String> { country ->
+                uiState.value.items.count { it.commonDetails.country == country }}
+                .thenBy { it }
+            )
+            .toSet()
     }
 
     private fun getItems() {

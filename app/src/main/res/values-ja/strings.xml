@@ -45,7 +45,7 @@
     <string name="discard">破棄</string>
     <string name="keep_editing">編集を続ける</string>
     <plurals name="statistics_intro">
-        <item quantity="other">プレートが%d枚</item>
+        <item quantity="other">プレートが%d枚。</item>
     </plurals>
     <string name="statistics_intro_empty">プレートがない。</string>
     <string name="width">横</string>
@@ -55,4 +55,7 @@
     <string name="location">位置</string>
     <string name="vehicle">車両</string>
     <string name="notes">ノート</string>
+    <string name="labels">ラベル</string>
+    <string name="edit">編集</string>
+    <string name="create_label">新しいラベルを作成</string>
 </resources>

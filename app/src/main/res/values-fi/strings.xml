@@ -56,4 +56,7 @@
     <string name="location">Sijainti</string>
     <string name="vehicle">Ajoneuvo</string>
     <string name="notes">Lisätietoja</string>
+    <string name="labels">Tunnisteet</string>
+    <string name="edit">Muokkaa</string>
+    <string name="create_label">Luo uusi tunniste</string>
 </resources>

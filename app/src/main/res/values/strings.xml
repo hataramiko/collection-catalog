@@ -56,4 +56,7 @@
     <string name="location">Location</string>
     <string name="vehicle">Vehicle</string>
     <string name="notes">Notes</string>
+    <string name="labels">Labels</string>
+    <string name="edit">Edit</string>
+    <string name="create_label">Create new label</string>
 </resources>

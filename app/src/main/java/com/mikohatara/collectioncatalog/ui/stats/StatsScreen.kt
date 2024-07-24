@@ -6,17 +6,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,17 +44,21 @@ fun StatsScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StatsScreen(
     uiState: StatsUiState,
     viewModel: StatsViewModel,
     onOpenDrawer: () -> Unit
 ) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     Scaffold(
-        modifier = Modifier,//.nestedScroll(),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             StatsTopAppBar(
-                onOpenDrawer = onOpenDrawer
+                onOpenDrawer = onOpenDrawer,
+                scrollBehavior
             )
         },
         content = { innerPadding ->
@@ -121,7 +128,7 @@ private fun Table(
 ) {
     val allItems = items.size
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 12.dp)) {
         Text(
             label,
             modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
@@ -139,24 +146,23 @@ private fun Table(
                 quantity.toFloat() / allItems.toFloat() * 100.0
             )
 
-            Row {
+            Row(modifier = Modifier.padding(horizontal = 4.dp)) {
                 Text(
                     column,
                     modifier = Modifier.weight(1f)
                 )
-                VerticalDivider()
                 Text(
                     quantity.toString(),
                     modifier = Modifier
                         .align(alignment = Alignment.CenterVertically)
                         .weight(0.3f)
                 )
-                VerticalDivider()
                 Text(
                     "$percentage%",
+                    textAlign = TextAlign.End,
                     modifier = Modifier
                         .align(alignment = Alignment.CenterVertically)
-                        .weight(0.5f)
+                        .weight(0.4f)
                 )
             }
             HorizontalDivider(
@@ -164,13 +170,5 @@ private fun Table(
                 modifier = Modifier.padding(vertical = 4.dp)
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun StatsScreenPreview() {
-    CollectionCatalogTheme {
-        //StatsScreenContent()
     }
 }
