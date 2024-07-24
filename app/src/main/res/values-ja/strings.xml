@@ -41,7 +41,7 @@
     <string name="filter_apply">適用する</string>
     <string name="statistics">統計</string>
     <string name="discard_dialog_title">変更を破棄しますか？</string>
-    <string name="discard_dialog_text">このまま戻ると、変更は破棄される。</string>
+    <string name="discard_dialog_text">変更は保存されていません。</string>
     <string name="discard">破棄</string>
     <string name="keep_editing">編集を続ける</string>
     <plurals name="statistics_intro">
@@ -58,4 +58,5 @@
     <string name="labels">ラベル</string>
     <string name="edit">編集</string>
     <string name="create_label">新しいラベルを作成</string>
+    <string name="default_sort_by">デフォルト並べ替え</string>
 </resources>

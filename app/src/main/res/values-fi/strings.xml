@@ -59,4 +59,5 @@
     <string name="labels">Tunnisteet</string>
     <string name="edit">Muokkaa</string>
     <string name="create_label">Luo uusi tunniste</string>
+    <string name="default_sort_by">Oletusjärjestys</string>
 </resources>

@@ -42,6 +42,7 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.home.HomeUiState
 import com.mikohatara.collectioncatalog.ui.home.HomeViewModel
 import com.mikohatara.collectioncatalog.ui.home.SortBy
+import com.mikohatara.collectioncatalog.util.getSortByText
 
 enum class BottomSheetType {
     SORT_BY,
@@ -109,16 +110,7 @@ fun SortByBottomSheet(
                         modifier = Modifier
                             .padding(start = 32.dp, top = 12.dp, end = 16.dp, bottom = 12.dp)
                     )
-                    Text(text = when (option) {
-                        SortBy.COUNTRY_ASC -> stringResource(R.string.sort_by_country_asc)
-                        SortBy.COUNTRY_DESC -> stringResource(R.string.sort_by_country_desc)
-                        SortBy.COUNTRY_AND_TYPE_ASC ->
-                            stringResource(R.string.sort_by_country_and_type_asc)
-                        SortBy.COUNTRY_AND_TYPE_DESC ->
-                            stringResource(R.string.sort_by_country_and_type_desc)
-                        SortBy.DATE_NEWEST -> stringResource(R.string.sort_by_date_newest)
-                        SortBy.DATE_OLDEST -> stringResource(R.string.sort_by_date_oldest)
-                    })
+                    Text(getSortByText(option))
                 }
             }
         }

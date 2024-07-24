@@ -66,7 +66,7 @@ fun DiscardDialog(
             TextButton(onClick = { onConfirm() }) {
                 Text(
                     stringResource(R.string.discard),
-                    color = Color(0xFFF44336)
+                    //color = Color(0xFFF44336)
                 )
             }
         }
