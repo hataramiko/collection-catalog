@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
+import com.mikohatara.collectioncatalog.ui.home.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
 
 @Composable
@@ -80,7 +81,13 @@ private fun SettingsScreenContent(
     Column(modifier = modifier) {
         SettingsButton(
             label = stringResource(R.string.default_sort_by),
-            onClick = {},
+            onClick = {
+                if (uiState.defaultSortBy == SortBy.COUNTRY_AND_TYPE_ASC) {
+                    viewModel.updateDefaultSortBy(SortBy.DATE_NEWEST)
+                } else {
+                    viewModel.updateDefaultSortBy(SortBy.COUNTRY_AND_TYPE_ASC)
+                }
+            },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.rounded_swap_vert),

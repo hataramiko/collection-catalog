@@ -1,16 +1,17 @@
 package com.mikohatara.collectioncatalog.ui.home
 
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
+import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -19,7 +20,7 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val items: List<Plate> = emptyList(),
-    val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC, // TODO get default value from preferences
+    val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
     val countryFilter: Set<String> = emptySet(),
     val typeFilter: Set<String> = emptySet(),
     val isKeeperFilter: Boolean = false,
@@ -31,6 +32,7 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val plateRepository: PlateRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val showSortByBottomSheet = mutableStateOf(false)
@@ -38,6 +40,7 @@ class HomeViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
 
     val sortByOptions = SortBy.entries.toList()
 
@@ -53,7 +56,19 @@ class HomeViewModel @Inject constructor(
         lastScrollIndex = newScrollIndex
     }
 
+    /*  TODO ensure (uiState.value.sortBy == defaultSortBy) before calling getPlates()
+    *
+    *   The sortBy isn't guaranteed to be set to defaultSortBy in time before calling getPlates(),
+    *   which can lead to the initial getPlates() call to have the wrong sortBy value,
+    *   essentially rendering the defaultSortBy null
+    * 
+    * */
     init {
+        viewModelScope.launch {
+            val userPreferences = userPreferencesRepository.userPreferences.first()
+            val defaultSortBy = userPreferences.defaultSortOrder
+            _uiState.value = _uiState.value.copy(sortBy = defaultSortBy)
+        }
         getPlates()
     }
 
@@ -77,14 +92,17 @@ class HomeViewModel @Inject constructor(
                 compareByDescending<Plate> { it.commonDetails.country }
                     .thenByDescending { it.commonDetails.region }
                     .thenByDescending { it.commonDetails.area }
+                    .thenByDescending { it.uniqueDetails.number }
             )
             SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedWith(
                 compareBy<Plate> { it.commonDetails.country }
                     .thenBy { it.commonDetails.type }
+                    //.thenBy { it.uniqueDetails.number }
             )
             SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedWith(
                 compareByDescending<Plate> { it.commonDetails.country }
                     .thenByDescending { it.commonDetails.type }
+                    //.thenByDescending { it.uniqueDetails.number }
             )
             SortBy.DATE_NEWEST -> items.sortedByDescending { it.uniqueDetails.date }
             SortBy.DATE_OLDEST -> items.sortedWith(
