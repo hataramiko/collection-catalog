@@ -185,7 +185,7 @@ private fun TopRow(
     modifier: Modifier = Modifier
 ) {
     // For testing scroll handling
-    val position by animateFloatAsState(if (scrollState.value == true) -1024f else 0f)
+    val position by animateFloatAsState(if (scrollState.value == true) -256f else 0f)
 
     /*
     *   Did some changes to the structure, paddings, and background colors
