@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.components
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,7 +34,10 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -210,36 +216,6 @@ fun FilterBottomSheet(
                 }
             }
         }
-        /*
-        Column(
-            modifier = Modifier.padding(bottom = 24.dp)
-        ) {
-            filterOptions.forEach { option ->
-                Column(
-                    modifier = Modifier
-                        .clickable {  }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp, vertical = 16.dp)
-                    ) {
-                        Text(option)
-                        Spacer(modifier = Modifier.weight(1f))
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_chevron_forward),
-                            contentDescription = null
-                        )
-                    }
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                    )
-                }
-            }
-        }*/
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         Row(
             modifier = Modifier
@@ -273,38 +249,20 @@ fun FilterBottomSheet(
 @Composable
 private fun Header(
     label: String,
-    hasBackNavigation: Boolean = false,
     onReset: (() -> Unit)? = null
 ) {
     Row(
         verticalAlignment = Alignment.Bottom,
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
-        if (hasBackNavigation) {
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .padding(start = 16.dp, bottom = 4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = null
-                )
-            }
-        } else {
-            Spacer(modifier = Modifier.width(18.dp))
-        }
-
         Text(
             label,
             fontSize = 20.sp,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(start = 16.dp, bottom = 16.dp)
+                .padding(start = 32.dp, bottom = 16.dp)
         )
-
         if (onReset != null) {
             //Spacer(modifier = Modifier.weight(1f))
             TextButton(
@@ -341,26 +299,49 @@ private fun CheckboxList(
     activeFilters: Set<String>,
     onToggleFilter: (String) -> Unit
 ) {
-    Text(
-        label,
-        modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 4.dp)
-    )
-    filterOptions.forEach { option ->
-        val onClick = remember { Modifier.clickable { onToggleFilter(option) } }
+    var isExpanded by remember { mutableStateOf(false) }
+    val onClickLabel = remember { Modifier.clickable { isExpanded = !isExpanded } }
 
+    Column(
+        modifier = Modifier.animateContentSize()
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .then(onClick)
+                .then(onClickLabel)
         ) {
-            Checkbox(
-                checked = activeFilters.any { it == option },
-                onCheckedChange = null,
-                modifier = Modifier
-                    .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
+            Text(
+                label,
+                modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
             )
-            Text(option)
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
+                    else Icons.Rounded.KeyboardArrowDown,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 32.dp)
+            )
+        }
+        if (isExpanded) {
+            filterOptions.forEach { option ->
+                val onClickOption = remember { Modifier.clickable { onToggleFilter(option) } }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(onClickOption)
+                ) {
+                    Checkbox(
+                        checked = activeFilters.any { it == option },
+                        onCheckedChange = null,
+                        modifier = Modifier
+                            .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
+                    )
+                    Text(option)
+                }
+            }
         }
     }
 }
@@ -370,29 +351,6 @@ private fun FilterHorizontalDivider() {
     HorizontalDivider(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 8.dp)
+            .padding(start = 20.dp, end = 20.dp, /*top = 8.dp*/)
     )
 }
-
-/*
-@Composable
-private fun CheckboxSubmenu(options: Set<String>) {
-    Column {
-        options.forEach { option ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.toggleCountryFilter(option) }
-            ) {
-                Checkbox(
-                    checked = viewModel.uiState.value.countryFilter.any { it == option },
-                    onCheckedChange = null,
-                    modifier = Modifier
-                        .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
-                )
-                Text(option)
-            }
-        }
-    }
-}*/
