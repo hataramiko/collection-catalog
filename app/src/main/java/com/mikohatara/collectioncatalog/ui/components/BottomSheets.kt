@@ -154,7 +154,7 @@ fun FilterBottomSheet(
                     CheckboxList(
                         label = stringResource(R.string.country),
                         filterOptions = countries,
-                        activeFilters = uiState.countryFilter,
+                        activeFilters = uiState.filters.country,
                         onToggleFilter = { viewModel.toggleCountryFilter(it) }
                     )
                     FilterHorizontalDivider()
@@ -163,7 +163,7 @@ fun FilterBottomSheet(
                     CheckboxList(
                         label = stringResource(R.string.type),
                         filterOptions = types,
-                        activeFilters = uiState.typeFilter,
+                        activeFilters = uiState.filters.type,
                         onToggleFilter = { viewModel.toggleTypeFilter(it) }
                     )
                     FilterHorizontalDivider()
@@ -179,10 +179,10 @@ fun FilterBottomSheet(
                             .padding(start = 32.dp, end = 32.dp, top = 4.dp, bottom = 12.dp)
                     ) {
                         FilterChip(
-                            selected = uiState.isKeeperFilter,
+                            selected = uiState.filters.isKeeper,
                             onClick = { viewModel.toggleIsKeeperFilter() },
                             label = { Text("Keeper") },
-                            leadingIcon = if (uiState.isKeeperFilter) {
+                            leadingIcon = if (uiState.filters.isKeeper) {
                                 {
                                     Icon(
                                         imageVector = Icons.Rounded.Done,
@@ -196,10 +196,10 @@ fun FilterBottomSheet(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         FilterChip(
-                            selected = uiState.isForTradeFilter,
+                            selected = uiState.filters.isForTrade,
                             onClick = { viewModel.toggleIsForTradeFilter() },
                             label = { Text("For trade") },
-                            leadingIcon = if (uiState.isForTradeFilter) {
+                            leadingIcon = if (uiState.filters.isForTrade) {
                                 {
                                     Icon(
                                         imageVector = Icons.Rounded.Done,
