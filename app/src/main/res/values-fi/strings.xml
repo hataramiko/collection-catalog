@@ -60,4 +60,8 @@
     <string name="edit">Muokkaa</string>
     <string name="create_label">Luo uusi tunniste</string>
     <string name="default_sort_by">Oletusjärjestys</string>
+    <string name="collection">Kokoelma</string>
+    <string name="wishlist">Toivelista</string>
+    <string name="former">Entiset</string>
+    <string name="archive">Arkisto</string>
 </resources>

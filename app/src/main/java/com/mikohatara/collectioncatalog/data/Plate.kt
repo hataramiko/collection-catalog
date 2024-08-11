@@ -17,7 +17,7 @@ data class Plate(
 
 @Entity(tableName = "wishlist")
 data class WantedPlate(
-    @PrimaryKey @Ignore val id: Int,
+    @PrimaryKey val id: Int,
     @Embedded var commonDetails: CommonDetails,
     @ColumnInfo(name = "number") var number: String?,
     @ColumnInfo(name = "notes") var notes: String?
@@ -32,20 +32,18 @@ data class FormerPlate(
     @Embedded var measurements: Measurements
 )
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 data class CommonDetails(
-    @ColumnInfo(name = "country") var country: String, /********** NOT NULL **********/
+    @ColumnInfo(name = "country") var country: String,
     @ColumnInfo(name = "region") var region: String?,
     @ColumnInfo(name = "area") var area: String?,
-    @ColumnInfo(name = "type") var type: String, /********** NOT NULL **********/
+    @ColumnInfo(name = "type") var type: String,
     @ColumnInfo(name = "period") var period: String?,
     @ColumnInfo(name = "year") var year: Int?
 )
 
 data class UniqueDetails(
-    @ColumnInfo(name = "number") var number: String, /********** NOT NULL **********/
-    @ColumnInfo(name = "variant") var variant: String, /********** NOT NULL **********/
+    @ColumnInfo(name = "number") var number: String,
+    @ColumnInfo(name = "variant") var variant: String,
     @ColumnInfo(name = "image_path") var imagePath: String?,
     @ColumnInfo(name = "vehicle") var vehicle: String?,
     @ColumnInfo(name = "notes") var notes: String?,
@@ -56,8 +54,8 @@ data class UniqueDetails(
 )
 
 data class Grading(
-    @ColumnInfo(name = "keeper") var isKeeper: Boolean, /********** NOT NULL **********/
-    @ColumnInfo(name = "for_trade") var isForTrade: Boolean, /********** NOT NULL **********/
+    @ColumnInfo(name = "keeper") var isKeeper: Boolean,
+    @ColumnInfo(name = "for_trade") var isForTrade: Boolean,
     @ColumnInfo(name = "condition") var condition: String?,
 )
 
@@ -83,4 +81,3 @@ data class Former(
     @ColumnInfo(name = "transaction_type") var transactionType: String?,
     @ColumnInfo(name = "destination_country") var destinationCountry: String?,
 )
-

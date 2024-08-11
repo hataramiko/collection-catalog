@@ -4,9 +4,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikohatara.collectioncatalog.data.FormerPlate
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
+import com.mikohatara.collectioncatalog.data.WantedPlate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +20,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed class Item {
+    data class PlateData(val plate: Plate) : Item()
+    data class WantedPlateData(val wantedPlate: WantedPlate) : Item()
+    data class FormerPlateData(val formerPlate: FormerPlate) : Item()
+}
+
 data class HomeUiState(
     val items: List<Plate> = emptyList(),
     val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
@@ -28,15 +36,13 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val plateRepository: PlateRepository,
-    private val userPreferencesRepository: UserPreferencesRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     val showSortByBottomSheet = mutableStateOf(false)
     val showFilterBottomSheet = mutableStateOf(false)
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
 
     val sortByOptions = SortBy.entries.toList()
 

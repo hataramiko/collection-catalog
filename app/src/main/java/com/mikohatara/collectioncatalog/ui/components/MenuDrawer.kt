@@ -72,9 +72,8 @@ private fun MenuDrawerContent(
                 },
                 modifier = modifier
             )
-            /* TODO implement Wishlist
             NavigationDrawerItem(
-                label = { Text("Wishlist") },
+                label = { Text(stringResource(R.string.wishlist)) },
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.rounded_list_alt),
@@ -86,10 +85,9 @@ private fun MenuDrawerContent(
                     onCloseDrawer()
                 },
                 modifier = modifier
-            )*/
-            /* TODO implement Former
+            )
             NavigationDrawerItem(
-                label = { Text("Former") },
+                label = { Text(stringResource(R.string.archive)) },
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.rounded_history),
@@ -101,7 +99,7 @@ private fun MenuDrawerContent(
                     onCloseDrawer()
                 },
                 modifier = modifier
-            )*/
+            )
             NavigationDrawerItem(
                 label = { Text(stringResource(R.string.statistics)) },
                 icon = {

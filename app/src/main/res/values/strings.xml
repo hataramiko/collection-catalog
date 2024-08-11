@@ -60,4 +60,8 @@
     <string name="edit">Edit</string>
     <string name="create_label">Create new label</string>
     <string name="default_sort_by">Default sort order</string>
+    <string name="collection">Collection</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="former">Former</string>
+    <string name="archive">Archive</string>
 </resources>

@@ -59,4 +59,8 @@
     <string name="edit">編集</string>
     <string name="create_label">新しいラベルを作成</string>
     <string name="default_sort_by">デフォルト並べ替え</string>
+    <string name="collection">コレクション</string>
+    <string name="wishlist">欲しい物</string>
+    <string name="former">所有終了済み</string>
+    <string name="archive">アーカイブ</string>
 </resources>

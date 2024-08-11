@@ -87,12 +87,14 @@ private fun HomeScreen(
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { HomeTopAppBar(
-            title = stringResource(R.string.plates) + " (${itemList.size})",
-            onOpenDrawer = onOpenDrawer,
-            onAddItem = onAddItem,
-            scrollBehavior = scrollBehavior
-        ) },
+        topBar = {
+            HomeTopAppBar(
+                title = stringResource(R.string.plates) + " (${itemList.size})",
+                onOpenDrawer = onOpenDrawer,
+                onAddItem = onAddItem,
+                scrollBehavior = scrollBehavior
+            )
+        },
         content = { innerPadding ->
             HomeScreenContent(
                 viewModel = viewModel,
@@ -145,8 +147,7 @@ private fun HomeScreenContent(
         contentPadding = PaddingValues(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
             TopRow(scrollState, onSortByClick, onFilterClick)
