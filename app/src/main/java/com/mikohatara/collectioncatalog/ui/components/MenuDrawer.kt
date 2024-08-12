@@ -80,12 +80,14 @@ private fun MenuDrawerContent(
                         contentDescription = null
                     )
                 },
-                selected = false,
+                selected = currentRoute == CollectionCatalogDestinations.WISHLIST_ROUTE,
                 onClick = {
+                    navActions.navigateToWishlistScreen()
                     onCloseDrawer()
                 },
                 modifier = modifier
             )
+            /*
             NavigationDrawerItem(
                 label = { Text(stringResource(R.string.archive)) },
                 icon = {
@@ -99,7 +101,7 @@ private fun MenuDrawerContent(
                     onCloseDrawer()
                 },
                 modifier = modifier
-            )
+            )*/
             NavigationDrawerItem(
                 label = { Text(stringResource(R.string.statistics)) },
                 icon = {

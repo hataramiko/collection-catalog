@@ -33,7 +33,7 @@ import java.io.File
 @Composable
 fun ItemCard(
     item: Plate,
-    maxWidth: Double,
+    maxWidth: Int,
     onClick: () -> Unit
 ) {
     ItemCard(
@@ -48,9 +48,9 @@ fun ItemCard(
 @Composable
 private fun ItemCard(
     imagePath: String?,
-    width: Double?,
+    width: Int?,
     title: String,
-    maxImageWidth: Double,
+    maxImageWidth: Int,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -113,9 +113,9 @@ private fun ItemCard(
 fun CardPreview() {
     ItemCard(
         imagePath = null,
-        width = 440.0,
+        width = 440,
         title = "ABCD56789",
-        maxImageWidth = 520.0,
+        maxImageWidth = 520,
         onCardClick = {}
     )
 }

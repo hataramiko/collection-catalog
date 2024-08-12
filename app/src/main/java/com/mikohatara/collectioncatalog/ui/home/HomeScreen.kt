@@ -134,7 +134,7 @@ private fun HomeScreenContent(
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit
 ) {
-    val maxWidth = itemList.maxOfOrNull { it.measurements.width ?: 0.0 } ?: 0.0
+    val maxWidth = itemList.maxOfOrNull { it.measurements.width ?: 0 } ?: 0
 
     // For testing TopRow scroll handling
     val listState = rememberLazyListState()

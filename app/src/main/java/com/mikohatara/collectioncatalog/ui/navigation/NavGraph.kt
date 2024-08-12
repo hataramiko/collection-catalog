@@ -15,6 +15,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
+import com.mikohatara.collectioncatalog.ui.home.WishlistScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemSummaryScreen
 import com.mikohatara.collectioncatalog.ui.settings.SettingsScreen
@@ -49,6 +50,15 @@ fun CollectionCatalogNavGraph(
                         item.uniqueDetails.number,
                         item.uniqueDetails.variant
                     ) },
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                )
+            }
+        }
+        composable(CollectionCatalogDestinations.WISHLIST_ROUTE) {
+            ModalMenuDrawer(drawerState, currentRoute, navActions) {
+                WishlistScreen(
+                    onAddItem = { /*TODO*/ },
+                    onItemClick = {},
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )
             }

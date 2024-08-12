@@ -17,8 +17,8 @@ val samplePlates = listOf(
             null,
             null,
             "2023-04-21",
-            5.0,
-            35.0,
+            500L,
+            3500L,
             null
         ),
         Grading(
@@ -55,8 +55,8 @@ val samplePlates = listOf(
             null,
             null,
             "2023-04-21",
-            5.0,
-            35.0,
+            500L,
+            3500L,
             null
         ),
         Grading(
@@ -245,8 +245,8 @@ val samplePlates = listOf(
             "Some Mercedez",
             "New Münich region code.",
             "2024-06-01",
-            5.0,
-            35.0,
+            500L,
+            3500L,
             "In storage"
         ),
         Grading(
@@ -262,7 +262,7 @@ val samplePlates = listOf(
             "Germany"
         ),
         Measurements(
-            52.0,
+            520,
             null,
             null
         )

@@ -100,7 +100,7 @@ private fun WishlistScreenContent(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 200.dp)
+                        .padding(top = 256.dp)
                 )
             }
         } else {

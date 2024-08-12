@@ -108,8 +108,8 @@ data class ItemDetails(
     val vehicle: String? = null,
     val notes: String? = null,
     val date: String? = null,
-    val cost: Double? = null,
-    val value: Double? = null,
+    val cost: Long? = null,
+    val value: Long? = null,
     val status: String? = null,
     // Grading
     val isKeeper: Boolean = false,
@@ -122,7 +122,7 @@ data class ItemDetails(
     val sourceType: String? = null,
     val sourceCountry: String? = null,
     // Measurements
-    val width: Double? = null,
-    val height: Double? = null,
+    val width: Int? = null,
+    val height: Int? = null,
     val weight: Double? = null,
 )

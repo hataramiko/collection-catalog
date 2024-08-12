@@ -275,7 +275,7 @@ private fun ItemEntryScreenContent(
                     label = stringResource(R.string.cost),
                     value = uiState.itemDetails.cost?.toString() ?: "",
                     onValueChange = { onValueChange( // TODO improve input logic
-                        uiState.itemDetails.copy(cost = it.toDoubleOrNull() ?: 0.0))
+                        uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
                     },
                     modifier = Modifier.weight(1f),
                     keyboardType = KeyboardType.Number,
@@ -287,7 +287,7 @@ private fun ItemEntryScreenContent(
                     onValueChange = { newValue ->
                         onValueChange(uiState.itemDetails.copy(
                             value = if (newValue.isBlankOrZero()) null
-                            else newValue.toDoubleOrNull())
+                            else newValue.toLongOrNull())
                         )
                     },
                     modifier = Modifier.weight(0.725f),
@@ -366,7 +366,7 @@ private fun ItemEntryScreenContent(
                     onValueChange = { newValue ->
                         onValueChange(uiState.itemDetails.copy(
                             width = if (newValue.isBlankOrZero()) null
-                            else newValue.toDoubleOrNull())
+                            else newValue.toIntOrNull())
                         )
                     },
                     modifier = Modifier.weight(1f),
@@ -379,7 +379,7 @@ private fun ItemEntryScreenContent(
                     onValueChange = { newValue ->
                         onValueChange(uiState.itemDetails.copy(
                             height = if (newValue.isBlankOrZero()) null
-                            else newValue.toDoubleOrNull())
+                            else newValue.toIntOrNull())
                         )
                     },
                     modifier = Modifier.weight(0.725f),

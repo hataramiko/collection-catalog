@@ -7,14 +7,17 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HOME_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_ENTRY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_SUMMARY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.SETTINGS_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.STATS_SCREEN
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.WISHLIST_SCREEN
 
 object CollectionCatalogScreens {
     const val HOME_SCREEN = "home"
+    const val WISHLIST_SCREEN = "wishlist"
     const val STATS_SCREEN = "stats"
     const val SETTINGS_SCREEN = "settings"
     const val ITEM_SUMMARY_SCREEN = "itemSummary"
@@ -28,6 +31,7 @@ object CollectionCatalogDestinationArgs {
 
 object CollectionCatalogDestinations {
     const val HOME_ROUTE = HOME_SCREEN
+    const val WISHLIST_ROUTE = WISHLIST_SCREEN
     const val STATS_ROUTE = STATS_SCREEN
     const val SETTINGS_ROUTE = SETTINGS_SCREEN
     const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
@@ -38,6 +42,10 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
 
     fun navigateToHomeScreen() {
         navController.navigate(HOME_ROUTE)
+    }
+
+    fun navigateToWishlistScreen() {
+        navController.navigate(WISHLIST_ROUTE)
     }
 
     fun navigateToStatsScreen() {
