@@ -3,26 +3,26 @@ package com.mikohatara.collectioncatalog.util
 import com.mikohatara.collectioncatalog.data.Color
 import com.mikohatara.collectioncatalog.data.CommonDetails
 import com.mikohatara.collectioncatalog.data.Grading
+import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.Size
 import com.mikohatara.collectioncatalog.data.Source
 import com.mikohatara.collectioncatalog.data.UniqueDetails
-import com.mikohatara.collectioncatalog.ui.item.ItemDetails
 
 fun ItemDetails.toPlate(): Plate = Plate(
-    id,
+    id ?: 0,
     CommonDetails(
-        country,
+        country ?: "",
         region1st?.takeIf { it.isNotBlank() },
         region2nd?.takeIf { it.isNotBlank() },
         region3rd?.takeIf { it.isNotBlank() },
-        type,
+        type ?: "",
         periodStart,//.takeIf { it.isNotBlank() },
         periodEnd,//.takeIf { it.isNotBlank() },
         year//?.takeIf { it != 0 }
     ),
     UniqueDetails(
-        regNo,
+        regNo ?: "",
         imagePath,
         notes?.takeIf { it.isNotBlank() },
         vehicle?.takeIf { it.isNotBlank() },

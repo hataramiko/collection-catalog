@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
 import com.mikohatara.collectioncatalog.ui.components.IconAbc123
 import com.mikohatara.collectioncatalog.ui.components.IconBlank
@@ -71,7 +72,7 @@ private fun ItemEntryScreen(
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
     val topBarTitle: String = if (!uiState.isNew) {
-        stringResource(R.string.edit_item_title, uiState.itemDetails.regNo)
+        stringResource(R.string.edit_item_title, uiState.itemDetails.regNo ?: "")
     } else {
         stringResource(R.string.add_item_title)
     }
@@ -112,9 +113,9 @@ private fun ItemEntryScreenContent(
     onSave: () -> Unit
 ) {
     val saveButtonText: String = if (!uiState.isNew) {
-        stringResource(R.string.save_edited_item, uiState.itemDetails.regNo)
+        stringResource(R.string.save_edited_item, uiState.itemDetails.regNo ?: "")
     } else {
-        stringResource(R.string.save_added_item, uiState.itemDetails.regNo)
+        stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "")
     }
 
     Column(
@@ -133,7 +134,7 @@ private fun ItemEntryScreenContent(
                 EntryFormField(
                     icon = { IconAbc123() },
                     label = stringResource(R.string.reg_no),
-                    value = uiState.itemDetails.regNo,
+                    value = uiState.itemDetails.regNo ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(regNo = it)) },
                     modifier = Modifier.weight(1f),
                     enabled = uiState.isNew,
@@ -167,7 +168,7 @@ private fun ItemEntryScreenContent(
                     )
                 },
                 label = stringResource(R.string.country),
-                value = uiState.itemDetails.country,
+                value = uiState.itemDetails.country ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(country = it)) }
             )
             EntryFormField(
@@ -199,7 +200,7 @@ private fun ItemEntryScreenContent(
                     )
                 },
                 label = stringResource(R.string.type),
-                value = uiState.itemDetails.type,
+                value = uiState.itemDetails.type ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(type = it)) }
             )
             Row {

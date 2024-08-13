@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
@@ -34,7 +35,7 @@ class ItemEntryViewModel @Inject constructor(
     var uiState by mutableStateOf(ItemEntryUiState())
         private set
 
-    init { // TODO this works for now, but should be improved
+    init {
         if (itemId != null) {
             loadItem(itemId)
         } else {
@@ -89,41 +90,3 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 }
-
-data class ItemDetails(
-    val id: Int = 3,
-    // CommonDetails
-    val country: String = "",
-    val region1st: String? = null,
-    val region2nd: String? = null,
-    val region3rd: String? = null,
-    val type: String = "",
-    val periodStart: Int? = null,
-    val periodEnd: Int? = null,
-    val year: Int? = null,
-    // UniqueDetails
-    val regNo: String = "",
-    val imagePath: String? = null,
-    val vehicle: String? = null,
-    val notes: String? = null,
-    val date: String? = null,
-    val cost: Long? = null,
-    val value: Long? = null,
-    val status: String? = null,
-    // Grading
-    val isKeeper: Boolean = false,
-    val isForTrade: Boolean = false,
-    // Size
-    val width: Int? = null,
-    val height: Int? = null,
-    val weight: Double? = null,
-    // Color
-    val main: String? = null,
-    val secondary: String? = null,
-    // Source
-    val sourceName: String? = null,
-    val sourceAlias: String? = null,
-    val sourceDetails: String? = null,
-    val sourceType: String? = null,
-    val sourceCountry: String? = null,
-)
