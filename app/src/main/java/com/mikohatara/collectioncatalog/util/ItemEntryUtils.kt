@@ -10,6 +10,7 @@ import com.mikohatara.collectioncatalog.data.UniqueDetails
 import com.mikohatara.collectioncatalog.ui.item.ItemDetails
 
 fun ItemDetails.toPlate(): Plate = Plate(
+    id,
     CommonDetails(
         country,
         region1st?.takeIf { it.isNotBlank() },
@@ -22,7 +23,6 @@ fun ItemDetails.toPlate(): Plate = Plate(
     ),
     UniqueDetails(
         regNo,
-        variant,
         imagePath,
         notes?.takeIf { it.isNotBlank() },
         vehicle?.takeIf { it.isNotBlank() },
@@ -54,6 +54,7 @@ fun ItemDetails.toPlate(): Plate = Plate(
 )
 
 fun Plate.toItemDetails(): ItemDetails = ItemDetails(
+    id = id,
     // CommonDetails
     country = commonDetails.country,
     region1st = commonDetails.region1st,
@@ -65,7 +66,6 @@ fun Plate.toItemDetails(): ItemDetails = ItemDetails(
     year = commonDetails.year,
     // UniqueDetails
     regNo = uniqueDetails.regNo,
-    variant = uniqueDetails.variant,
     imagePath = uniqueDetails.imagePath,
     notes = uniqueDetails.notes,
     vehicle = uniqueDetails.vehicle,

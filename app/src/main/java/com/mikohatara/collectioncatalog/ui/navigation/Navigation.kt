@@ -1,10 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.navigation
 
 import androidx.navigation.NavHostController
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.NUMBER_VARIANT
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.PLATE_NUMBER
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ADD_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
@@ -25,8 +24,7 @@ object CollectionCatalogScreens {
 }
 
 object CollectionCatalogDestinationArgs {
-    const val PLATE_NUMBER = "plateNumber"
-    const val NUMBER_VARIANT = "numberVariant"
+    const val ITEM_ID = "itemId"
 }
 
 object CollectionCatalogDestinations {
@@ -34,8 +32,9 @@ object CollectionCatalogDestinations {
     const val WISHLIST_ROUTE = WISHLIST_SCREEN
     const val STATS_ROUTE = STATS_SCREEN
     const val SETTINGS_ROUTE = SETTINGS_SCREEN
-    const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
-    const val ITEM_ENTRY_ROUTE = "$ITEM_ENTRY_SCREEN/{$PLATE_NUMBER}/{$NUMBER_VARIANT}"
+    const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$ITEM_ID}"
+    const val ITEM_ENTRY_ADD_ROUTE = ITEM_ENTRY_SCREEN
+    const val ITEM_ENTRY_EDIT_ROUTE = "$ITEM_ENTRY_SCREEN/{$ITEM_ID}"
 }
 
 class CollectionCatalogNavigationActions(private val navController: NavHostController) {
@@ -56,15 +55,13 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
         navController.navigate(SETTINGS_ROUTE)
     }
 
-    fun navigateToItemSummaryScreen(number: String, variant: String) {
-        navController.navigate("$ITEM_SUMMARY_SCREEN/$number/$variant")
+    fun navigateToItemSummaryScreen(itemId: Int) {
+        navController.navigate("$ITEM_SUMMARY_SCREEN/$itemId")
     }
 
-    fun navigateToItemEntryScreen(number: String?, variant: String?) {
-        if (number == null || variant == null) { // TODO probably should improve this whole thing
-            navController.navigate(ITEM_ENTRY_ROUTE)
-        } else {
-            navController.navigate("$ITEM_ENTRY_SCREEN/$number/$variant")
-        }
+    fun navigateToItemEntryScreen(itemId: Int? = null) {
+        navController.navigate(
+            if (itemId != null) "$ITEM_ENTRY_SCREEN/$itemId" else ITEM_ENTRY_ADD_ROUTE
+        )
     }
 }

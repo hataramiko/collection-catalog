@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.data.Plate
 import java.io.File
 
 @Composable
@@ -57,7 +56,7 @@ private fun ItemCard(
     modifier: Modifier = Modifier
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
-    val scale = screenWidth / maxImageWidth
+    val scale = screenWidth / if (maxImageWidth != 0) maxImageWidth else 1
     val onClick = remember { Modifier.clickable { onCardClick() } }
 
     Card(

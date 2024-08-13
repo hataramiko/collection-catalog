@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toPlate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,17 +29,14 @@ class ItemEntryViewModel @Inject constructor(
     private val plateRepository: PlateRepository
 ) : ViewModel() {
 
-    private val plateNumber: String? =
-        savedStateHandle.get<String>(CollectionCatalogDestinationArgs.PLATE_NUMBER)
-    private val numberVariant: String? =
-        savedStateHandle.get<String>(CollectionCatalogDestinationArgs.NUMBER_VARIANT)
+    private val itemId: Int? = savedStateHandle.get<Int>(ITEM_ID)
 
     var uiState by mutableStateOf(ItemEntryUiState())
         private set
 
     init { // TODO this works for now, but should be improved
-        if (plateNumber != "{plateNumber}" && numberVariant != "{numberVariant}") {
-            loadItem(plateNumber, numberVariant)
+        if (itemId != null) {
+            loadItem(itemId)
         } else {
             uiState = ItemEntryUiState(isNew = true)
         }
@@ -82,8 +79,8 @@ class ItemEntryViewModel @Inject constructor(
         plateRepository.updatePlate(uiState.itemDetails.toPlate())
     }
 
-    private fun loadItem(plateNumber: String?, numberVariant: String?) = viewModelScope.launch {
-        plateRepository.getPlateStream(plateNumber!!, numberVariant!!).let {
+    private fun loadItem(itemId: Int?) = viewModelScope.launch {
+        plateRepository.getPlateStream(itemId!!).let {
             uiState = ItemEntryUiState(
                 item = it.firstOrNull(),
                 itemDetails = it.firstOrNull()!!.toItemDetails(),
@@ -94,6 +91,7 @@ class ItemEntryViewModel @Inject constructor(
 }
 
 data class ItemDetails(
+    val id: Int = 3,
     // CommonDetails
     val country: String = "",
     val region1st: String? = null,
@@ -105,7 +103,6 @@ data class ItemDetails(
     val year: Int? = null,
     // UniqueDetails
     val regNo: String = "",
-    val variant: String = "",
     val imagePath: String? = null,
     val vehicle: String? = null,
     val notes: String? = null,

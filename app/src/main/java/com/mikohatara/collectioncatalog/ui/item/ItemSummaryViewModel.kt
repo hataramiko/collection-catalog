@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.samplePlates
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,15 +24,10 @@ class ItemSummaryViewModel @Inject constructor(
     private val plateRepository: PlateRepository
 ) : ViewModel() {
 
-    private val plateNumber: String =
-        savedStateHandle.get<String>(CollectionCatalogDestinationArgs.PLATE_NUMBER)!!
-        //savedStateHandle[CollectionCatalogDestinationArgs.PLATE_NUMBER]!!
-    private val numberVariant: String =
-        savedStateHandle.get<String>(CollectionCatalogDestinationArgs.NUMBER_VARIANT)!!
-        //savedStateHandle[CollectionCatalogDestinationArgs.NUMBER_VARIANT]!!
+    private val itemId: Int = savedStateHandle.get<Int>(ITEM_ID)!!
 
     val uiState: StateFlow<ItemSummaryUiState> =
-        plateRepository.getPlateStream(plateNumber, numberVariant)
+        plateRepository.getPlateStream(itemId)
             .map { ItemSummaryUiState(item = it) }
             .stateIn(
                 scope = viewModelScope,

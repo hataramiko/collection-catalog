@@ -25,15 +25,15 @@ interface PlateDao {
     @Delete
     suspend fun deletePlate(plate: Plate)
 
-    @Query("SELECT * from plates WHERE reg_no = :number AND variant = :variant") //
-    fun getPlate(number: String, variant: String): Flow<Plate>
+    @Query("SELECT * from plates WHERE id = :id")
+    fun getPlate(id: Int): Flow<Plate>
 
-    @Query("SELECT * from plates WHERE reg_no = :number")
-    fun getPlates(number: String): Flow<Plate>
+    @Query("SELECT * from plates WHERE reg_no = :regNo")
+    fun getPlates(regNo: String): Flow<Plate>
 
     @Query("SELECT * from plates ORDER BY country ASC")
     fun getAllPlates(): Flow<List<Plate>>
 
-    @Query("SELECT * from plates WHERE reg_no = :number AND variant = :variant")
-    fun getPlateData(number: String, variant: String): Plate
+    @Query("SELECT * from plates WHERE id = :id")
+    fun getPlateData(id: Int): Plate
 }

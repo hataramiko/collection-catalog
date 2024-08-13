@@ -9,15 +9,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.home.WishlistScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemSummaryScreen
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ADD_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_EDIT_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_SUMMARY_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.settings.SettingsScreen
 import com.mikohatara.collectioncatalog.ui.stats.StatsScreen
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +39,7 @@ fun CollectionCatalogNavGraph(
     navController: NavHostController = rememberNavController(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    startDestination: String = CollectionCatalogDestinations.HOME_ROUTE,
+    startDestination: String = HOME_ROUTE,
     navActions: CollectionCatalogNavigationActions = remember(navController) {
         CollectionCatalogNavigationActions(navController)
     }
@@ -42,50 +52,67 @@ fun CollectionCatalogNavGraph(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        composable(CollectionCatalogDestinations.HOME_ROUTE) { //entry ->
+        composable(
+            route = HOME_ROUTE
+        ) {
             ModalMenuDrawer(drawerState, currentRoute, navActions) {
                 HomeScreen(
-                    onAddItem = { navActions.navigateToItemEntryScreen(null, null) },
-                    onItemClick = { item -> navActions.navigateToItemSummaryScreen(
-                        item.uniqueDetails.regNo,
-                        item.uniqueDetails.variant
-                    ) },
+                    onAddItem = { navActions.navigateToItemEntryScreen(null) },
+                    onItemClick = { navActions.navigateToItemSummaryScreen(it.id) },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )
             }
         }
-        composable(CollectionCatalogDestinations.WISHLIST_ROUTE) {
+        composable(
+            route = WISHLIST_ROUTE
+        ) {
             ModalMenuDrawer(drawerState, currentRoute, navActions) {
                 WishlistScreen(
                     onAddItem = { /*TODO*/ },
-                    onItemClick = {},
+                    onItemClick = { /*TODO*/ },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )
             }
         }
-        composable(CollectionCatalogDestinations.ITEM_SUMMARY_ROUTE) {
+        composable(
+            route = ITEM_SUMMARY_ROUTE,
+            arguments = listOf(navArgument(ITEM_ID) { type = NavType.IntType })
+        ) {
             ItemSummaryScreen(
                 onBack = { navController.popBackStack() },
-                onEdit = { item -> navActions.navigateToItemEntryScreen(
-                    item.uniqueDetails.regNo,
-                    item.uniqueDetails.variant
-                ) },
-                onDelete = {  }
+                onEdit = { navActions.navigateToItemEntryScreen(it.id) },
+                onDelete = { /*TODO remove this from here?*/ }
             )
         }
-        composable(CollectionCatalogDestinations.ITEM_ENTRY_ROUTE) {
+        composable(
+            route = ITEM_ENTRY_ADD_ROUTE
+        ) {
             ItemEntryScreen(
                 onBack = { navController.popBackStack() }
             )
         }
-        composable(CollectionCatalogDestinations.STATS_ROUTE) {
+        composable(
+            route = ITEM_ENTRY_EDIT_ROUTE,
+            arguments = listOf(
+                navArgument(ITEM_ID) { type = NavType.IntType }
+            )
+        ) {
+            ItemEntryScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = STATS_ROUTE
+        ) {
             ModalMenuDrawer(drawerState, currentRoute, navActions) {
                 StatsScreen(
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )
             }
         }
-        composable(CollectionCatalogDestinations.SETTINGS_ROUTE) {
+        composable(
+            route = SETTINGS_ROUTE
+        ) {
             SettingsScreen(
                 onBack = { navController.popBackStack() }
             )

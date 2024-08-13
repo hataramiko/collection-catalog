@@ -11,9 +11,9 @@ interface PlateRepository {
 
     suspend fun deletePlate(plate: Plate)
 
-    fun getPlateData(number: String, variant: String): Plate
+    fun getPlateData(id: Int): Plate
 
-    fun getPlateStream(number: String, variant: String): Flow<Plate?> //
+    fun getPlateStream(id: Int): Flow<Plate?> //
 
     fun getAllPlatesStream(): Flow<List<Plate>>
 }
@@ -28,11 +28,11 @@ class OfflinePlateRepository @Inject constructor(
 
     override suspend fun deletePlate(plate: Plate) = plateDao.deletePlate(plate)
 
-    override fun getPlateData(number: String, variant: String):
-        Plate = plateDao.getPlateData(number, variant)
+    override fun getPlateData(id: Int):
+        Plate = plateDao.getPlateData(id)
 
-    override fun getPlateStream(number: String, variant: String): Flow<Plate?> {
-        return plateDao.getPlate(number, variant).map { it }
+    override fun getPlateStream(id: Int): Flow<Plate?> {
+        return plateDao.getPlate(id).map { it }
     }
 
     override fun getAllPlatesStream(): Flow<List<Plate>> = plateDao.getAllPlates()

@@ -142,8 +142,8 @@ private fun ItemEntryScreenContent(
                 EntryFormField(
                     icon = null,
                     label = "Variant",
-                    value = uiState.itemDetails.variant,
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(variant = it)) },
+                    value = uiState.itemDetails.id.toString(),
+                    onValueChange = {},//{ onValueChange(uiState.itemDetails.copy(id = it)) },
                     modifier = Modifier.weight(0.5f),
                     enabled = uiState.isNew
                 )

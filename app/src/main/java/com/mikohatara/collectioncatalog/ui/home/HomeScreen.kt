@@ -164,9 +164,7 @@ private fun HomeScreenContent(
             }
             Log.d("itemList is empty", itemList.toString())
         } else {
-            items(items = itemList, key = {
-                it.uniqueDetails.regNo + it.uniqueDetails.variant
-            }) { item ->
+            items(items = itemList, key = { it.id }) { item ->
                 ItemCard(
                     imagePath = item.uniqueDetails.imagePath,
                     width = item.size.width,

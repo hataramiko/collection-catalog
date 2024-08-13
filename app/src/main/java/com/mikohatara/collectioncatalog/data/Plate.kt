@@ -3,12 +3,11 @@ package com.mikohatara.collectioncatalog.data
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "plates", primaryKeys = ["reg_no", "variant"])
+@Entity(tableName = "plates")
 data class Plate(
-    //@PrimaryKey val id: Int, // TODO replace primaryKeys
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @Embedded val commonDetails: CommonDetails,
     @Embedded val uniqueDetails: UniqueDetails,
     @Embedded val grading: Grading,
@@ -19,7 +18,7 @@ data class Plate(
 
 @Entity(tableName = "wishlist")
 data class WantedPlate(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "reg_no") val regNo: String?,
     @Embedded val commonDetails: CommonDetails,
     @ColumnInfo(name = "notes") val notes: String?
@@ -27,7 +26,7 @@ data class WantedPlate(
 
 @Entity(tableName = "archive")
 data class FormerPlate(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @Embedded val commonDetails: CommonDetails,
     @Embedded val uniqueDetails: UniqueDetails,
     @Embedded val size: Size,
@@ -35,8 +34,6 @@ data class FormerPlate(
     @Embedded val source: Source,
     @Embedded val archivalDetails: ArchivalDetails,
 )
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 
 data class CommonDetails(
     @ColumnInfo(name = "country") val country: String,
@@ -49,19 +46,15 @@ data class CommonDetails(
     @ColumnInfo(name = "year") val year: Int?
 )
 
-data class UniqueDetails(
-    // TODO separate from UniqueDetails
+data class UniqueDetails( // TODO include "condition" and/or "grade"???
     @ColumnInfo(name = "reg_no") val regNo: String,
-    @ColumnInfo(name = "variant") val variant: String,
     @ColumnInfo(name = "image_path") val imagePath: String?,
-    ////////////////////////////////////////////////////////////////////////////////////
     @ColumnInfo(name = "notes") val notes: String?,
     @ColumnInfo(name = "vehicle") val vehicle: String?,
     @ColumnInfo(name = "date") val date: String?,
     @ColumnInfo(name = "cost") val cost: Long?,
     @ColumnInfo(name = "value") val value: Long?,
     @ColumnInfo(name = "status") val status: String?
-    // TODO include "condition" and/or "grade"???
 )
 
 data class Grading( // TODO get rid of when "runs" have been implemented
