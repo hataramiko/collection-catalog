@@ -6,8 +6,10 @@ val samplePlates = listOf(
             "Finland",
             null,
             null,
+            null,
             "Sample",
-            "1996 - 2001",
+            1923,
+            1930,
             null
         ),
         UniqueDetails(
@@ -23,8 +25,16 @@ val samplePlates = listOf(
         ),
         Grading(
             true,
-            false,
+            false
+        ),
+        Size(
+            400,
+            130,
             null
+        ),
+        Color(
+            "Black",
+            "White"
         ),
         Source(
             null,
@@ -32,11 +42,6 @@ val samplePlates = listOf(
             null,
             "Online",
             "Finland"
-        ),
-        Measurements(
-            null,
-            null,
-            null
         )
     ),
     Plate(
@@ -44,13 +49,15 @@ val samplePlates = listOf(
             "Finland",
             null,
             null,
+            null,
             "Sample",
-            "1996 - 2001",
+            1923,
+            1930,
             null
         ),
         UniqueDetails(
             "ABC-012",
-            "b",
+            "a",
             null,
             null,
             null,
@@ -60,9 +67,17 @@ val samplePlates = listOf(
             null
         ),
         Grading(
-            false,
             true,
+            false
+        ),
+        Size(
+            400,
+            130,
             null
+        ),
+        Color(
+            "Black",
+            "White"
         ),
         Source(
             null,
@@ -70,201 +85,221 @@ val samplePlates = listOf(
             null,
             "Online",
             "Finland"
-        ),
-        Measurements(
-            null,
-            null,
-            null
         )
     ),
     Plate(
         CommonDetails(
-            "Japan",
-            "Sample",
+            "Finland",
+            null,
+            null,
             null,
             "Sample",
-            "1998 - ",
+            1923,
+            1930,
             null
         ),
         UniqueDetails(
-            "見本480 あ12-34",
+            "ABC-012",
             "a",
             null,
             null,
             null,
-            null,
-            null,
-            null,
-            null
-        ),
-        Grading(
-            true,
-            false,
-            null
-        ),
-        Source(
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        Measurements(
-            null,
-            null,
-            null
-        ),
-    ),
-    Plate(
-        CommonDetails(
-            "Japan",
-            "Sample",
-            null,
-            "Sample",
-            "1998 - ",
-            null
-        ),
-        UniqueDetails(
-            "見本50A さ01-23",
-            "a",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        Grading(
-            true,
-            false,
-            null
-        ),
-        Source(
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        Measurements(
-            null,
-            null,
-            null
-        ),
-    ),
-    Plate(
-        CommonDetails(
-            "Soviet Union",
-            "Sample",
-            null,
-            "Sample",
-            "1998 - ",
-            null
-        ),
-        UniqueDetails(
-            "1234 АБВ",
-            "a",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        Grading(
-            true,
-            false,
-            null
-        ),
-        Source(
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        Measurements(
-            null,
-            null,
-            null
-        )
-    ),
-    Plate(
-        CommonDetails(
-            "Soviet Union",
-            "Sample",
-            null,
-            "Sample",
-            "1998 - ",
-            null
-        ),
-        UniqueDetails(
-            "А 1234 БВ",
-            "a",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        Grading(
-            true,
-            false,
-            null
-        ),
-        Source(
-            null,
-            null,
-            null,
-            null,
-            null
-        ),
-        Measurements(
-            null,
-            null,
-            null
-        ),
-    ),
-    Plate(
-        CommonDetails(
-            "Germany",
-            "Bayern",
-            "Münich",
-            "Passenger",
-            "1995 - 2052",
-            2024
-        ),
-        UniqueDetails(
-            "MUC AB12",
-            "a",
-            null,
-            "Some Mercedez",
-            "New Münich region code.",
-            "2024-06-01",
+            "2023-04-21",
             500L,
             3500L,
-            "In storage"
+            null
         ),
         Grading(
             true,
-            false,
+            false
+        ),
+        Size(
+            400,
+            130,
             null
+        ),
+        Color(
+            "Black",
+            "White"
         ),
         Source(
-            "Hermann Freimann",
-            "pl8dlr",
-            "eBay",
-            "Online",
-            "Germany"
-        ),
-        Measurements(
-            520,
             null,
-            null
+            null,
+            null,
+            "Online",
+            "Finland"
         )
-    )
+    ),
+    Plate(
+        CommonDetails(
+            "Finland",
+            null,
+            null,
+            null,
+            "Sample",
+            1923,
+            1930,
+            null
+        ),
+        UniqueDetails(
+            "ABC-012",
+            "a",
+            null,
+            null,
+            null,
+            "2023-04-21",
+            500L,
+            3500L,
+            null
+        ),
+        Grading(
+            true,
+            false
+        ),
+        Size(
+            400,
+            130,
+            null
+        ),
+        Color(
+            "Black",
+            "White"
+        ),
+        Source(
+            null,
+            null,
+            null,
+            "Online",
+            "Finland"
+        )
+    ),
+    Plate(
+        CommonDetails(
+            "Finland",
+            null,
+            null,
+            null,
+            "Sample",
+            1923,
+            1930,
+            null
+        ),
+        UniqueDetails(
+            "ABC-012",
+            "a",
+            null,
+            null,
+            null,
+            "2023-04-21",
+            500L,
+            3500L,
+            null
+        ),
+        Grading(
+            true,
+            false
+        ),
+        Size(
+            400,
+            130,
+            null
+        ),
+        Color(
+            "Black",
+            "White"
+        ),
+        Source(
+            null,
+            null,
+            null,
+            "Online",
+            "Finland"
+        )
+    ),
+    Plate(
+        CommonDetails(
+            "Finland",
+            null,
+            null,
+            null,
+            "Sample",
+            1923,
+            1930,
+            null
+        ),
+        UniqueDetails(
+            "ABC-012",
+            "a",
+            null,
+            null,
+            null,
+            "2023-04-21",
+            500L,
+            3500L,
+            null
+        ),
+        Grading(
+            true,
+            false
+        ),
+        Size(
+            400,
+            130,
+            null
+        ),
+        Color(
+            "Black",
+            "White"
+        ),
+        Source(
+            null,
+            null,
+            null,
+            "Online",
+            "Finland"
+        )
+    ),
+    Plate(
+        CommonDetails(
+            "Finland",
+            null,
+            null,
+            null,
+            "Sample",
+            1923,
+            1930,
+            null
+        ),
+        UniqueDetails(
+            "ABC-012",
+            "a",
+            null,
+            null,
+            null,
+            "2023-04-21",
+            500L,
+            3500L,
+            null
+        ),
+        Grading(
+            true,
+            false
+        ),
+        Size(
+            400,
+            130,
+            null
+        ),
+        Color(
+            "Black",
+            "White"
+        ),
+        Source(
+            null,
+            null,
+            null,
+            "Online",
+            "Finland"
+        )
+    ),
 )

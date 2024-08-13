@@ -1,9 +1,10 @@
 package com.mikohatara.collectioncatalog.util
 
+import com.mikohatara.collectioncatalog.data.Color
 import com.mikohatara.collectioncatalog.data.CommonDetails
 import com.mikohatara.collectioncatalog.data.Grading
-import com.mikohatara.collectioncatalog.data.Measurements
 import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.data.Size
 import com.mikohatara.collectioncatalog.data.Source
 import com.mikohatara.collectioncatalog.data.UniqueDetails
 import com.mikohatara.collectioncatalog.ui.item.ItemDetails
@@ -11,18 +12,20 @@ import com.mikohatara.collectioncatalog.ui.item.ItemDetails
 fun ItemDetails.toPlate(): Plate = Plate(
     CommonDetails(
         country,
-        region?.takeIf { it.isNotBlank() },
-        area?.takeIf { it.isNotBlank() },
+        region1st?.takeIf { it.isNotBlank() },
+        region2nd?.takeIf { it.isNotBlank() },
+        region3rd?.takeIf { it.isNotBlank() },
         type,
-        period?.takeIf { it.isNotBlank() },
+        periodStart,//.takeIf { it.isNotBlank() },
+        periodEnd,//.takeIf { it.isNotBlank() },
         year//?.takeIf { it != 0 }
     ),
     UniqueDetails(
-        number,
+        regNo,
         variant,
         imagePath,
-        vehicle?.takeIf { it.isNotBlank() },
         notes?.takeIf { it.isNotBlank() },
+        vehicle?.takeIf { it.isNotBlank() },
         date?.takeIf { it.isNotBlank() },
         cost,
         value,
@@ -30,8 +33,16 @@ fun ItemDetails.toPlate(): Plate = Plate(
     ),
     Grading(
         isKeeper,
-        isForTrade,
-        condition?.takeIf { it.isNotBlank() }
+        isForTrade
+    ),
+    Size(
+        width,
+        height,
+        weight
+    ),
+    Color(
+        main,
+        secondary
     ),
     Source(
         sourceName?.takeIf { it.isNotBlank() },
@@ -39,28 +50,25 @@ fun ItemDetails.toPlate(): Plate = Plate(
         sourceDetails?.takeIf { it.isNotBlank() },
         sourceType?.takeIf { it.isNotBlank() },
         sourceCountry?.takeIf { it.isNotBlank() }
-    ),
-    Measurements(
-        width,
-        height,
-        weight
     )
 )
 
 fun Plate.toItemDetails(): ItemDetails = ItemDetails(
     // CommonDetails
     country = commonDetails.country,
-    region = commonDetails.region,
-    area = commonDetails.area,
+    region1st = commonDetails.region1st,
+    region2nd = commonDetails.region2nd,
+    region3rd = commonDetails.region3rd,
     type = commonDetails.type,
-    period = commonDetails.period,
+    periodStart = commonDetails.periodStart,
+    periodEnd = commonDetails.periodEnd,
     year = commonDetails.year,
     // UniqueDetails
-    number = uniqueDetails.number,
+    regNo = uniqueDetails.regNo,
     variant = uniqueDetails.variant,
     imagePath = uniqueDetails.imagePath,
-    vehicle = uniqueDetails.vehicle,
     notes = uniqueDetails.notes,
+    vehicle = uniqueDetails.vehicle,
     date = uniqueDetails.date,
     cost = uniqueDetails.cost,
     value = uniqueDetails.value,
@@ -68,15 +76,17 @@ fun Plate.toItemDetails(): ItemDetails = ItemDetails(
     // Grading
     isKeeper = grading.isKeeper,
     isForTrade = grading.isForTrade,
-    condition = grading.condition,
+    // Size
+    width = size.width,
+    height = size.height,
+    weight = size.weight,
+    // Color
+    main = color.main,
+    secondary = color.secondary,
     // Source
-    sourceName = source.sourceName,
-    sourceAlias = source.sourceAlias,
-    sourceDetails = source.sourceDetails,
-    sourceType = source.sourceType,
-    sourceCountry = source.sourceCountry,
-    // Measurements
-    width = measurements.width,
-    height = measurements.height,
-    weight = measurements.weight,
+    sourceName = source.name,
+    sourceAlias = source.alias,
+    sourceType = source.type,
+    sourceDetails = source.details,
+    sourceCountry = source.country,
 )

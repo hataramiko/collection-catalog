@@ -20,12 +20,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class Item {
-    data class PlateData(val plate: Plate) : Item()
-    data class WantedPlateData(val wantedPlate: WantedPlate) : Item()
-    data class FormerPlateData(val formerPlate: FormerPlate) : Item()
-}
-
 data class HomeUiState(
     val items: List<Plate> = emptyList(),
     val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
@@ -79,25 +73,27 @@ class HomeViewModel @Inject constructor(
         val sortedItems = when (sortBy) {
             SortBy.COUNTRY_ASC -> items.sortedWith(
                 compareBy<Plate> { it.commonDetails.country }
-                    .thenBy(nullsLast()) { it.commonDetails.region }
-                    .thenBy(nullsLast()) { it.commonDetails.area }
-                    .thenBy { it.uniqueDetails.number }
+                    .thenBy(nullsLast()) { it.commonDetails.region1st }
+                    .thenBy(nullsLast()) { it.commonDetails.region2nd }
+                    .thenBy(nullsLast()) { it.commonDetails.region3rd }
+                    .thenBy { it.uniqueDetails.regNo }
             )
             SortBy.COUNTRY_DESC -> items.sortedWith(
                 compareByDescending<Plate> { it.commonDetails.country }
-                    .thenByDescending { it.commonDetails.region }
-                    .thenByDescending { it.commonDetails.area }
-                    .thenByDescending { it.uniqueDetails.number }
+                    .thenBy(nullsLast()) { it.commonDetails.region1st }
+                    .thenBy(nullsLast()) { it.commonDetails.region2nd }
+                    .thenBy(nullsLast()) { it.commonDetails.region3rd }
+                    .thenByDescending { it.uniqueDetails.regNo }
             )
             SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedWith(
                 compareBy<Plate> { it.commonDetails.country }
                     .thenBy { it.commonDetails.type }
-                    //.thenBy { it.uniqueDetails.number }
+                    //.thenBy { it.uniqueDetails.regNo }
             )
             SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedWith(
                 compareByDescending<Plate> { it.commonDetails.country }
                     .thenByDescending { it.commonDetails.type }
-                    //.thenByDescending { it.uniqueDetails.number }
+                    //.thenByDescending { it.uniqueDetails.regNo }
             )
             SortBy.DATE_NEWEST -> items.sortedByDescending { it.uniqueDetails.date }
             SortBy.DATE_OLDEST -> items.sortedWith(

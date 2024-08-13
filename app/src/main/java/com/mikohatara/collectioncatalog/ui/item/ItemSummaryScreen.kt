@@ -75,7 +75,7 @@ private fun ItemSummaryScreen(
 
     Scaffold(
         topBar = { ItemSummaryTopAppBar(
-            item.uniqueDetails.number,
+            item.uniqueDetails.regNo,
             item,
             onBack,
             onEdit,
@@ -124,10 +124,12 @@ private fun ItemSummaryScreenContent(
             SectionType.COMMON_DETAILS,
             sectionDetails = listOf(
                 item.commonDetails.country,
-                item.commonDetails.region,
-                item.commonDetails.area,
+                item.commonDetails.region1st,
+                item.commonDetails.region2nd,
+                item.commonDetails.region3rd,
                 item.commonDetails.type,
-                item.commonDetails.period,
+                item.commonDetails.periodStart,
+                item.commonDetails.periodEnd,
                 item.commonDetails.year
             )
         )
@@ -149,20 +151,20 @@ private fun ItemSummaryScreenContent(
             item = item,
             SectionType.PHYSICAL_ATTRIBUTES,
             sectionDetails = listOf(
-                item.measurements.width,
-                item.measurements.height,
-                item.measurements.weight
+                item.size.width,
+                item.size.height,
+                item.size.weight
             )
         )
         ItemSummarySection(
             item = item,
             SectionType.SOURCE_INFO,
             sectionDetails = listOf(
-                item.source.sourceName,
-                item.source.sourceAlias,
-                item.source.sourceType,
-                item.source.sourceDetails,
-                item.source.sourceCountry
+                item.source.name,
+                item.source.alias,
+                item.source.type,
+                item.source.details,
+                item.source.country
             )
         )
     }
@@ -248,13 +250,14 @@ private fun ItemInfoField(
 private fun CommonDetailsCard(
     item: Plate
 ) {
-    val countryRegionArea = listOf(
+    val countryAndRegion = listOf(
         item.commonDetails.country,
-        item.commonDetails.region,
-        item.commonDetails.area
+        item.commonDetails.region1st,
+        item.commonDetails.region2nd,
+        item.commonDetails.region3rd
     )
 
-    if (countryRegionArea.any { it != null }) {
+    if (countryAndRegion.any { it != null }) {
         SummaryCardSection(
             icon = {
                 Icon(
@@ -270,13 +273,19 @@ private fun CommonDetailsCard(
                     value = it
                 )
             }
-            item.commonDetails.region?.let {
+            item.commonDetails.region1st?.let {
                 ItemInfoField(
                     label = stringResource(R.string.region),
                     value = it
                 )
             }
-            item.commonDetails.area?.let {
+            item.commonDetails.region2nd?.let {
+                ItemInfoField(
+                    label = stringResource(R.string.area),
+                    value = it
+                )
+            }
+            item.commonDetails.region3rd?.let {
                 ItemInfoField(
                     label = stringResource(R.string.area),
                     value = it
@@ -302,7 +311,7 @@ private fun CommonDetailsCard(
             }
         }
     }
-    if (item.commonDetails.period != null || item.commonDetails.year != null) {
+    if (item.commonDetails.periodStart != null || item.commonDetails.year != null) { // TODO add periodEnd
         SummaryCardSection(
             icon = {
                 Icon(
@@ -313,10 +322,10 @@ private fun CommonDetailsCard(
             }
         ) {
             Row {
-                item.commonDetails.period?.let {
+                item.commonDetails.periodStart?.let {
                     ItemInfoField(
                         label = stringResource(R.string.period),
-                        value = it,
+                        value = item.commonDetails.periodStart.toString() + " – " + item.commonDetails.periodEnd.toString(),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -440,21 +449,21 @@ private fun PhysicalAttributesCard(
         }
     ) {
         Row {
-            item.measurements.width?.let {
+            item.size.width?.let {
                 ItemInfoField(
                     label = stringResource(R.string.width),
                     value = it.toString(),
                     modifier = Modifier.weight(1f)
                 )
             }
-            item.measurements.height?.let {
+            item.size.height?.let {
                 ItemInfoField(
                     label = stringResource(R.string.height),
                     value = it.toString(),
                     modifier = Modifier.weight(1f)
                 )
             }
-            item.measurements.weight?.let {
+            item.size.weight?.let {
                 ItemInfoField(
                     label = stringResource(R.string.weight),
                     value = it.toString(),
@@ -478,31 +487,31 @@ private fun SourceInfoCard(
             )
         }
     ) {
-        item.source.sourceName?.let {
+        item.source.name?.let {
             ItemInfoField(
                 label = "Source Name",
                 value = it
             )
         }
-        item.source.sourceAlias?.let {
+        item.source.alias?.let {
             ItemInfoField(
                 label = "Source Alias",
                 value = it
             )
         }
-        item.source.sourceType?.let {
+        item.source.type?.let {
             ItemInfoField(
                 label = "Source Type",
                 value = it
             )
         }
-        item.source.sourceDetails?.let {
+        item.source.details?.let {
             ItemInfoField(
                 label = "Source Details",
                 value = it
             )
         }
-        item.source.sourceCountry?.let {
+        item.source.country?.let {
             ItemInfoField(
                 label = "Source Country",
                 value = it

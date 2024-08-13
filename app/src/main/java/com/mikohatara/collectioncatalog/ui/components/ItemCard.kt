@@ -32,14 +32,16 @@ import java.io.File
 
 @Composable
 fun ItemCard(
-    item: Plate,
+    imagePath: String?,
+    width: Int?,
+    title: String,
     maxWidth: Int,
     onClick: () -> Unit
 ) {
     ItemCard(
-        imagePath = item.uniqueDetails.imagePath,
-        width = item.measurements.width,
-        title = item.uniqueDetails.number,
+        imagePath = imagePath,
+        width = width,
+        title = title,
         maxImageWidth = maxWidth,
         onCardClick = onClick
     )

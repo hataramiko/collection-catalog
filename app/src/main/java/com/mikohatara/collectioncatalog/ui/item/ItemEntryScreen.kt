@@ -71,7 +71,7 @@ private fun ItemEntryScreen(
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
     val topBarTitle: String = if (!uiState.isNew) {
-        stringResource(R.string.edit_item_title, uiState.itemDetails.number)
+        stringResource(R.string.edit_item_title, uiState.itemDetails.regNo)
     } else {
         stringResource(R.string.add_item_title)
     }
@@ -112,9 +112,9 @@ private fun ItemEntryScreenContent(
     onSave: () -> Unit
 ) {
     val saveButtonText: String = if (!uiState.isNew) {
-        stringResource(R.string.save_edited_item, uiState.itemDetails.number)
+        stringResource(R.string.save_edited_item, uiState.itemDetails.regNo)
     } else {
-        stringResource(R.string.save_added_item, uiState.itemDetails.number)
+        stringResource(R.string.save_added_item, uiState.itemDetails.regNo)
     }
 
     Column(
@@ -133,8 +133,8 @@ private fun ItemEntryScreenContent(
                 EntryFormField(
                     icon = { IconAbc123() },
                     label = stringResource(R.string.reg_no),
-                    value = uiState.itemDetails.number,
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(number = it)) },
+                    value = uiState.itemDetails.regNo,
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(regNo = it)) },
                     modifier = Modifier.weight(1f),
                     enabled = uiState.isNew,
                     capitalization = KeyboardCapitalization.Characters
@@ -173,14 +173,20 @@ private fun ItemEntryScreenContent(
             EntryFormField(
                 icon = { IconBlank() },
                 label = stringResource(R.string.region),
-                value = uiState.itemDetails.region ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(region = it)) }
+                value = uiState.itemDetails.region1st ?: "",
+                onValueChange = { onValueChange(uiState.itemDetails.copy(region1st = it)) }
             )
             EntryFormField(
                 icon = { IconBlank() },
                 label = stringResource(R.string.area),
-                value = uiState.itemDetails.area ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(area = it)) }
+                value = uiState.itemDetails.region2nd ?: "",
+                onValueChange = { onValueChange(uiState.itemDetails.copy(region2nd = it)) }
+            )
+            EntryFormField(
+                icon = { IconBlank() },
+                label = stringResource(R.string.area),
+                value = uiState.itemDetails.region3rd ?: "",
+                onValueChange = { onValueChange(uiState.itemDetails.copy(region3rd = it)) }
             )
             ItemEntryVerticalSpacer()
 
@@ -206,8 +212,26 @@ private fun ItemEntryScreenContent(
                         )
                     },
                     label = stringResource(R.string.period),
-                    value = uiState.itemDetails.period ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(period = it)) },
+                    value = uiState.itemDetails.periodStart?.toString() ?: "",
+                    onValueChange = { newValue ->
+                        onValueChange(
+                            uiState.itemDetails.copy(
+                                periodStart = if (newValue.isValidYear()) newValue.toInt() else null)
+                        )
+                    },
+                    modifier = Modifier.weight(1f),
+                    keyboardType = KeyboardType.Number
+                )
+                EntryFormField(
+                    icon = null,
+                    label = stringResource(R.string.period),
+                    value = uiState.itemDetails.periodEnd?.toString() ?: "",
+                    onValueChange = { newValue ->
+                        onValueChange(
+                            uiState.itemDetails.copy(
+                                periodEnd = if (newValue.isValidYear()) newValue.toInt() else null)
+                        )
+                    },
                     modifier = Modifier.weight(1f),
                     keyboardType = KeyboardType.Number
                 )
@@ -221,7 +245,7 @@ private fun ItemEntryScreenContent(
                                 year = if (newValue.isValidYear()) newValue.toInt() else null)
                         )
                     },
-                    modifier = Modifier.weight(0.5f),
+                    modifier = Modifier.weight(1f),
                     keyboardType = KeyboardType.Number
                 )
             }
@@ -310,7 +334,7 @@ private fun ItemEntryScreenContent(
             )
         }
         EntryFormCard {
-            EntryFormField(
+            /*EntryFormField( TODO get rid of
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.rounded_stars_layered),
@@ -321,7 +345,7 @@ private fun ItemEntryScreenContent(
                 label = stringResource(R.string.condition),
                 value = uiState.itemDetails.condition ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(condition = it)) }
-            )
+            )*/
             Row(ItemScreenModifiers.rowNoIcon) {
                 Column(
                     modifier = Modifier

@@ -96,13 +96,15 @@ class ItemEntryViewModel @Inject constructor(
 data class ItemDetails(
     // CommonDetails
     val country: String = "",
-    val region: String? = null,
-    val area: String? = null,
+    val region1st: String? = null,
+    val region2nd: String? = null,
+    val region3rd: String? = null,
     val type: String = "",
-    val period: String? = null,
+    val periodStart: Int? = null,
+    val periodEnd: Int? = null,
     val year: Int? = null,
     // UniqueDetails
-    val number: String = "",
+    val regNo: String = "",
     val variant: String = "",
     val imagePath: String? = null,
     val vehicle: String? = null,
@@ -114,15 +116,17 @@ data class ItemDetails(
     // Grading
     val isKeeper: Boolean = false,
     val isForTrade: Boolean = false,
-    val condition: String? = null,
+    // Size
+    val width: Int? = null,
+    val height: Int? = null,
+    val weight: Double? = null,
+    // Color
+    val main: String? = null,
+    val secondary: String? = null,
     // Source
     val sourceName: String? = null,
     val sourceAlias: String? = null,
     val sourceDetails: String? = null,
     val sourceType: String? = null,
     val sourceCountry: String? = null,
-    // Measurements
-    val width: Int? = null,
-    val height: Int? = null,
-    val weight: Double? = null,
 )

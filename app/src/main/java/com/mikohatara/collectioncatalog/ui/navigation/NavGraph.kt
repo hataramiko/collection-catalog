@@ -47,7 +47,7 @@ fun CollectionCatalogNavGraph(
                 HomeScreen(
                     onAddItem = { navActions.navigateToItemEntryScreen(null, null) },
                     onItemClick = { item -> navActions.navigateToItemSummaryScreen(
-                        item.uniqueDetails.number,
+                        item.uniqueDetails.regNo,
                         item.uniqueDetails.variant
                     ) },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
@@ -67,7 +67,7 @@ fun CollectionCatalogNavGraph(
             ItemSummaryScreen(
                 onBack = { navController.popBackStack() },
                 onEdit = { item -> navActions.navigateToItemEntryScreen(
-                    item.uniqueDetails.number,
+                    item.uniqueDetails.regNo,
                     item.uniqueDetails.variant
                 ) },
                 onDelete = {  }
