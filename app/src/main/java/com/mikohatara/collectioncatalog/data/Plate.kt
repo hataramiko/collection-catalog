@@ -63,8 +63,8 @@ data class ItemDetails(
     val height: Int? = null,
     val weight: Double? = null,
     // Color
-    val main: String? = null,
-    val secondary: String? = null,
+    val colorMain: String? = null,
+    val colorSecondary: String? = null,
     // Source
     val sourceName: String? = null,
     val sourceAlias: String? = null,

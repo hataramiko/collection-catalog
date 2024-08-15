@@ -64,4 +64,13 @@
     <string name="wishlist">Wishlist</string>
     <string name="former">Former</string>
     <string name="archive">Archive</string>
+    <string name="region_1st">Region, 1st</string>
+    <string name="region_2nd">Region, 2nd</string>
+    <string name="region_3rd">Region, 3rd</string>
+    <string name="region_second">Region, Second</string>
+    <string name="period_start">Period, Start</string>
+    <string name="period_end">Period, End</string>
+    <string name="color">Color</string>
+    <string name="color_main">Color, Base</string>
+    <string name="color_secondary">Color, Characters</string>
 </resources>

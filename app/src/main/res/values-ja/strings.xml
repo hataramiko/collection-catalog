@@ -28,7 +28,7 @@
     <string name="image_loading">画像ロード中</string>
     <string name="loading">ロード中</string>
     <string name="country">国家</string>
-    <string name="region">地方</string>
+    <string name="region">地域</string>
     <string name="area">地域</string>
     <string name="subdivision">行政区画</string>
     <string name="sort_by_date_newest">日付が最も新しい</string>
@@ -63,4 +63,13 @@
     <string name="wishlist">欲しい物</string>
     <string name="former">所有終了済み</string>
     <string name="archive">アーカイブ</string>
+    <string name="region_1st">地域、1番目</string>
+    <string name="region_2nd">地域、2番目</string>
+    <string name="region_3rd">地域、3番目</string>
+    <string name="region_second">地域、2つ目</string>
+    <string name="period_start">期間、始まり</string>
+    <string name="period_end">期間、終わり</string>
+    <string name="color">配色</string>
+    <string name="color_main">配色、地</string>
+    <string name="color_secondary">配色、字</string>
 </resources>

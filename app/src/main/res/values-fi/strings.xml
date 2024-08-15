@@ -64,4 +64,13 @@
     <string name="wishlist">Toivelista</string>
     <string name="former">Entiset</string>
     <string name="archive">Arkisto</string>
+    <string name="region_1st">Alue, ensimmäinen</string>
+    <string name="region_2nd">Alue, toinen</string>
+    <string name="region_3rd">Alue, kolmas</string>
+    <string name="region_second">Alue, toinen</string>
+    <string name="period_start">Aikaväli, alku</string>
+    <string name="period_end">Aikaväli, loppu</string>
+    <string name="color">Väri</string>
+    <string name="color_main">Pohjan väri</string>
+    <string name="color_secondary">Merkkien väri</string>
 </resources>

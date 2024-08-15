@@ -41,8 +41,8 @@ fun ItemDetails.toPlate(): Plate = Plate(
         weight
     ),
     Color(
-        main,
-        secondary
+        colorMain,
+        colorSecondary
     ),
     Source(
         sourceName?.takeIf { it.isNotBlank() },
@@ -81,8 +81,8 @@ fun Plate.toItemDetails(): ItemDetails = ItemDetails(
     height = size.height,
     weight = size.weight,
     // Color
-    main = color.main,
-    secondary = color.secondary,
+    colorMain = color.main,
+    colorSecondary = color.secondary,
     // Source
     sourceName = source.name,
     sourceAlias = source.alias,
