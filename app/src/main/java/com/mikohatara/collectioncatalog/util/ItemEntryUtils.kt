@@ -17,9 +17,9 @@ fun ItemDetails.toPlate(): Plate = Plate(
         region2nd?.takeIf { it.isNotBlank() },
         region3rd?.takeIf { it.isNotBlank() },
         type ?: "",
-        periodStart,//.takeIf { it.isNotBlank() },
-        periodEnd,//.takeIf { it.isNotBlank() },
-        year//?.takeIf { it != 0 }
+        periodStart?.takeIf { it.isValidYear() },
+        periodEnd?.takeIf { it.isValidYear() },
+        year?.takeIf { it.isValidYear() }
     ),
     UniqueDetails(
         regNo ?: "",
@@ -41,14 +41,14 @@ fun ItemDetails.toPlate(): Plate = Plate(
         weight
     ),
     Color(
-        colorMain,
-        colorSecondary
+        colorMain?.takeIf { it.isNotBlank() },
+        colorSecondary?.takeIf { it.isNotBlank() }
     ),
     Source(
         sourceName?.takeIf { it.isNotBlank() },
         sourceAlias?.takeIf { it.isNotBlank() },
-        sourceDetails?.takeIf { it.isNotBlank() },
         sourceType?.takeIf { it.isNotBlank() },
+        sourceDetails?.takeIf { it.isNotBlank() },
         sourceCountry?.takeIf { it.isNotBlank() }
     )
 )

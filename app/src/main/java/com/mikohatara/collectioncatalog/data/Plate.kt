@@ -68,8 +68,8 @@ data class ItemDetails(
     // Source
     val sourceName: String? = null,
     val sourceAlias: String? = null,
-    val sourceDetails: String? = null,
     val sourceType: String? = null,
+    val sourceDetails: String? = null,
     val sourceCountry: String? = null,
     // ArchivalDetails
     val archivalDate: String? = null,
