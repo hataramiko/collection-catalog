@@ -31,41 +31,43 @@ import java.io.File
 
 @Composable
 fun ItemCard(
-    imagePath: String?,
-    width: Int?,
     title: String,
+    imagePath: String?,
+    itemWidth: Int?,
     maxWidth: Int,
     onClick: () -> Unit
 ) {
     ItemCard(
-        imagePath = imagePath,
-        width = width,
         title = title,
-        maxImageWidth = maxWidth,
+        imagePath = imagePath,
+        itemWidth = itemWidth,
+        maxWidth = maxWidth,
         onCardClick = onClick
     )
 }
 
 @Composable
 private fun ItemCard(
-    imagePath: String?,
-    width: Int?,
     title: String,
-    maxImageWidth: Int,
+    imagePath: String?,
+    itemWidth: Int?,
+    maxWidth: Int,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val screenWidth = LocalConfiguration.current.screenWidthDp
-    val scale = screenWidth / if (maxImageWidth != 0) maxImageWidth else 1
     val onClick = remember { Modifier.clickable { onCardClick() } }
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+
+    val maxWidthAsFloat = if (maxWidth > 0) maxWidth.toFloat() else 1f
+    val itemWidthAsFloat = itemWidth?.toFloat() ?: maxWidthAsFloat
+
+    val scale = screenWidth / maxWidthAsFloat
+    val imageWidth = itemWidthAsFloat * scale
 
     Card(
-        //onClick = onClick,
         modifier = modifier.then(onClick)
     ) {
         if (imagePath != null) {
-            val imageWidth = (width ?: maxImageWidth) * scale
-
             Box {
                 Text(
                     text = stringResource(R.string.image_loading),
@@ -114,9 +116,9 @@ private fun ItemCard(
 fun CardPreview() {
     ItemCard(
         imagePath = null,
-        width = 440,
+        itemWidth = 440,
         title = "ABCD56789",
-        maxImageWidth = 520,
+        maxWidth = 520,
         onCardClick = {}
     )
 }

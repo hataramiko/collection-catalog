@@ -342,6 +342,7 @@ private fun CheckboxList(
                     Text(option)
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

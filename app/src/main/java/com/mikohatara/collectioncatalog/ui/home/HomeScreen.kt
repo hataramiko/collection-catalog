@@ -134,7 +134,7 @@ private fun HomeScreenContent(
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit
 ) {
-    val maxWidth = itemList.maxOfOrNull { it.size.width ?: 0 } ?: 0
+    val maxWidth = itemList.maxOfOrNull { it.size.width ?: 1 } ?: 1
 
     // For testing TopRow scroll handling
     val listState = rememberLazyListState()
@@ -166,9 +166,9 @@ private fun HomeScreenContent(
         } else {
             items(items = itemList, key = { it.id }) { item ->
                 ItemCard(
-                    imagePath = item.uniqueDetails.imagePath,
-                    width = item.size.width,
                     title = item.uniqueDetails.regNo,
+                    imagePath = item.uniqueDetails.imagePath,
+                    itemWidth = item.size.width,
                     maxWidth = maxWidth
                 ) {
                     onItemClick(item)
