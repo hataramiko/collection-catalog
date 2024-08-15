@@ -46,6 +46,11 @@ fun CollectionCatalogNavGraph(
 ) {
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavBackStackEntry?.destination?.route ?: startDestination
+    val onBack = {
+        if (navController.currentBackStackEntry?.destination?.route != startDestination) {
+            navController.popBackStack()
+        }
+    }
     
     NavHost(
         navController = navController,
@@ -79,7 +84,7 @@ fun CollectionCatalogNavGraph(
             arguments = listOf(navArgument(ITEM_ID) { type = NavType.IntType })
         ) {
             ItemSummaryScreen(
-                onBack = { navController.popBackStack() },
+                onBack = onBack,
                 onEdit = { navActions.navigateToItemEntryScreen(it.id) },
                 onDelete = { /*TODO remove this from here?*/ }
             )
@@ -88,7 +93,7 @@ fun CollectionCatalogNavGraph(
             route = ITEM_ENTRY_ADD_ROUTE
         ) {
             ItemEntryScreen(
-                onBack = { navController.popBackStack() }
+                onBack = onBack
             )
         }
         composable(
@@ -98,7 +103,7 @@ fun CollectionCatalogNavGraph(
             )
         ) {
             ItemEntryScreen(
-                onBack = { navController.popBackStack() }
+                onBack = onBack
             )
         }
         composable(
@@ -114,7 +119,7 @@ fun CollectionCatalogNavGraph(
             route = SETTINGS_ROUTE
         ) {
             SettingsScreen(
-                onBack = { navController.popBackStack() }
+                onBack = onBack
             )
         }
     }
