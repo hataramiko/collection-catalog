@@ -20,8 +20,9 @@ data class Plate(
 data class WantedPlate(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "reg_no") val regNo: String?,
+    @ColumnInfo(name = "notes") val notes: String?,
     @Embedded val commonDetails: CommonDetails,
-    @ColumnInfo(name = "notes") val notes: String?
+    @Embedded val color: Color,
 )
 
 @Entity(tableName = "archive")

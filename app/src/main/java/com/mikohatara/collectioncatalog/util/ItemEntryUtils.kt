@@ -8,6 +8,7 @@ import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.Size
 import com.mikohatara.collectioncatalog.data.Source
 import com.mikohatara.collectioncatalog.data.UniqueDetails
+import com.mikohatara.collectioncatalog.data.WantedPlate
 
 fun ItemDetails.toPlate(): Plate = Plate(
     id ?: 0,
@@ -53,6 +54,26 @@ fun ItemDetails.toPlate(): Plate = Plate(
     )
 )
 
+fun ItemDetails.toWantedPlate(): WantedPlate = WantedPlate(
+    id ?: 0,
+    regNo?.takeIf { it.isNotBlank() },
+    notes?.takeIf { it.isNotBlank() },
+    CommonDetails(
+        country ?: "",
+        region1st?.takeIf { it.isNotBlank() },
+        region2nd?.takeIf { it.isNotBlank() },
+        region3rd?.takeIf { it.isNotBlank() },
+        type ?: "",
+        periodStart?.takeIf { it.isValidYear() },
+        periodEnd?.takeIf { it.isValidYear() },
+        year?.takeIf { it.isValidYear() }
+    ),
+    Color(
+        colorMain?.takeIf { it.isNotBlank() },
+        colorSecondary?.takeIf { it.isNotBlank() }
+    )
+)
+
 fun Plate.toItemDetails(): ItemDetails = ItemDetails(
     id = id,
     // CommonDetails
@@ -89,4 +110,19 @@ fun Plate.toItemDetails(): ItemDetails = ItemDetails(
     sourceType = source.type,
     sourceDetails = source.details,
     sourceCountry = source.country,
+)
+
+fun WantedPlate.toItemDetails(): ItemDetails = ItemDetails(
+    id = id,
+    regNo = regNo,
+    notes = notes,
+    // CommonDetails
+    country = commonDetails.country,
+    region1st = commonDetails.region1st,
+    region2nd = commonDetails.region2nd,
+    region3rd = commonDetails.region3rd,
+    type = commonDetails.type,
+    periodStart = commonDetails.periodStart,
+    periodEnd = commonDetails.periodEnd,
+    year = commonDetails.year
 )
