@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
@@ -28,7 +27,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -133,6 +131,7 @@ fun FilterBottomSheet(
 ) {
     val countries = viewModel.getCountries()
     val types = viewModel.getTypes()
+    val locations = viewModel.getLocations()
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() }
@@ -165,6 +164,15 @@ fun FilterBottomSheet(
                         filterOptions = types,
                         activeFilters = uiState.filters.type,
                         onToggleFilter = { viewModel.toggleTypeFilter(it) }
+                    )
+                    FilterHorizontalDivider()
+                }
+                item {
+                    CheckboxList(
+                        label = stringResource(R.string.location),
+                        filterOptions = locations,
+                        activeFilters = uiState.filters.location,
+                        onToggleFilter = { viewModel.toggleLocationFilter(it) }
                     )
                     FilterHorizontalDivider()
                 }

@@ -1,21 +1,16 @@
 package com.mikohatara.collectioncatalog.ui.home
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mikohatara.collectioncatalog.data.FormerPlate
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
-import com.mikohatara.collectioncatalog.data.WantedPlate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,8 +18,8 @@ import javax.inject.Inject
 data class HomeUiState(
     val items: List<Plate> = emptyList(),
     val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
-    val filters: FilterData = FilterData()
-    //val isLoading: Boolean = false
+    val filters: FilterData = FilterData(),
+    val isLoading: Boolean = false
 )
 
 @HiltViewModel
@@ -51,21 +46,25 @@ class HomeViewModel @Inject constructor(
         _isScrollingUp.value = newScrollIndex > lastScrollIndex
         lastScrollIndex = newScrollIndex
     }
+    //
 
     init {
         viewModelScope.launch {
             val userPreferences = userPreferencesRepository.userPreferences.first()
             val defaultSortBy = userPreferences.defaultSortOrder
-            _uiState.value = _uiState.value.copy(sortBy = defaultSortBy)
+            _uiState.update { it.copy(sortBy = defaultSortBy) }
             getPlates()
         }
     }
 
     fun getPlates() {
-        plateRepository.getAllPlatesStream().onEach { items ->
-            _uiState.value = _uiState.value.copy(items = items)
-            setSortBy(uiState.value.sortBy)
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            plateRepository.getAllPlatesStream().collect { items ->
+                _uiState.update { it.copy(items = items, isLoading = false) }
+                setSortBy(uiState.value.sortBy)
+            }
+        }
     }
 
     fun setSortBy(sortBy: SortBy) {
@@ -100,59 +99,53 @@ class HomeViewModel @Inject constructor(
                 compareBy(nullsLast()) { it.uniqueDetails.date }
             )
         }
-        _uiState.value = _uiState.value.copy(items = sortedItems, sortBy = sortBy)
+        _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }
     }
 
     fun setFilter() {
-        val items = _uiState.value.items
-        val filters = _uiState.value.filters
-
-        val countryFilter = filters.country
-        val typeFilter = filters.type
-        val isKeeperFilter = filters.isKeeper
-        val isForTradeFilter = filters.isForTrade
+        val (items, _, filters) = _uiState.value
 
         val filteredItems = items.filter { item ->
-            val passCountryFilter = countryFilter.isEmpty() ||
-                    countryFilter.any { it == item.commonDetails.country }
-            val passTypeFilter = typeFilter.isEmpty() ||
-                    typeFilter.any { it == item.commonDetails.type }
-            val passIsKeeperFilter = !isKeeperFilter || item.grading.isKeeper
-            val passIsForTradeFilter = !isForTradeFilter || item.grading.isForTrade
-
-            passCountryFilter && passTypeFilter && passIsKeeperFilter && passIsForTradeFilter
+            when {
+                filters.country.isNotEmpty() && filters.country.none {
+                    it == item.commonDetails.country
+                } -> false
+                filters.type.isNotEmpty() && filters.type.none {
+                    it == item.commonDetails.type
+                } -> false
+                filters.location.isNotEmpty() && filters.location.none {
+                    it == item.uniqueDetails.status
+                } -> false
+                filters.isKeeper && !item.grading.isKeeper -> false
+                filters.isForTrade && !item.grading.isForTrade -> false
+                else -> true
+            }
         }
-
-        _uiState.value = _uiState.value.copy(items = filteredItems)
+        _uiState.update { it.copy(items = filteredItems) }
         setSortBy(uiState.value.sortBy)
     }
 
-    fun toggleCountryFilter(country: String) = viewModelScope.launch {
-        val filter = _uiState.value.filters.country
-        val newFilter: Set<String> = if (filter.any { it == country }) {
-            filter - country
-        } else {
-            filter + country
-        }
+    fun toggleCountryFilter(country: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.country, country)
         _uiState.update { it.copy(filters = it.filters.copy(country = newFilter)) }
     }
 
-    fun toggleTypeFilter(type: String) = viewModelScope.launch {
-        val filter = _uiState.value.filters.type
-        val newFilter: Set<String> = if (filter.any { it == type }) {
-            filter - type
-        } else {
-            filter + type
-        }
+    fun toggleTypeFilter(type: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.type, type)
         _uiState.update { it.copy(filters = it.filters.copy(type = newFilter)) }
     }
 
-    fun toggleIsKeeperFilter() = viewModelScope.launch {
+    fun toggleLocationFilter(location: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.location, location)
+        _uiState.update { it.copy(filters = it.filters.copy(location = newFilter)) }
+    }
+
+    fun toggleIsKeeperFilter() {
         val filter = !_uiState.value.filters.isKeeper
         _uiState.update { it.copy(filters = it.filters.copy(isKeeper = filter)) }
     }
 
-    fun toggleIsForTradeFilter() = viewModelScope.launch {
+    fun toggleIsForTradeFilter() {
         val filter = !_uiState.value.filters.isForTrade
         _uiState.update { it.copy(filters = it.filters.copy(isForTrade = filter)) }
     }
@@ -174,6 +167,15 @@ class HomeViewModel @Inject constructor(
             .sortedWith(compareBy { it }) // See getCountries for an alternative
             .toSet()
     }
+
+    fun getLocations(): Set<String> {
+        return uiState.value.items.mapNotNull { it.uniqueDetails.status }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    private fun <T> toggleFilter(filters: Set<T>, item: T): Set<T> =
+        if (item in filters) filters - item else filters + item
 }
 
 enum class SortBy {
@@ -188,6 +190,7 @@ enum class SortBy {
 data class FilterData(
     val country: Set<String> = emptySet(),
     val type: Set<String> = emptySet(),
+    val location: Set<String> = emptySet(),
     val isKeeper: Boolean = false,
     val isForTrade: Boolean = false
 )

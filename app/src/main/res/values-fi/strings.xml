@@ -26,7 +26,7 @@
     <string name="cancel">Peruuta</string>
     <string name="cost">Menot</string>
     <string name="image_loading">Ladataan kuvaa</string>
-    <string name="loading">Ladataan</string>
+    <string name="loading">Ladataan...</string>
     <string name="country">Valtio</string>
     <string name="region">Alue</string>
     <string name="area">Alue</string>
@@ -73,4 +73,5 @@
     <string name="color">Väri</string>
     <string name="color_main">Pohjan väri</string>
     <string name="color_secondary">Merkkien väri</string>
+    <string name="is_empty_message">Ei näytettävää.</string>
 </resources>

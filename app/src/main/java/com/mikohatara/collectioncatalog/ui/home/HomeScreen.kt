@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.home
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -97,6 +96,7 @@ private fun HomeScreen(
         },
         content = { innerPadding ->
             HomeScreenContent(
+                uiState = uiState,
                 viewModel = viewModel,
                 itemList = itemList,
                 modifier = modifier
@@ -127,6 +127,7 @@ private fun HomeScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreenContent(
+    uiState: HomeUiState,
     viewModel: HomeViewModel,
     itemList: List<Plate>,
     modifier: Modifier = Modifier,
@@ -152,17 +153,33 @@ private fun HomeScreenContent(
         stickyHeader {
             TopRow(scrollState, onSortByClick, onFilterClick)
         }
-        if (itemList.isEmpty()) {
+        if (uiState.isLoading) {
             item {
                 Text(
-                    text = "Collection is empty.\nPress + to add an item",
+                    text = stringResource(R.string.loading),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 200.dp)
+                        .padding(top = 256.dp)
                 )
             }
-            Log.d("itemList is empty", itemList.toString())
+        } else if (itemList.isEmpty()) {
+            /*  TODO add different messages and visualizations for different types of empty
+            *
+            *   Is the entire database empty? Just Wishlist? Archive? A collection?
+            *   Or due to filters?
+            *   Also a proper empty state for Stats.
+            *
+            * */
+            item {
+                Text(
+                    text = stringResource(R.string.is_empty_message),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 256.dp)
+                )
+            }
         } else {
             items(items = itemList, key = { it.id }) { item ->
                 ItemCard(

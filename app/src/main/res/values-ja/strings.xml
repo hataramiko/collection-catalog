@@ -26,7 +26,7 @@
     <string name="cancel">キャンセル</string>
     <string name="cost">費用</string>
     <string name="image_loading">画像ロード中</string>
-    <string name="loading">ロード中</string>
+    <string name="loading">ロード中...</string>
     <string name="country">国家</string>
     <string name="region">地域</string>
     <string name="area">地域</string>
@@ -72,4 +72,5 @@
     <string name="color">配色</string>
     <string name="color_main">配色、地</string>
     <string name="color_secondary">配色、字</string>
+    <string name="is_empty_message">何も表示されていません。</string>
 </resources>
