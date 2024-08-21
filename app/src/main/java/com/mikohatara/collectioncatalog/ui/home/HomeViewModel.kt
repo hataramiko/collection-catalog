@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,6 +28,7 @@ class HomeViewModel @Inject constructor(
     private val plateRepository: PlateRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
+    private val _allItems = mutableStateListOf<Plate>()
     val showSortByBottomSheet = mutableStateOf(false)
     val showFilterBottomSheet = mutableStateOf(false)
 
@@ -61,6 +63,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             plateRepository.getAllPlatesStream().collect { items ->
+                _allItems.clear()
+                _allItems.addAll(items)
                 _uiState.update { it.copy(items = items, isLoading = false) }
                 setSortBy(uiState.value.sortBy)
             }
@@ -86,11 +90,13 @@ class HomeViewModel @Inject constructor(
             )
             SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedWith(
                 compareBy<Plate> { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
                     .thenBy { it.commonDetails.type }
                     //.thenBy { it.uniqueDetails.regNo }
             )
             SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedWith(
                 compareByDescending<Plate> { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
                     .thenByDescending { it.commonDetails.type }
                     //.thenByDescending { it.uniqueDetails.regNo }
             )
@@ -103,9 +109,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setFilter() {
-        val (items, _, filters) = _uiState.value
+        val filters = _uiState.value.filters
 
-        val filteredItems = items.filter { item ->
+        val filteredItems = _allItems.filter { item ->
             when {
                 filters.country.isNotEmpty() && filters.country.none {
                     it == item.commonDetails.country
@@ -153,23 +159,23 @@ class HomeViewModel @Inject constructor(
     fun resetFilter() {
         _uiState.update { it.copy(filters = FilterData()) }
         setFilter()
-        getPlates()
+        //getPlates()
     }
 
     fun getCountries(): Set<String> {
-        return uiState.value.items.map { it.commonDetails.country }
+        return _allItems.map { it.commonDetails.country }
             .sortedBy { it } // See getTypes for an alternative
             .toSet()
     }
 
     fun getTypes(): Set<String> {
-        return uiState.value.items.map { it.commonDetails.type }
+        return _allItems.map { it.commonDetails.type }
             .sortedWith(compareBy { it }) // See getCountries for an alternative
             .toSet()
     }
 
     fun getLocations(): Set<String> {
-        return uiState.value.items.mapNotNull { it.uniqueDetails.status }
+        return _allItems.mapNotNull { it.uniqueDetails.status }
             .sortedWith(compareBy { it })
             .toSet()
     }

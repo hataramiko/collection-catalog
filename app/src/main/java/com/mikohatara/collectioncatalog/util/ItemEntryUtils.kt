@@ -57,6 +57,7 @@ fun ItemDetails.toPlate(): Plate = Plate(
 fun ItemDetails.toWantedPlate(): WantedPlate = WantedPlate(
     id ?: 0,
     regNo?.takeIf { it.isNotBlank() },
+    imagePath?.takeIf { it.isNotBlank() },
     notes?.takeIf { it.isNotBlank() },
     CommonDetails(
         country ?: "",
@@ -115,6 +116,7 @@ fun Plate.toItemDetails(): ItemDetails = ItemDetails(
 fun WantedPlate.toItemDetails(): ItemDetails = ItemDetails(
     id = id,
     regNo = regNo,
+    imagePath = imagePath,
     notes = notes,
     // CommonDetails
     country = commonDetails.country,

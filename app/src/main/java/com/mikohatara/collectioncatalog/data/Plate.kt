@@ -20,6 +20,7 @@ data class Plate(
 data class WantedPlate(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "reg_no") val regNo: String?,
+    @ColumnInfo(name = "image_path") val imagePath: String?,
     @ColumnInfo(name = "notes") val notes: String?,
     @Embedded val commonDetails: CommonDetails,
     @Embedded val color: Color,
