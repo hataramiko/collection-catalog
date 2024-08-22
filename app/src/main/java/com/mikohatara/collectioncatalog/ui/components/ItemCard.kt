@@ -2,10 +2,12 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Card
@@ -43,6 +45,27 @@ fun ItemCard(
         itemWidth = itemWidth,
         maxWidth = maxWidth,
         onCardClick = onClick
+    )
+}
+
+@Composable
+fun WishlistCard(
+    country: String,
+    region: String?,
+    type: String,
+    period: String?,
+    year: String?,
+    onClick: () -> Unit,
+    imagePath: String?,
+) {
+    WishlistCard(
+        country = country,
+        region = region,
+        type = type,
+        period = period,
+        year = year,
+        onClick = onClick,
+        imagePath = imagePath,
     )
 }
 
@@ -111,14 +134,73 @@ private fun ItemCard(
     }
 }
 
+@Composable
+private fun WishlistCard(
+    country: String,
+    region: String?,
+    type: String,
+    period: String?,
+    year: String?,
+    onCardClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    imagePath: String? = null,
+) {
+    val onClick = remember { Modifier.clickable { onCardClick() } }
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(onClick)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Card(
+                modifier = Modifier.size(80.dp)
+            ) {
+                if (imagePath != null) {
+                    Text(
+                        text = stringResource(R.string.image_loading),
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                    )
+                    AsyncImage(
+                        model = ImageRequest
+                            .Builder(LocalContext.current)
+                            .data(data = File(imagePath))
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier,
+                        contentScale = ContentScale.FillWidth,
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_no_image),
+                        contentDescription = null,
+                        modifier = Modifier.padding(20.dp)
+                    )
+                }
+            }
+            Column {
+                Text(text = country + ", " + region)
+                Text(text = type)
+                Text(text = period + ", " + year)
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun CardPreview() {
-    ItemCard(
-        imagePath = null,
-        itemWidth = 440,
-        title = "ABCD56789",
-        maxWidth = 520,
-        onCardClick = {}
-    )
+    WishlistCard(
+        country = "United States",
+        region = "Arizona",
+        type = "Passenger",
+        period = "1995 – 2011",
+        year = "2004",
+        onCardClick = { /*TODO*/ })
 }
