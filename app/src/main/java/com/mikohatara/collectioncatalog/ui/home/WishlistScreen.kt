@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -24,10 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.WantedPlate
 import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
-import com.mikohatara.collectioncatalog.ui.components.ItemCard
+import com.mikohatara.collectioncatalog.ui.components.WishlistCard
 
 @Composable
 fun WishlistScreen(
@@ -73,6 +70,8 @@ private fun WishlistScreen(
         },
         content = { innerPadding ->
             WishlistScreenContent(
+                uiState = uiState,
+                viewModel = viewModel,
                 itemList = itemList,
                 modifier = Modifier.padding(innerPadding),
                 onItemClick = onItemClick
@@ -83,6 +82,8 @@ private fun WishlistScreen(
 
 @Composable
 private fun WishlistScreenContent(
+    uiState: WishlistUiState,
+    viewModel: WishlistViewModel,
     itemList: List<WantedPlate>,
     modifier: Modifier = Modifier,
     onItemClick: (WantedPlate) -> Unit
@@ -93,10 +94,20 @@ private fun WishlistScreenContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        if (itemList.isEmpty()) {
+        if (uiState.isLoading) {
             item {
                 Text(
-                    text = "Wishlist is empty",
+                    text = stringResource(R.string.loading),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 256.dp)
+                )
+            }
+        } else if (itemList.isEmpty()) {
+            item {
+                Text(
+                    text = stringResource(R.string.is_empty_message),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxSize()
@@ -104,9 +115,17 @@ private fun WishlistScreenContent(
                 )
             }
         } else {
-            items(itemList) {
-                Button(onClick = { onItemClick(it) }) {
-                    Text(it.toString())
+            items(items = itemList, key = { it.id }) { item ->
+                WishlistCard(
+                    country = item.commonDetails.country,
+                    region = item.commonDetails.region1st,
+                    type = item.commonDetails.type,
+                    period = item.commonDetails.periodStart.toString() + " – " +
+                        item.commonDetails.periodEnd.toString(),
+                    year = item.commonDetails.year.toString(),
+                    imagePath = item.imagePath
+                ) {
+                    onItemClick(item)
                 }
             }
         }

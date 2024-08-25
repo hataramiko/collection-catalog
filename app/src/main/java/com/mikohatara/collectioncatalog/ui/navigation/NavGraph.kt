@@ -73,8 +73,8 @@ fun CollectionCatalogNavGraph(
         ) {
             ModalMenuDrawer(drawerState, currentRoute, navActions) {
                 WishlistScreen(
-                    onAddItem = { /*TODO*/ },
-                    onItemClick = { /*TODO*/ },
+                    onAddItem = { navActions.navigateToItemEntryScreen(null) },
+                    onItemClick = { navActions.navigateToItemSummaryScreen(it.id) },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )
             }

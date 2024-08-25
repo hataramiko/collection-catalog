@@ -41,14 +41,32 @@ class WishlistViewModel @Inject constructor(
             val userPreferences = userPreferencesRepository.userPreferences.first()
             val defaultSortBy = userPreferences.defaultSortOrder
             _uiState.update { it.copy(sortBy = defaultSortBy) }
-            getItems()
+            getWishlist()
         }
     }
 
-    fun getItems() {
+    fun getWishlist() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            //plateRepository
+            plateRepository.getAllWantedPlatesStream().collect { items ->
+                _allItems.clear()
+                _allItems.addAll(items)
+                _uiState.update { it.copy(items = items, isLoading = false) }
+                setSortBy(uiState.value.sortBy)
+            }
         }
+    }
+
+    fun setSortBy(sortBy: SortBy) {
+        val items = _uiState.value.items
+        val sortedItems = when (sortBy) {
+            SortBy.COUNTRY_ASC -> items.sortedBy { it.commonDetails.country }
+            SortBy.COUNTRY_DESC -> items.sortedByDescending { it.commonDetails.country }
+            SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedBy { it.commonDetails.type }
+            SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedByDescending { it.commonDetails.type }
+            SortBy.DATE_NEWEST -> items.sortedByDescending { it.commonDetails.country }
+            SortBy.DATE_OLDEST -> items.sortedBy { it.commonDetails.country }
+        }
+        _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }
     }
 }

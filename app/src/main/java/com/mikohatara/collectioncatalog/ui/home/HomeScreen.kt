@@ -4,11 +4,14 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -28,12 +32,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -155,13 +162,7 @@ private fun HomeScreenContent(
         }
         if (uiState.isLoading) {
             item {
-                Text(
-                    text = stringResource(R.string.loading),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 256.dp)
-                )
+                Loading()
             }
         } else if (itemList.isEmpty()) {
             /*  TODO add different messages and visualizations for different types of empty
@@ -273,6 +274,32 @@ private fun TopRow(
                 //.padding(bottom = 4.dp)
                 .requiredWidth(1024.dp)
         )*/
+    }
+}
+
+@Composable
+private fun Loading() {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(IntrinsicSize.Max)
+            .padding(top = 256.dp)
+    ) {
+        var textWidth by remember { mutableIntStateOf(0) }
+
+        Text(
+            text = stringResource(R.string.loading),
+            modifier = Modifier
+                .offset(x = 4.dp)
+                .onGloballyPositioned { textWidth = it.size.width }
+        )
+        LinearProgressIndicator(
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .width((textWidth / 2).dp)
+        )
     }
 }
 

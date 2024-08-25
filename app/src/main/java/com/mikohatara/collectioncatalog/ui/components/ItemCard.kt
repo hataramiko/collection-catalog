@@ -55,8 +55,8 @@ fun WishlistCard(
     type: String,
     period: String?,
     year: String?,
-    onClick: () -> Unit,
     imagePath: String?,
+    onClick: () -> Unit,
 ) {
     WishlistCard(
         country = country,
