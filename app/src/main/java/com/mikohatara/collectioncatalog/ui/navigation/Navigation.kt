@@ -1,7 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.navigation
 
 import androidx.navigation.NavHostController
+import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ADD_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
@@ -24,6 +26,7 @@ object CollectionCatalogScreens {
 }
 
 object CollectionCatalogDestinationArgs {
+    const val ITEM_TYPE = "itemType"
     const val ITEM_ID = "itemId"
 }
 
@@ -33,8 +36,8 @@ object CollectionCatalogDestinations {
     const val STATS_ROUTE = STATS_SCREEN
     const val SETTINGS_ROUTE = SETTINGS_SCREEN
     const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$ITEM_ID}"
-    const val ITEM_ENTRY_ADD_ROUTE = ITEM_ENTRY_SCREEN
-    const val ITEM_ENTRY_EDIT_ROUTE = "$ITEM_ENTRY_SCREEN/{$ITEM_ID}"
+    const val ITEM_ENTRY_ADD_ROUTE = "$ITEM_ENTRY_SCREEN/{$ITEM_TYPE}"
+    const val ITEM_ENTRY_EDIT_ROUTE = "$ITEM_ENTRY_SCREEN/{$ITEM_TYPE}/{$ITEM_ID}"
 }
 
 class CollectionCatalogNavigationActions(private val navController: NavHostController) {
@@ -59,9 +62,13 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
         navController.navigate("$ITEM_SUMMARY_SCREEN/$itemId")
     }
 
-    fun navigateToItemEntryScreen(itemId: Int? = null) {
+    fun navigateToItemEntryScreen(itemType: ItemType = ItemType.PLATE, itemId: Int? = null) {
         navController.navigate(
-            if (itemId != null) "$ITEM_ENTRY_SCREEN/$itemId" else ITEM_ENTRY_ADD_ROUTE
+            if (itemId != null) {
+                "$ITEM_ENTRY_SCREEN/${itemType.name}/$itemId"
+            } else {
+                "$ITEM_ENTRY_SCREEN/${itemType.name}"
+            }
         )
     }
 }

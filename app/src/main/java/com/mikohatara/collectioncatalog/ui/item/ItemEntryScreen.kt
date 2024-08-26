@@ -112,10 +112,11 @@ private fun ItemEntryScreenContent(
     onValueChange: (ItemDetails) -> Unit = {},
     onSave: () -> Unit
 ) {
-    val saveButtonText: String = if (!uiState.isNew) {
-        stringResource(R.string.save_edited_item, uiState.itemDetails.regNo ?: "")
-    } else {
-        stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "")
+    val (saveButtonText, saveButtonIcon) = when (uiState.isNew) {
+        true -> stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "") to
+            painterResource(R.drawable.rounded_save)
+        false -> stringResource(R.string.save_edited_item, uiState.itemDetails.regNo ?: "") to
+            painterResource(R.drawable.rounded_save_as)
     }
 
     Column(
@@ -486,11 +487,8 @@ private fun ItemEntryScreenContent(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Icon(painter = if (!uiState.isNew) {
-                painterResource(R.drawable.rounded_save_as)
-            } else {
-                painterResource(R.drawable.rounded_save)
-            },
+            Icon(
+                painter = saveButtonIcon,
                 contentDescription = null,
                 modifier = Modifier.padding(end = 8.dp)
             )
@@ -504,7 +502,7 @@ private fun EntryFormImage(
     uiState: ItemEntryUiState,
     onValueChange: (ItemDetails) -> Unit
 ) {
-    val imagePath: String? = pickItemImage(uiState.item?.uniqueDetails?.imagePath)
+    val imagePath: String? = pickItemImage(uiState.itemDetails.imagePath)
     val updateUiState: (ItemDetails) -> Unit = {
         onValueChange(uiState.itemDetails.copy(imagePath = imagePath))
     }
