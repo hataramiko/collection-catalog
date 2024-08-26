@@ -6,7 +6,7 @@ import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.WantedPlate
 
 fun getItemType(item: Any): ItemType {
-    return if (item is WantedPlate) {
+    return if (item is Item.WantedPlateItem) {
         ItemType.WANTED_PLATE
     } else {
         ItemType.PLATE

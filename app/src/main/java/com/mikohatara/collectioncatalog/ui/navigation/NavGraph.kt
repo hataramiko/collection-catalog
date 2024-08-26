@@ -15,10 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
-import com.mikohatara.collectioncatalog.data.Plate
-import com.mikohatara.collectioncatalog.data.WantedPlate
 import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.home.WishlistScreen

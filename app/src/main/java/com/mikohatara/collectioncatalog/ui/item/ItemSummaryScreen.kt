@@ -29,7 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
-import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
