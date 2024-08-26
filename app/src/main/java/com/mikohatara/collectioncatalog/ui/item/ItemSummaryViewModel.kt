@@ -1,12 +1,18 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.data.Item
+import com.mikohatara.collectioncatalog.data.ItemDetails
+import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.PlateRepository
-import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.toItemDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +21,8 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 data class ItemSummaryUiState(
-    val item: Plate? = null //?: samplePlates[0]
+    val item: Item? = null,
+    val itemDetails: ItemDetails = ItemDetails()
 )
 
 @HiltViewModel
@@ -23,23 +30,40 @@ class ItemSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val plateRepository: PlateRepository
 ) : ViewModel() {
-
+    private val itemType: ItemType =
+        savedStateHandle.get<String>(ITEM_TYPE)?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
     private val itemId: Int = savedStateHandle.get<Int>(ITEM_ID)!!
 
     val uiState: StateFlow<ItemSummaryUiState> =
-        plateRepository.getPlateStream(itemId)
-            .map { ItemSummaryUiState(item = it) }
+        when (itemType) {
+            ItemType.PLATE -> plateRepository.getPlateStream(itemId)
+                .map {
+                    ItemSummaryUiState(
+                        item = Item.PlateItem(it!!),
+                        itemDetails = it.toItemDetails()
+                    )
+                }
+            ItemType.WANTED_PLATE -> plateRepository.getWantedPlateStream(itemId)
+                .map {
+                    ItemSummaryUiState(
+                        item = Item.WantedPlateItem(it!!),
+                        itemDetails = it.toItemDetails()
+                    )
+                }
+        }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = ItemSummaryUiState(item = samplePlates[5])
+                started = SharingStarted.WhileSubscribed(5_000L),
+                initialValue = ItemSummaryUiState()
             )
 
     suspend fun deleteItem() /*= viewModelScope.launch*/ {
-        plateRepository.deletePlate(uiState.value.item!!)
-    }
-
-    companion object {
-        private const val TIMEOUT_MILLIS = 5_000L
+        when (uiState.value.item) {
+            is Item.PlateItem -> plateRepository
+                .deletePlate((uiState.value.item as Item.PlateItem).plate)
+            is Item.WantedPlateItem -> plateRepository
+                .deleteWantedPlate((uiState.value.item as Item.WantedPlateItem).wantedPlate)
+            else -> {}
+        }
     }
 }

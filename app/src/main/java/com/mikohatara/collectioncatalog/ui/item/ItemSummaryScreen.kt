@@ -27,15 +27,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.Item
+import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.Plate
-import com.mikohatara.collectioncatalog.data.samplePlates
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryVerticalSpacer
-import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -43,31 +43,31 @@ import kotlinx.coroutines.launch
 fun ItemSummaryScreen(
     viewModel: ItemSummaryViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    onEdit: (Plate) -> Unit,
-    onDelete: () -> Unit
+    onEdit: (Item) -> Unit
 ) {
     val uiState: ItemSummaryUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    val item: Plate = uiState.item!!
+    val item: Item = uiState.item ?: return
+    val itemDetails: ItemDetails = uiState.itemDetails
 
     ItemSummaryScreen(
         item,
+        itemDetails,
         viewModel,
         coroutineScope,
         onBack,
         onEdit,
-        onDelete
     )
 }
 
 @Composable
 private fun ItemSummaryScreen(
-    item: Plate,
+    item: Item,
+    itemDetails: ItemDetails,
     viewModel: ItemSummaryViewModel,
     coroutineScope: CoroutineScope,
     onBack: () -> Unit,
-    onEdit: (Plate) -> Unit,
-    onDelete: () -> Unit,
+    onEdit: (Item) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
@@ -75,7 +75,7 @@ private fun ItemSummaryScreen(
 
     Scaffold(
         topBar = { ItemSummaryTopAppBar(
-            item.uniqueDetails.regNo,
+            itemDetails.regNo ?: "",
             item,
             onBack,
             onEdit,
@@ -83,7 +83,7 @@ private fun ItemSummaryScreen(
         ) },
         content = { innerPadding ->
             ItemSummaryScreenContent(
-                item = item,
+                itemDetails = itemDetails,
                 onInspectImage = { isInspectingImage = true },
                 modifier = modifier.padding(innerPadding)
             )
@@ -91,7 +91,7 @@ private fun ItemSummaryScreen(
     )
     if (isInspectingImage) {
         InspectItemImage(
-            imagePath = item.uniqueDetails.imagePath,
+            imagePath = itemDetails.imagePath,
             onBack = { isInspectingImage = false }
         )
     }
@@ -111,60 +111,60 @@ private fun ItemSummaryScreen(
 
 @Composable
 private fun ItemSummaryScreenContent(
-    item: Plate,
+    itemDetails: ItemDetails,
     onInspectImage: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
-        ItemImage(item.uniqueDetails.imagePath, onInspectImage)
+        ItemImage(itemDetails.imagePath, onInspectImage)
         ItemSummaryVerticalSpacer(true)
 
         ItemSummarySection(
-            item = item,
+            itemDetails = itemDetails,
             SectionType.COMMON_DETAILS,
             sectionDetails = listOf(
-                item.commonDetails.country,
-                item.commonDetails.region1st,
-                item.commonDetails.region2nd,
-                item.commonDetails.region3rd,
-                item.commonDetails.type,
-                item.commonDetails.periodStart,
-                item.commonDetails.periodEnd,
-                item.commonDetails.year
+                itemDetails.country,
+                itemDetails.region1st,
+                itemDetails.region2nd,
+                itemDetails.region3rd,
+                itemDetails.type,
+                itemDetails.periodStart,
+                itemDetails.periodEnd,
+                itemDetails.year
             )
         )
         ItemSummarySection(
-            item = item,
+            itemDetails = itemDetails,
             SectionType.UNIQUE_DETAILS,
             sectionDetails = listOf(
-                item.uniqueDetails.notes,
-                item.uniqueDetails.vehicle,
-                item.uniqueDetails.date,
-                item.uniqueDetails.cost,
-                item.uniqueDetails.value,
-                item.uniqueDetails.status,
-                item.grading.isKeeper,
-                item.grading.isForTrade
+                itemDetails.notes,
+                itemDetails.vehicle,
+                itemDetails.date,
+                itemDetails.cost,
+                itemDetails.value,
+                itemDetails.status,
+                itemDetails.isKeeper,
+                itemDetails.isForTrade
             )
         )
         ItemSummarySection(
-            item = item,
+            itemDetails = itemDetails,
             SectionType.PHYSICAL_ATTRIBUTES,
             sectionDetails = listOf(
-                item.size.width,
-                item.size.height,
-                item.size.weight
+                itemDetails.width,
+                itemDetails.height,
+                itemDetails.weight
             )
         )
         ItemSummarySection(
-            item = item,
+            itemDetails = itemDetails,
             SectionType.SOURCE_INFO,
             sectionDetails = listOf(
-                item.source.name,
-                item.source.alias,
-                item.source.type,
-                item.source.details,
-                item.source.country
+                itemDetails.sourceName,
+                itemDetails.sourceAlias,
+                itemDetails.sourceType,
+                itemDetails.sourceDetails,
+                itemDetails.sourceCountry
             )
         )
     }
@@ -172,17 +172,17 @@ private fun ItemSummaryScreenContent(
 
 @Composable
 private fun ItemSummarySection(
-    item: Plate,
+    itemDetails: ItemDetails,
     sectionType: SectionType,
     sectionDetails: List<Any?>
 ) {
     if (sectionDetails.any { it !is Boolean && it != null || it is Boolean && it != false }) {
         SummaryCard {
             when (sectionType) {
-                SectionType.COMMON_DETAILS -> CommonDetailsCard(item)
-                SectionType.UNIQUE_DETAILS -> UniqueDetailsCard(item)
-                SectionType.PHYSICAL_ATTRIBUTES -> PhysicalAttributesCard(item)
-                SectionType.SOURCE_INFO -> SourceInfoCard(item)
+                SectionType.COMMON_DETAILS -> CommonDetailsCard(itemDetails)
+                SectionType.UNIQUE_DETAILS -> UniqueDetailsCard(itemDetails)
+                SectionType.PHYSICAL_ATTRIBUTES -> PhysicalAttributesCard(itemDetails)
+                SectionType.SOURCE_INFO -> SourceInfoCard(itemDetails)
             }
         }
     }
@@ -248,13 +248,13 @@ private fun ItemInfoField(
 
 @Composable
 private fun CommonDetailsCard(
-    item: Plate
+    itemDetails: ItemDetails
 ) {
     val countryAndRegion = listOf(
-        item.commonDetails.country,
-        item.commonDetails.region1st,
-        item.commonDetails.region2nd,
-        item.commonDetails.region3rd
+        itemDetails.country,
+        itemDetails.region1st,
+        itemDetails.region2nd,
+        itemDetails.region3rd
     )
 
     if (countryAndRegion.any { it != null }) {
@@ -267,25 +267,25 @@ private fun CommonDetailsCard(
                 )
             }
         ) {
-            item.commonDetails.country?.let {
+            itemDetails.country?.let {
                 ItemInfoField(
                     label = stringResource(R.string.country),
                     value = it
                 )
             }
-            item.commonDetails.region1st?.let {
+            itemDetails.region1st?.let {
                 ItemInfoField(
                     label = stringResource(R.string.region),
                     value = it
                 )
             }
-            item.commonDetails.region2nd?.let {
+            itemDetails.region2nd?.let {
                 ItemInfoField(
                     label = stringResource(R.string.area),
                     value = it
                 )
             }
-            item.commonDetails.region3rd?.let {
+            itemDetails.region3rd?.let {
                 ItemInfoField(
                     label = stringResource(R.string.area),
                     value = it
@@ -293,7 +293,7 @@ private fun CommonDetailsCard(
             }
         }
     }
-    if (item.commonDetails.type != null) {
+    if (itemDetails.type != null) {
         SummaryCardSection(
             icon = {
                 Icon(
@@ -303,7 +303,7 @@ private fun CommonDetailsCard(
                 )
             }
         ) {
-            item.commonDetails.type?.let {
+            itemDetails.type?.let {
                 ItemInfoField(
                     label = stringResource(R.string.type),
                     value = it
@@ -311,7 +311,7 @@ private fun CommonDetailsCard(
             }
         }
     }
-    if (item.commonDetails.periodStart != null || item.commonDetails.year != null) { // TODO add periodEnd
+    if (itemDetails.periodStart != null || itemDetails.year != null) { // TODO add periodEnd
         SummaryCardSection(
             icon = {
                 Icon(
@@ -322,14 +322,14 @@ private fun CommonDetailsCard(
             }
         ) {
             Row {
-                item.commonDetails.periodStart?.let {
+                itemDetails.periodStart?.let {
                     ItemInfoField(
                         label = stringResource(R.string.period),
-                        value = item.commonDetails.periodStart.toString() + " – " + item.commonDetails.periodEnd.toString(),
+                        value = itemDetails.periodStart.toString() + " – " + itemDetails.periodEnd.toString(),
                         modifier = Modifier.weight(1f)
                     )
                 }
-                item.commonDetails.year?.let {
+                itemDetails.year?.let {
                     ItemInfoField(
                         label = stringResource(R.string.year),
                         value = it.toString(),
@@ -343,9 +343,9 @@ private fun CommonDetailsCard(
 
 @Composable
 private fun UniqueDetailsCard(
-    item: Plate
+    itemDetails: ItemDetails
 ) {
-    if (item.uniqueDetails.notes != null || item.uniqueDetails.vehicle != null) {
+    if (itemDetails.notes != null || itemDetails.vehicle != null) {
         SummaryCardSection(
             icon = {
                 Icon(
@@ -355,13 +355,13 @@ private fun UniqueDetailsCard(
                 )
             }
         ) {
-            item.uniqueDetails.notes?.let {
+            itemDetails.notes?.let {
                 ItemInfoField(
                     label = stringResource(R.string.notes),
                     value = it
                 )
             }
-            item.uniqueDetails.vehicle?.let {
+            itemDetails.vehicle?.let {
                 ItemInfoField(
                     label = stringResource(R.string.vehicle),
                     value = it
@@ -369,7 +369,7 @@ private fun UniqueDetailsCard(
             }
         }
     }
-    if (item.uniqueDetails.date != null) {
+    if (itemDetails.date != null) {
         SummaryCardSection(
             icon = {
                 Icon(
@@ -379,7 +379,7 @@ private fun UniqueDetailsCard(
                 )
             }
         ) {
-            item.uniqueDetails.date?.let {
+            itemDetails.date?.let {
                 ItemInfoField(
                     label = stringResource(R.string.date),
                     value = it
@@ -387,7 +387,7 @@ private fun UniqueDetailsCard(
             }
         }
     }
-    if (item.uniqueDetails.cost != null || item.uniqueDetails.value != null) {
+    if (itemDetails.cost != null || itemDetails.value != null) {
         SummaryCardSection(
             icon = {
                 Icon(
@@ -398,14 +398,14 @@ private fun UniqueDetailsCard(
             }
         ) {
             Row {
-                item.uniqueDetails.cost?.let {
+                itemDetails.cost?.let {
                     ItemInfoField(
                         label = stringResource(R.string.cost),
                         value = it.toString(),
                         modifier = Modifier.weight(1f)
                     )
                 }
-                item.uniqueDetails.value?.let {
+                itemDetails.value?.let {
                     ItemInfoField(
                         label = stringResource(R.string.value),
                         value = it.toString(),
@@ -415,7 +415,7 @@ private fun UniqueDetailsCard(
             }
         }
     }
-    if (item.uniqueDetails.status != null) {
+    if (itemDetails.status != null) {
         SummaryCardSection(
             icon = {
                 Icon(
@@ -425,7 +425,7 @@ private fun UniqueDetailsCard(
                 )
             }
         ) {
-            item.uniqueDetails.status?.let {
+            itemDetails.status?.let {
                 ItemInfoField(
                     label = stringResource(R.string.location),
                     value = it
@@ -437,7 +437,7 @@ private fun UniqueDetailsCard(
 
 @Composable
 private fun PhysicalAttributesCard(
-    item: Plate
+    itemDetails: ItemDetails
 ) {
     SummaryCardSection(
         icon = {
@@ -449,21 +449,21 @@ private fun PhysicalAttributesCard(
         }
     ) {
         Row {
-            item.size.width?.let {
+            itemDetails.width?.let {
                 ItemInfoField(
                     label = stringResource(R.string.width),
                     value = it.toString(),
                     modifier = Modifier.weight(1f)
                 )
             }
-            item.size.height?.let {
+            itemDetails.height?.let {
                 ItemInfoField(
                     label = stringResource(R.string.height),
                     value = it.toString(),
                     modifier = Modifier.weight(1f)
                 )
             }
-            item.size.weight?.let {
+            itemDetails.weight?.let {
                 ItemInfoField(
                     label = stringResource(R.string.weight),
                     value = it.toString(),
@@ -476,7 +476,7 @@ private fun PhysicalAttributesCard(
 
 @Composable
 private fun SourceInfoCard(
-    item: Plate
+    itemDetails: ItemDetails
 ) {
     SummaryCardSection(
         icon = {
@@ -487,31 +487,31 @@ private fun SourceInfoCard(
             )
         }
     ) {
-        item.source.name?.let {
+        itemDetails.sourceName?.let {
             ItemInfoField(
                 label = "Source Name",
                 value = it
             )
         }
-        item.source.alias?.let {
+        itemDetails.sourceAlias?.let {
             ItemInfoField(
                 label = "Source Alias",
                 value = it
             )
         }
-        item.source.type?.let {
+        itemDetails.sourceType?.let {
             ItemInfoField(
                 label = "Source Type",
                 value = it
             )
         }
-        item.source.details?.let {
+        itemDetails.sourceDetails?.let {
             ItemInfoField(
                 label = "Source Details",
                 value = it
             )
         }
-        item.source.country?.let {
+        itemDetails.sourceCountry?.let {
             ItemInfoField(
                 label = "Source Country",
                 value = it
@@ -523,9 +523,9 @@ private fun SourceInfoCard(
 @Preview
 @Composable
 fun ItemSummaryScreenPreview() {
-    CollectionCatalogTheme {
-        ItemSummaryScreenContent(item = samplePlates[6], onInspectImage = {})
-    }
+    /*CollectionCatalogTheme {
+        ItemSummaryScreenContent(itemDetails = samplePlates[6], onInspectImage = {})
+    }*/
 }
 
 private enum class SectionType {

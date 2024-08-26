@@ -35,7 +35,7 @@ object CollectionCatalogDestinations {
     const val WISHLIST_ROUTE = WISHLIST_SCREEN
     const val STATS_ROUTE = STATS_SCREEN
     const val SETTINGS_ROUTE = SETTINGS_SCREEN
-    const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$ITEM_ID}"
+    const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$ITEM_TYPE}/{$ITEM_ID}"
     const val ITEM_ENTRY_ADD_ROUTE = "$ITEM_ENTRY_SCREEN/{$ITEM_TYPE}"
     const val ITEM_ENTRY_EDIT_ROUTE = "$ITEM_ENTRY_SCREEN/{$ITEM_TYPE}/{$ITEM_ID}"
 }
@@ -58,8 +58,8 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
         navController.navigate(SETTINGS_ROUTE)
     }
 
-    fun navigateToItemSummaryScreen(itemId: Int) {
-        navController.navigate("$ITEM_SUMMARY_SCREEN/$itemId")
+    fun navigateToItemSummaryScreen(itemType: ItemType = ItemType.PLATE, itemId: Int) {
+        navController.navigate("$ITEM_SUMMARY_SCREEN/${itemType.name}/$itemId")
     }
 
     fun navigateToItemEntryScreen(itemType: ItemType = ItemType.PLATE, itemId: Int? = null) {

@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.Plate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,9 +67,9 @@ fun HomeTopAppBar(
 @Composable
 fun ItemSummaryTopAppBar(
     title: String,
-    item: Plate,
+    item: Item,
     onBack: () -> Unit,
-    onEdit: (Plate) -> Unit,
+    onEdit: (Item) -> Unit,
     onDelete: () -> Unit
 ) {
     TopAppBar(

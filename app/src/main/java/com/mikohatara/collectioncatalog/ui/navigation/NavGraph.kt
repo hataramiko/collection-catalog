@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.WantedPlate
@@ -34,6 +35,7 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.settings.SettingsScreen
 import com.mikohatara.collectioncatalog.ui.stats.StatsScreen
+import com.mikohatara.collectioncatalog.util.getItemId
 import com.mikohatara.collectioncatalog.util.getItemType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -70,7 +72,9 @@ fun CollectionCatalogNavGraph(
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
                     },
-                    onItemClick = { navActions.navigateToItemSummaryScreen(it.id) },
+                    onItemClick = {
+                        navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
+                    },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )
             }
@@ -83,26 +87,33 @@ fun CollectionCatalogNavGraph(
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.WANTED_PLATE, null)
                     },
-                    onItemClick = { navActions.navigateToItemSummaryScreen(it.id) },
+                    onItemClick = {
+                        navActions.navigateToItemSummaryScreen(ItemType.WANTED_PLATE, it.id)
+                    },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )
             }
         }
         composable(
             route = ITEM_SUMMARY_ROUTE,
-            arguments = listOf(navArgument(ITEM_ID) { type = NavType.IntType })
+            arguments = listOf(
+                navArgument(ITEM_TYPE) { type = NavType.StringType },
+                navArgument(ITEM_ID) { type = NavType.IntType }
+            )
         ) {
             ItemSummaryScreen(
                 onBack = onBack,
-                onEdit = { navActions.navigateToItemEntryScreen(getItemType(it), it.id) },
-                onDelete = { /*TODO remove this from here?*/ }
+                onEdit = {
+                    navActions.navigateToItemEntryScreen(
+                        getItemType(it),
+                        getItemId(it)
+                    )
+                }
             )
         }
         composable(
             route = ITEM_ENTRY_ADD_ROUTE,
-            arguments = listOf(
-                navArgument(ITEM_TYPE) { type = NavType.StringType }
-            )
+            arguments = listOf(navArgument(ITEM_TYPE) { type = NavType.StringType })
         ) {
             ItemEntryScreen(
                 onBack = onBack

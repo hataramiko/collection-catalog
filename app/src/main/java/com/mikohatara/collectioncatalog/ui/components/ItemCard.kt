@@ -59,13 +59,13 @@ fun WishlistCard(
     onClick: () -> Unit,
 ) {
     WishlistCard(
-        /*country = country,
+        country = country,
         region = region,
         type = type,
         period = period,
         year = year,
-        onClick = onClick,
-        imagePath = imagePath,*/
+        onCardClick = onClick,
+        imagePath = imagePath
     )
 }
 
@@ -136,17 +136,16 @@ private fun ItemCard(
 
 @Composable
 private fun WishlistCard(
-    /*country: String,
+    country: String,
     region: String?,
     type: String,
     period: String?,
     year: String?,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier,
-    imagePath: String? = null,*/
+    imagePath: String? = null
 ) {
-    Text("yes")
-    /*val onClick = remember { Modifier.clickable { onCardClick() } }
+    val onClick = remember { Modifier.clickable { onCardClick() } }
 
     Card(
         modifier = modifier
@@ -191,17 +190,18 @@ private fun WishlistCard(
                 Text(text = period + ", " + year)
             }
         }
-    }*/
+    }
 }
 
 @Preview
 @Composable
 fun CardPreview() {
-    /*WishlistCard(
+    WishlistCard(
         country = "United States",
         region = "Arizona",
         type = "Passenger",
         period = "1995 – 2011",
         year = "2004",
-        onCardClick = { /*TODO*/ })*/
+        onCardClick = {}
+    )
 }
