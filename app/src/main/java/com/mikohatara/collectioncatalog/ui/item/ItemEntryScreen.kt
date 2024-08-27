@@ -34,8 +34,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.ItemDetails
+import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
 import com.mikohatara.collectioncatalog.ui.components.IconAbc123
 import com.mikohatara.collectioncatalog.ui.components.IconBlank
@@ -52,7 +54,7 @@ fun ItemEntryScreen(
     viewModel: ItemEntryViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
-    val uiState = viewModel.uiState
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ItemEntryScreen(
         uiState,
@@ -268,160 +270,165 @@ private fun ItemEntryScreenContent(
                 onValueChange = { onValueChange(uiState.itemDetails.copy(notes = it)) },
                 singleLine = false
             )
-            EntryFormField(
-                icon = { IconBlank() },
-                label = stringResource(R.string.vehicle),
-                value = uiState.itemDetails.vehicle ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(vehicle = it)) },
-                singleLine = false
-            )
-            ItemEntryVerticalSpacer()
+            if (uiState.itemType != ItemType.WANTED_PLATE) {
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = stringResource(R.string.vehicle),
+                    value = uiState.itemDetails.vehicle ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(vehicle = it)) },
+                    singleLine = false
+                )
+                ItemEntryVerticalSpacer()
 
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_event),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
-                label = stringResource(R.string.date),
-                //placeholder = "1922-05-18",
-                value = uiState.itemDetails.date ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(date = it)) },
-                keyboardType = KeyboardType.Number,
-            )
-            Row {
                 EntryFormField(
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.rounded_payments),
+                            painter = painterResource(R.drawable.rounded_event),
                             contentDescription = null,
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = stringResource(R.string.cost),
-                    value = uiState.itemDetails.cost?.toString() ?: "",
-                    onValueChange = { onValueChange( // TODO improve input logic
-                        uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
-                    },
-                    modifier = Modifier.weight(1f),
+                    label = stringResource(R.string.date),
+                    //placeholder = "1922-05-18",
+                    value = uiState.itemDetails.date ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(date = it)) },
                     keyboardType = KeyboardType.Number,
                 )
-                EntryFormField(
-                    icon = null,
-                    label = stringResource(R.string.value),
-                    value = uiState.itemDetails.value?.toString() ?: "",
-                    onValueChange = { newValue ->
-                        onValueChange(uiState.itemDetails.copy(
-                            value = if (newValue.isBlankOrZero()) null
-                            else newValue.toLongOrNull())
-                        )
-                    },
-                    modifier = Modifier.weight(0.725f),
-                    keyboardType = KeyboardType.Number,
-                )
-            }
-            ItemEntryVerticalSpacer()
+                Row {
+                    EntryFormField(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_payments),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        },
+                        label = stringResource(R.string.cost),
+                        value = uiState.itemDetails.cost?.toString() ?: "",
+                        onValueChange = { onValueChange( // TODO improve input logic
+                            uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
+                        },
+                        modifier = Modifier.weight(1f),
+                        keyboardType = KeyboardType.Number,
+                    )
+                    EntryFormField(
+                        icon = null,
+                        label = stringResource(R.string.value),
+                        value = uiState.itemDetails.value?.toString() ?: "",
+                        onValueChange = { newValue ->
+                            onValueChange(uiState.itemDetails.copy(
+                                value = if (newValue.isBlankOrZero()) null
+                                else newValue.toLongOrNull())
+                            )
+                        },
+                        modifier = Modifier.weight(0.725f),
+                        keyboardType = KeyboardType.Number,
+                    )
+                }
+                ItemEntryVerticalSpacer()
 
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_pin_dist),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
-                label = stringResource(R.string.location),
-                value = uiState.itemDetails.status ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(status = it)) }
-            )
-        }
-        EntryFormCard {
-            Row(ItemScreenModifiers.rowNoIcon) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                ) {
-                    Text("Keeper")
-                    Switch(
-                        checked = uiState.itemDetails.isKeeper,
-                        onCheckedChange = {
-                            onValueChange(uiState.itemDetails.copy(isKeeper = it))
-                        }
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                ) {
-                    Text("For Trade")
-                    Switch(
-                        checked = uiState.itemDetails.isForTrade,
-                        onCheckedChange = {
-                            onValueChange(uiState.itemDetails.copy(isForTrade = it))
-                        }
-                    )
-                }
-            }
-        }
-        EntryFormCard {
-            Row {
                 EntryFormField(
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.rounded_ruler),
+                            painter = painterResource(R.drawable.rounded_pin_dist),
                             contentDescription = null,
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = stringResource(R.string.width),
-                    value = uiState.itemDetails.width?.toString() ?: "",
-                    onValueChange = { newValue ->
-                        onValueChange(uiState.itemDetails.copy(
-                            width = if (newValue.isBlankOrZero()) null
-                            else newValue.toIntOrNull())
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    keyboardType = KeyboardType.Number
-                )
-                EntryFormField(
-                    icon = null,
-                    label = stringResource(R.string.height),
-                    value = uiState.itemDetails.height?.toString() ?: "",
-                    onValueChange = { newValue ->
-                        onValueChange(uiState.itemDetails.copy(
-                            height = if (newValue.isBlankOrZero()) null
-                            else newValue.toIntOrNull())
-                        )
-                    },
-                    modifier = Modifier.weight(0.725f),
-                    keyboardType = KeyboardType.Number
+                    label = stringResource(R.string.location),
+                    value = uiState.itemDetails.status ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(status = it)) }
                 )
             }
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_weight),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
+        }
+        if (uiState.itemType != ItemType.WANTED_PLATE) {
+            EntryFormCard {
+                Row(ItemScreenModifiers.rowNoIcon) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                    ) {
+                        Text("Keeper")
+                        Switch(
+                            checked = uiState.itemDetails.isKeeper,
+                            onCheckedChange = {
+                                onValueChange(uiState.itemDetails.copy(isKeeper = it))
+                            }
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                    ) {
+                        Text("For Trade")
+                        Switch(
+                            checked = uiState.itemDetails.isForTrade,
+                            onCheckedChange = {
+                                onValueChange(uiState.itemDetails.copy(isForTrade = it))
+                            }
+                        )
+                    }
+                }
+            }
+        }
+        EntryFormCard {
+            if (uiState.itemType != ItemType.WANTED_PLATE) {
+                Row {
+                    EntryFormField(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_ruler),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        },
+                        label = stringResource(R.string.width),
+                        value = uiState.itemDetails.width?.toString() ?: "",
+                        onValueChange = { newValue ->
+                            onValueChange(uiState.itemDetails.copy(
+                                width = if (newValue.isBlankOrZero()) null
+                                else newValue.toIntOrNull())
+                            )
+                        },
+                        modifier = Modifier.weight(1f),
+                        keyboardType = KeyboardType.Number
                     )
-                },
-                label = stringResource(R.string.weight),
-                value = uiState.itemDetails.weight?.toString() ?: "",
-                onValueChange = { newValue ->
-                    onValueChange(uiState.itemDetails.copy(
-                        weight = if (newValue.isBlankOrZero()) null
-                        else newValue.toDoubleOrNull())
+                    EntryFormField(
+                        icon = null,
+                        label = stringResource(R.string.height),
+                        value = uiState.itemDetails.height?.toString() ?: "",
+                        onValueChange = { newValue ->
+                            onValueChange(uiState.itemDetails.copy(
+                                height = if (newValue.isBlankOrZero()) null
+                                else newValue.toIntOrNull())
+                            )
+                        },
+                        modifier = Modifier.weight(0.725f),
+                        keyboardType = KeyboardType.Number
                     )
-                },
-                keyboardType = KeyboardType.Number
-            )
-            ItemEntryVerticalSpacer()
-
+                }
+                EntryFormField(
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_weight),
+                            contentDescription = null,
+                            modifier = ItemScreenModifiers.icon
+                        )
+                    },
+                    label = stringResource(R.string.weight),
+                    value = uiState.itemDetails.weight?.toString() ?: "",
+                    onValueChange = { newValue ->
+                        onValueChange(uiState.itemDetails.copy(
+                            weight = if (newValue.isBlankOrZero()) null
+                            else newValue.toDoubleOrNull())
+                        )
+                    },
+                    keyboardType = KeyboardType.Number
+                )
+                ItemEntryVerticalSpacer()
+            }
             EntryFormField(
                 icon = {
                     Icon(
@@ -441,44 +448,46 @@ private fun ItemEntryScreenContent(
                 onValueChange = { onValueChange(uiState.itemDetails.copy(colorSecondary = it)) }
             )
         }
-        EntryFormCard {
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_person_pin_circle),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
-                label = "Source Name",
-                value = uiState.itemDetails.sourceName ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(sourceName = it)) }
-            )
-            EntryFormField(
-                icon = { IconBlank() },
-                label = "Source Alias",
-                value = uiState.itemDetails.sourceAlias ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(sourceAlias = it)) }
-            )
-            EntryFormField(
-                icon = { IconBlank() },
-                label = "Source Type",
-                value = uiState.itemDetails.sourceType ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(sourceType = it)) }
-            )
-            EntryFormField(
-                icon = { IconBlank() },
-                label = "Source Details",
-                value = uiState.itemDetails.sourceDetails ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) }
-            )
-            EntryFormField(
-                icon = { IconBlank() },
-                label = "Source Country",
-                value = uiState.itemDetails.sourceCountry ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
-                imeAction = ImeAction.Done
-            )
+        if (uiState.itemType != ItemType.WANTED_PLATE) {
+            EntryFormCard {
+                EntryFormField(
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_person_pin_circle),
+                            contentDescription = null,
+                            modifier = ItemScreenModifiers.icon
+                        )
+                    },
+                    label = "Source Name",
+                    value = uiState.itemDetails.sourceName ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceName = it)) }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Source Alias",
+                    value = uiState.itemDetails.sourceAlias ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceAlias = it)) }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Source Type",
+                    value = uiState.itemDetails.sourceType ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceType = it)) }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Source Details",
+                    value = uiState.itemDetails.sourceDetails ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Source Country",
+                    value = uiState.itemDetails.sourceCountry ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
+                    imeAction = ImeAction.Done
+                )
+            }
         }
         Button(
             onClick = onSave,

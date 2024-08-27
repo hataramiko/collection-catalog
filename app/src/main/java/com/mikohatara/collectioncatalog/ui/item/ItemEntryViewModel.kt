@@ -1,9 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,12 +13,17 @@ import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toPlate
 import com.mikohatara.collectioncatalog.util.toWantedPlate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ItemEntryUiState(
     val item: Item? = null,
+    val itemType: ItemType = ItemType.PLATE,
     val itemDetails: ItemDetails = ItemDetails(),
     val isNew: Boolean = false,
     val hasUnsavedChanges: Boolean = false
@@ -37,55 +38,65 @@ class ItemEntryViewModel @Inject constructor(
         savedStateHandle.get<String>(ITEM_TYPE)?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
     private val itemId: Int? = savedStateHandle.get<Int>(ITEM_ID)
 
-    var uiState by mutableStateOf(ItemEntryUiState())
-        private set
+    private val _uiState = MutableStateFlow(ItemEntryUiState())
+    val uiState: StateFlow<ItemEntryUiState> = _uiState.asStateFlow()
 
     init {
-        if (itemId != null) {
-            loadItem(itemType, itemId)
-        } else {
-            uiState = ItemEntryUiState(isNew = true)
+        viewModelScope.launch {
+            if (itemId != null) {
+                loadItem(itemType, itemId)
+            } else {
+                _uiState.update { it.copy(itemType = itemType, isNew = true) }
+            }
         }
     }
 
     fun updateUiState(itemDetails: ItemDetails) {
-        val item = uiState.item
-        val isNew = uiState.isNew
+        val item = uiState.value.item
+        val isNew = uiState.value.isNew
         val initialDetails = if (isNew) ItemDetails() else when (item) {
             is Item.PlateItem -> item.plate.toItemDetails()
             is Item.WantedPlateItem -> item.wantedPlate.toItemDetails()
             else -> ItemDetails()
         }
 
-        uiState = if (itemDetails != initialDetails) {
+        _uiState.value = if (itemDetails != initialDetails) {
             ItemEntryUiState(
                 item = item,
+                itemType = itemType,
                 itemDetails = itemDetails,
                 isNew = isNew,
                 hasUnsavedChanges = true
             )
         } else {
-            ItemEntryUiState(item = item, itemDetails = itemDetails, isNew = isNew)
+            ItemEntryUiState(
+                item = item,
+                itemType = itemType,
+                itemDetails = itemDetails,
+                isNew = isNew
+            )
         }
     }
 
     fun saveEntry() = viewModelScope.launch {
-        if (uiState.isNew) addNewItem() else updateItem()
+        if (uiState.value.isNew) addNewItem() else updateItem()
     }
 
     private suspend fun addNewItem() = viewModelScope.launch {
         when (itemType) {
-            ItemType.PLATE -> plateRepository.addPlate(uiState.itemDetails.toPlate())
+            ItemType.PLATE -> plateRepository
+                .addPlate(uiState.value.itemDetails.toPlate())
             ItemType.WANTED_PLATE -> plateRepository
-                .addWantedPlate(uiState.itemDetails.toWantedPlate())
+                .addWantedPlate(uiState.value.itemDetails.toWantedPlate())
         }
     }
 
     private suspend fun updateItem() = viewModelScope.launch {
         when (itemType) {
-            ItemType.PLATE -> plateRepository.updatePlate(uiState.itemDetails.toPlate())
+            ItemType.PLATE -> plateRepository
+                .updatePlate(uiState.value.itemDetails.toPlate())
             ItemType.WANTED_PLATE -> plateRepository
-                .updateWantedPlate(uiState.itemDetails.toWantedPlate())
+                .updateWantedPlate(uiState.value.itemDetails.toWantedPlate())
         }
     }
 
@@ -93,8 +104,9 @@ class ItemEntryViewModel @Inject constructor(
         when (itemType) {
             ItemType.PLATE -> {
                 plateRepository.getPlateStream(itemId).let {
-                    uiState = ItemEntryUiState(
+                    _uiState.value = ItemEntryUiState(
                         item = it.firstOrNull()?.let { Item.PlateItem(it) },
+                        itemType = itemType,
                         itemDetails = it.firstOrNull()?.toItemDetails() ?: ItemDetails(),
                         isNew = false
                     )
@@ -102,8 +114,9 @@ class ItemEntryViewModel @Inject constructor(
             }
             ItemType.WANTED_PLATE -> {
                 plateRepository.getWantedPlateStream(itemId).let {
-                    uiState = ItemEntryUiState(
+                    _uiState.value = ItemEntryUiState(
                         item = it.firstOrNull()?.let { Item.WantedPlateItem(it) },
+                        itemType = itemType,
                         itemDetails = it.firstOrNull()?.toItemDetails() ?: ItemDetails(),
                         isNew = false
                     )
