@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Item
-import com.mikohatara.collectioncatalog.data.Plate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +30,7 @@ fun HomeTopAppBar(
     TopAppBar(
         title = {
             Text(
-                title, // database tableName?
+                title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 //modifier = Modifier.padding(16.dp)
@@ -177,6 +176,56 @@ fun SettingsTopAppBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = "Back"
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WishlistTopAppBar(
+    title: String,
+    onOpenDrawer: () -> Unit,
+    onAddItem: () -> Unit,
+    onSortBy: () -> Unit,
+    onFilter: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior
+) {
+    TopAppBar(
+        title = {
+            Text(
+                title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onOpenDrawer) {
+                Icon(
+                    imageVector = Icons.Rounded.Menu,
+                    contentDescription = "Menu"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { onSortBy() }) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_swap_vert),
+                    contentDescription = null
+                )
+            }
+            IconButton(onClick = { onFilter() }) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_filter),
+                    contentDescription = null
+                )
+            }
+            IconButton(onClick = { onAddItem() }) {
+                Icon(
+                    imageVector = Icons.Rounded.AddCircle,
+                    contentDescription = "Add"
                 )
             }
         },

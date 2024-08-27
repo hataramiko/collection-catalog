@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,21 +53,31 @@ fun ItemCard(
 @Composable
 fun WishlistCard(
     country: String,
-    region: String?,
+    region1st: String?,
+    region2nd: String?,
+    region3rd: String?,
     type: String,
-    period: String?,
-    year: String?,
+    periodStart: Int?,
+    periodEnd: Int?,
+    year: Int?,
+    regNo: String?,
     imagePath: String?,
+    notes: String?,
     onClick: () -> Unit,
 ) {
     WishlistCard(
         country = country,
-        region = region,
-        type = type,
-        period = period,
-        year = year,
         onCardClick = onClick,
-        imagePath = imagePath
+        imagePath = imagePath,
+        regNo = regNo,
+        notes = notes,
+        region1st = region1st,
+        region2nd = region2nd,
+        region3rd = region3rd,
+        type = type.ifBlank { null },
+        periodStart = periodStart?.toString(),
+        periodEnd = periodEnd?.toString(),
+        year = year?.toString()
     )
 }
 
@@ -137,35 +149,52 @@ private fun ItemCard(
 @Composable
 private fun WishlistCard(
     country: String,
-    region: String?,
-    type: String,
-    period: String?,
-    year: String?,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier,
-    imagePath: String? = null
+    imagePath: String? = null,
+    regNo: String? = null,
+    notes: String? = null,
+    region1st: String? = null,
+    region2nd: String? = null,
+    region3rd: String? = null,
+    type: String? = null,
+    periodStart: String? = null,
+    periodEnd: String? = null,
+    year: String? = null,
 ) {
     val onClick = remember { Modifier.clickable { onCardClick() } }
+    val regions = listOfNotNull(region1st, region2nd, region3rd).filterNot { it.isBlank() }
+    val mainText = listOf(country).plus(regions).joinToString(", ")
+    val period = if (periodStart.isNullOrBlank() && periodEnd.isNullOrBlank()) {
+        null
+    } else {
+        "${periodStart ?: ""} – ${periodEnd ?: ""}".trim()
+    }
+    val subText = listOfNotNull(type, notes)
+        .filterNot { it.isBlank() }
+        .joinToString(", ")
 
-    Card(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .then(onClick)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+        Card(
+            modifier = Modifier.size(80.dp)
         ) {
-            Card(
-                modifier = Modifier.size(80.dp)
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
             ) {
                 if (imagePath != null) {
-                    Text(
+                    /*Text(
                         text = stringResource(R.string.image_loading),
                         softWrap = false,
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                    )
+                    )*/
                     AsyncImage(
                         model = ImageRequest
                             .Builder(LocalContext.current)
@@ -174,20 +203,32 @@ private fun WishlistCard(
                             .build(),
                         contentDescription = null,
                         modifier = Modifier,
-                        contentScale = ContentScale.FillWidth,
+                        contentScale = ContentScale.Fit,
                     )
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.rounded_no_image),
                         contentDescription = null,
-                        modifier = Modifier.padding(20.dp)
+                        modifier = Modifier
                     )
                 }
             }
-            Column {
-                Text(text = country + ", " + region)
-                Text(text = type)
-                Text(text = period + ", " + year)
+        }
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = mainText,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (subText.isNotBlank()) {
+                Text(
+                    text = subText,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
@@ -197,11 +238,16 @@ private fun WishlistCard(
 @Composable
 fun CardPreview() {
     WishlistCard(
-        country = "United States",
-        region = "Arizona",
+        country = "Lorem ipsum",
+        onCardClick = {},
+        regNo = "V-####",
+        notes = "With inspection stamp",
+        region1st = "QWERTYUIOPÅ",
+        region2nd = "ASDFGHJKLÖÄ",
+        region3rd = "ZXCVBNM",
         type = "Passenger",
-        period = "1995 – 2011",
-        year = "2004",
-        onCardClick = {}
+        periodStart = "1930",
+        periodEnd = "1949",
+        year = "1989",
     )
 }
