@@ -2,14 +2,15 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,19 +28,24 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikohatara.collectioncatalog.R
@@ -129,12 +135,20 @@ fun FilterBottomSheet(
     uiState: HomeUiState,
     viewModel: HomeViewModel
 ) {
+    val sheetState = rememberModalBottomSheetState()
+    var sheetHeight by remember { mutableIntStateOf(0) }
+    //var contentHeight by remember { mutableIntStateOf(0) } Could use this for offset as well
+
     val countries = viewModel.getCountries()
     val types = viewModel.getTypes()
     val locations = viewModel.getLocations()
 
     ModalBottomSheet(
-        onDismissRequest = { onDismiss() }
+        onDismissRequest = { onDismiss() },
+        sheetState = sheetState,
+        modifier = Modifier.onGloballyPositioned {
+            sheetHeight = it.size.height
+        }
     ) {
         Header(
             stringResource(R.string.filter),
@@ -146,7 +160,9 @@ fun FilterBottomSheet(
         Box(
             modifier = Modifier
                 .weight(1f)
-                //.verticalScroll(rememberScrollState()) // if Column instead of LazyColumn
+                /*.onGloballyPositioned { See above
+                    contentHeight = it.size.height
+                }*/
         ) {
             LazyColumn {
                 item {
@@ -224,31 +240,44 @@ fun FilterBottomSheet(
                 }
             }
         }
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .padding(8.dp)
+                .offset {
+                    IntOffset(
+                        0,
+                        (sheetHeight - sheetState.requireOffset() - sheetHeight).toInt()
+                    )
+                }
         ) {
-            /* TODO potentially replace the Reset button in the Header with this
-            TextButton(
-                onClick = { viewModel.resetFilter() },
+            //TODO fix the gap in the bottom
+            Column(
                 modifier = Modifier
-                    .weight(0.9f)
+                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
             ) {
-                Text(stringResource(R.string.reset))
-            }
-            Spacer(modifier = Modifier.width(8.dp))*/
-            Button(
-                onClick = {
-                    viewModel.setFilter()
-                    onDismiss()
-                },
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(stringResource(R.string.filter_apply))
+                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .padding(8.dp)
+                ) {
+                    TextButton(
+                        onClick = { viewModel.resetFilter() },
+                        modifier = Modifier.weight(0.9f)
+                    ) {
+                        Text(stringResource(R.string.reset))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            viewModel.setFilter()
+                            //onDismiss()
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.filter_apply))
+                    }
+                }
             }
         }
     }
@@ -257,7 +286,7 @@ fun FilterBottomSheet(
 @Composable
 private fun Header(
     label: String,
-    onReset: (() -> Unit)? = null
+    onReset: (() -> Unit)? = null // TODO get rid of completely?
 ) {
     Row(
         verticalAlignment = Alignment.Bottom,
@@ -271,7 +300,7 @@ private fun Header(
                 .weight(1f)
                 .padding(start = 32.dp, bottom = 16.dp)
         )
-        if (onReset != null) {
+        /*if (onReset != null) {
             //Spacer(modifier = Modifier.weight(1f))
             TextButton(
                 onClick = { onReset() },
@@ -295,7 +324,7 @@ private fun Header(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
             }
-        }
+        }*/
     }
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 }
