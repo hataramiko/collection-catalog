@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -77,14 +78,14 @@ fun SortByBottomSheet(
     uiState: HomeUiState,
     viewModel: HomeViewModel
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val sortByOptions = viewModel.sortByOptions
 
     ModalBottomSheet(
-        onDismissRequest = { onDismiss() }
+        onDismissRequest = { onDismiss() },
+        sheetState = sheetState
     ) {
-        Header(
-            stringResource(R.string.sort_by)
-        )
+        Header(stringResource(R.string.sort_by))
         Column(
             modifier = Modifier
                 .selectableGroup()
@@ -137,7 +138,6 @@ fun FilterBottomSheet(
 ) {
     val sheetState = rememberModalBottomSheetState()
     var sheetHeight by remember { mutableIntStateOf(0) }
-    //var contentHeight by remember { mutableIntStateOf(0) } Could use this for offset as well
 
     val countries = viewModel.getCountries()
     val types = viewModel.getTypes()
@@ -151,18 +151,11 @@ fun FilterBottomSheet(
         }
     ) {
         Header(
-            stringResource(R.string.filter),
-            onReset = {
-                viewModel.resetFilter()
-                onDismiss()
-            }
+            label = stringResource(R.string.filter),
+            onReset = { viewModel.resetFilter() }
         )
         Box(
-            modifier = Modifier
-                .weight(1f)
-                /*.onGloballyPositioned { See above
-                    contentHeight = it.size.height
-                }*/
+            modifier = Modifier.weight(1f)
         ) {
             LazyColumn {
                 item {
@@ -240,46 +233,12 @@ fun FilterBottomSheet(
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .offset {
-                    IntOffset(
-                        0,
-                        (sheetHeight - sheetState.requireOffset() - sheetHeight).toInt()
-                    )
-                }
-        ) {
-            //TODO fix the gap in the bottom
-            Column(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            ) {
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .padding(8.dp)
-                ) {
-                    TextButton(
-                        onClick = { viewModel.resetFilter() },
-                        modifier = Modifier.weight(0.9f)
-                    ) {
-                        Text(stringResource(R.string.reset))
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = {
-                            viewModel.setFilter()
-                            //onDismiss()
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(stringResource(R.string.filter_apply))
-                    }
-                }
-            }
-        }
+        FilterFooter(
+            sheetState = sheetState,
+            sheetHeight = sheetHeight,
+            onReset = { viewModel.resetFilter() },
+            onApply = { viewModel.setFilter() }
+        )
     }
 }
 
@@ -391,4 +350,66 @@ private fun FilterHorizontalDivider() {
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, /*top = 8.dp*/)
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FilterFooter(
+    sheetState: SheetState,
+    sheetHeight: Int,
+    onReset: () -> Unit,
+    onApply: () -> Unit,
+) {
+    val backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow
+
+    Box(
+        modifier = Modifier
+            .offset {
+                IntOffset(
+                    0,
+                    (sheetHeight - sheetState.requireOffset() - sheetHeight).toInt()
+                )
+            }
+    ) {
+        Column(
+            modifier = Modifier
+                .background(backgroundColor)
+        ) {
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .padding(8.dp)
+            ) {
+                TextButton(
+                    onClick = onReset,
+                    modifier = Modifier.weight(0.9f)
+                ) {
+                    Text(stringResource(R.string.reset))
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = onApply,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(stringResource(R.string.filter_apply))
+                }
+            }
+        }
+        /*  The Column above contains the actual content of the footer.
+        *   The Box below is a hack to fill in the gap from the system navigation bar.
+        * */
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .offset(y = 64.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(backgroundColor)
+            )
+        }
+    }
 }
