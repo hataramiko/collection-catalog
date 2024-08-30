@@ -21,6 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -236,8 +238,21 @@ fun FilterBottomSheet(
         FilterFooter(
             sheetState = sheetState,
             sheetHeight = sheetHeight,
+            filterCount = uiState.filters.country.size +
+                    uiState.filters.type.size +
+                    uiState.filters.location.size +
+                    if (uiState.filters.isKeeper && uiState.filters.isForTrade) {
+                        2
+                    } else if (uiState.filters.isKeeper || uiState.filters.isForTrade) {
+                        1
+                    } else {
+                        0
+                    },
             onReset = { viewModel.resetFilter() },
-            onApply = { viewModel.setFilter() }
+            onApply = {
+                viewModel.setFilter()
+                onDismiss()
+            }
         )
     }
 }
@@ -307,10 +322,22 @@ private fun CheckboxList(
                 .fillMaxWidth()
                 .then(onClickLabel)
         ) {
-            Text(
-                label,
-                modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
-            )
+            BadgedBox(
+                badge = {
+                    if (activeFilters.isNotEmpty()) {
+                        Badge(
+                            modifier = Modifier.padding(start = 14.dp, top = 4.dp)
+                        ) {
+                            Text(activeFilters.size.toString())
+                        }
+                    }
+                }
+            ) {
+                Text(
+                    label,
+                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
@@ -357,6 +384,7 @@ private fun FilterHorizontalDivider() {
 private fun FilterFooter(
     sheetState: SheetState,
     sheetHeight: Int,
+    filterCount: Int,
     onReset: () -> Unit,
     onApply: () -> Unit,
 ) {
@@ -389,11 +417,22 @@ private fun FilterFooter(
                     Text(stringResource(R.string.reset))
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = onApply,
-                    modifier = Modifier.weight(1f)
+                BadgedBox(
+                    modifier = Modifier.weight(1f),
+                    badge = {
+                        if (filterCount > 0) {
+                            Badge {
+                                Text(filterCount.toString())
+                            }
+                        }
+                    }
                 ) {
-                    Text(stringResource(R.string.filter_apply))
+                    Button(
+                        onClick = onApply,
+                        modifier = Modifier.fillMaxWidth()//.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.filter_apply))
+                    }
                 }
             }
         }
