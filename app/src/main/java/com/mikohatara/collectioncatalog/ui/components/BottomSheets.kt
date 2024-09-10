@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.sp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.home.HomeUiState
 import com.mikohatara.collectioncatalog.ui.home.HomeViewModel
-import com.mikohatara.collectioncatalog.ui.home.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
 
 enum class BottomSheetType {
@@ -100,20 +99,7 @@ fun SortByBottomSheet(
                         .fillMaxWidth()
                         .selectable(
                             selected = (option == uiState.sortBy),
-                            onClick = {
-                                when (option) {
-                                    SortBy.COUNTRY_ASC -> viewModel.setSortBy(SortBy.COUNTRY_ASC)
-                                    SortBy.COUNTRY_DESC -> viewModel.setSortBy(SortBy.COUNTRY_DESC)
-                                    SortBy.COUNTRY_AND_TYPE_ASC ->
-                                        viewModel.setSortBy(SortBy.COUNTRY_AND_TYPE_ASC)
-
-                                    SortBy.COUNTRY_AND_TYPE_DESC ->
-                                        viewModel.setSortBy(SortBy.COUNTRY_AND_TYPE_DESC)
-
-                                    SortBy.DATE_NEWEST -> viewModel.setSortBy(SortBy.DATE_NEWEST)
-                                    SortBy.DATE_OLDEST -> viewModel.setSortBy(SortBy.DATE_OLDEST)
-                                }
-                            },
+                            onClick = { viewModel.setSortBy(option) },
                             role = Role.RadioButton
                         )
                 ) {
@@ -152,10 +138,7 @@ fun FilterBottomSheet(
             sheetHeight = it.size.height
         }
     ) {
-        Header(
-            label = stringResource(R.string.filter),
-            onReset = { viewModel.resetFilter() }
-        )
+        Header(stringResource(R.string.filter))
         Box(
             modifier = Modifier.weight(1f)
         ) {
@@ -167,7 +150,6 @@ fun FilterBottomSheet(
                         activeFilters = uiState.filters.country,
                         onToggleFilter = { viewModel.toggleCountryFilter(it) }
                     )
-                    FilterHorizontalDivider()
                 }
                 item {
                     CheckboxList(
@@ -176,7 +158,6 @@ fun FilterBottomSheet(
                         activeFilters = uiState.filters.type,
                         onToggleFilter = { viewModel.toggleTypeFilter(it) }
                     )
-                    FilterHorizontalDivider()
                 }
                 item {
                     CheckboxList(
@@ -185,7 +166,6 @@ fun FilterBottomSheet(
                         activeFilters = uiState.filters.location,
                         onToggleFilter = { viewModel.toggleLocationFilter(it) }
                     )
-                    FilterHorizontalDivider()
                 }
                 item {
                     Text(
@@ -259,47 +239,15 @@ fun FilterBottomSheet(
 
 @Composable
 private fun Header(
-    label: String,
-    onReset: (() -> Unit)? = null // TODO get rid of completely?
+    label: String
 ) {
-    Row(
-        verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            label,
-            fontSize = 20.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(start = 32.dp, bottom = 16.dp)
-        )
-        /*if (onReset != null) {
-            //Spacer(modifier = Modifier.weight(1f))
-            TextButton(
-                onClick = { onReset() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .absoluteOffset(y = (-5).dp)
-                    .padding(end = 8.dp)
-            ) {
-                /*Icon(
-                    painter = painterResource(R.drawable.rounded_refresh),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .rotate(45f)
-                        .scale(scaleX = -1f, scaleY = 1f)
-                )*/
-                Text(
-                    stringResource(R.string.reset),
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-            }
-        }*/
-    }
+    Text(
+        label,
+        fontSize = 20.sp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 32.dp, bottom = 16.dp)
+    )
     HorizontalDivider(modifier = Modifier.fillMaxWidth())
 }
 
@@ -367,6 +315,7 @@ private fun CheckboxList(
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
+        FilterHorizontalDivider()
     }
 }
 
