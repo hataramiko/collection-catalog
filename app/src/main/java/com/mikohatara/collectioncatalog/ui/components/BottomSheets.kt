@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -45,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -56,6 +59,7 @@ import com.mikohatara.collectioncatalog.ui.home.HomeUiState
 import com.mikohatara.collectioncatalog.ui.home.HomeViewModel
 import com.mikohatara.collectioncatalog.util.getSortByText
 
+//TODO maybe combine SortByBottomSheet and FilterBottomSheet into one BottomSheet?
 enum class BottomSheetType {
     SORT_BY,
     FILTER
@@ -86,7 +90,7 @@ fun SortByBottomSheet(
         onDismissRequest = { onDismiss() },
         sheetState = sheetState
     ) {
-        Header(stringResource(R.string.sort_by))
+        BottomSheetHeader(stringResource(R.string.sort_by))
         Column(
             modifier = Modifier
                 .selectableGroup()
@@ -117,7 +121,7 @@ fun SortByBottomSheet(
 }
 
 @SuppressLint("StateFlowValueCalledInComposition")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun FilterBottomSheet(
     onDismiss: () -> Unit,
@@ -131,6 +135,10 @@ fun FilterBottomSheet(
     val types = viewModel.getTypes()
     val locations = viewModel.getLocations()
 
+    var isCountriesExpanded by remember { mutableStateOf(false) }
+    var isTypesExpanded by remember { mutableStateOf(false) }
+    var isLocationsExpanded by remember { mutableStateOf(false) }
+
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,
@@ -138,40 +146,66 @@ fun FilterBottomSheet(
             sheetHeight = it.size.height
         }
     ) {
-        Header(stringResource(R.string.filter))
+        BottomSheetHeader(stringResource(R.string.filter))
         Box(
             modifier = Modifier.weight(1f)
         ) {
             LazyColumn {
-                item {
-                    CheckboxList(
+                stickyHeader {
+                    FilterListLabel(
                         label = stringResource(R.string.country),
+                        activeFilters = uiState.filters.country,
+                        isExpanded = isCountriesExpanded,
+                        onExpand = { isCountriesExpanded = !isCountriesExpanded }
+                    )
+                }
+                item {
+                    FilterListContent(
                         filterOptions = countries,
                         activeFilters = uiState.filters.country,
+                        isExpanded = isCountriesExpanded,
                         onToggleFilter = { viewModel.toggleCountryFilter(it) }
                     )
                 }
-                item {
-                    CheckboxList(
+                stickyHeader {
+                    FilterListLabel(
                         label = stringResource(R.string.type),
+                        activeFilters = uiState.filters.type,
+                        isExpanded = isTypesExpanded,
+                        onExpand = { isTypesExpanded = !isTypesExpanded }
+                    )
+                }
+                item {
+                    FilterListContent(
                         filterOptions = types,
                         activeFilters = uiState.filters.type,
+                        isExpanded = isTypesExpanded,
                         onToggleFilter = { viewModel.toggleTypeFilter(it) }
                     )
                 }
-                item {
-                    CheckboxList(
+                stickyHeader {
+                    FilterListLabel(
                         label = stringResource(R.string.location),
-                        filterOptions = locations,
                         activeFilters = uiState.filters.location,
-                        onToggleFilter = { viewModel.toggleLocationFilter(it) }
+                        isExpanded = isLocationsExpanded,
+                        onExpand = { isLocationsExpanded = !isLocationsExpanded }
                     )
                 }
                 item {
+                    FilterListContent(
+                        filterOptions = locations,
+                        activeFilters = uiState.filters.location,
+                        isExpanded = isLocationsExpanded,
+                        onToggleFilter = { viewModel.toggleLocationFilter(it) }
+                    )
+                }
+                stickyHeader {
                     Text(
                         "Boolean",
                         modifier = Modifier.padding(start = 32.dp, top = 12.dp)
                     )
+                }
+                item {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -238,11 +272,11 @@ fun FilterBottomSheet(
 }
 
 @Composable
-private fun Header(
+private fun BottomSheetHeader(
     label: String
 ) {
     Text(
-        label,
+        text = label,
         fontSize = 20.sp,
         modifier = Modifier
             .fillMaxWidth()
@@ -252,48 +286,56 @@ private fun Header(
 }
 
 @Composable
-private fun CheckboxList(
+private fun FilterListLabel(
     label: String,
+    activeFilters: Set<String>,
+    isExpanded: Boolean,
+    onExpand: () -> Unit
+) {
+    val onClick = remember { Modifier.clickable { onExpand() } }
+    val backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.95f)
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor)
+            .then(onClick)
+    ) {
+        Row {
+            Text(
+                label,
+                modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
+            )
+            if (activeFilters.isNotEmpty()) {
+                Badge(
+                    modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+                ) {
+                    Text(activeFilters.size.toString())
+                }
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
+            else Icons.Rounded.KeyboardArrowDown,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 32.dp)
+        )
+    }
+    FilterHorizontalDivider(color = Color.Transparent)
+}
+
+@Composable
+private fun FilterListContent(
     filterOptions: Set<String>,
     activeFilters: Set<String>,
+    isExpanded: Boolean,
     onToggleFilter: (String) -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
-    val onClickLabel = remember { Modifier.clickable { isExpanded = !isExpanded } }
-
     Column(
         modifier = Modifier.animateContentSize()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(onClickLabel)
-        ) {
-            BadgedBox(
-                badge = {
-                    if (activeFilters.isNotEmpty()) {
-                        Badge(
-                            modifier = Modifier.padding(start = 14.dp, top = 4.dp)
-                        ) {
-                            Text(activeFilters.size.toString())
-                        }
-                    }
-                }
-            ) {
-                Text(
-                    label,
-                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
-                    else Icons.Rounded.KeyboardArrowDown,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 32.dp)
-            )
-        }
         if (isExpanded) {
             filterOptions.forEach { option ->
                 val onClickOption = remember { Modifier.clickable { onToggleFilter(option) } }
@@ -315,16 +357,19 @@ private fun CheckboxList(
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
-        FilterHorizontalDivider()
     }
+    FilterHorizontalDivider()
 }
 
 @Composable
-private fun FilterHorizontalDivider() {
+private fun FilterHorizontalDivider(
+    color: Color = DividerDefaults.color,
+) {
     HorizontalDivider(
+        color = color,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, /*top = 8.dp*/)
+            .padding(horizontal = 20.dp)
     )
 }
 
