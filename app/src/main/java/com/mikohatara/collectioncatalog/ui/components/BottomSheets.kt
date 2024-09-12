@@ -84,7 +84,7 @@ fun SortByBottomSheet(
     viewModel: HomeViewModel
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val sortByOptions = viewModel.sortByOptions
+    val sortByOptions = viewModel.getSortByOptions()
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -142,9 +142,7 @@ fun FilterBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,
-        modifier = Modifier.onGloballyPositioned {
-            sheetHeight = it.size.height
-        }
+        modifier = Modifier.onGloballyPositioned { sheetHeight = it.size.height }
     ) {
         BottomSheetHeader(stringResource(R.string.filter))
         Box(

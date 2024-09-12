@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -13,38 +14,36 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,7 +53,6 @@ import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
-import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun HomeScreen(
@@ -86,10 +84,7 @@ private fun HomeScreen(
     onOpenDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-    val topBarState = rememberTopAppBarState()
-    val scrollState = rememberLazyListState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -105,10 +100,9 @@ private fun HomeScreen(
             HomeScreenContent(
                 uiState = uiState,
                 viewModel = viewModel,
+                topBarState = scrollBehavior.state,
                 itemList = itemList,
-                modifier = modifier
-                    .padding(innerPadding),
-                    //.verticalScroll(rememberScrollState())
+                modifier = modifier.padding(innerPadding),
                 onItemClick = onItemClick,
                 onSortByClick = { viewModel.showSortByBottomSheet.value = true },
                 onFilterClick = { viewModel.showFilterBottomSheet.value = true }
@@ -131,34 +125,38 @@ private fun HomeScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreenContent(
     uiState: HomeUiState,
     viewModel: HomeViewModel,
+    topBarState: TopAppBarState,
     itemList: List<Plate>,
     modifier: Modifier = Modifier,
     onItemClick: (Plate) -> Unit,
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit
 ) {
-    val maxWidth = itemList.maxOfOrNull { it.size.width ?: 1 } ?: 1
-
-    // For testing TopRow scroll handling
+    val maxItemWidth = itemList.maxOfOrNull { it.size.width ?: 1 } ?: 1
     val listState = rememberLazyListState()
+    val isAtTop = remember {
+        derivedStateOf { (listState.firstVisibleItemIndex == 0) &&
+            (listState.firstVisibleItemScrollOffset == 0) }
+    }
     val itemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
-    val scrollState = viewModel.isScrollingUp.collectAsState()
+    val topBarCollapsedFraction = remember { derivedStateOf { topBarState.collapsedFraction } }
+    // Use itemIndex and topBarCollapsedFraction to update TopRow visibility in viewModel
+    viewModel.updateTopRowVisibility(itemIndex.value, topBarCollapsedFraction.value)
 
-    viewModel.updateScrollPosition(itemIndex.value)
     LazyColumn(
         state = listState,
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
-            TopRow(scrollState, onSortByClick, onFilterClick)
+            TopRow(viewModel.isTopRowHidden.value, isAtTop.value, onSortByClick, onFilterClick)
         }
         if (uiState.isLoading) {
             item {
@@ -187,7 +185,7 @@ private fun HomeScreenContent(
                     title = item.uniqueDetails.regNo,
                     imagePath = item.uniqueDetails.imagePath,
                     itemWidth = item.size.width,
-                    maxWidth = maxWidth
+                    maxWidth = maxItemWidth
                 ) {
                     onItemClick(item)
                 }
@@ -196,40 +194,41 @@ private fun HomeScreenContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopRow(
-    scrollState: State<Boolean?>,
+    isHidden: Boolean,
+    isAtTop: Boolean,
     onSortByClick: () -> Unit,
-    onFilterClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onFilterClick: () -> Unit
 ) {
-    // For testing scroll handling
-    val position by animateFloatAsState(if (scrollState.value == true) -256f else 0f)
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val offset by animateFloatAsState(if (isHidden) -64f else 0f)
+    val backgroundColor by animateColorAsState(
+        if (isAtTop) TopAppBarDefaults.topAppBarColors().containerColor else
+            TopAppBarDefaults.topAppBarColors().scrolledContainerColor
+    )
 
-    /*
-    *   Did some changes to the structure, paddings, and background colors
-    *   for testing the scroll behavior stuff commented out here and in the ViewModel.
-    *
-    *   TODO
-    *   - test with firstVisibleItemOffset
-    *   - try FAB approach, utilizing -''-Index?
-    *
-    * */
-
-    Column(
-        modifier = Modifier.graphicsLayer { translationY = (position) }
+    Card(
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        shape = RoundedCornerShape(
+            topStart = 0.dp,
+            topEnd = 0.dp,
+            bottomStart = 24.dp,
+            bottomEnd = 24.dp
+        ),
+        modifier = Modifier
+            .requiredWidth(screenWidth.dp)
+            .offset(0.dp, offset.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 4.dp)
-                //.background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
             OutlinedButton(
                 onClick = { onSortByClick() },
-                colors = ButtonDefaults
-                    .outlinedButtonColors(MaterialTheme.colorScheme.background),
                 modifier = Modifier
                     .weight(1f)
             ) {
@@ -246,8 +245,6 @@ private fun TopRow(
             Spacer(modifier = Modifier.width(8.dp))
             OutlinedButton(
                 onClick = { onFilterClick() },
-                colors = ButtonDefaults
-                    .outlinedButtonColors(MaterialTheme.colorScheme.background),
                 modifier = Modifier
                     .weight(1f)
             ) {
@@ -262,18 +259,6 @@ private fun TopRow(
                 )
             }
         }
-        /*Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp)
-                .background(MaterialTheme.colorScheme.background)
-        )
-        HorizontalDivider(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                //.padding(bottom = 4.dp)
-                .requiredWidth(1024.dp)
-        )*/
     }
 }
 
@@ -295,18 +280,10 @@ private fun Loading() {
                 .offset(x = 4.dp)
                 .onGloballyPositioned { textWidth = it.size.width }
         )
-        LinearProgressIndicator(
+        /*LinearProgressIndicator(
             modifier = Modifier
                 .padding(top = 4.dp)
                 .width((textWidth / 2).dp)
-        )
-    }
-}
-
-@Preview
-@Composable
-fun HomeScreenPreview() {
-    CollectionCatalogTheme {
-        //HomeScreenContent(samplePlates, onAddItem = {}, onItemClick = {}, onOpenDrawer = {})
+        )*/
     }
 }

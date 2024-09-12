@@ -32,23 +32,11 @@ class HomeViewModel @Inject constructor(
     val showSortByBottomSheet = mutableStateOf(false)
     val showFilterBottomSheet = mutableStateOf(false)
 
+    private val _isTopRowHidden = MutableStateFlow(false)
+    val isTopRowHidden: StateFlow<Boolean> = _isTopRowHidden.asStateFlow()
+
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
-    val sortByOptions = SortBy.entries.toList()
-
-    // For testing TopRow scroll handling
-    private var lastScrollIndex = 0
-    private val _isScrollingUp = MutableStateFlow(false)
-    val isScrollingUp: StateFlow<Boolean> = _isScrollingUp.asStateFlow()
-
-    fun updateScrollPosition(newScrollIndex: Int) {
-        if (newScrollIndex == lastScrollIndex) return
-
-        _isScrollingUp.value = newScrollIndex > lastScrollIndex
-        lastScrollIndex = newScrollIndex
-    }
-    //
 
     init {
         viewModelScope.launch {
@@ -69,6 +57,10 @@ class HomeViewModel @Inject constructor(
                 setSortBy(uiState.value.sortBy)
             }
         }
+    }
+
+    fun updateTopRowVisibility(itemIndex: Int, topBarCollapsedFraction: Float) {
+        _isTopRowHidden.value = (topBarCollapsedFraction > 0.5f) && (itemIndex > 0)
     }
 
     fun setSortBy(sortBy: SortBy) {
@@ -161,6 +153,11 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(filters = FilterData()) }
         setFilter()
         //getPlates()
+    }
+
+    fun getSortByOptions(): List<SortBy> {
+        val sortByOptions = SortBy.entries.toList()
+        return sortByOptions
     }
 
     fun getCountries(): Set<String> {
