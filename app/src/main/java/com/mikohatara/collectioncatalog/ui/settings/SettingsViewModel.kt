@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SettingsUiState(
+    //TODO remove defaultSortBy. No longer applied through Settings
     val defaultSortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC
 )
 
@@ -34,12 +34,4 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SettingsUiState()
         )
-
-    val sortByOptions = SortBy.entries.toList()
-
-    fun updateDefaultSortBy(sortBy: SortBy) {
-        viewModelScope.launch {
-            userPreferencesRepository.saveDefaultSortOrder(sortBy)
-        }
-    }
 }

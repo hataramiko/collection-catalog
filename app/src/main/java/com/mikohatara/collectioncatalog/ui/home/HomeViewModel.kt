@@ -106,6 +106,7 @@ class HomeViewModel @Inject constructor(
             )
         }
         _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }
+        updateDefaultSortBy(sortBy)
     }
 
     fun setFilter() {
@@ -178,6 +179,12 @@ class HomeViewModel @Inject constructor(
         return _allItems.mapNotNull { it.uniqueDetails.status }
             .sortedWith(compareBy { it })
             .toSet()
+    }
+
+    private fun updateDefaultSortBy(sortBy: SortBy) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveDefaultSortOrder(sortBy)
+        }
     }
 
     private fun <T> toggleFilter(filters: Set<T>, item: T): Set<T> =
