@@ -32,6 +32,32 @@ class DatabaseModule {
         }
     }
 
+    /*  I wrote this before realizing I hadn't applied AutoMigration to the Database,
+    *   so I didn't actually use this, but let it lay here as a reminder.
+    * */
+    private val MIGRATION_7_9 = object : Migration(8, 9) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `archive` ( " +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`country` TEXT NOT NULL, " +
+                        "`region_1st` TEXT, `region_2nd` TEXT, `region_3rd` TEXT, " +
+                        "`type` TEXT NOT NULL, " +
+                        "`period_start` INTEGER, `period_end` INTEGER, `year` INTEGER, " +
+                        "`reg_no` TEXT NOT NULL, " +
+                        "`image_path` TEXT, `notes` TEXT, `vehicle` TEXT, `date` TEXT, " +
+                        "`cost` INTEGER, `value` INTEGER, `status` TEXT, " +
+                        "`width` INTEGER, `height` INTEGER, `weight` REAL, " +
+                        "`color_main` TEXT, `color_secondary` TEXT, " +
+                        "`source_name` TEXT, `source_alias` TEXT, `source_type` TEXT, " +
+                        "`source_details` TEXT, `source_country` TEXT, " +
+                        "`archival_date` TEXT, `recipient_name` TEXT, `recipient_alias` TEXT, " +
+                        "`archival_reason` TEXT, `archival_details` TEXT, " +
+                        "`price` INTEGER, `recipient_country` TEXT)"
+            )
+        }
+    }
+
     @Provides
     fun providePlateDao(collectionDatabase: CollectionDatabase): PlateDao {
         return collectionDatabase.plateDao()

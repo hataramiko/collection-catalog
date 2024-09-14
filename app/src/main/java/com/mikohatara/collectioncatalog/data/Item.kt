@@ -3,13 +3,13 @@ package com.mikohatara.collectioncatalog.data
 sealed class Item {
     data class PlateItem(val plate: Plate) : Item()
     data class WantedPlateItem(val wantedPlate: WantedPlate) : Item()
-    //data class FormerPlateItem(val formerPlate: FormerPlate) : Item()
+    data class FormerPlateItem(val formerPlate: FormerPlate) : Item()
 }
 
 enum class ItemType {
     PLATE,
     WANTED_PLATE,
-    //FORMER_PLATE
+    FORMER_PLATE
 }
 
 data class ItemDetails(
@@ -52,8 +52,8 @@ data class ItemDetails(
     val archivalDate: String? = null,
     val recipientName: String? = null,
     val recipientAlias: String? = null,
-    val actionType: String? = null,
-    val actionDetails: String? = null,
+    val archivalType: String? = null,
+    val archivalDetails: String? = null,
     val price: Long? = null,
     val recipientCountry: String? = null
 )

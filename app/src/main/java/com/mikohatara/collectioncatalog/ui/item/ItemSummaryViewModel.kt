@@ -47,6 +47,13 @@ class ItemSummaryViewModel @Inject constructor(
                         itemDetails = it.toItemDetails()
                     )
                 }
+            ItemType.FORMER_PLATE -> plateRepository.getFormerPlateStream(itemId)
+                .map {
+                    ItemSummaryUiState(
+                        item = Item.FormerPlateItem(it!!),
+                        itemDetails = it.toItemDetails()
+                    )
+                }
         }
             .stateIn(
                 scope = viewModelScope,

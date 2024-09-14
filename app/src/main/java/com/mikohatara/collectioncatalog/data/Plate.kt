@@ -84,11 +84,11 @@ data class Source(
 )
 
 data class ArchivalDetails(
-    @ColumnInfo(name = "archival_date") val date: String?,
+    @ColumnInfo(name = "archival_date") val archivalDate: String?,
     @ColumnInfo(name = "recipient_name") val recipientName: String?,
     @ColumnInfo(name = "recipient_alias") val recipientAlias: String?,
-    @ColumnInfo(name = "action_type") val actionType: String?,
-    @ColumnInfo(name = "action_details") val actionDetails: String?,
+    @ColumnInfo(name = "archival_reason") val archivalReason: String?,
+    @ColumnInfo(name = "archival_details") val archivalDetails: String?,
     @ColumnInfo(name = "price") val price: Long?,
     @ColumnInfo(name = "recipient_country") val recipientCountry: String?,
 )

@@ -24,6 +24,16 @@ interface PlateRepository {
     fun getAllWantedPlatesStream(): Flow<List<WantedPlate>>
 
     fun getWantedPlateStream(id: Int): Flow<WantedPlate?>
+
+    suspend fun addFormerPlate(plate: FormerPlate)
+
+    suspend fun updateFormerPlate(plate: FormerPlate)
+
+    suspend fun deleteFormerPlate(plate: FormerPlate)
+
+    fun getAllFormerPlatesStream(): Flow<List<FormerPlate>>
+
+    fun getFormerPlateStream(id: Int): Flow<FormerPlate?>
 }
 
 class OfflinePlateRepository @Inject constructor(
@@ -51,5 +61,17 @@ class OfflinePlateRepository @Inject constructor(
 
     override fun getWantedPlateStream(id: Int): Flow<WantedPlate?> {
         return plateDao.getWantedPlate(id).map { it }
+    }
+
+    override suspend fun addFormerPlate(plate: FormerPlate) = plateDao.insertFormerPlate(plate)
+
+    override suspend fun updateFormerPlate(plate: FormerPlate) = plateDao.updateFormerPlate(plate)
+
+    override suspend fun deleteFormerPlate(plate: FormerPlate) = plateDao.deleteFormerPlate(plate)
+
+    override fun getAllFormerPlatesStream(): Flow<List<FormerPlate>> = plateDao.getAllFormerPlates()
+
+    override fun getFormerPlateStream(id: Int): Flow<FormerPlate?> {
+        return plateDao.getFormerPlate(id).map { it }
     }
 }

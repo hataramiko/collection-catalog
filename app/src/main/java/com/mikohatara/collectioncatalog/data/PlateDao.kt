@@ -39,4 +39,19 @@ interface PlateDao {
 
     @Query("SELECT * from wishlist WHERE id = :id")
     fun getWantedPlate(id: Int): Flow<WantedPlate>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertFormerPlate(formerPlate: FormerPlate)
+
+    @Update
+    suspend fun updateFormerPlate(formerPlate: FormerPlate)
+
+    @Delete
+    suspend fun deleteFormerPlate(formerPlate: FormerPlate)
+
+    @Query("SELECT * from archive ORDER BY country ASC")
+    fun getAllFormerPlates(): Flow<List<FormerPlate>>
+
+    @Query("SELECT * from archive WHERE id = :id")
+    fun getFormerPlate(id: Int): Flow<FormerPlate>
 }

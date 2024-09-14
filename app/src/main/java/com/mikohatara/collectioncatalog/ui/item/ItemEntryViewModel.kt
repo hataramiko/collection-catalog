@@ -9,6 +9,7 @@ import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.toFormerPlate
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toPlate
 import com.mikohatara.collectioncatalog.util.toWantedPlate
@@ -88,6 +89,8 @@ class ItemEntryViewModel @Inject constructor(
                 .addPlate(uiState.value.itemDetails.toPlate())
             ItemType.WANTED_PLATE -> plateRepository
                 .addWantedPlate(uiState.value.itemDetails.toWantedPlate())
+            ItemType.FORMER_PLATE -> plateRepository
+                .addFormerPlate(uiState.value.itemDetails.toFormerPlate())
         }
     }
 
@@ -97,6 +100,8 @@ class ItemEntryViewModel @Inject constructor(
                 .updatePlate(uiState.value.itemDetails.toPlate())
             ItemType.WANTED_PLATE -> plateRepository
                 .updateWantedPlate(uiState.value.itemDetails.toWantedPlate())
+            ItemType.FORMER_PLATE -> plateRepository
+                .updateFormerPlate(uiState.value.itemDetails.toFormerPlate())
         }
     }
 
@@ -116,6 +121,16 @@ class ItemEntryViewModel @Inject constructor(
                 plateRepository.getWantedPlateStream(itemId).let {
                     _uiState.value = ItemEntryUiState(
                         item = it.firstOrNull()?.let { Item.WantedPlateItem(it) },
+                        itemType = itemType,
+                        itemDetails = it.firstOrNull()?.toItemDetails() ?: ItemDetails(),
+                        isNew = false
+                    )
+                }
+            }
+            ItemType.FORMER_PLATE -> {
+                plateRepository.getFormerPlateStream(itemId).let {
+                    _uiState.value = ItemEntryUiState(
+                        item = it.firstOrNull()?.let { Item.FormerPlateItem(it) },
                         itemType = itemType,
                         itemDetails = it.firstOrNull()?.toItemDetails() ?: ItemDetails(),
                         isNew = false
