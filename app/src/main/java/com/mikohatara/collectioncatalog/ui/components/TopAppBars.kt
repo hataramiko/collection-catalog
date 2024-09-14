@@ -210,13 +210,13 @@ fun WishlistTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { onSortBy() }) {
+            IconButton(onClick = { onSortBy() }, enabled = false) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_swap_vert),
                     contentDescription = null
                 )
             }
-            IconButton(onClick = { onFilter() }) {
+            IconButton(onClick = { onFilter() }, enabled = false) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_filter),
                     contentDescription = null

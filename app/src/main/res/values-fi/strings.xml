@@ -74,4 +74,6 @@
     <string name="color_main">Pohjan väri</string>
     <string name="color_secondary">Merkkien väri</string>
     <string name="is_empty_message">Ei näytettävää.</string>
+    <string name="collections">Kokoelmat</string>
+    <string name="create_collection">Luo uusi kokoelma</string>
 </resources>

@@ -73,4 +73,6 @@
     <string name="color_main">配色、地</string>
     <string name="color_secondary">配色、字</string>
     <string name="is_empty_message">何も表示されていません。</string>
+    <string name="collections">コレクション</string>
+    <string name="create_collection">新しいコレクションを作成</string>
 </resources>

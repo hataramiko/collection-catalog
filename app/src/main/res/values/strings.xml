@@ -74,4 +74,6 @@
     <string name="color_main">Color, Base</string>
     <string name="color_secondary">Color, Characters</string>
     <string name="is_empty_message">Nothing to display.</string>
+    <string name="collections">Collections</string>
+    <string name="create_collection">Create new collection</string>
 </resources>

@@ -1,7 +1,8 @@
 package com.mikohatara.collectioncatalog.ui.home
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,13 +41,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
@@ -190,6 +196,16 @@ private fun HomeScreenContent(
                     onItemClick(item)
                 }
             }
+            item { // TODO replace with something better?
+                Text(
+                    text = "•",
+                    color = MaterialTheme.colorScheme.outline,
+                    fontSize = 32.sp,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .alpha(0.5f)
+                )
+            }
         }
     }
 }
@@ -203,23 +219,33 @@ private fun TopRow(
     onFilterClick: () -> Unit
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
-    val offset by animateFloatAsState(if (isHidden) -64f else 0f)
-    val backgroundColor by animateColorAsState(
-        if (isAtTop) TopAppBarDefaults.topAppBarColors().containerColor else
-            TopAppBarDefaults.topAppBarColors().scrolledContainerColor
+    val offset by animateIntAsState(
+        targetValue = if (isHidden) -200 else 0,
+        label = "TopRowOffset"
     )
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isAtTop) TopAppBarDefaults.topAppBarColors().containerColor else
+            TopAppBarDefaults.topAppBarColors().scrolledContainerColor,
+        animationSpec = tween(250),
+        label = "TopRowBackgroundColor"
+    )
+    /*  The backgroundColor seems to be in sync _well enough_ with that of the TopAppBar,
+    *   but it might be worth exploring the possibility of getting the color directly off
+    *   of the TopAppBar.
+    * */
 
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(
             topStart = 0.dp,
             topEnd = 0.dp,
-            bottomStart = 24.dp,
-            bottomEnd = 24.dp
+            bottomStart = 26.dp,
+            bottomEnd = 26.dp
         ),
         modifier = Modifier
+            .padding(bottom = 8.dp)
             .requiredWidth(screenWidth.dp)
-            .offset(0.dp, offset.dp)
+            .offset { IntOffset(0, offset) }
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -280,10 +306,10 @@ private fun Loading() {
                 .offset(x = 4.dp)
                 .onGloballyPositioned { textWidth = it.size.width }
         )
-        /*LinearProgressIndicator(
+        LinearProgressIndicator(
             modifier = Modifier
                 .padding(top = 4.dp)
                 .width((textWidth / 2).dp)
-        )*/
+        )
     }
 }
