@@ -6,10 +6,11 @@ import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.WantedPlate
 
 fun getItemType(item: Any): ItemType {
-    return if (item is Item.WantedPlateItem) {
-        ItemType.WANTED_PLATE
-    } else {
-        ItemType.PLATE
+    return when (item) {
+        is Item.PlateItem -> ItemType.PLATE
+        is Item.WantedPlateItem -> ItemType.WANTED_PLATE
+        is Item.FormerPlateItem -> ItemType.FORMER_PLATE
+        else -> throw IllegalArgumentException("getItemType: Invalid item type")
     }
 }
 
@@ -17,6 +18,7 @@ fun getItemId(item: Any): Int {
     return when (item) {
         is Item.PlateItem -> item.plate.id
         is Item.WantedPlateItem -> item.wantedPlate.id
-        else -> throw IllegalArgumentException("Invalid item type")
+        is Item.FormerPlateItem -> item.formerPlate.id
+        else -> throw IllegalArgumentException("getItemId: Invalid item type")
     }
 }

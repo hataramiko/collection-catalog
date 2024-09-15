@@ -5,12 +5,9 @@ import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -25,7 +22,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -36,14 +32,11 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -58,6 +51,7 @@ import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
+import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 
 @Composable
@@ -113,7 +107,7 @@ private fun HomeScreen(
                 onSortByClick = { viewModel.showSortByBottomSheet.value = true },
                 onFilterClick = { viewModel.showFilterBottomSheet.value = true }
             )
-            if(viewModel.showSortByBottomSheet.value) {
+            if (viewModel.showSortByBottomSheet.value) {
                 SortByBottomSheet(
                     onDismiss = { viewModel.showSortByBottomSheet.value = false },
                     uiState = uiState,
@@ -212,7 +206,7 @@ private fun HomeScreenContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopRow(
+fun TopRow(
     isHidden: Boolean,
     isAtTop: Boolean,
     onSortByClick: () -> Unit,
@@ -285,31 +279,5 @@ private fun TopRow(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun Loading() {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(IntrinsicSize.Max)
-            .padding(top = 256.dp)
-    ) {
-        var textWidth by remember { mutableIntStateOf(0) }
-
-        Text(
-            text = stringResource(R.string.loading),
-            modifier = Modifier
-                .offset(x = 4.dp)
-                .onGloballyPositioned { textWidth = it.size.width }
-        )
-        LinearProgressIndicator(
-            modifier = Modifier
-                .padding(top = 4.dp)
-                .width((textWidth / 2).dp)
-        )
     }
 }

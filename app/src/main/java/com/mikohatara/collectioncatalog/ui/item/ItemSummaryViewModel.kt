@@ -67,6 +67,8 @@ class ItemSummaryViewModel @Inject constructor(
                 .deletePlate((uiState.value.item as Item.PlateItem).plate)
             is Item.WantedPlateItem -> plateRepository
                 .deleteWantedPlate((uiState.value.item as Item.WantedPlateItem).wantedPlate)
+            is Item.FormerPlateItem -> plateRepository
+                .deleteFormerPlate((uiState.value.item as Item.FormerPlateItem).formerPlate)
             else -> {}
         }
     }

@@ -17,12 +17,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
+import com.mikohatara.collectioncatalog.ui.home.ArchiveScreen
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.home.WishlistScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemSummaryScreen
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ADD_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_EDIT_ROUTE
@@ -86,6 +88,21 @@ fun CollectionCatalogNavGraph(
                     },
                     onItemClick = {
                         navActions.navigateToItemSummaryScreen(ItemType.WANTED_PLATE, it.id)
+                    },
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                )
+            }
+        }
+        composable(
+            route = ARCHIVE_ROUTE
+        ) {
+            ModalMenuDrawer(drawerState, currentRoute, navActions) {
+                ArchiveScreen(
+                    onAddItem = {
+                        navActions.navigateToItemEntryScreen(ItemType.FORMER_PLATE, null)
+                    },
+                    onItemClick = {
+                        navActions.navigateToItemSummaryScreen(ItemType.FORMER_PLATE, it.id)
                     },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
                 )

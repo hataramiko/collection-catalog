@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.icons.Icons
@@ -87,7 +88,7 @@ private fun MenuDrawerContent(
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 2.dp)
+                modifier = Modifier.padding(horizontal = 2.dp, vertical = 4.dp)
             ) {
                 Text(
                     text = stringResource(R.string.collections),
@@ -146,11 +147,12 @@ private fun MenuDrawerContent(
                         contentDescription = null
                     )
                 },
-                selected = false,
+                selected = currentRoute == CollectionCatalogDestinations.ARCHIVE_ROUTE,
                 onClick = {
-                    //onCloseDrawer()
+                    navActions.navigateToArchiveScreen()
+                    onCloseDrawer()
                 },
-                modifier = modifier.alpha(0.5f)
+                modifier = modifier
             )
             HorizontalDivider(
                 modifier = Modifier

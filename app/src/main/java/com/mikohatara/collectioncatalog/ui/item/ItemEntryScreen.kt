@@ -341,7 +341,7 @@ private fun ItemEntryScreenContent(
                 )
             }
         }
-        if (uiState.itemType != ItemType.WANTED_PLATE) {
+        if (uiState.itemType == ItemType.PLATE) {
             EntryFormCard {
                 Row(ItemScreenModifiers.rowNoIcon) {
                     Column(
@@ -485,6 +485,78 @@ private fun ItemEntryScreenContent(
                     label = "Source Country",
                     value = uiState.itemDetails.sourceCountry ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
+                    imeAction = if (uiState.itemType != ItemType.FORMER_PLATE) ImeAction.Done
+                        else ImeAction.Next
+                )
+            }
+        }
+        if (uiState.itemType == ItemType.FORMER_PLATE) {
+            EntryFormCard {
+                EntryFormField(
+                    icon  = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_history),
+                            contentDescription = null,
+                            modifier = ItemScreenModifiers.icon
+                        )
+                    },
+                    label = "Archival Date",
+                    value = uiState.itemDetails.archivalDate ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(archivalDate = it))
+                    }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Recipient Name",
+                    value = uiState.itemDetails.recipientName ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(recipientName = it))
+                    }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Recipient Alias",
+                    value = uiState.itemDetails.recipientAlias ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(recipientAlias = it))
+                    }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Archival Reason",
+                    value = uiState.itemDetails.archivalType ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(archivalType = it))
+                    }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Archival Details",
+                    value = uiState.itemDetails.archivalDetails ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(archivalDetails = it))
+                    }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Price",
+                    value = uiState.itemDetails.price?.toString() ?: "",
+                    onValueChange = { newValue ->
+                        onValueChange(uiState.itemDetails.copy(
+                            price = if (newValue.isBlankOrZero()) null
+                            else newValue.toLongOrNull())
+                        )
+                    },
+                    keyboardType = KeyboardType.Number,
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = "Recipient Country",
+                    value = uiState.itemDetails.recipientCountry ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(recipientCountry = it))
+                    },
                     imeAction = ImeAction.Done
                 )
             }

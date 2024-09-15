@@ -58,6 +58,7 @@ class ItemEntryViewModel @Inject constructor(
         val initialDetails = if (isNew) ItemDetails() else when (item) {
             is Item.PlateItem -> item.plate.toItemDetails()
             is Item.WantedPlateItem -> item.wantedPlate.toItemDetails()
+            is Item.FormerPlateItem -> item.formerPlate.toItemDetails()
             else -> ItemDetails()
         }
 

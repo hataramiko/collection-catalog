@@ -166,6 +166,19 @@ private fun ItemSummaryScreenContent(
                 itemDetails.sourceCountry
             )
         )
+        ItemSummarySection(
+            itemDetails = itemDetails,
+            SectionType.ARCHIVAL_INFO,
+            sectionDetails = listOf(
+                itemDetails.archivalDate,
+                itemDetails.archivalType,
+                itemDetails.archivalDetails,
+                itemDetails.price,
+                itemDetails.recipientName,
+                itemDetails.recipientAlias,
+                itemDetails.recipientCountry
+            )
+        )
     }
 }
 
@@ -175,13 +188,16 @@ private fun ItemSummarySection(
     sectionType: SectionType,
     sectionDetails: List<Any?>
 ) {
-    if (sectionDetails.any { it !is Boolean && it != null || it is Boolean && it != false }) {
+    if (sectionDetails.any {
+        it !is Boolean && it != null || it is Boolean && it != false && it != true
+    }) {
         SummaryCard {
             when (sectionType) {
                 SectionType.COMMON_DETAILS -> CommonDetailsCard(itemDetails)
                 SectionType.UNIQUE_DETAILS -> UniqueDetailsCard(itemDetails)
                 SectionType.PHYSICAL_ATTRIBUTES -> PhysicalAttributesCard(itemDetails)
                 SectionType.SOURCE_INFO -> SourceInfoCard(itemDetails)
+                SectionType.ARCHIVAL_INFO -> ArchivalInfoCard(itemDetails)
             }
         }
     }
@@ -519,6 +535,64 @@ private fun SourceInfoCard(
     }
 }
 
+@Composable
+private fun ArchivalInfoCard(
+    itemDetails: ItemDetails
+) {
+    SummaryCardSection(
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.rounded_history),
+                contentDescription = null,
+                modifier = ItemScreenModifiers.icon
+            )
+        }
+    ) {
+        itemDetails.archivalDate?.let {
+            ItemInfoField(
+                label = "Archival Date",
+                value = it
+            )
+        }
+        itemDetails.archivalType?.let {
+            ItemInfoField(
+                label = "Archival Reason",
+                value = it
+            )
+        }
+        itemDetails.archivalDetails?.let {
+            ItemInfoField(
+                label = "Archival Details",
+                value = it
+            )
+        }
+        itemDetails.price?.let {
+            ItemInfoField(
+                label = "Price",
+                value = it.toString()
+            )
+        }
+        itemDetails.recipientName?.let {
+            ItemInfoField(
+                label = "Recipient Name",
+                value = it
+            )
+        }
+        itemDetails.recipientAlias?.let {
+            ItemInfoField(
+                label = "Recipient Alias",
+                value = it
+            )
+        }
+        itemDetails.recipientCountry?.let {
+            ItemInfoField(
+                label = "Recipient Country",
+                value = it
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 fun ItemSummaryScreenPreview() {
@@ -531,5 +605,6 @@ private enum class SectionType {
     COMMON_DETAILS,
     UNIQUE_DETAILS,
     PHYSICAL_ATTRIBUTES,
-    SOURCE_INFO
+    SOURCE_INFO,
+    ARCHIVAL_INFO
 }
