@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.mikohatara.collectioncatalog.data.CollectionDatabase
+import com.mikohatara.collectioncatalog.data.PlateDatabase
 import com.mikohatara.collectioncatalog.data.PlateDao
 import dagger.Module
 import dagger.Provides
@@ -59,16 +59,16 @@ class DatabaseModule {
     }
 
     @Provides
-    fun providePlateDao(collectionDatabase: CollectionDatabase): PlateDao {
-        return collectionDatabase.plateDao()
+    fun providePlateDao(plateDatabase: PlateDatabase): PlateDao {
+        return plateDatabase.plateDao()
     }
 
     @Provides
     @Singleton
-    fun provideCollectionDatabase(@ApplicationContext appContext: Context): CollectionDatabase {
+    fun providePlateDatabase(@ApplicationContext appContext: Context): PlateDatabase {
         return Room.databaseBuilder(
             appContext,
-            CollectionDatabase::class.java,
+            PlateDatabase::class.java,
             "Plate"
         )
             .addMigrations(MIGRATION_7_8)

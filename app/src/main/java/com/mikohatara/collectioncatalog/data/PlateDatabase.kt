@@ -7,8 +7,8 @@ import androidx.room.RoomDatabase
 @Database(
     version = 9,
     entities = [Plate::class, WantedPlate::class, FormerPlate::class],
-    autoMigrations = [AutoMigration(from = 8, to = 9)]
+    //autoMigrations = [AutoMigration(from = 8, to = 9)]
 )
-abstract class CollectionDatabase : RoomDatabase() {
+abstract class PlateDatabase : RoomDatabase() {
     abstract fun plateDao(): PlateDao
 }
