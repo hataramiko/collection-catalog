@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.collections
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,26 +36,27 @@ import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 
 @Composable
-fun CollectionsScreen(
-    viewModel: CollectionsViewModel = hiltViewModel(),
+fun CollectionListScreen(
+    viewModel: CollectionListViewModel = hiltViewModel(),
+    onAddNew: () -> Unit,
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    CollectionsScreen(
-        collectionList = uiState.collections,
+    CollectionListScreen(
+        collectionList = uiState.collectionList,
         uiState = uiState,
         viewModel = viewModel,
-        onAddNew = {  },
+        onAddNew = onAddNew,
         onBack = onBack
     )
 }
 
 @Composable
-private fun CollectionsScreen(
+private fun CollectionListScreen(
     collectionList: List<Collection>,
-    uiState: CollectionsUiState,
-    viewModel: CollectionsViewModel,
+    uiState: CollectionListUiState,
+    viewModel: CollectionListViewModel,
     onAddNew: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -67,7 +69,7 @@ private fun CollectionsScreen(
             )
         },
         content = { innerPadding ->
-            CollectionsScreenContent(
+            CollectionListScreenContent(
                 uiState = uiState,
                 viewModel = viewModel,
                 collectionList = collectionList,
@@ -80,18 +82,14 @@ private fun CollectionsScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun CollectionsScreenContent(
-    uiState: CollectionsUiState,
-    viewModel: CollectionsViewModel,
+private fun CollectionListScreenContent(
+    uiState: CollectionListUiState,
+    viewModel: CollectionListViewModel,
     collectionList: List<Collection>,
     onAddNew: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var testList = emptyList<Int>()
-    for (i in 1..30) {
-        testList = testList.plus(i)
-    }
-
+    Log.d("collectionList", collectionList.toString())
     LazyColumn(
         modifier = modifier.fillMaxWidth()
     ) {

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.icons.Icons
@@ -22,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,6 +36,7 @@ fun ModalMenuDrawer(
     currentRoute: String,
     navActions: CollectionCatalogNavigationActions,
     onEditCollections: () -> Unit,
+    onAddCollection: () -> Unit,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     screenContent: @Composable () -> Unit
 ) {
@@ -48,6 +47,7 @@ fun ModalMenuDrawer(
                 navActions = navActions,
                 currentRoute = currentRoute,
                 onEditCollections = onEditCollections,
+                onAddCollection = onAddCollection,
                 onCloseDrawer = { coroutineScope.launch { drawerState.close() } }
             )
         }
@@ -61,6 +61,7 @@ private fun MenuDrawerContent(
     navActions: CollectionCatalogNavigationActions,
     currentRoute: String,
     onEditCollections: () -> Unit,
+    onAddCollection: () -> Unit,
     onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -116,10 +117,8 @@ private fun MenuDrawerContent(
                     )
                 },
                 selected = false,
-                onClick = {
-                    //onCloseDrawer()
-                },
-                modifier = modifier.alpha(0.5f)
+                onClick = { onAddCollection() },
+                modifier = modifier
             )
         }
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -185,10 +184,7 @@ private fun MenuDrawerContent(
                     )
                 },
                 selected = false,
-                onClick = {
-                    navActions.navigateToSettingsScreen()
-                    onCloseDrawer()
-                },
+                onClick = { navActions.navigateToSettingsScreen() },
                 modifier = modifier
             )
         }
