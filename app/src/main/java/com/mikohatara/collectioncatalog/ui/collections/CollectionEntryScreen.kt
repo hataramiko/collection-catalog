@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,8 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.ui.components.CollectionEntryEditTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun CollectionEntryScreen(
@@ -36,10 +41,12 @@ fun CollectionEntryScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
 
     CollectionEntryScreen(
         uiState = uiState,
         viewModel = viewModel,
+        coroutineScope = coroutineScope,
         onValueChange = viewModel::updateUiState,
         onBack = onBack
     )
@@ -49,12 +56,14 @@ fun CollectionEntryScreen(
 private fun CollectionEntryScreen(
     uiState: CollectionEntryUiState,
     viewModel: CollectionEntryViewModel,
+    coroutineScope: CoroutineScope,
     onValueChange: (CollectionDetails) -> Unit,
     onBack: () -> Unit
 ) {
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
     val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
-    val topBarTitle: String = if (!uiState.isNew) {
+    val topBarTitle: String = if (!uiState.isNew) { // Could be .collectionDetails.name below
         stringResource(R.string.edit_item_title, uiState.collection?.name ?: "")
     } else {
         stringResource(R.string.create_collection)
@@ -64,7 +73,20 @@ private fun CollectionEntryScreen(
     }
 
     Scaffold(
-        topBar = { ItemEntryTopAppBar(title = topBarTitle, onBack = onBackBehavior) },
+        topBar = {
+            if (uiState.isNew) {
+                ItemEntryTopAppBar(
+                    title = topBarTitle,
+                    onBack = onBackBehavior
+                )
+            } else {
+                CollectionEntryEditTopAppBar(
+                    title = topBarTitle,
+                    onBack = onBackBehavior,
+                    onDelete = { showDeletionDialog = true }
+                )
+            }
+        },
         content = { innerPadding ->
             CollectionEntryScreenContent(
                 uiState = uiState,
@@ -86,6 +108,18 @@ private fun CollectionEntryScreen(
             onCancel = { showDiscardDialog = false }
         )
     }
+    if (showDeletionDialog) {
+        DeletionDialog(
+            onConfirm = {
+                showDeletionDialog = false
+                coroutineScope.launch {
+                    viewModel.deleteCollection()
+                    onBack()
+                }
+            },
+            onCancel = { showDeletionDialog = false }
+        )
+    }
 }
 
 @Composable
@@ -96,10 +130,12 @@ private fun CollectionEntryScreenContent(
     onSave: () -> Unit
 ) {
     val (saveButtonIcon, saveButtonText) = when (uiState.isNew) {
-        true -> painterResource(R.drawable.rounded_save) to
-            stringResource(R.string.save_added_item, uiState.collection?.name ?: "")
-        false -> painterResource(R.drawable.rounded_save_as) to
-            stringResource(R.string.save_edited_item, uiState.collection?.name ?: "")
+        true -> painterResource(R.drawable.rounded_save) to stringResource(
+            R.string.save_added_item, uiState.collectionDetails.name ?: ""
+        )
+        false -> painterResource(R.drawable.rounded_save_as) to stringResource(
+            R.string.save_edited_item, uiState.collectionDetails.name ?: ""
+        )
     }
 
     Column(
@@ -113,7 +149,9 @@ private fun CollectionEntryScreenContent(
             ) {
                 OutlinedTextField(
                     value = uiState.collectionDetails.emoji ?: "",
-                    onValueChange = { onValueChange(uiState.collectionDetails.copy(emoji = it)) },
+                    onValueChange = {
+                        onValueChange(uiState.collectionDetails.copy(emoji = it))
+                    },
                     label = { Text(stringResource(R.string.emoji)) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier.weight(0.33f)
@@ -132,6 +170,7 @@ private fun CollectionEntryScreenContent(
         }
         Button(
             onClick = onSave,
+            enabled = uiState.isValidEntry,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 24.dp, end = 24.dp, top = 4.dp)

@@ -197,6 +197,9 @@ fun CollectionCatalogNavGraph(
         ) {
             CollectionListScreen(
                 onAddNew = onAddCollection,
+                onCollectionClick = {
+                    navActions.navigateToCollectionEntryScreen(it.id)
+                },
                 onBack = onBack
             )
         }

@@ -19,6 +19,7 @@ data class CollectionEntryUiState(
     val collection: Collection? = null,
     val collectionDetails: CollectionDetails = CollectionDetails(),
     val isNew: Boolean = false,
+    val isValidEntry: Boolean = false,
     val hasUnsavedChanges: Boolean = false
 )
 
@@ -45,6 +46,7 @@ class CollectionEntryViewModel @Inject constructor(
     fun updateUiState(collectionDetails: CollectionDetails) {
         val collection = uiState.value.collection
         val isNew = uiState.value.isNew
+        val isValidEntry = !collectionDetails.name.isNullOrBlank()
         val initialDetails = if (isNew) CollectionDetails() else
             collection?.toCollectionDetails() ?: CollectionDetails()
 
@@ -53,19 +55,25 @@ class CollectionEntryViewModel @Inject constructor(
                 collection = collection,
                 collectionDetails = collectionDetails,
                 isNew = isNew,
+                isValidEntry = isValidEntry,
                 hasUnsavedChanges = true
             )
         } else {
             CollectionEntryUiState(
                 collection = collection,
                 collectionDetails = collectionDetails,
-                isNew = isNew
+                isNew = isNew,
+                isValidEntry = isValidEntry
             )
         }
     }
 
     fun saveEntry() = viewModelScope.launch {
         if (uiState.value.isNew) addNewCollection() else updateCollection()
+    }
+
+    suspend fun deleteCollection() = viewModelScope.launch {
+        uiState.value.collection?.let { collectionRepository.deleteCollection(it) }
     }
 
     private suspend fun addNewCollection() = viewModelScope.launch {
@@ -76,16 +84,13 @@ class CollectionEntryViewModel @Inject constructor(
         collectionRepository.updateCollection(uiState.value.collectionDetails.toCollection())
     }
 
-    private suspend fun deleteCollection() = viewModelScope.launch {
-        uiState.value.collection?.let { collectionRepository.deleteCollection(it) }
-    }
-
     private fun loadCollection(collectionId: Int) = viewModelScope.launch {
         collectionRepository.getCollectionStream(collectionId).let {
             _uiState.value = CollectionEntryUiState(
                 collection = it.firstOrNull(),
                 collectionDetails = it.firstOrNull()?.toCollectionDetails() ?: CollectionDetails(),
-                isNew = false
+                isNew = false,
+                isValidEntry = true
             )
         }
     }

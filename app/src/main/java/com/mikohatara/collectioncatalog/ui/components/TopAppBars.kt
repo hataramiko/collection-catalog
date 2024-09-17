@@ -131,15 +131,41 @@ fun ItemEntryTopAppBar( // also used in CollectionsScreen
                     contentDescription = "Back"
                 )
             }
-        },/*
-        actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CollectionEntryEditTopAppBar(
+    title: String,
+    onBack: () -> Unit,
+    onDelete: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(
+                title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.Rounded.MoreVert,
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { onDelete() }) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_delete_forever),
                     contentDescription = null
                 )
             }
-        }*/
+        }
     )
 }
 

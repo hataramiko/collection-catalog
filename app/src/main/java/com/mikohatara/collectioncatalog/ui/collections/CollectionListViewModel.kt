@@ -34,7 +34,12 @@ class CollectionListViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             collectionRepository.getAllCollectionsStream().collect { collections ->
-                _uiState.update { it.copy(collectionList = collections, isLoading = false) }
+                _uiState.update {
+                    it.copy(
+                        collectionList = collections.sortedBy { collection -> collection.name },
+                        isLoading = false
+                    )
+                }
             }
         }
     }

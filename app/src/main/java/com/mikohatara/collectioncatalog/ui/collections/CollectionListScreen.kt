@@ -39,6 +39,7 @@ import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 fun CollectionListScreen(
     viewModel: CollectionListViewModel = hiltViewModel(),
     onAddNew: () -> Unit,
+    onCollectionClick: (Collection) -> Unit,
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -48,6 +49,7 @@ fun CollectionListScreen(
         uiState = uiState,
         viewModel = viewModel,
         onAddNew = onAddNew,
+        onCollectionClick = onCollectionClick,
         onBack = onBack
     )
 }
@@ -58,6 +60,7 @@ private fun CollectionListScreen(
     uiState: CollectionListUiState,
     viewModel: CollectionListViewModel,
     onAddNew: () -> Unit,
+    onCollectionClick: (Collection) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -74,6 +77,7 @@ private fun CollectionListScreen(
                 viewModel = viewModel,
                 collectionList = collectionList,
                 onAddNew = onAddNew,
+                onCollectionClick = onCollectionClick,
                 modifier = modifier.padding(innerPadding)
             )
         },
@@ -87,6 +91,7 @@ private fun CollectionListScreenContent(
     viewModel: CollectionListViewModel,
     collectionList: List<Collection>,
     onAddNew: () -> Unit,
+    onCollectionClick: (Collection) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Log.d("collectionList", collectionList.toString())
@@ -107,12 +112,13 @@ private fun CollectionListScreenContent(
             )
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
         }
-        items(items = collectionList, key = { it.id }) { item ->
+        items(items = collectionList, key = { it.id }) { collection ->
             CollectionListItem(
-                label = item.name,
-                onClick = {},
-                emoji = item.emoji
-            )
+                label = collection.name,
+                emoji = collection.emoji
+            ) {
+                onCollectionClick(collection)
+            }
         }
         item {
             Spacer(modifier = Modifier.height(40.dp))
@@ -123,10 +129,10 @@ private fun CollectionListScreenContent(
 @Composable
 private fun CollectionListItem(
     label: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     emoji: String? = null,
     icon: @Composable (() -> Unit)? = null,
+    onClick: () -> Unit,
 ) {
     val onClickItem = remember { Modifier.clickable { onClick() } }
 
