@@ -4,7 +4,10 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -15,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.collections.CollectionEntryScreen
 import com.mikohatara.collectioncatalog.ui.collections.CollectionListScreen
@@ -47,6 +52,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CollectionCatalogNavGraph(
+    collectionRepository: CollectionRepository,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -65,6 +71,9 @@ fun CollectionCatalogNavGraph(
     }
     val onEditCollections = { navActions.navigateToCollectionListScreen() }
     val onAddCollection = { navActions.navigateToCollectionEntryScreen() }
+    val collectionList by collectionRepository.getAllCollectionsStream().collectAsState(
+        initial = emptyList()
+    )
     
     NavHost(
         navController = navController,
@@ -78,6 +87,7 @@ fun CollectionCatalogNavGraph(
                 drawerState,
                 currentRoute,
                 navActions,
+                collectionList,
                 onEditCollections,
                 onAddCollection
             ) {
@@ -99,6 +109,7 @@ fun CollectionCatalogNavGraph(
                 drawerState,
                 currentRoute,
                 navActions,
+                collectionList,
                 onEditCollections,
                 onAddCollection
             ) {
@@ -120,6 +131,7 @@ fun CollectionCatalogNavGraph(
                 drawerState,
                 currentRoute,
                 navActions,
+                collectionList,
                 onEditCollections,
                 onAddCollection
             ) {
@@ -141,6 +153,7 @@ fun CollectionCatalogNavGraph(
                 drawerState,
                 currentRoute,
                 navActions,
+                collectionList,
                 onEditCollections,
                 onAddCollection
             ) {

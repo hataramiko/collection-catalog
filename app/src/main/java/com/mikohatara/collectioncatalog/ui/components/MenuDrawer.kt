@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +36,7 @@ fun ModalMenuDrawer(
     drawerState: DrawerState,
     currentRoute: String,
     navActions: CollectionCatalogNavigationActions,
+    collectionList: List<Collection>,
     onEditCollections: () -> Unit,
     onAddCollection: () -> Unit,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -46,6 +48,7 @@ fun ModalMenuDrawer(
             MenuDrawerContent(
                 navActions = navActions,
                 currentRoute = currentRoute,
+                collectionList = collectionList,
                 onEditCollections = onEditCollections,
                 onAddCollection = onAddCollection,
                 onCloseDrawer = { coroutineScope.launch { drawerState.close() } }
@@ -60,6 +63,7 @@ fun ModalMenuDrawer(
 private fun MenuDrawerContent(
     navActions: CollectionCatalogNavigationActions,
     currentRoute: String,
+    collectionList: List<Collection>,
     onEditCollections: () -> Unit,
     onAddCollection: () -> Unit,
     onCloseDrawer: () -> Unit,
@@ -105,6 +109,22 @@ private fun MenuDrawerContent(
                 ) {
                     Text(
                         stringResource(R.string.edit)
+                    )
+                }
+            }
+            collectionList.let {
+                collectionList.forEach {
+                    NavigationDrawerItem(
+                        label = { Text(it.name) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_list_alt),
+                                contentDescription = null
+                            )
+                        },
+                        selected = false,
+                        onClick = {},
+                        modifier = modifier
                     )
                 }
             }
