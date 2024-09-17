@@ -112,7 +112,7 @@ fun ItemSummaryTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemEntryTopAppBar(
+fun ItemEntryTopAppBar( // also used in CollectionsScreen
     title: String,
     onBack: () -> Unit
 ) {

@@ -75,4 +75,5 @@
     <string name="is_empty_message">何も表示されていません。</string>
     <string name="collections">コレクション</string>
     <string name="create_collection">新しいコレクションを作成</string>
+    <string name="edit_collections">コレクションを編集</string>
 </resources>

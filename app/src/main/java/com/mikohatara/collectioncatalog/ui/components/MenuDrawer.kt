@@ -37,6 +37,7 @@ fun ModalMenuDrawer(
     drawerState: DrawerState,
     currentRoute: String,
     navActions: CollectionCatalogNavigationActions,
+    onEditCollections: () -> Unit,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     screenContent: @Composable () -> Unit
 ) {
@@ -46,6 +47,7 @@ fun ModalMenuDrawer(
             MenuDrawerContent(
                 navActions = navActions,
                 currentRoute = currentRoute,
+                onEditCollections = onEditCollections,
                 onCloseDrawer = { coroutineScope.launch { drawerState.close() } }
             )
         }
@@ -58,6 +60,7 @@ fun ModalMenuDrawer(
 private fun MenuDrawerContent(
     navActions: CollectionCatalogNavigationActions,
     currentRoute: String,
+    onEditCollections: () -> Unit,
     onCloseDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -96,9 +99,8 @@ private fun MenuDrawerContent(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 TextButton(
-                    onClick = {},
-                    modifier = Modifier.requiredHeight(35.dp),
-                    enabled = false,
+                    onClick = { onEditCollections() },
+                    modifier = Modifier.requiredHeight(35.dp)
                 ) {
                     Text(
                         stringResource(R.string.edit)

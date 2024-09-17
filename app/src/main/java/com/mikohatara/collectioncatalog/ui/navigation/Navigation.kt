@@ -5,11 +5,13 @@ import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTIONS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ARCHIVE_SCREEN
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.COLLECTIONS_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HOME_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_ENTRY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_SUMMARY_SCREEN
@@ -21,6 +23,7 @@ object CollectionCatalogScreens {
     const val HOME_SCREEN = "home"
     const val WISHLIST_SCREEN = "wishlist"
     const val ARCHIVE_SCREEN = "archive"
+    const val COLLECTIONS_SCREEN = "collections"
     const val STATS_SCREEN = "stats"
     const val SETTINGS_SCREEN = "settings"
     const val ITEM_SUMMARY_SCREEN = "itemSummary"
@@ -36,6 +39,7 @@ object CollectionCatalogDestinations {
     const val HOME_ROUTE = HOME_SCREEN
     const val WISHLIST_ROUTE = WISHLIST_SCREEN
     const val ARCHIVE_ROUTE = ARCHIVE_SCREEN
+    const val COLLECTIONS_ROUTE = COLLECTIONS_SCREEN
     const val STATS_ROUTE = STATS_SCREEN
     const val SETTINGS_ROUTE = SETTINGS_SCREEN
     const val ITEM_SUMMARY_ROUTE = "$ITEM_SUMMARY_SCREEN/{$ITEM_TYPE}/{$ITEM_ID}"
@@ -55,6 +59,10 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
 
     fun navigateToArchiveScreen() {
         navController.navigate(ARCHIVE_ROUTE)
+    }
+
+    fun navigateToCollectionsScreen() {
+        navController.navigate(COLLECTIONS_ROUTE)
     }
 
     fun navigateToStatsScreen() {
