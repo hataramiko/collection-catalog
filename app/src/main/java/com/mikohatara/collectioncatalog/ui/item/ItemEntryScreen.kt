@@ -135,7 +135,7 @@ private fun ItemEntryScreenContent(
         EntryFormCard {
             Row {
                 EntryFormField(
-                    icon = { IconAbc123() },
+                    icon = { IconAbc123(ItemScreenModifiers.icon) },
                     label = stringResource(R.string.reg_no),
                     value = uiState.itemDetails.regNo ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(regNo = it)) },

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -47,8 +48,8 @@ fun ItemSummaryVerticalSpacer(isEnd: Boolean) {
 }
 
 @Composable
-fun IconAbc123() {
-    Box(modifier = ItemScreenModifiers.icon) {
+fun IconAbc123(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.size(24.dp)) {
         Icon(
             painter = painterResource(R.drawable.rounded_abc),
             contentDescription = null,

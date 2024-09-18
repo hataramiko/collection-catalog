@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.DrawerState
@@ -70,143 +73,159 @@ private fun MenuDrawerContent(
     modifier: Modifier = Modifier
 ) {
     ModalDrawerSheet {
-        Header()
-        Column(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            NavigationDrawerItem(
-                label = { Text(stringResource(R.string.plates)) },
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_database),
-                        contentDescription = null
-                    )
-                },
-                selected = currentRoute == CollectionCatalogDestinations.HOME_ROUTE,
-                onClick = {
-                    navActions.navigateToHomeScreen()
-                    onCloseDrawer()
-                },
-                modifier = modifier
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 8.dp)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 2.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.collections),
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                TextButton(
-                    onClick = { onEditCollections() },
-                    modifier = Modifier.requiredHeight(35.dp)
+        LazyColumn {
+            item {
+                Header()
+                Column(
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 ) {
-                    Text(
-                        stringResource(R.string.edit)
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.plates)) },
+                        icon = {
+                            IconAbc123()
+                        },
+                        selected = currentRoute == CollectionCatalogDestinations.HOME_ROUTE,
+                        onClick = {
+                            navActions.navigateToHomeScreen()
+                            onCloseDrawer()
+                        },
+                        modifier = modifier.padding(top = 8.dp)
                     )
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp, vertical = 8.dp)
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 2.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.collections),
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        TextButton(
+                            onClick = { onEditCollections() },
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .requiredHeight(36.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.edit)
+                            )
+                        }
+                    }
                 }
             }
-            collectionList.let {
-                collectionList.forEach {
+            items(items = collectionList, key = { it.id }) { collection ->
+                NavigationDrawerItem(
+                    label = { Text(collection.name) },
+                    icon = {
+                        if (collection.emoji != null) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Text(collection.emoji)
+                            }
+                        } else {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_bookmark),
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    selected = false,
+                    onClick = {},
+                    modifier = modifier.padding(horizontal = 12.dp)
+                )
+            }
+            item {
+                NavigationDrawerItem(
+                    label = { Text(stringResource(R.string.create_collection)) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = null
+                        )
+                    },
+                    selected = false,
+                    onClick = { onAddCollection() },
+                    modifier = modifier.padding(horizontal = 12.dp)
+                )
+            }
+            item {
+                HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+            }
+            item {
+                Column(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                ) {
                     NavigationDrawerItem(
-                        label = { Text(it.name) },
+                        label = { Text(stringResource(R.string.wishlist)) },
                         icon = {
                             Icon(
                                 painter = painterResource(R.drawable.rounded_list_alt),
                                 contentDescription = null
                             )
                         },
-                        selected = false,
-                        onClick = {},
+                        selected = currentRoute == CollectionCatalogDestinations.WISHLIST_ROUTE,
+                        onClick = {
+                            navActions.navigateToWishlistScreen()
+                            onCloseDrawer()
+                        },
                         modifier = modifier
+                    )
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.archive)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_history),
+                                contentDescription = null
+                            )
+                        },
+                        selected = currentRoute == CollectionCatalogDestinations.ARCHIVE_ROUTE,
+                        onClick = {
+                            navActions.navigateToArchiveScreen()
+                            onCloseDrawer()
+                        },
+                        modifier = modifier
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp, vertical = 8.dp)
+                    )
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.statistics)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_analytics),
+                                contentDescription = null
+                            )
+                        },
+                        selected = currentRoute == CollectionCatalogDestinations.STATS_ROUTE,
+                        onClick = {
+                            navActions.navigateToStatsScreen()
+                            onCloseDrawer()
+                        },
+                        modifier = modifier
+                    )
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.settings)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_settings),
+                                contentDescription = null
+                            )
+                        },
+                        selected = false,
+                        onClick = { navActions.navigateToSettingsScreen() },
+                        modifier = modifier.padding(bottom = 8.dp)
                     )
                 }
             }
-            NavigationDrawerItem(
-                label = { Text(stringResource(R.string.create_collection)) },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = null
-                    )
-                },
-                selected = false,
-                onClick = { onAddCollection() },
-                modifier = modifier
-            )
-        }
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-        Column(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            NavigationDrawerItem(
-                label = { Text(stringResource(R.string.wishlist)) },
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_list_alt),
-                        contentDescription = null
-                    )
-                },
-                selected = currentRoute == CollectionCatalogDestinations.WISHLIST_ROUTE,
-                onClick = {
-                    navActions.navigateToWishlistScreen()
-                    onCloseDrawer()
-                },
-                modifier = modifier
-            )
-            NavigationDrawerItem(
-                label = { Text(stringResource(R.string.archive)) },
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_history),
-                        contentDescription = null
-                    )
-                },
-                selected = currentRoute == CollectionCatalogDestinations.ARCHIVE_ROUTE,
-                onClick = {
-                    navActions.navigateToArchiveScreen()
-                    onCloseDrawer()
-                },
-                modifier = modifier
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 8.dp)
-            )
-            NavigationDrawerItem(
-                label = { Text(stringResource(R.string.statistics)) },
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_analytics),
-                        contentDescription = null
-                    )
-                },
-                selected = currentRoute == CollectionCatalogDestinations.STATS_ROUTE,
-                onClick = {
-                    navActions.navigateToStatsScreen()
-                    onCloseDrawer()
-                },
-                modifier = modifier
-            )
-            NavigationDrawerItem(
-                label = { Text(stringResource(R.string.settings)) },
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_settings),
-                        contentDescription = null
-                    )
-                },
-                selected = false,
-                onClick = { navActions.navigateToSettingsScreen() },
-                modifier = modifier
-            )
         }
     }
 }

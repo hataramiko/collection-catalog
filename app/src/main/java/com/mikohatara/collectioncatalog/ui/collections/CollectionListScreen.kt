@@ -154,7 +154,7 @@ private fun CollectionListItem(
                 Text(emoji)
             } else {
                 Icon(
-                    painter = painterResource(R.drawable.rounded_birb),
+                    painter = painterResource(R.drawable.rounded_bookmark),
                     contentDescription = null
                 )
             }
