@@ -33,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 
 @Composable
@@ -121,7 +122,7 @@ private fun CollectionListScreenContent(
             }
         }
         item {
-            Spacer(modifier = Modifier.height(40.dp))
+            EndOfList()
         }
     }
 }

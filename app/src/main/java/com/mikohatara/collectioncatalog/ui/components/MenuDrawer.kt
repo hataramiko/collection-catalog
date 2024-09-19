@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -82,7 +84,10 @@ private fun MenuDrawerContent(
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.plates)) },
                         icon = {
-                            IconAbc123()
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_newsstand),
+                                contentDescription = null,
+                            )
                         },
                         selected = currentRoute == CollectionCatalogDestinations.HOME_ROUTE,
                         onClick = {

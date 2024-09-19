@@ -5,6 +5,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,12 +23,14 @@ fun DeletionDialog(
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
+    val highlightColor = MaterialTheme.colorScheme.error
+
     AlertDialog(
         onDismissRequest = { onCancel() },
         icon = { Icon(
             painter = painterResource(R.drawable.rounded_warning),
             contentDescription = null,
-            tint = Color(0xFFF44336),
+            tint = highlightColor,
             modifier = Modifier.size(48.dp)
         ) },
         title = { Text(stringResource(R.string.delete)) },
@@ -40,7 +43,7 @@ fun DeletionDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm() },
-                colors = ButtonDefaults.buttonColors(Color(0xFFF44336))
+                colors = ButtonDefaults.buttonColors(highlightColor)
             ) {
                 Text(stringResource(R.string.delete))
             }
