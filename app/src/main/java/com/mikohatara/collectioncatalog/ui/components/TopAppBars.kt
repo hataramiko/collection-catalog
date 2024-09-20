@@ -2,8 +2,8 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,7 +24,6 @@ import com.mikohatara.collectioncatalog.data.Item
 fun HomeTopAppBar(
     title: String,
     onOpenDrawer: () -> Unit,
-    onAddItem: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     TopAppBar(
@@ -33,30 +32,26 @@ fun HomeTopAppBar(
                 title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                //modifier = Modifier.padding(16.dp)
             )
         },
         navigationIcon = {
             IconButton(onClick = onOpenDrawer) {
                 Icon(
                     imageVector = Icons.Rounded.Menu,
-                    contentDescription = "Menu"
+                    contentDescription = null
                 )
             }
         },
         actions = {
-            IconButton(onClick = { onAddItem() }) {
-                Icon(
-                    imageVector = Icons.Rounded.AddCircle,
-                    contentDescription = "Add"
-                )
-            }/*
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(
+                onClick = {  },
+                enabled = false
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.MoreVert,
                     contentDescription = null
                 )
-            }*/
+            }
         },
         scrollBehavior = scrollBehavior
     )
@@ -99,8 +94,8 @@ fun ItemSummaryTopAppBar(
                     painter = painterResource(R.drawable.rounded_delete_forever),
                     contentDescription = "Delete"
                 )
-            }/*
-            IconButton(onClick = { /*TODO*/ }) {
+            }
+            /*IconButton(onClick = {  }) {
                 Icon(
                     imageVector = Icons.Rounded.MoreVert,
                     contentDescription = null
@@ -202,56 +197,6 @@ fun SettingsTopAppBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = "Back"
-                )
-            }
-        },
-        scrollBehavior = scrollBehavior
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun WishlistTopAppBar(
-    title: String,
-    onOpenDrawer: () -> Unit,
-    onAddItem: () -> Unit,
-    onSortBy: () -> Unit,
-    onFilter: () -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior
-) {
-    TopAppBar(
-        title = {
-            Text(
-                title,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = onOpenDrawer) {
-                Icon(
-                    imageVector = Icons.Rounded.Menu,
-                    contentDescription = "Menu"
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = { onSortBy() }, enabled = false) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_swap_vert),
-                    contentDescription = null
-                )
-            }
-            IconButton(onClick = { onFilter() }, enabled = false) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_filter),
-                    contentDescription = null
-                )
-            }
-            IconButton(onClick = { onAddItem() }) {
-                Icon(
-                    imageVector = Icons.Rounded.AddCircle,
-                    contentDescription = "Add"
                 )
             }
         },

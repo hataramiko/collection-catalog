@@ -31,10 +31,11 @@ class WishlistViewModel @Inject constructor(
     val showSortByBottomSheet = mutableStateOf(false)
     val showFiltersBottomSheet = mutableStateOf(false)
 
+    private val _isTopRowHidden = MutableStateFlow(false)
+    val isTopRowHidden: StateFlow<Boolean> = _isTopRowHidden.asStateFlow()
+
     private val _uiState = MutableStateFlow(WishlistUiState())
     val uiState: StateFlow<WishlistUiState> = _uiState.asStateFlow()
-
-    val sortByOptions = SortBy.entries.toList()
 
     init {
         viewModelScope.launch {
@@ -43,6 +44,10 @@ class WishlistViewModel @Inject constructor(
             _uiState.update { it.copy(sortBy = defaultSortBy) }
             getWishlist()
         }
+    }
+
+    fun updateTopRowVisibility(itemIndex: Int, topBarCollapsedFraction: Float) {
+        _isTopRowHidden.value = (topBarCollapsedFraction > 0.5f) && (itemIndex > 0)
     }
 
     fun getWishlist() {
