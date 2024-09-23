@@ -23,7 +23,7 @@ data class WantedPlate(
     @ColumnInfo(name = "image_path") val imagePath: String?,
     @ColumnInfo(name = "notes") val notes: String?,
     @Embedded val commonDetails: CommonDetails,
-    @Embedded val color: Color,
+    @Embedded val color: Color
 )
 
 @Entity(tableName = "archive")
@@ -34,7 +34,7 @@ data class FormerPlate(
     @Embedded val size: Size,
     @Embedded val color: Color,
     @Embedded val source: Source,
-    @Embedded val archivalDetails: ArchivalDetails,
+    @Embedded val archivalDetails: ArchivalDetails
 )
 
 data class CommonDetails(
@@ -90,5 +90,5 @@ data class ArchivalDetails(
     @ColumnInfo(name = "archival_reason") val archivalReason: String?,
     @ColumnInfo(name = "archival_details") val archivalDetails: String?,
     @ColumnInfo(name = "price") val price: Long?,
-    @ColumnInfo(name = "recipient_country") val recipientCountry: String?,
+    @ColumnInfo(name = "recipient_country") val recipientCountry: String?
 )

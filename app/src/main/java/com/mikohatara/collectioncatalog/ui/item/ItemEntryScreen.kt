@@ -1,7 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -25,13 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,7 +43,6 @@ import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
-import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
 
@@ -87,6 +84,7 @@ private fun ItemEntryScreen(
         content = { innerPadding ->
             ItemEntryScreenContent(
                 uiState,
+                viewModel,
                 modifier = Modifier.padding(innerPadding),
                 onValueChange,
                 onSave = {
@@ -110,10 +108,12 @@ private fun ItemEntryScreen(
 @Composable
 private fun ItemEntryScreenContent(
     uiState: ItemEntryUiState,
+    viewModel: ItemEntryViewModel,
     modifier: Modifier,
     onValueChange: (ItemDetails) -> Unit = {},
     onSave: () -> Unit
 ) {
+    val collections = viewModel.getCollections()
     val (saveButtonText, saveButtonIcon) = when (uiState.isNew) {
         true -> stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "") to
             painterResource(R.drawable.rounded_save)
@@ -159,6 +159,36 @@ private fun ItemEntryScreenContent(
                 enabled = false,
                 singleLine = false
             )
+        }
+        if (uiState.itemType == ItemType.PLATE && collections.isNotEmpty()) {
+            EntryFormCard {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 8.dp)
+                ) {
+                    collections.forEach { collection ->
+                        FilterChip(
+                            selected = uiState.selectedCollections.any { it == collection },
+                            onClick = { viewModel.toggleCollectionSelection(collection) },
+                            label = { Text(collection.name) },
+                            leadingIcon = if (!collection.emoji.isNullOrBlank()) {
+                                {
+                                    Text(collection.emoji)
+                                }
+                            } else {
+                                {
+                                    Icon(
+                                        painter = painterResource(R.drawable.rounded_bookmark),
+                                        contentDescription = null
+                                    )
+                                }
+                            },
+                            modifier = Modifier
+                        )
+                    }
+                }
+            }
         }
         EntryFormCard {
             EntryFormField(
@@ -640,18 +670,5 @@ private fun EntryFormField(
             enabled = enabled,
             singleLine = singleLine
         )
-    }
-}
-
-@Preview
-@Composable
-fun EntryFormPreview() {
-    CollectionCatalogTheme {
-        ItemEntryScreenContent(
-            uiState = ItemEntryUiState(),
-            modifier = Modifier.background(Color.LightGray)
-        ) {
-            
-        }
     }
 }

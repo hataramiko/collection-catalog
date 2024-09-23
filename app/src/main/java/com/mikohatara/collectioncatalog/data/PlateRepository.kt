@@ -15,6 +15,8 @@ interface PlateRepository {
 
     fun getPlateStream(id: Int): Flow<Plate?>
 
+    suspend fun updatePlateWithCollections(plate: Plate, collectionIds: List<Int>)
+
     suspend fun addWantedPlate(plate: WantedPlate)
 
     suspend fun updateWantedPlate(plate: WantedPlate)
@@ -50,6 +52,9 @@ class OfflinePlateRepository @Inject constructor(
     override fun getPlateStream(id: Int): Flow<Plate?> {
         return plateDao.getPlate(id).map { it }
     }
+
+    override suspend fun updatePlateWithCollections(plate: Plate, collectionIds: List<Int>) =
+        plateDao.updatePlateWithCollections(plate, collectionIds)
 
     override suspend fun addWantedPlate(plate: WantedPlate) = plateDao.insertWantedPlate(plate)
 

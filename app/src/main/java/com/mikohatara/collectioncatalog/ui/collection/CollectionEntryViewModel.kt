@@ -1,4 +1,4 @@
-package com.mikohatara.collectioncatalog.ui.collections
+package com.mikohatara.collectioncatalog.ui.collection
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

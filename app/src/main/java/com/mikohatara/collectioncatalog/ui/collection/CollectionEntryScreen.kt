@@ -1,4 +1,4 @@
-package com.mikohatara.collectioncatalog.ui.collections
+package com.mikohatara.collectioncatalog.ui.collection
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column

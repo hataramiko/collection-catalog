@@ -8,5 +8,5 @@ import androidx.room.PrimaryKey
 data class Collection(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "emoji") val emoji: String?,
-    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "name") val name: String
 )

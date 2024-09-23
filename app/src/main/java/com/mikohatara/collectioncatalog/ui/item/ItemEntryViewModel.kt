@@ -1,8 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
@@ -26,6 +29,7 @@ data class ItemEntryUiState(
     val item: Item? = null,
     val itemType: ItemType = ItemType.PLATE,
     val itemDetails: ItemDetails = ItemDetails(),
+    val selectedCollections: List<Collection> = emptyList(),
     val isNew: Boolean = false,
     val hasUnsavedChanges: Boolean = false
 )
@@ -33,17 +37,24 @@ data class ItemEntryUiState(
 @HiltViewModel
 class ItemEntryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val plateRepository: PlateRepository
+    private val plateRepository: PlateRepository,
+    private val collectionRepository: CollectionRepository
 ) : ViewModel() {
     private val itemType: ItemType =
         savedStateHandle.get<String>(ITEM_TYPE)?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
     private val itemId: Int? = savedStateHandle.get<Int>(ITEM_ID)
+
+    private val _allCollections = mutableStateListOf<Collection>()
 
     private val _uiState = MutableStateFlow(ItemEntryUiState())
     val uiState: StateFlow<ItemEntryUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
+            collectionRepository.getAllCollectionsStream().collect {
+                _allCollections.clear()
+                _allCollections.addAll(it)
+            }
             if (itemId != null) {
                 loadItem(itemType, itemId)
             } else {
@@ -54,6 +65,7 @@ class ItemEntryViewModel @Inject constructor(
 
     fun updateUiState(itemDetails: ItemDetails) {
         val item = uiState.value.item
+        val selectedCollections = uiState.value.selectedCollections
         val isNew = uiState.value.isNew
         val initialDetails = if (isNew) ItemDetails() else when (item) {
             is Item.PlateItem -> item.plate.toItemDetails()
@@ -67,6 +79,7 @@ class ItemEntryViewModel @Inject constructor(
                 item = item,
                 itemType = itemType,
                 itemDetails = itemDetails,
+                selectedCollections = selectedCollections,
                 isNew = isNew,
                 hasUnsavedChanges = true
             )
@@ -75,6 +88,7 @@ class ItemEntryViewModel @Inject constructor(
                 item = item,
                 itemType = itemType,
                 itemDetails = itemDetails,
+                selectedCollections = selectedCollections,
                 isNew = isNew
             )
         }
@@ -82,6 +96,21 @@ class ItemEntryViewModel @Inject constructor(
 
     fun saveEntry() = viewModelScope.launch {
         if (uiState.value.isNew) addNewItem() else updateItem()
+    }
+
+    fun getCollections(): List<Collection> {
+        val collections = _allCollections
+        return collections
+    }
+
+    fun toggleCollectionSelection(collection: Collection) {
+        val selections = _uiState.value.selectedCollections
+        val newSelections: List<Collection> = if (selections.any { it == collection }) {
+            selections - collection
+        } else {
+            selections + collection
+        }
+        _uiState.update { it.copy(selectedCollections = newSelections) }
     }
 
     private suspend fun addNewItem() = viewModelScope.launch {

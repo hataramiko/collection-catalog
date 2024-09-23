@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -24,4 +25,8 @@ interface CollectionDao {
 
     @Query("SELECT * from collections WHERE id = :id")
     fun getCollection(id: Int): Flow<Collection>
+
+    @Transaction
+    @Query("SELECT * from collections WHERE id = :id")
+    fun getCollectionWithPlates(id: Int): Flow<CollectionWithPlates>
 }
