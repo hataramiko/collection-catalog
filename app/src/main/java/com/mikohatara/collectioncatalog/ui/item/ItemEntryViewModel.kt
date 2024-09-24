@@ -51,14 +51,14 @@ class ItemEntryViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            collectionRepository.getAllCollectionsStream().collect {
-                _allCollections.clear()
-                _allCollections.addAll(it)
-            }
             if (itemId != null) {
                 loadItem(itemType, itemId)
             } else {
                 _uiState.update { it.copy(itemType = itemType, isNew = true) }
+            }
+            collectionRepository.getAllCollectionsStream().collect {
+                _allCollections.clear()
+                _allCollections.addAll(it)
             }
         }
     }
@@ -116,7 +116,10 @@ class ItemEntryViewModel @Inject constructor(
     private suspend fun addNewItem() = viewModelScope.launch {
         when (itemType) {
             ItemType.PLATE -> plateRepository
-                .addPlate(uiState.value.itemDetails.toPlate())
+                .addPlateWithCollections(
+                    uiState.value.itemDetails.toPlate(),
+                    uiState.value.selectedCollections.map { it.id }
+                )
             ItemType.WANTED_PLATE -> plateRepository
                 .addWantedPlate(uiState.value.itemDetails.toWantedPlate())
             ItemType.FORMER_PLATE -> plateRepository
@@ -127,7 +130,10 @@ class ItemEntryViewModel @Inject constructor(
     private suspend fun updateItem() = viewModelScope.launch {
         when (itemType) {
             ItemType.PLATE -> plateRepository
-                .updatePlate(uiState.value.itemDetails.toPlate())
+                .updatePlateWithCollections(
+                    uiState.value.itemDetails.toPlate(),
+                    uiState.value.selectedCollections.map { it.id }
+                )
             ItemType.WANTED_PLATE -> plateRepository
                 .updateWantedPlate(uiState.value.itemDetails.toWantedPlate())
             ItemType.FORMER_PLATE -> plateRepository
@@ -138,11 +144,12 @@ class ItemEntryViewModel @Inject constructor(
     private fun loadItem(itemType: ItemType, itemId: Int) = viewModelScope.launch {
         when (itemType) {
             ItemType.PLATE -> {
-                plateRepository.getPlateStream(itemId).let {
+                plateRepository.getPlateWithCollectionsStream(itemId).let {
                     _uiState.value = ItemEntryUiState(
-                        item = it.firstOrNull()?.let { Item.PlateItem(it) },
+                        item = it.firstOrNull()?.let { Item.PlateItem(it.plate) },
                         itemType = itemType,
-                        itemDetails = it.firstOrNull()?.toItemDetails() ?: ItemDetails(),
+                        itemDetails = it.firstOrNull()?.plate?.toItemDetails() ?: ItemDetails(),
+                        selectedCollections = it.firstOrNull()?.collections ?: emptyList(),
                         isNew = false
                     )
                 }

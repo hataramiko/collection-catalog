@@ -1,11 +1,14 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -17,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -27,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
@@ -48,10 +53,12 @@ fun ItemSummaryScreen(
     val coroutineScope = rememberCoroutineScope()
     val item: Item = uiState.item ?: return
     val itemDetails: ItemDetails = uiState.itemDetails
+    val collections: List<Collection> = uiState.collections
 
     ItemSummaryScreen(
         item,
         itemDetails,
+        collections,
         viewModel,
         coroutineScope,
         onBack,
@@ -63,6 +70,7 @@ fun ItemSummaryScreen(
 private fun ItemSummaryScreen(
     item: Item,
     itemDetails: ItemDetails,
+    collections: List<Collection>,
     viewModel: ItemSummaryViewModel,
     coroutineScope: CoroutineScope,
     onBack: () -> Unit,
@@ -83,6 +91,7 @@ private fun ItemSummaryScreen(
         content = { innerPadding ->
             ItemSummaryScreenContent(
                 itemDetails = itemDetails,
+                collections = collections,
                 onInspectImage = { isInspectingImage = true },
                 modifier = modifier.padding(innerPadding)
             )
@@ -112,11 +121,40 @@ private fun ItemSummaryScreen(
 private fun ItemSummaryScreenContent(
     itemDetails: ItemDetails,
     onInspectImage: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    collections: List<Collection> = emptyList()
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         ItemImage(itemDetails.imagePath, onInspectImage)
         ItemSummaryVerticalSpacer(true)
+
+        if (collections.isNotEmpty()) {
+            Column(
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            ) {
+                collections.forEach {
+                    AssistChip(
+                        onClick = {},
+                        label = { Text(it.name) },
+                        leadingIcon = {
+                            if (!it.emoji.isNullOrBlank()) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Text(it.emoji)
+                                }
+                            } else {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_bookmark),
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+        }
 
         ItemSummarySection(
             itemDetails = itemDetails,
