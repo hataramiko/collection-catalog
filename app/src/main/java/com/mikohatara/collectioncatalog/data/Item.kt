@@ -32,9 +32,6 @@ data class ItemDetails(
     val cost: Long? = null,
     val value: Long? = null,
     val status: String? = null,
-    // Grading
-    val isKeeper: Boolean = false,
-    val isForTrade: Boolean = false,
     // Size
     val width: Int? = null,
     val height: Int? = null,

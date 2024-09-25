@@ -73,10 +73,7 @@ class CollectionEntryViewModel @Inject constructor(
     }
 
     suspend fun deleteCollection() = viewModelScope.launch {
-        uiState.value.collection?.let {
-            //collectionRepository.deleteCollection(it)
-            collectionRepository.deleteCollectionWithPlates(it)
-        }
+        uiState.value.collection?.let { collectionRepository.deleteCollectionWithPlates(it) }
     }
 
     private suspend fun addNewCollection() = viewModelScope.launch {

@@ -117,8 +117,6 @@ class HomeViewModel @Inject constructor(
                 filters.location.isNotEmpty() && filters.location.none {
                     it == item.uniqueDetails.status
                 } -> false
-                filters.isKeeper && !item.grading.isKeeper -> false
-                filters.isForTrade && !item.grading.isForTrade -> false
                 else -> true
             }
         }
@@ -139,16 +137,6 @@ class HomeViewModel @Inject constructor(
     fun toggleLocationFilter(location: String) {
         val newFilter = toggleFilter(_uiState.value.filters.location, location)
         _uiState.update { it.copy(filters = it.filters.copy(location = newFilter)) }
-    }
-
-    fun toggleIsKeeperFilter() {
-        val filter = !_uiState.value.filters.isKeeper
-        _uiState.update { it.copy(filters = it.filters.copy(isKeeper = filter)) }
-    }
-
-    fun toggleIsForTradeFilter() {
-        val filter = !_uiState.value.filters.isForTrade
-        _uiState.update { it.copy(filters = it.filters.copy(isForTrade = filter)) }
     }
 
     fun resetFilter() {
@@ -231,7 +219,5 @@ enum class SortBy {
 data class FilterData(
     val country: Set<String> = emptySet(),
     val type: Set<String> = emptySet(),
-    val location: Set<String> = emptySet(),
-    val isKeeper: Boolean = false,
-    val isForTrade: Boolean = false
+    val location: Set<String> = emptySet()
 )

@@ -23,9 +23,44 @@ val samplePlates = listOf(
             3500L,
             null
         ),
-        Grading(
-            true,
-            false
+        Size(
+            400,
+            130,
+            null
+        ),
+        Color(
+            "Black",
+            "White"
+        ),
+        Source(
+            null,
+            null,
+            null,
+            "Online",
+            "Finland"
+        )
+    ),
+    Plate(
+        id = 0,
+        CommonDetails(
+            "Finland",
+            null,
+            null,
+            null,
+            "Sample",
+            1923,
+            1930,
+            null
+        ),
+        UniqueDetails(
+            "ABC-012",
+            null,
+            null,
+            null,
+            "2023-04-21",
+            500L,
+            3500L,
+            null
         ),
         Size(
             400,
@@ -66,9 +101,44 @@ val samplePlates = listOf(
             3500L,
             null
         ),
-        Grading(
-            true,
-            false
+        Size(
+            400,
+            130,
+            null
+        ),
+        Color(
+            "Black",
+            "White"
+        ),
+        Source(
+            null,
+            null,
+            null,
+            "Online",
+            "Finland"
+        )
+    ),
+    Plate(
+        id = 0,
+        CommonDetails(
+            "Finland",
+            null,
+            null,
+            null,
+            "Sample",
+            1923,
+            1930,
+            null
+        ),
+        UniqueDetails(
+            "ABC-012",
+            null,
+            null,
+            null,
+            "2023-04-21",
+            500L,
+            3500L,
+            null
         ),
         Size(
             400,
@@ -109,10 +179,6 @@ val samplePlates = listOf(
             3500L,
             null
         ),
-        Grading(
-            true,
-            false
-        ),
         Size(
             400,
             130,
@@ -151,96 +217,6 @@ val samplePlates = listOf(
             500L,
             3500L,
             null
-        ),
-        Grading(
-            true,
-            false
-        ),
-        Size(
-            400,
-            130,
-            null
-        ),
-        Color(
-            "Black",
-            "White"
-        ),
-        Source(
-            null,
-            null,
-            null,
-            "Online",
-            "Finland"
-        )
-    ),
-    Plate(
-        id = 0,
-        CommonDetails(
-            "Finland",
-            null,
-            null,
-            null,
-            "Sample",
-            1923,
-            1930,
-            null
-        ),
-        UniqueDetails(
-            "ABC-012",
-            null,
-            null,
-            null,
-            "2023-04-21",
-            500L,
-            3500L,
-            null
-        ),
-        Grading(
-            true,
-            false
-        ),
-        Size(
-            400,
-            130,
-            null
-        ),
-        Color(
-            "Black",
-            "White"
-        ),
-        Source(
-            null,
-            null,
-            null,
-            "Online",
-            "Finland"
-        )
-    ),
-    Plate(
-        id = 0,
-        CommonDetails(
-            "Finland",
-            null,
-            null,
-            null,
-            "Sample",
-            1923,
-            1930,
-            null
-        ),
-        UniqueDetails(
-            "ABC-012",
-            null,
-            null,
-            null,
-            "2023-04-21",
-            500L,
-            3500L,
-            null
-        ),
-        Grading(
-            true,
-            false
         ),
         Size(
             400,

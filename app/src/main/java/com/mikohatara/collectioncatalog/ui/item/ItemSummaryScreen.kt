@@ -179,9 +179,7 @@ private fun ItemSummaryScreenContent(
                 itemDetails.date,
                 itemDetails.cost,
                 itemDetails.value,
-                itemDetails.status,
-                itemDetails.isKeeper,
-                itemDetails.isForTrade
+                itemDetails.status
             )
         )
         ItemSummarySection(

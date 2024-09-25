@@ -4,7 +4,6 @@ import com.mikohatara.collectioncatalog.data.ArchivalDetails
 import com.mikohatara.collectioncatalog.data.Color
 import com.mikohatara.collectioncatalog.data.CommonDetails
 import com.mikohatara.collectioncatalog.data.FormerPlate
-import com.mikohatara.collectioncatalog.data.Grading
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.Size
@@ -33,10 +32,6 @@ fun ItemDetails.toPlate(): Plate = Plate(
         cost,
         value,
         status?.takeIf { it.isNotBlank() }
-    ),
-    Grading(
-        isKeeper,
-        isForTrade
     ),
     Size(
         width,
@@ -146,9 +141,6 @@ fun Plate.toItemDetails(): ItemDetails = ItemDetails(
     cost = uniqueDetails.cost,
     value = uniqueDetails.value,
     status = uniqueDetails.status,
-    // Grading
-    isKeeper = grading.isKeeper,
-    isForTrade = grading.isForTrade,
     // Size
     width = size.width,
     height = size.height,

@@ -10,7 +10,6 @@ data class Plate(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @Embedded val commonDetails: CommonDetails,
     @Embedded val uniqueDetails: UniqueDetails,
-    @Embedded val grading: Grading,
     @Embedded val size: Size,
     @Embedded val color: Color,
     @Embedded val source: Source
@@ -57,11 +56,6 @@ data class UniqueDetails( // TODO include "condition" and/or "grade"???
     @ColumnInfo(name = "cost") val cost: Long?,
     @ColumnInfo(name = "value") val value: Long?,
     @ColumnInfo(name = "status") val status: String?
-)
-
-data class Grading( // TODO get rid of when "runs" have been implemented
-    @ColumnInfo(name = "keeper") val isKeeper: Boolean,
-    @ColumnInfo(name = "for_trade") val isForTrade: Boolean,
 )
 
 data class Size(

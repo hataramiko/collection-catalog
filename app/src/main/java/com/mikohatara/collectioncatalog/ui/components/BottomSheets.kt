@@ -197,69 +197,13 @@ fun FilterBottomSheet(
                         onToggleFilter = { viewModel.toggleLocationFilter(it) }
                     )
                 }
-                stickyHeader {
-                    Text(
-                        "Boolean",
-                        modifier = Modifier.padding(start = 32.dp, top = 12.dp)
-                    )
-                }
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 32.dp, end = 32.dp, top = 4.dp, bottom = 12.dp)
-                    ) {
-                        FilterChip(
-                            selected = uiState.filters.isKeeper,
-                            onClick = { viewModel.toggleIsKeeperFilter() },
-                            label = { Text("Keeper") },
-                            leadingIcon = if (uiState.filters.isKeeper) {
-                                {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Done,
-                                        contentDescription = null
-                                    )
-                                }
-                            } else {
-                                null
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        FilterChip(
-                            selected = uiState.filters.isForTrade,
-                            onClick = { viewModel.toggleIsForTradeFilter() },
-                            label = { Text("For trade") },
-                            leadingIcon = if (uiState.filters.isForTrade) {
-                                {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Done,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                    )
-                                }
-                            } else {
-                                null
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
             }
         }
         FilterFooter(
             sheetState = sheetState,
             sheetHeight = sheetHeight,
-            filterCount = uiState.filters.country.size +
-                    uiState.filters.type.size +
-                    uiState.filters.location.size +
-                    if (uiState.filters.isKeeper && uiState.filters.isForTrade) {
-                        2
-                    } else if (uiState.filters.isKeeper || uiState.filters.isForTrade) {
-                        1
-                    } else {
-                        0
-                    },
+            filterCount = uiState.filters.country.size + uiState.filters.type.size +
+                uiState.filters.location.size,
             onReset = { viewModel.resetFilter() },
             onApply = {
                 viewModel.setFilter()

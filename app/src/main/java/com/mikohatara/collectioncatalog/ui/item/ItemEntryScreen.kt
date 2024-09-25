@@ -18,7 +18,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -215,8 +214,16 @@ private fun ItemEntryScreenContent(
                 value = uiState.itemDetails.region1st ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(region1st = it)) }
             )
+            ItemEntryVerticalSpacer()
+
             EntryFormField(
-                icon = { IconBlank() },
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_map),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                },
                 label = stringResource(R.string.region),
                 value = uiState.itemDetails.region2nd ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(region2nd = it)) }
@@ -375,38 +382,6 @@ private fun ItemEntryScreenContent(
                     value = uiState.itemDetails.status ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(status = it)) }
                 )
-            }
-        }
-        if (uiState.itemType == ItemType.PLATE) {
-            EntryFormCard {
-                Row(ItemScreenModifiers.rowNoIcon) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                    ) {
-                        Text("Keeper")
-                        Switch(
-                            checked = uiState.itemDetails.isKeeper,
-                            onCheckedChange = {
-                                onValueChange(uiState.itemDetails.copy(isKeeper = it))
-                            }
-                        )
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                    ) {
-                        Text("For Trade")
-                        Switch(
-                            checked = uiState.itemDetails.isForTrade,
-                            onCheckedChange = {
-                                onValueChange(uiState.itemDetails.copy(isForTrade = it))
-                            }
-                        )
-                    }
-                }
             }
         }
         EntryFormCard {
