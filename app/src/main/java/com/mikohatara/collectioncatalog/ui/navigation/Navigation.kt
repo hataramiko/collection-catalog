@@ -7,7 +7,7 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_LIST_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_DEFAULT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
@@ -40,7 +40,8 @@ object CollectionCatalogDestinationArgs {
 }
 
 object CollectionCatalogDestinations {
-    const val HOME_ROUTE = HOME_SCREEN
+    const val HOME_DEFAULT_ROUTE = HOME_SCREEN
+    const val HOME_COLLECTION_ROUTE = "$HOME_SCREEN/{$COLLECTION_ID}"
     const val WISHLIST_ROUTE = WISHLIST_SCREEN
     const val ARCHIVE_ROUTE = ARCHIVE_SCREEN
     const val STATS_ROUTE = STATS_SCREEN
@@ -55,8 +56,14 @@ object CollectionCatalogDestinations {
 
 class CollectionCatalogNavigationActions(private val navController: NavHostController) {
 
-    fun navigateToHomeScreen() {
-        navController.navigate(HOME_ROUTE)
+    fun navigateToHomeScreen(collectionId: Int? = null) {
+        navController.navigate(
+            if (collectionId != null) {
+                "$HOME_SCREEN/$collectionId"
+            } else {
+                HOME_DEFAULT_ROUTE
+            }
+        )
     }
 
     fun navigateToWishlistScreen() {

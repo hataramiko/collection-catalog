@@ -2,11 +2,15 @@ package com.mikohatara.collectioncatalog.ui.home
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,9 +29,14 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val plateRepository: PlateRepository,
+    private val collectionRepository: CollectionRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
+    private val collectionId: Int? = savedStateHandle.get<Int>(COLLECTION_ID)
+    private val _collection = mutableStateOf<Collection?>(null)
+
     private val _allItems = mutableStateListOf<Plate>()
     val showSortByBottomSheet = mutableStateOf(false)
     val showFilterBottomSheet = mutableStateOf(false)
@@ -44,17 +53,10 @@ class HomeViewModel @Inject constructor(
             val defaultSortBy = userPreferences.defaultSortOrder
             _uiState.update { it.copy(sortBy = defaultSortBy) }
             getPlates()
-        }
-    }
-
-    fun getPlates() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            plateRepository.getAllPlatesStream().collect { items ->
-                _allItems.clear()
-                _allItems.addAll(items)
-                _uiState.update { it.copy(items = items, isLoading = false) }
-                setSortBy(uiState.value.sortBy)
+            collectionId?.let {
+                collectionRepository.getCollectionStream(collectionId).collect {
+                    _collection.value = it
+                }
             }
         }
     }
@@ -152,7 +154,10 @@ class HomeViewModel @Inject constructor(
     fun resetFilter() {
         _uiState.update { it.copy(filters = FilterData()) }
         setFilter()
-        //getPlates()
+    }
+
+    fun getCollectionName(): String? {
+        return _collection.value?.name
     }
 
     fun getSortByOptions(): List<SortBy> {
@@ -176,6 +181,32 @@ class HomeViewModel @Inject constructor(
         return _allItems.mapNotNull { it.uniqueDetails.status }
             .sortedWith(compareBy { it })
             .toSet()
+    }
+
+    private fun getPlates() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            if (collectionId != null) {
+                collectionRepository
+                    .getCollectionWithPlatesStream(collectionId).collect { collection ->
+                        _allItems.clear()
+                        if (collection != null) {
+                            _allItems.addAll(collection.plates)
+                            _uiState.update {
+                                it.copy(items = collection.plates, isLoading = false)
+                            }
+                        }
+                        setSortBy(uiState.value.sortBy)
+                    }
+            } else {
+                plateRepository.getAllPlatesStream().collect { items ->
+                    _allItems.clear()
+                    _allItems.addAll(items)
+                    _uiState.update { it.copy(items = items, isLoading = false) }
+                    setSortBy(uiState.value.sortBy)
+                }
+            }
+        }
     }
 
     private fun updateDefaultSortBy(sortBy: SortBy) {

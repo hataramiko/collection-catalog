@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
@@ -25,13 +24,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_COLLECTION_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_DEFAULT_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -44,6 +48,7 @@ fun ModalMenuDrawer(
     collectionList: List<Collection>,
     onEditCollections: () -> Unit,
     onAddCollection: () -> Unit,
+    navBackStackEntry: NavBackStackEntry? = null,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     screenContent: @Composable () -> Unit
 ) {
@@ -56,7 +61,8 @@ fun ModalMenuDrawer(
                 collectionList = collectionList,
                 onEditCollections = onEditCollections,
                 onAddCollection = onAddCollection,
-                onCloseDrawer = { coroutineScope.launch { drawerState.close() } }
+                onCloseDrawer = { coroutineScope.launch { drawerState.close() } },
+                navBackStackEntry = navBackStackEntry
             )
         }
     ) {
@@ -72,8 +78,11 @@ private fun MenuDrawerContent(
     onEditCollections: () -> Unit,
     onAddCollection: () -> Unit,
     onCloseDrawer: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navBackStackEntry: NavBackStackEntry? = null
 ) {
+    val collectionId = navBackStackEntry?.arguments?.getInt(COLLECTION_ID)
+
     ModalDrawerSheet {
         LazyColumn {
             item {
@@ -82,14 +91,14 @@ private fun MenuDrawerContent(
                     modifier = Modifier.padding(horizontal = 12.dp)
                 ) {
                     NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.plates)) },
+                        label = { Text(stringResource(R.string.all_plates)) },
                         icon = {
                             Icon(
                                 painter = painterResource(R.drawable.rounded_newsstand),
                                 contentDescription = null,
                             )
                         },
-                        selected = currentRoute == CollectionCatalogDestinations.HOME_ROUTE,
+                        selected = currentRoute == HOME_DEFAULT_ROUTE,
                         onClick = {
                             navActions.navigateToHomeScreen()
                             onCloseDrawer()
@@ -141,8 +150,12 @@ private fun MenuDrawerContent(
                             )
                         }
                     },
-                    selected = false,
-                    onClick = {},
+                    selected = currentRoute == HOME_COLLECTION_ROUTE &&
+                        collectionId == collection.id,
+                    onClick = {
+                        navActions.navigateToHomeScreen(collection.id)
+                        onCloseDrawer()
+                    },
                     modifier = modifier.padding(horizontal = 12.dp)
                 )
             }
@@ -161,7 +174,9 @@ private fun MenuDrawerContent(
                 )
             }
             item {
-                HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+                HorizontalDivider(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
             }
             item {
                 Column(
@@ -175,7 +190,7 @@ private fun MenuDrawerContent(
                                 contentDescription = null
                             )
                         },
-                        selected = currentRoute == CollectionCatalogDestinations.WISHLIST_ROUTE,
+                        selected = currentRoute == WISHLIST_ROUTE,
                         onClick = {
                             navActions.navigateToWishlistScreen()
                             onCloseDrawer()
@@ -190,7 +205,7 @@ private fun MenuDrawerContent(
                                 contentDescription = null
                             )
                         },
-                        selected = currentRoute == CollectionCatalogDestinations.ARCHIVE_ROUTE,
+                        selected = currentRoute == ARCHIVE_ROUTE,
                         onClick = {
                             navActions.navigateToArchiveScreen()
                             onCloseDrawer()
@@ -210,7 +225,7 @@ private fun MenuDrawerContent(
                                 contentDescription = null
                             )
                         },
-                        selected = currentRoute == CollectionCatalogDestinations.STATS_ROUTE,
+                        selected = currentRoute == STATS_ROUTE,
                         onClick = {
                             navActions.navigateToStatsScreen()
                             onCloseDrawer()

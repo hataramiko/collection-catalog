@@ -10,10 +10,12 @@ interface CollectionRepository {
     suspend fun updateCollection(collection: Collection)
 
     suspend fun deleteCollection(collection: Collection)
+    suspend fun deleteCollectionWithPlates(collection: Collection)
 
     fun getAllCollectionsStream(): Flow<List<Collection>>
 
     fun getCollectionStream(id: Int): Flow<Collection?>
+    fun getCollectionWithPlatesStream(id: Int): Flow<CollectionWithPlates?>
 }
 
 class OfflineCollectionRepository @Inject constructor(
@@ -27,11 +29,16 @@ class OfflineCollectionRepository @Inject constructor(
 
     override suspend fun deleteCollection(collection: Collection) =
         collectionDao.deleteCollection(collection)
+    override suspend fun deleteCollectionWithPlates(collection: Collection) =
+        collectionDao.deleteCollectionWithPlates(collection)
 
     override fun getAllCollectionsStream(): Flow<List<Collection>> =
         collectionDao.getAllCollections()
 
     override fun getCollectionStream(id: Int): Flow<Collection?> {
         return collectionDao.getCollection(id).map { it }
+    }
+    override fun getCollectionWithPlatesStream(id: Int): Flow<CollectionWithPlates?> {
+        return collectionDao.getCollectionWithPlates(id).map { it }
     }
 }

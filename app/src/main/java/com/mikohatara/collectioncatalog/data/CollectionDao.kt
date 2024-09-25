@@ -20,6 +20,15 @@ interface CollectionDao {
     @Delete
     suspend fun deleteCollection(collection: Collection)
 
+    @Query("DELETE from plate_collection_cross_ref WHERE collection_id = :collectionId")
+    suspend fun deletePlateCollectionCrossRefsByCollection(collectionId: Int)
+
+    @Transaction
+    suspend fun deleteCollectionWithPlates(collection: Collection) {
+        deletePlateCollectionCrossRefsByCollection(collection.id)
+        deleteCollection(collection)
+    }
+
     @Query("SELECT * from collections ORDER BY name ASC")
     fun getAllCollections(): Flow<List<Collection>>
 

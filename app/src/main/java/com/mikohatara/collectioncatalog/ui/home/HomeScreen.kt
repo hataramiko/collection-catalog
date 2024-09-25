@@ -76,12 +76,14 @@ private fun HomeScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
+    val topBarTitle = viewModel.getCollectionName() ?: stringResource(R.string.all_plates)
+    //" (${itemList.size})"
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             HomeTopAppBar(
-                title = stringResource(R.string.plates) + " (${itemList.size})",
+                title = topBarTitle,
                 onOpenDrawer = onOpenDrawer,
                 scrollBehavior = scrollBehavior
             )

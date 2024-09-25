@@ -77,4 +77,5 @@
     <string name="create_collection">新しいコレクションを作成</string>
     <string name="edit_collections">コレクションを編集</string>
     <string name="emoji">絵文字</string>
+    <string name="all_plates">すべてのプレート</string>
 </resources>

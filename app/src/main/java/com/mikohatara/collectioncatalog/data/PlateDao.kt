@@ -32,7 +32,7 @@ interface PlateDao {
     @Transaction
     suspend fun updatePlateWithCollections(plate: Plate, collectionIds: List<Int>) {
         updatePlate(plate)
-        deletePlateCollectionCrossRefs(plate.id)
+        deletePlateCollectionCrossRefsByPlate(plate.id)
         collectionIds.forEach { collectionId ->
             insertPlateCollectionCrossRef(PlateCollectionCrossRef(plate.id, collectionId))
         }
@@ -42,11 +42,11 @@ interface PlateDao {
     suspend fun deletePlate(plate: Plate)
 
     @Query("DELETE from plate_collection_cross_ref WHERE plate_id = :plateId")
-    suspend fun deletePlateCollectionCrossRefs(plateId: Int)
+    suspend fun deletePlateCollectionCrossRefsByPlate(plateId: Int)
 
     @Transaction
     suspend fun deletePlateWithCollections(plate: Plate) {
-        deletePlateCollectionCrossRefs(plate.id)
+        deletePlateCollectionCrossRefsByPlate(plate.id)
         deletePlate(plate)
     }
 

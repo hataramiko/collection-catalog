@@ -33,7 +33,8 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_ENTRY_ADD_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_ENTRY_EDIT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_LIST_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_COLLECTION_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_DEFAULT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ADD_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_EDIT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_SUMMARY_ROUTE
@@ -54,7 +55,7 @@ fun CollectionCatalogNavGraph(
     navController: NavHostController = rememberNavController(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    startDestination: String = HOME_ROUTE,
+    startDestination: String = HOME_DEFAULT_ROUTE,
     navActions: CollectionCatalogNavigationActions = remember(navController) {
         CollectionCatalogNavigationActions(navController)
     }
@@ -78,7 +79,7 @@ fun CollectionCatalogNavGraph(
         modifier = modifier
     ) {
         composable(
-            route = HOME_ROUTE
+            route = HOME_DEFAULT_ROUTE
         ) {
             ModalMenuDrawer(
                 drawerState,
@@ -86,11 +87,37 @@ fun CollectionCatalogNavGraph(
                 navActions,
                 collectionList,
                 onEditCollections,
-                onAddCollection
+                onAddCollection,
+                currentNavBackStackEntry
             ) {
                 HomeScreen(
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
+                    },
+                    onItemClick = {
+                        navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
+                    },
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                )
+            }
+        }
+        composable(
+            route = HOME_COLLECTION_ROUTE,
+            arguments = listOf(navArgument(COLLECTION_ID) { type = NavType.IntType })
+        ) {
+            ModalMenuDrawer(
+                drawerState,
+                currentRoute,
+                navActions,
+                collectionList,
+                onEditCollections,
+                onAddCollection,
+                currentNavBackStackEntry
+            ) {
+                HomeScreen(
+                    onAddItem = {
+                        // TODO snackBar to add plates via "All plates"
+                        /*navActions.navigateToItemEntryScreen(ItemType.PLATE, null)*/
                     },
                     onItemClick = {
                         navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
@@ -108,7 +135,8 @@ fun CollectionCatalogNavGraph(
                 navActions,
                 collectionList,
                 onEditCollections,
-                onAddCollection
+                onAddCollection,
+                currentNavBackStackEntry
             ) {
                 WishlistScreen(
                     onAddItem = {
@@ -130,7 +158,8 @@ fun CollectionCatalogNavGraph(
                 navActions,
                 collectionList,
                 onEditCollections,
-                onAddCollection
+                onAddCollection,
+                currentNavBackStackEntry
             ) {
                 ArchiveScreen(
                     onAddItem = {
@@ -152,7 +181,8 @@ fun CollectionCatalogNavGraph(
                 navActions,
                 collectionList,
                 onEditCollections,
-                onAddCollection
+                onAddCollection,
+                currentNavBackStackEntry
             ) {
                 StatsScreen(
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
