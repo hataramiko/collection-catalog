@@ -64,7 +64,8 @@ fun ItemSummaryTopAppBar(
     item: Item,
     onBack: () -> Unit,
     onEdit: (Item) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onCopy: (() -> Unit)? = null
 ) {
     TopAppBar(
         title = {
@@ -95,12 +96,15 @@ fun ItemSummaryTopAppBar(
                     contentDescription = "Delete"
                 )
             }
-            /*IconButton(onClick = {  }) {
+            IconButton(
+                onClick = { onCopy?.let { it() } },
+                enabled = onCopy != null
+            ) {
                 Icon(
-                    imageVector = Icons.Rounded.MoreVert,
+                    painter = painterResource(R.drawable.rounded_content_copy),
                     contentDescription = null
                 )
-            }*/
+            }
         }
     )
 }
@@ -109,7 +113,9 @@ fun ItemSummaryTopAppBar(
 @Composable
 fun ItemEntryTopAppBar( // also used in CollectionsScreen
     title: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onCopy: (() -> Unit)? = null,
+    onPaste: (() -> Unit)? = null
 ) {
     TopAppBar(
         title = {
@@ -124,6 +130,26 @@ fun ItemEntryTopAppBar( // also used in CollectionsScreen
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = { onCopy?.let { it() } },
+                enabled = onCopy != null
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_content_copy),
+                    contentDescription = null
+                )
+            }
+            IconButton(
+                onClick = { onPaste?.let { it() } },
+                enabled = onPaste != null
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_content_paste),
+                    contentDescription = null
                 )
             }
         }

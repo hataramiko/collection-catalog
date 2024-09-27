@@ -1,5 +1,8 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +19,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 data class ItemSummaryUiState(
@@ -78,5 +83,12 @@ class ItemSummaryViewModel @Inject constructor(
                 .deleteFormerPlate((uiState.value.item as Item.FormerPlateItem).formerPlate)
             else -> {}
         }
+    }
+
+    fun copyItemDetailsToClipboard(context: Context, itemDetails: ItemDetails) {
+        val jsonString = Json.encodeToString(itemDetails)
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("ItemDetails", jsonString)
+        clipboard.setPrimaryClip(clip)
     }
 }

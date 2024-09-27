@@ -1,5 +1,7 @@
 package com.mikohatara.collectioncatalog.data
 
+import kotlinx.serialization.Serializable
+
 sealed class Item {
     data class PlateItem(val plate: Plate) : Item()
     data class WantedPlateItem(val wantedPlate: WantedPlate) : Item()
@@ -12,6 +14,7 @@ enum class ItemType {
     FORMER_PLATE
 }
 
+@Serializable
 data class ItemDetails(
     val id: Int? = null,
     // CommonDetails

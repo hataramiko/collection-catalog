@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,6 +60,7 @@ fun ItemSummaryScreen(
         item,
         itemDetails,
         collections,
+        uiState,
         viewModel,
         coroutineScope,
         onBack,
@@ -71,23 +73,28 @@ private fun ItemSummaryScreen(
     item: Item,
     itemDetails: ItemDetails,
     collections: List<Collection>,
+    uiState: ItemSummaryUiState,
     viewModel: ItemSummaryViewModel,
     coroutineScope: CoroutineScope,
     onBack: () -> Unit,
     onEdit: (Item) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { ItemSummaryTopAppBar(
-            itemDetails.regNo ?: "",
-            item,
-            onBack,
-            onEdit,
-            onDelete = { showDeletionDialog = true }
-        ) },
+        topBar = {
+            ItemSummaryTopAppBar(
+                title = itemDetails.regNo ?: "",
+                item = item,
+                onBack = onBack,
+                onEdit = onEdit,
+                onDelete = { showDeletionDialog = true },
+                onCopy = { viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails) }
+            )
+        },
         content = { innerPadding ->
             ItemSummaryScreenContent(
                 itemDetails = itemDetails,

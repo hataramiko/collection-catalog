@@ -1,5 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -23,6 +27,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 data class ItemEntryUiState(
@@ -111,6 +117,31 @@ class ItemEntryViewModel @Inject constructor(
             selections + collection
         }
         _uiState.update { it.copy(selectedCollections = newSelections) }
+    }
+
+    fun copyItemDetailsToClipboard(context: Context, itemDetails: ItemDetails) {
+        val jsonString = Json.encodeToString(itemDetails)
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("ItemDetails", jsonString)
+        clipboard.setPrimaryClip(clip)
+    }
+
+    fun pasteItemDetailsFromClipboard(context: Context) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = clipboard.primaryClip
+        if (clipData != null && clipData.itemCount > 0) {
+            val clipText = clipData.getItemAt(0).text
+            if (clipText != null) {
+                try {
+                    val copiedItemDetails = Json.decodeFromString<ItemDetails>(clipText.toString())
+                    _uiState.update { it.copy(itemDetails = copiedItemDetails) }
+                } catch (e: Exception) {
+                    // TODO something
+                    // Handle invalid JSON
+                    Log.e("ItemEntryViewModel", "Error pasting ItemDetails", e)
+                }
+            }
+        }
     }
 
     private suspend fun addNewItem() = viewModelScope.launch {
