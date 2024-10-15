@@ -73,6 +73,7 @@ class ItemEntryViewModel @Inject constructor(
         val item = uiState.value.item
         val selectedCollections = uiState.value.selectedCollections
         val isNew = uiState.value.isNew
+        val hasUnsavedChanges = uiState.value.hasUnsavedChanges
         val initialDetails = if (isNew) ItemDetails() else when (item) {
             is Item.PlateItem -> item.plate.toItemDetails()
             is Item.WantedPlateItem -> item.wantedPlate.toItemDetails()
@@ -80,7 +81,7 @@ class ItemEntryViewModel @Inject constructor(
             else -> ItemDetails()
         }
 
-        _uiState.value = if (itemDetails != initialDetails) {
+        _uiState.value = if (itemDetails != initialDetails || hasUnsavedChanges) {
             ItemEntryUiState(
                 item = item,
                 itemType = itemType,
@@ -116,7 +117,7 @@ class ItemEntryViewModel @Inject constructor(
         } else {
             selections + collection
         }
-        _uiState.update { it.copy(selectedCollections = newSelections) }
+        _uiState.update { it.copy(selectedCollections = newSelections, hasUnsavedChanges = true) }
     }
 
     fun copyItemDetailsToClipboard(context: Context, itemDetails: ItemDetails) {

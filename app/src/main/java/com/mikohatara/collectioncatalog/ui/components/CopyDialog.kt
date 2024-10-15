@@ -132,7 +132,7 @@ private fun ItemDetailsCheckbox(
     label: String,
     value: String? = null
 ) {
-    val valueColor = if (value != null) colorScheme.secondary else colorScheme.outlineVariant
+    val valueColor = if (value != null) colorScheme.onSurface else colorScheme.outlineVariant
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -150,6 +150,7 @@ private fun ItemDetailsCheckbox(
         Column {
             Text(
                 text = label,
+                color = colorScheme.secondary,
                 fontSize = 10.sp
             )
             Text(

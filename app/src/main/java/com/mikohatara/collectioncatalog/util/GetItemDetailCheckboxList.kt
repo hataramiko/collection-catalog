@@ -18,11 +18,11 @@ fun getItemDetailsCheckboxList(itemDetails: ItemDetails): List<ItemDetailsCheckb
     // CommonDetails
     checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.country), itemDetails.country))
     checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.region_1st), itemDetails.region1st))
+        .add(ItemDetailsCheckbox(stringResource(R.string.subdivision), itemDetails.region1st))
     checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.region_2nd), itemDetails.region2nd))
+        .add(ItemDetailsCheckbox(stringResource(R.string.region), itemDetails.region2nd))
     checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.region_3rd), itemDetails.region3rd))
+        .add(ItemDetailsCheckbox(stringResource(R.string.region_second), itemDetails.region3rd))
     checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.type), itemDetails.type))
     checkboxList.add(ItemDetailsCheckbox(
         stringResource(R.string.period_start), itemDetails.periodStart?.toString())
