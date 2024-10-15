@@ -79,4 +79,8 @@
     <string name="edit_collections">Muokkaa kokoelmia</string>
     <string name="emoji">Emoji</string>
     <string name="all_plates">Kaikki kilvet</string>
+    <string name="copy">Kopioi</string>
+    <string name="select_all">Valitse kaikki</string>
+    <string name="include_image">Sisällytä kuva</string>
+    <string name="copy_dialog_empty_value">Tyhjä</string>
 </resources>

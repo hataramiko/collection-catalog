@@ -35,6 +35,7 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
+import com.mikohatara.collectioncatalog.ui.components.CopyItemDetailsDialog
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
@@ -83,6 +84,7 @@ private fun ItemSummaryScreen(
     val context = LocalContext.current
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
+    var showCopyDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -92,7 +94,10 @@ private fun ItemSummaryScreen(
                 onBack = onBack,
                 onEdit = onEdit,
                 onDelete = { showDeletionDialog = true },
-                onCopy = { viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails) }
+                onCopy = {
+                    //viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails)
+                    showCopyDialog = true
+                }
             )
         },
         content = { innerPadding ->
@@ -120,6 +125,15 @@ private fun ItemSummaryScreen(
                 }
             },
             onCancel = { showDeletionDialog = false }
+        )
+    }
+    if (showCopyDialog) {
+        CopyItemDetailsDialog(
+            itemDetails = itemDetails,
+            onConfirm = {
+                showCopyDialog = false
+            },
+            onCancel = { showCopyDialog = false }
         )
     }
 }
