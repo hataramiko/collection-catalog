@@ -3,12 +3,14 @@ package com.mikohatara.collectioncatalog.data
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.Junction
 import androidx.room.Relation
 
 @Entity(
     tableName = "plate_collection_cross_ref",
-    primaryKeys = ["plate_id", "collection_id"]
+    primaryKeys = ["plate_id", "collection_id"],
+    indices = [Index(value = ["collection_id"])]
 )
 data class PlateCollectionCrossRef(
     @ColumnInfo(name = "plate_id") val plateId: Int,

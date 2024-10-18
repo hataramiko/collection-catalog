@@ -197,6 +197,9 @@ fun FilterBottomSheet(
                         onToggleFilter = { viewModel.toggleLocationFilter(it) }
                     )
                 }
+                item {
+                    Spacer(modifier = Modifier.height(128.dp))
+                }
             }
         }
         FilterFooter(
