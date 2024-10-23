@@ -1,17 +1,24 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,7 +49,6 @@ import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
-import com.mikohatara.collectioncatalog.ui.components.ItemSummaryVerticalSpacer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -146,96 +153,736 @@ private fun ItemSummaryScreenContent(
     collections: List<Collection> = emptyList()
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
-        ItemImage(itemDetails.imagePath, onInspectImage)
-        ItemSummaryVerticalSpacer(true)
+        Card(
+            shape = RoundedCornerShape(
+                topStart = 0.dp,
+                topEnd = 0.dp,
+                bottomStart = 24.dp,
+                bottomEnd = 24.dp
+            )
+        ) {
+            Card(
+                modifier = Modifier.padding(horizontal = 8.dp)
+                    .padding(top = 8.dp) //TODO remove this when topBar is re-touched
+            ) {
+                ItemImage(itemDetails.imagePath, onInspectImage)
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            CommonDetails(
+                regNo = itemDetails.regNo ?: "",
+                country = itemDetails.country ?: "",
+                region1st = itemDetails.region1st,
+                region2nd = itemDetails.region2nd,
+                region3rd = itemDetails.region3rd,
+                type = itemDetails.type ?: "",
+                year = itemDetails.year?.toString(),
+                period = if (itemDetails.periodStart != null || itemDetails.periodEnd != null) {
+                    itemDetails.periodStart?.toString() + " – " + itemDetails.periodEnd?.toString()
+                } else {
+                    null
+                }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         if (collections.isNotEmpty()) {
-            Column(
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            Spacer(modifier = Modifier.height(16.dp))
+            Collections(collections = collections)
+        }
+
+        Card(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            UniqueDetails(
+                notes = itemDetails.notes,
+                vehicle = itemDetails.vehicle,
+                date = itemDetails.date,
+                cost = itemDetails.cost.toString(),
+                value = itemDetails.value.toString(),
+                status = itemDetails.status
+            )
+        }
+        Card(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            PhysicalAttributes(
+                width = itemDetails.width.toString(),
+                height = itemDetails.height.toString(),
+                weight = itemDetails.weight.toString(),
+                colorMain = itemDetails.colorMain,
+                colorSecondary = itemDetails.colorSecondary
+            )
+        }
+        Card(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            SourceInfo(
+                name = itemDetails.sourceName,
+                alias = itemDetails.sourceAlias,
+                type = itemDetails.sourceType,
+                details = itemDetails.sourceDetails,
+                country = itemDetails.sourceCountry
+            )
+        }
+        Card(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            ArchivalInfo(
+                date = itemDetails.archivalDate,
+                reason = itemDetails.archivalType,
+                details = itemDetails.archivalDetails,
+                price = itemDetails.price.toString(),
+                recipientName = itemDetails.recipientName,
+                recipientAlias = itemDetails.recipientAlias,
+                recipientCountry = itemDetails.recipientCountry
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun CommonDetails(
+    regNo: String,
+    country: String,
+    region1st: String?,
+    region2nd: String?,
+    region3rd: String?,
+    type: String,
+    year: String?,
+    period: String?
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = 24.dp)
+    ) {
+        Text(
+            text = regNo,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Medium,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Column(
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Row(
+
             ) {
-                collections.forEach {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(it.name) },
-                        leadingIcon = {
-                            if (!it.emoji.isNullOrBlank()) {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier.size(24.dp)
-                                ) {
-                                    Text(it.emoji)
-                                }
-                            } else {
-                                Icon(
-                                    painter = painterResource(R.drawable.rounded_bookmark),
-                                    contentDescription = null
-                                )
-                            }
-                        }
+                Text(
+                    text = country
+                )
+                region1st?.let {
+                    Text(
+                        text = "・$it"
                     )
                 }
             }
-        }
+            if (region2nd != null || region3rd != null) {
+                Row(
 
-        ItemSummarySection(
-            itemDetails = itemDetails,
-            SectionType.COMMON_DETAILS,
-            sectionDetails = listOf(
-                itemDetails.country,
-                itemDetails.region1st,
-                itemDetails.region2nd,
-                itemDetails.region3rd,
-                itemDetails.type,
-                itemDetails.periodStart,
-                itemDetails.periodEnd,
-                itemDetails.year
-            )
+                ) {
+                    region2nd?.let {
+                        Text(
+                            text = it
+                        )
+                    }
+                    if (region2nd != null && region3rd != null) {
+                        Text(
+                            text = "・"
+                        )
+                    }
+                    region3rd?.let {
+                        Text(
+                            text = it
+                        )
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = type
         )
-        ItemSummarySection(
-            itemDetails = itemDetails,
-            SectionType.UNIQUE_DETAILS,
-            sectionDetails = listOf(
-                itemDetails.notes,
-                itemDetails.vehicle,
-                itemDetails.date,
-                itemDetails.cost,
-                itemDetails.value,
-                itemDetails.status
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+    /*Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(14.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.type),
+                color = MaterialTheme.colorScheme.secondary
             )
-        )
-        ItemSummarySection(
-            itemDetails = itemDetails,
-            SectionType.PHYSICAL_ATTRIBUTES,
-            sectionDetails = listOf(
-                itemDetails.width,
-                itemDetails.height,
-                itemDetails.weight
+            Text(
+                text = type ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
             )
-        )
-        ItemSummarySection(
-            itemDetails = itemDetails,
-            SectionType.SOURCE_INFO,
-            sectionDetails = listOf(
-                itemDetails.sourceName,
-                itemDetails.sourceAlias,
-                itemDetails.sourceType,
-                itemDetails.sourceDetails,
-                itemDetails.sourceCountry
+        }
+    }*/
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp)
+    ) {
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+            modifier = Modifier.weight(0.6f)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.year),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = year?.toString() ?: "",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+        if (year != null && period != null) {
+            Spacer(modifier = Modifier.width(16.dp))
+        }
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+            modifier = Modifier.weight(1f)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.period),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = period ?: "",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Collections(
+    collections: List<Collection>
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        collections.forEach {
+            AssistChip(
+                onClick = {},
+                label = { Text(it.name) },
+                leadingIcon = {
+                    if (!it.emoji.isNullOrBlank()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Text(it.emoji)
+                        }
+                    } else {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_bookmark),
+                            contentDescription = null
+                        )
+                    }
+                }
             )
-        )
-        ItemSummarySection(
-            itemDetails = itemDetails,
-            SectionType.ARCHIVAL_INFO,
-            sectionDetails = listOf(
-                itemDetails.archivalDate,
-                itemDetails.archivalType,
-                itemDetails.archivalDetails,
-                itemDetails.price,
-                itemDetails.recipientName,
-                itemDetails.recipientAlias,
-                itemDetails.recipientCountry
+        }
+    }
+}
+
+@Composable
+private fun UniqueDetails(
+    notes: String?,
+    vehicle: String?,
+    date: String?,
+    cost: String?,
+    value: String?,
+    status: String?
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                //.padding(bottom = 20.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.notes),
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.weight(0.5f)
             )
-        )
+            Text(
+                text = notes ?: "",
+                modifier = Modifier//.padding(horizontal = 16.dp)
+                    .weight(1f)
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.vehicle),
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.weight(0.5f)
+            )
+            Text(
+                text = vehicle ?: "",
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+
+    Column(
+        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        //modifier = Modifier.padding(horizontal = 8.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.notes),
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = notes ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.vehicle),
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = vehicle ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        modifier = Modifier.padding(horizontal = 14.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.date),
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = date ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp)
+    ) {
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+            modifier = Modifier.weight(1f)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.cost),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = cost ?: "",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+        if (cost != null && value != null) {
+            Spacer(modifier = Modifier.width(16.dp))
+        }
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+            modifier = Modifier.weight(1f)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.value),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = value ?: "",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    Card(
+        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        modifier = Modifier.padding(horizontal = 14.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.location),
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = status ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun PhysicalAttributes(
+    width: String?,
+    height: String?,
+    weight: String?,
+    colorMain: String?,
+    colorSecondary: String?
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp)
+    ) {
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+            modifier = Modifier.weight(1f)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.width),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = width ?: "",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+        if (width != null && height != null) {
+            Spacer(modifier = Modifier.width(16.dp))
+        }
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+            modifier = Modifier.weight(1f)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.height),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = height ?: "",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        modifier = Modifier.padding(horizontal = 14.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.weight),
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = weight ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+    Card(
+        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        modifier = Modifier.padding(horizontal = 14.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.color_main),
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = colorMain ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.color_secondary),
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = colorSecondary ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun SourceInfo(
+    name: String?,
+    alias: String?,
+    type: String?,
+    details: String?,
+    country: String?
+) {
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        modifier = Modifier.padding(horizontal = 14.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Source Name",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = name ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Source Alias",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = alias ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Source Type",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = type ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Source Details",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = details ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Source Country",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = country ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun ArchivalInfo(
+    date: String?,
+    reason: String?,
+    details: String?,
+    price: String?,
+    recipientName: String?,
+    recipientAlias: String?,
+    recipientCountry: String?
+) {
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        modifier = Modifier.padding(horizontal = 14.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Archival Date",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = date ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Archival Reason",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = reason ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Archival Details",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = details ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Price",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = price ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Recipient Name",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = recipientName ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Recipient Alias",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = recipientAlias ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "Recipient Country",
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = recipientCountry ?: "",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -648,14 +1295,6 @@ private fun ArchivalInfoCard(
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun ItemSummaryScreenPreview() {
-    /*CollectionCatalogTheme {
-        ItemSummaryScreenContent(itemDetails = samplePlates[6], onInspectImage = {})
-    }*/
 }
 
 private enum class SectionType {

@@ -20,8 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -71,6 +73,7 @@ fun ItemImage(imagePath: String?, onInspectImage: () -> Unit) {
     } else {
         Card(
             shape = RoundedCornerShape(0.dp),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth()
