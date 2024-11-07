@@ -1,5 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -35,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,12 +49,14 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
+import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.components.CopyItemDetailsDialog
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
+import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -153,225 +161,25 @@ private fun ItemSummaryScreenContent(
     collections: List<Collection> = emptyList()
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
-        Card(
-            shape = RoundedCornerShape(
-                topStart = 0.dp,
-                topEnd = 0.dp,
-                bottomStart = 24.dp,
-                bottomEnd = 24.dp
-            )
-        ) {
-            Card(
-                modifier = Modifier.padding(horizontal = 8.dp)
-                    .padding(top = 8.dp) //TODO remove this when topBar is re-touched
-            ) {
-                ItemImage(itemDetails.imagePath, onInspectImage)
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            CommonDetails(
-                regNo = itemDetails.regNo ?: "",
-                country = itemDetails.country ?: "",
-                region1st = itemDetails.region1st,
-                region2nd = itemDetails.region2nd,
-                region3rd = itemDetails.region3rd,
-                type = itemDetails.type ?: "",
-                year = itemDetails.year?.toString(),
-                period = if (itemDetails.periodStart != null || itemDetails.periodEnd != null) {
-                    itemDetails.periodStart?.toString() + " – " + itemDetails.periodEnd?.toString()
-                } else {
-                    null
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
+        CommonDetailsCard(
+            itemDetails = itemDetails,
+            image = { ItemImage(itemDetails.imagePath, onInspectImage) }
+        )
         if (collections.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(16.dp))
             Collections(collections = collections)
         }
-
-        Card(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            UniqueDetails(
-                notes = itemDetails.notes,
-                vehicle = itemDetails.vehicle,
-                date = itemDetails.date,
-                cost = itemDetails.cost.toString(),
-                value = itemDetails.value.toString(),
-                status = itemDetails.status
-            )
-        }
-        Card(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            PhysicalAttributes(
-                width = itemDetails.width.toString(),
-                height = itemDetails.height.toString(),
-                weight = itemDetails.weight.toString(),
-                colorMain = itemDetails.colorMain,
-                colorSecondary = itemDetails.colorSecondary
-            )
-        }
-        Card(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            SourceInfo(
-                name = itemDetails.sourceName,
-                alias = itemDetails.sourceAlias,
-                type = itemDetails.sourceType,
-                details = itemDetails.sourceDetails,
-                country = itemDetails.sourceCountry
-            )
-        }
-        Card(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            ArchivalInfo(
-                date = itemDetails.archivalDate,
-                reason = itemDetails.archivalType,
-                details = itemDetails.archivalDetails,
-                price = itemDetails.price.toString(),
-                recipientName = itemDetails.recipientName,
-                recipientAlias = itemDetails.recipientAlias,
-                recipientCountry = itemDetails.recipientCountry
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-private fun CommonDetails(
-    regNo: String,
-    country: String,
-    region1st: String?,
-    region2nd: String?,
-    region3rd: String?,
-    type: String,
-    year: String?,
-    period: String?
-) {
-    Column(
-        modifier = Modifier.padding(horizontal = 24.dp)
-    ) {
-        Text(
-            text = regNo,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Medium,
+        UniqueDetailsCard(
+            itemDetails = itemDetails
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Column(
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
-            Row(
-
-            ) {
-                Text(
-                    text = country
-                )
-                region1st?.let {
-                    Text(
-                        text = "・$it"
-                    )
-                }
-            }
-            if (region2nd != null || region3rd != null) {
-                Row(
-
-                ) {
-                    region2nd?.let {
-                        Text(
-                            text = it
-                        )
-                    }
-                    if (region2nd != null && region3rd != null) {
-                        Text(
-                            text = "・"
-                        )
-                    }
-                    region3rd?.let {
-                        Text(
-                            text = it
-                        )
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = type
+        PhysicalAttributesCard(
+            itemDetails = itemDetails
         )
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-    /*Card(
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(14.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.type),
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = type ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }*/
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp)
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-            modifier = Modifier.weight(0.6f)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.year),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    text = year?.toString() ?: "",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-        if (year != null && period != null) {
-            Spacer(modifier = Modifier.width(16.dp))
-        }
-        Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-            modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.period),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    text = period ?: "",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
+        SourceInfoCard(
+            itemDetails = itemDetails
+        )
+        ArchivalInfoCard(
+            itemDetails = itemDetails
+        )
     }
 }
 
@@ -407,486 +215,59 @@ private fun Collections(
 }
 
 @Composable
-private fun UniqueDetails(
-    notes: String?,
-    vehicle: String?,
-    date: String?,
-    cost: String?,
-    value: String?,
-    status: String?
+private fun DataFieldCard(
+    label: String,
+    value: String = "",
+    modifier: Modifier = Modifier,
+    isSingleLine: Boolean = true,
+    hasContainer: Boolean = true
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                //.padding(bottom = 20.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.notes),
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.weight(0.5f)
-            )
-            Text(
-                text = notes ?: "",
-                modifier = Modifier//.padding(horizontal = 16.dp)
-                    .weight(1f)
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(R.string.vehicle),
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.weight(0.5f)
-            )
-            Text(
-                text = vehicle ?: "",
-                modifier = Modifier.weight(1f)
-            )
-        }
+    val colors = if (hasContainer) {
+        CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)
+    } else {
+        CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHighest)
     }
 
-    Column(
-        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        //modifier = Modifier.padding(horizontal = 8.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.notes),
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = notes ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.vehicle),
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = vehicle ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(16.dp))
     Card(
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        modifier = Modifier.padding(horizontal = 14.dp)
+        colors = colors,
+        modifier = modifier.fillMaxWidth()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.date),
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = date ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp)
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-            modifier = Modifier.weight(1f)
-        ) {
+        if (isSingleLine) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.cost),
-                    color = MaterialTheme.colorScheme.secondary
+                    text = label,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.padding(end = 8.dp)
                 )
                 Text(
-                    text = cost ?: "",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    text = value,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
-        }
-        if (cost != null && value != null) {
-            Spacer(modifier = Modifier.width(16.dp))
-        }
-        Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-            modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        } else {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.value),
+                    text = label,
                     color = MaterialTheme.colorScheme.secondary
                 )
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = value ?: "",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    text = value,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
         }
     }
-    Spacer(modifier = Modifier.height(16.dp))
-    Card(
-        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        modifier = Modifier.padding(horizontal = 14.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.location),
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = status ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
 }
 
-@Composable
-private fun PhysicalAttributes(
-    width: String?,
-    height: String?,
-    weight: String?,
-    colorMain: String?,
-    colorSecondary: String?
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp)
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-            modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.width),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    text = width ?: "",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-        if (width != null && height != null) {
-            Spacer(modifier = Modifier.width(16.dp))
-        }
-        Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-            modifier = Modifier.weight(1f)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.height),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = height ?: "",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    Card(
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        modifier = Modifier.padding(horizontal = 14.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.weight),
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = weight ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-    Card(
-        //colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        modifier = Modifier.padding(horizontal = 14.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.color_main),
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = colorMain ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.color_secondary),
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = colorSecondary ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-@Composable
-private fun SourceInfo(
-    name: String?,
-    alias: String?,
-    type: String?,
-    details: String?,
-    country: String?
-) {
-    Card(
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        modifier = Modifier.padding(horizontal = 14.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Source Name",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = name ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Source Alias",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = alias ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Source Type",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = type ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Source Details",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = details ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Source Country",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = country ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-@Composable
-private fun ArchivalInfo(
-    date: String?,
-    reason: String?,
-    details: String?,
-    price: String?,
-    recipientName: String?,
-    recipientAlias: String?,
-    recipientCountry: String?
-) {
-    Card(
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-        modifier = Modifier.padding(horizontal = 14.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Archival Date",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = date ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Archival Reason",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = reason ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Archival Details",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = details ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Price",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = price ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Recipient Name",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = recipientName ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Recipient Alias",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = recipientAlias ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = "Recipient Country",
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = recipientCountry ?: "",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-@Composable
+/*@Composable
 private fun ItemSummarySection(
     itemDetails: ItemDetails,
     sectionType: SectionType,
@@ -905,7 +286,7 @@ private fun ItemSummarySection(
             }
         }
     }
-}
+}*/
 
 @Composable
 private fun SummaryCard(
@@ -939,35 +320,9 @@ private fun SummaryCardSection(
 }
 
 @Composable
-private fun ItemInfoField(
-    label: String?,
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        label?.let {
-            Text(
-                label,
-                color = Color(0, 0, 0, 128),
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-            )
-        }
-        Text(
-            value,
-            modifier = Modifier
-                .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 12.dp)
-        )
-    }
-}
-
-@Composable
 private fun CommonDetailsCard(
-    itemDetails: ItemDetails
+    itemDetails: ItemDetails,
+    image: @Composable () -> Unit
 ) {
     val countryAndRegion = listOf(
         itemDetails.country,
@@ -975,182 +330,160 @@ private fun CommonDetailsCard(
         itemDetails.region2nd,
         itemDetails.region3rd
     )
+    val year: String? = if (itemDetails.year != null) itemDetails.year.toString() else null
+    val period: String? = if (itemDetails.periodStart != null || itemDetails.periodEnd != null) {
+        "${itemDetails.periodStart ?: ""} – ${itemDetails.periodEnd ?: ""}"
+    } else {
+        null
+    }
 
-    if (countryAndRegion.any { it != null }) {
-        SummaryCardSection(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_globe),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-            }
+    Card(
+        shape = RoundedCornerShape(
+            topStart = 0.dp,
+            topEnd = 0.dp,
+            bottomStart = 24.dp,
+            bottomEnd = 24.dp
+        )
+    ) {
+        Card(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            itemDetails.country?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.country),
-                    value = it
-                )
-            }
-            itemDetails.region1st?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.region),
-                    value = it
-                )
-            }
-            itemDetails.region2nd?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.area),
-                    value = it
-                )
-            }
-            itemDetails.region3rd?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.area),
-                    value = it
-                )
-            }
+            image.invoke()
         }
-    }
-    if (itemDetails.type != null) {
-        SummaryCardSection(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_category),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
+        Column(
+            modifier = Modifier.padding(horizontal = 24.dp)
+        ) {
+            itemDetails.regNo?.let {
+                Text(
+                    text = itemDetails.regNo,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(vertical = 16.dp)
                 )
             }
-        ) {
+            if (countryAndRegion.any { it != null }) {
+                Row {
+                    Text(
+                        text = itemDetails.country ?: ""
+                    )
+                    itemDetails.region1st?.let {
+                        Text(
+                            text = "・$it"
+                        )
+                    }
+                }
+                if (itemDetails.region2nd != null || itemDetails.region3rd != null) {
+                    Row {
+                        itemDetails.region2nd?.let {
+                            Text(
+                                text = it
+                            )
+                        }
+                        itemDetails.region3rd?.let {
+                            Text(
+                                text = if (itemDetails.region2nd != null) "・$it" else it
+                            )
+                        }
+                    }
+                }
+            }
             itemDetails.type?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.type),
-                    value = it
+                Text(
+                    text = it,
+                    modifier = Modifier.padding(vertical = 16.dp)
                 )
             }
         }
-    }
-    if (itemDetails.periodStart != null || itemDetails.year != null) { // TODO add periodEnd
-        SummaryCardSection(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_date_range),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-            }
-        ) {
-            Row {
-                itemDetails.periodStart?.let {
-                    ItemInfoField(
-                        label = stringResource(R.string.period),
-                        value = itemDetails.periodStart.toString() + " – " + itemDetails.periodEnd.toString(),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                itemDetails.year?.let {
-                    ItemInfoField(
+        if (year != null || period != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+            ) {
+                year?.let {
+                    DataFieldCard(
                         label = stringResource(R.string.year),
-                        value = it.toString(),
-                        modifier = Modifier.weight(0.8f)
+                        value = it,
+                        modifier = Modifier.weight(1f),
+                        isSingleLine = period == null
+                    )
+                }
+                if (year != null && period != null) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
+                period?.let {
+                    DataFieldCard(
+                        label = stringResource(R.string.period),
+                        value = period,
+                        modifier = Modifier.weight(1f),
+                        isSingleLine = year == null
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable
 private fun UniqueDetailsCard(
     itemDetails: ItemDetails
 ) {
-    if (itemDetails.notes != null || itemDetails.vehicle != null) {
-        SummaryCardSection(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_note_stack),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-            }
-        ) {
-            itemDetails.notes?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.notes),
-                    value = it
-                )
-            }
-            itemDetails.vehicle?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.vehicle),
-                    value = it
-                )
-            }
+    val modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+
+    itemDetails.notes?.let {
+        DataFieldCard(
+            label = stringResource(R.string.notes),
+            value = it,
+            modifier = modifier,
+            isSingleLine = false
+        )
+    }
+    itemDetails.vehicle?.let {
+        DataFieldCard(
+            label = stringResource(R.string.vehicle),
+            value = it,
+            modifier = modifier,
+            isSingleLine = false
+        )
+    }
+    itemDetails.date?.let {
+        DataFieldCard(
+            label = stringResource(R.string.date),
+            value = it,
+            modifier = modifier
+        )
+    }
+    Row(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        itemDetails.cost?.let {
+            DataFieldCard(
+                label = stringResource(R.string.year),
+                value = it.toString(),
+                modifier = Modifier.weight(1f),
+                isSingleLine = itemDetails.value == null
+            )
+        }
+        if (itemDetails.cost != null && itemDetails.value != null) {
+            Spacer(modifier = Modifier.width(16.dp))
+        }
+        itemDetails.value?.let {
+            DataFieldCard(
+                label = stringResource(R.string.period),
+                value = it.toString(),
+                modifier = Modifier.weight(1f),
+                isSingleLine = itemDetails.cost == null
+            )
         }
     }
-    if (itemDetails.date != null) {
-        SummaryCardSection(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_event),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-            }
-        ) {
-            itemDetails.date?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.date),
-                    value = it
-                )
-            }
-        }
-    }
-    if (itemDetails.cost != null || itemDetails.value != null) {
-        SummaryCardSection(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_payments),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-            }
-        ) {
-            Row {
-                itemDetails.cost?.let {
-                    ItemInfoField(
-                        label = stringResource(R.string.cost),
-                        value = it.toString(),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                itemDetails.value?.let {
-                    ItemInfoField(
-                        label = stringResource(R.string.value),
-                        value = it.toString(),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
-    }
-    if (itemDetails.status != null) {
-        SummaryCardSection(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_pin_dist),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-            }
-        ) {
-            itemDetails.status?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.location),
-                    value = it
-                )
-            }
-        }
+    itemDetails.status?.let {
+        DataFieldCard(
+            label = stringResource(R.string.location),
+            value = it,
+            modifier = modifier
+        )
     }
 }
 
@@ -1158,37 +491,62 @@ private fun UniqueDetailsCard(
 private fun PhysicalAttributesCard(
     itemDetails: ItemDetails
 ) {
-    SummaryCardSection(
-        icon = {
-            Icon(
-                painter = painterResource(R.drawable.rounded_ruler),
-                contentDescription = null,
-                modifier = ItemScreenModifiers.icon
-            )
-        }
+    val modifier = Modifier.padding(bottom = 8.dp)
+
+    ExpandableSummaryCard(
+        label = "physical attributes",
+        data = listOf(
+            itemDetails.width,
+            itemDetails.height,
+            itemDetails.weight,
+            itemDetails.colorMain,
+            itemDetails.colorSecondary
+        )
     ) {
-        Row {
+        Row(
+            modifier = modifier.fillMaxWidth()
+        ) {
             itemDetails.width?.let {
-                ItemInfoField(
+                DataFieldCard(
                     label = stringResource(R.string.width),
                     value = it.toString(),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    isSingleLine = itemDetails.height == null
                 )
+            }
+            if (itemDetails.width != null && itemDetails.height != null) {
+                Spacer(modifier = Modifier.width(16.dp))
             }
             itemDetails.height?.let {
-                ItemInfoField(
+                DataFieldCard(
                     label = stringResource(R.string.height),
                     value = it.toString(),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    isSingleLine = itemDetails.width == null
                 )
             }
-            itemDetails.weight?.let {
-                ItemInfoField(
-                    label = stringResource(R.string.weight),
-                    value = it.toString(),
-                    modifier = Modifier.weight(1f)
-                )
-            }
+        }
+        itemDetails.weight?.let {
+            DataFieldCard(
+                label = stringResource(R.string.weight),
+                value = it.toString(),
+                modifier = modifier
+            )
+        }
+        itemDetails.colorMain?.let {
+            DataFieldCard(
+                label = stringResource(R.string.color_main),
+                value = it,
+                modifier = modifier,
+                hasContainer = false
+            )
+        }
+        itemDetails.colorSecondary?.let {
+            DataFieldCard(
+                label = stringResource(R.string.color_secondary),
+                value = it,
+                hasContainer = false
+            )
         }
     }
 }
@@ -1197,43 +555,54 @@ private fun PhysicalAttributesCard(
 private fun SourceInfoCard(
     itemDetails: ItemDetails
 ) {
-    SummaryCardSection(
-        icon = {
-            Icon(
-                painter = painterResource(R.drawable.rounded_person_pin_circle),
-                contentDescription = null,
-                modifier = ItemScreenModifiers.icon
-            )
-        }
+    val modifier = Modifier.padding(bottom = 8.dp)
+
+    ExpandableSummaryCard(
+        label = "source info",
+        data = listOf(
+            itemDetails.sourceName,
+            itemDetails.sourceAlias,
+            itemDetails.sourceType,
+            itemDetails.sourceCountry,
+            itemDetails.sourceDetails
+        )
     ) {
         itemDetails.sourceName?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Source Name",
-                value = it
+                value = it,
+                modifier = modifier
             )
         }
         itemDetails.sourceAlias?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Source Alias",
-                value = it
+                value = it,
+                modifier = modifier,
+                hasContainer = false
             )
         }
         itemDetails.sourceType?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Source Type",
-                value = it
-            )
-        }
-        itemDetails.sourceDetails?.let {
-            ItemInfoField(
-                label = "Source Details",
-                value = it
+                value = it,
+                modifier = modifier
             )
         }
         itemDetails.sourceCountry?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Source Country",
-                value = it
+                value = it,
+                modifier = modifier
+            )
+        }
+        itemDetails.sourceDetails?.let {
+            DataFieldCard(
+                label = "Source Details",
+                value = it,
+                modifier = modifier,
+                isSingleLine = false,
+                hasContainer = false
             )
         }
     }
@@ -1243,56 +612,115 @@ private fun SourceInfoCard(
 private fun ArchivalInfoCard(
     itemDetails: ItemDetails
 ) {
-    SummaryCardSection(
-        icon = {
-            Icon(
-                painter = painterResource(R.drawable.rounded_history),
-                contentDescription = null,
-                modifier = ItemScreenModifiers.icon
-            )
-        }
+    val modifier = Modifier.padding(bottom = 8.dp)
+
+    ExpandableSummaryCard(
+        label = "archival info",
+        data = listOf(
+            itemDetails.archivalDate,
+            itemDetails.archivalType,
+            itemDetails.archivalDetails,
+            itemDetails.price,
+            itemDetails.recipientName,
+            itemDetails.recipientAlias,
+            itemDetails.recipientCountry
+        )
     ) {
         itemDetails.archivalDate?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Archival Date",
-                value = it
+                value = it,
+                modifier = modifier
             )
         }
         itemDetails.archivalType?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Archival Reason",
-                value = it
+                value = it,
+                modifier = modifier,
+                hasContainer = false
             )
         }
         itemDetails.archivalDetails?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Archival Details",
-                value = it
+                value = it,
+                modifier = modifier,
+                hasContainer = false
             )
         }
         itemDetails.price?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Price",
-                value = it.toString()
+                value = it.toString(),
+                modifier = modifier
             )
         }
         itemDetails.recipientName?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Recipient Name",
-                value = it
+                value = it,
+                modifier = modifier
             )
         }
         itemDetails.recipientAlias?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Recipient Alias",
-                value = it
+                value = it,
+                modifier = modifier,
+                hasContainer = false
             )
         }
         itemDetails.recipientCountry?.let {
-            ItemInfoField(
+            DataFieldCard(
                 label = "Recipient Country",
-                value = it
+                value = it,
+                modifier = modifier,
+                hasContainer = false
             )
+        }
+    }
+}
+
+@Composable
+private fun ExpandableSummaryCard(
+    label: String,
+    data: List<Any?> = emptyList(),
+    content: @Composable () -> Unit
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val onClick = remember { Modifier.clickable { isExpanded = !isExpanded } }
+
+    if (data.any { it != null }) {
+        Card(
+            modifier = Modifier
+                .padding(8.dp)
+                .animateContentSize()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(onClick)
+            ) {
+                Text(
+                    text = label,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                Icon(
+                    imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
+                    else Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            if (isExpanded) {
+                Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+                    content()
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }
