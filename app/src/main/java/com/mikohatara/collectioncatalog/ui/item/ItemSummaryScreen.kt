@@ -460,7 +460,7 @@ private fun UniqueDetailsCard(
     ) {
         itemDetails.cost?.let {
             DataFieldCard(
-                label = stringResource(R.string.year),
+                label = stringResource(R.string.cost),
                 value = it.toString(),
                 modifier = Modifier.weight(1f),
                 isSingleLine = itemDetails.value == null
@@ -471,7 +471,7 @@ private fun UniqueDetailsCard(
         }
         itemDetails.value?.let {
             DataFieldCard(
-                label = stringResource(R.string.period),
+                label = stringResource(R.string.value),
                 value = it.toString(),
                 modifier = Modifier.weight(1f),
                 isSingleLine = itemDetails.cost == null

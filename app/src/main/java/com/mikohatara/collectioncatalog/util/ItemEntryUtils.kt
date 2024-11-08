@@ -161,6 +161,8 @@ fun WantedPlate.toItemDetails(): ItemDetails = ItemDetails(
     regNo = regNo,
     imagePath = imagePath,
     notes = notes,
+    colorMain = color.main,
+    colorSecondary = color.secondary,
     // CommonDetails
     country = commonDetails.country,
     region1st = commonDetails.region1st,
