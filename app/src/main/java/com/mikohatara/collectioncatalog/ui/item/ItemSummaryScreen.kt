@@ -21,10 +21,13 @@ import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,12 +38,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,14 +53,11 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
-import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.components.CopyItemDetailsDialog
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
-import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
-import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -84,6 +85,7 @@ fun ItemSummaryScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemSummaryScreen(
     item: Item,
@@ -97,15 +99,23 @@ private fun ItemSummaryScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val scrollBehavior = TopAppBarDefaults
+        .exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
     var showCopyDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             ItemSummaryTopAppBar(
                 title = itemDetails.regNo ?: "",
                 item = item,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                ),
+                scrollBehavior = scrollBehavior,
                 onBack = onBack,
                 onEdit = onEdit,
                 onDelete = { showDeletionDialog = true },
@@ -346,22 +356,23 @@ private fun CommonDetailsCard(
         )
     ) {
         Card(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 8.dp)
         ) {
             image.invoke()
         }
         Column(
             modifier = Modifier.padding(horizontal = 24.dp)
         ) {
-            itemDetails.regNo?.let {
+            /*itemDetails.regNo?.let {
                 Text(
                     text = itemDetails.regNo,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
-            }
+            }*/
             if (countryAndRegion.any { it != null }) {
+                Spacer(modifier = Modifier.height(16.dp))
                 Row {
                     Text(
                         text = itemDetails.country ?: ""
@@ -693,6 +704,7 @@ private fun ExpandableSummaryCard(
 
     if (data.any { it != null }) {
         Card(
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier
                 .padding(8.dp)
                 .animateContentSize()

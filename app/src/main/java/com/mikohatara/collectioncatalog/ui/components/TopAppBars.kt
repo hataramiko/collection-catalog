@@ -11,6 +11,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
@@ -62,12 +63,14 @@ fun HomeTopAppBar(
 fun ItemSummaryTopAppBar(
     title: String,
     item: Item,
+    colors: TopAppBarColors,
+    scrollBehavior: TopAppBarScrollBehavior,
     onBack: () -> Unit,
     onEdit: (Item) -> Unit,
     onDelete: () -> Unit,
     onCopy: (() -> Unit)? = null
 ) {
-    TopAppBar(
+    MediumTopAppBar(
         title = {
             Text(
                 title,
@@ -105,7 +108,9 @@ fun ItemSummaryTopAppBar(
                     contentDescription = null
                 )
             }
-        }
+        },
+        colors = colors,
+        scrollBehavior = scrollBehavior
     )
 }
 
