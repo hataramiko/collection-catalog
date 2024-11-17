@@ -198,7 +198,7 @@ private fun Collections(
     collections: List<Collection>
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         collections.forEach {
             AssistChip(
@@ -334,12 +334,6 @@ private fun CommonDetailsCard(
     itemDetails: ItemDetails,
     image: @Composable () -> Unit
 ) {
-    val countryAndRegion = listOf(
-        itemDetails.country,
-        itemDetails.region1st,
-        itemDetails.region2nd,
-        itemDetails.region3rd
-    )
     val year: String? = if (itemDetails.year != null) itemDetails.year.toString() else null
     val period: String? = if (itemDetails.periodStart != null || itemDetails.periodEnd != null) {
         "${itemDetails.periodStart ?: ""} – ${itemDetails.periodEnd ?: ""}"
@@ -353,55 +347,41 @@ private fun CommonDetailsCard(
             topEnd = 0.dp,
             bottomStart = 24.dp,
             bottomEnd = 24.dp
-        )
+        ),
+        modifier = Modifier.padding(bottom = 8.dp)
     ) {
         Card(
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             image.invoke()
         }
         Column(
-            modifier = Modifier.padding(horizontal = 24.dp)
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
         ) {
-            /*itemDetails.regNo?.let {
+            itemDetails.country?.let {
                 Text(
-                    text = itemDetails.regNo,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    text = it
                 )
-            }*/
-            if (countryAndRegion.any { it != null }) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row {
-                    Text(
-                        text = itemDetails.country ?: ""
-                    )
-                    itemDetails.region1st?.let {
-                        Text(
-                            text = "・$it"
-                        )
-                    }
-                }
-                if (itemDetails.region2nd != null || itemDetails.region3rd != null) {
-                    Row {
-                        itemDetails.region2nd?.let {
-                            Text(
-                                text = it
-                            )
-                        }
-                        itemDetails.region3rd?.let {
-                            Text(
-                                text = if (itemDetails.region2nd != null) "・$it" else it
-                            )
-                        }
-                    }
-                }
             }
+            itemDetails.region1st?.let {
+                Text(
+                    text = it
+                )
+            }
+            itemDetails.region2nd?.let {
+                Text(
+                    text = it
+                )
+            }
+            itemDetails.region3rd?.let {
+                Text(
+                    text = it
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
             itemDetails.type?.let {
                 Text(
-                    text = it,
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    text = it
                 )
             }
         }
@@ -420,21 +400,20 @@ private fun CommonDetailsCard(
                     )
                 }
                 if (year != null && period != null) {
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                 }
                 period?.let {
                     DataFieldCard(
                         label = stringResource(R.string.period),
                         value = period,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1.5f),
                         isSingleLine = year == null
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
         }
+        Spacer(modifier = Modifier.height(14.dp))
     }
-    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable
@@ -496,6 +475,7 @@ private fun UniqueDetailsCard(
             modifier = modifier
         )
     }
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable
@@ -706,7 +686,7 @@ private fun ExpandableSummaryCard(
         Card(
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier
-                .padding(8.dp)
+                .padding(/*horizontal = 8.dp, vertical = if (isExpanded) 16.dp else */8.dp)
                 .animateContentSize()
         ) {
             Row(
@@ -731,8 +711,11 @@ private fun ExpandableSummaryCard(
                 Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                     content()
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(6.dp))
             }
+        }
+        if (isExpanded) {
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
