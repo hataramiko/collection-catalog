@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,6 +40,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,28 +57,41 @@ import net.engawapg.lib.zoomable.zoomable
 import java.io.File
 
 @Composable
-fun ItemImage(imagePath: String?, onInspectImage: () -> Unit) {
+fun ItemImage(
+    imagePath: String?,
+    onInspectImage: () -> Unit
+) {
+    val maxHeight = LocalConfiguration.current.screenWidthDp * 0.75
 
     if (imagePath != null) {
-        AsyncImage(
-            model = ImageRequest
-                .Builder(LocalContext.current)
-                .data(data = File(imagePath))
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
+        Card(
+            colors = CardDefaults.cardColors(
+                //MaterialTheme.colorScheme.surface
+                Color(185, 185, 185) // TODO replace hardcoded background color
+            ),
             modifier = Modifier
+                .fillMaxWidth()
                 .clickable { onInspectImage() }
-                .fillMaxSize(),
-            contentScale = ContentScale.FillWidth
-        )
+        ) {
+            AsyncImage(
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(data = File(imagePath))
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier
+                    .heightIn(max = maxHeight.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Fit
+            )
+        }
     } else {
         Card(
-            shape = RoundedCornerShape(0.dp),
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
             modifier = Modifier
-                .height(100.dp)
                 .fillMaxWidth()
+                .height(100.dp)
         ) {
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,25 +110,27 @@ fun ItemImage(imagePath: String?, onInspectImage: () -> Unit) {
 
 @Composable
 fun pickItemImage(oldImagePath: String?): String? {
+    val maxHeight = LocalConfiguration.current.screenWidthDp * 0.75
     var imageUri: Uri? by remember { mutableStateOf(null) }
     val photoPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()) { uri ->
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
         if (uri != null) imageUri = uri
+    }
+    val onPick = {
+        photoPicker.launch(
+            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
     }
     val newImagePath: String? = imageUri?.let { filePathFromUri(it, LocalContext.current) }
 
     if (imageUri != null) {
-
         Card(
-            onClick = {
-                photoPicker.launch(PickVisualMediaRequest(
-                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                ))
-            },
-            //shape = RoundedCornerShape(0.dp),
+            colors = CardDefaults.cardColors(Color(185, 185, 185)), //TODO see above
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp)
+                .padding(8.dp)
+                .fillMaxWidth()
+                .clickable { onPick() }
         ) {
             AsyncImage(
                 model = ImageRequest
@@ -122,53 +139,34 @@ fun pickItemImage(oldImagePath: String?): String? {
                     .crossfade(true)
                     .build(),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillWidth
+                modifier = Modifier
+                    .heightIn(max = maxHeight.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Fit
             )
         }
         ChangeImageHint()
         return newImagePath
 
     } else if (oldImagePath != null) {
-
         Card(
-            onClick = {
-                photoPicker.launch(PickVisualMediaRequest(
-                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                ))
-            },
-            //shape = RoundedCornerShape(0.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
-            AsyncImage(
-                model = ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(data = File(oldImagePath))
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillWidth
+            ItemImage(
+                imagePath = oldImagePath,
+                onInspectImage = { onPick() }
             )
         }
         ChangeImageHint()
         return oldImagePath
 
     } else {
-
         Card(
-            onClick = {
-                photoPicker.launch(PickVisualMediaRequest(
-                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                ))
-            },
-            //shape = RoundedCornerShape(0.dp),
             modifier = Modifier
-                .height(100.dp)
+                .padding(8.dp)
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .height(100.dp)
+                .clickable { onPick() }
         ) {
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally,
