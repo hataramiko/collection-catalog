@@ -173,7 +173,12 @@ private fun ItemSummaryScreenContent(
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         CommonDetailsCard(
             itemDetails = itemDetails,
-            image = { ItemImage(itemDetails.imagePath, onInspectImage) }
+            image = {
+                ItemImage(
+                    onClick = onInspectImage,
+                    imagePath = itemDetails.imagePath
+                )
+            }
         )
         if (collections.isNotEmpty()) {
             Collections(collections = collections)
@@ -350,11 +355,7 @@ private fun CommonDetailsCard(
         ),
         modifier = Modifier.padding(bottom = 8.dp)
     ) {
-        Card(
-            modifier = Modifier.padding(8.dp)
-        ) {
-            image.invoke()
-        }
+        image.invoke()
         Column(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
         ) {

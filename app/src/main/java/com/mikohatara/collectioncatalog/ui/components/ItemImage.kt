@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Card
@@ -58,20 +57,73 @@ import java.io.File
 
 @Composable
 fun ItemImage(
-    imagePath: String?,
-    onInspectImage: () -> Unit
+    onClick: () -> Unit,
+    imageUri: Uri? = null,
+    imagePath: String? = null,
+    hasAddImagePrompt: Boolean = false
 ) {
     val maxHeight = LocalConfiguration.current.screenWidthDp * 0.75
+    val colors = CardDefaults.cardColors(
+        if (imageUri != null || imagePath != null) {
+            Color(185, 185, 185) // TODO replace with a dynamic background color
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
+    )
 
-    if (imagePath != null) {
+    Card(
+        onClick = onClick,
+        colors = colors,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        if (imageUri != null || imagePath != null) {
+            AsyncImage(
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(imageUri ?: imagePath)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier
+                    .heightIn(max = maxHeight.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Fit
+            )
+        } else {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+            ) {
+                if (hasAddImagePrompt) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_add_image),
+                        contentDescription = null
+                    )
+                    Text(stringResource(R.string.press_to_add_image))
+                } else {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_no_image),
+                        contentDescription = null
+                    )
+                    Text(stringResource(R.string.no_image))
+                }
+            }
+        }
+    }
+    /*if (imagePath != null) {
         Card(
             colors = CardDefaults.cardColors(
                 //MaterialTheme.colorScheme.surface
-                Color(185, 185, 185) // TODO replace hardcoded background color
+                Color(185, 185, 185)
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onInspectImage() }
+                .clickable { onClick() }
         ) {
             AsyncImage(
                 model = ImageRequest
@@ -105,12 +157,11 @@ fun ItemImage(
                 Text(stringResource(R.string.no_image))
             }
         }
-    }
+    }*/
 }
 
 @Composable
 fun pickItemImage(oldImagePath: String?): String? {
-    val maxHeight = LocalConfiguration.current.screenWidthDp * 0.75
     var imageUri: Uri? by remember { mutableStateOf(null) }
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -125,7 +176,7 @@ fun pickItemImage(oldImagePath: String?): String? {
     val newImagePath: String? = imageUri?.let { filePathFromUri(it, LocalContext.current) }
 
     if (imageUri != null) {
-        Card(
+        /*Card(
             colors = CardDefaults.cardColors(Color(185, 185, 185)), //TODO see above
             modifier = Modifier
                 .padding(8.dp)
@@ -144,24 +195,24 @@ fun pickItemImage(oldImagePath: String?): String? {
                     .fillMaxWidth(),
                 contentScale = ContentScale.Fit
             )
-        }
+        }*/
+        ItemImage(
+            onClick = { onPick() },
+            imageUri = imageUri
+        )
         ChangeImageHint()
         return newImagePath
 
     } else if (oldImagePath != null) {
-        Card(
-            modifier = Modifier.padding(8.dp)
-        ) {
-            ItemImage(
-                imagePath = oldImagePath,
-                onInspectImage = { onPick() }
-            )
-        }
+        ItemImage(
+            onClick = { onPick() },
+            imagePath = oldImagePath
+        )
         ChangeImageHint()
         return oldImagePath
 
     } else {
-        Card(
+        /*Card(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
@@ -179,7 +230,12 @@ fun pickItemImage(oldImagePath: String?): String? {
                 )
                 Text(stringResource(R.string.press_to_add_image))
             }
-        }
+        }*/
+        ItemImage(
+            onClick = { onPick() },
+            hasAddImagePrompt = true
+
+        )
         return null
     }
 }
