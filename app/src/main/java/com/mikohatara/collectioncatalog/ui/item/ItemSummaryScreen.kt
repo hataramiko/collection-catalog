@@ -486,7 +486,7 @@ private fun PhysicalAttributesCard(
     val modifier = Modifier.padding(bottom = 8.dp)
 
     ExpandableSummaryCard(
-        label = "physical attributes",
+        label = stringResource(R.string.physical_attributes),
         data = listOf(
             itemDetails.width,
             itemDetails.height,
@@ -550,7 +550,7 @@ private fun SourceInfoCard(
     val modifier = Modifier.padding(bottom = 8.dp)
 
     ExpandableSummaryCard(
-        label = "source info",
+        label = stringResource(R.string.source),
         data = listOf(
             itemDetails.sourceName,
             itemDetails.sourceAlias,
@@ -561,14 +561,14 @@ private fun SourceInfoCard(
     ) {
         itemDetails.sourceName?.let {
             DataFieldCard(
-                label = "Source Name",
+                label = stringResource(R.string.source_name),
                 value = it,
                 modifier = modifier
             )
         }
         itemDetails.sourceAlias?.let {
             DataFieldCard(
-                label = "Source Alias",
+                label = stringResource(R.string.source_alias),
                 value = it,
                 modifier = modifier,
                 hasContainer = false
@@ -576,21 +576,21 @@ private fun SourceInfoCard(
         }
         itemDetails.sourceType?.let {
             DataFieldCard(
-                label = "Source Type",
+                label = stringResource(R.string.source_type),
                 value = it,
                 modifier = modifier
             )
         }
         itemDetails.sourceCountry?.let {
             DataFieldCard(
-                label = "Source Country",
+                label = stringResource(R.string.source_country),
                 value = it,
                 modifier = modifier
             )
         }
         itemDetails.sourceDetails?.let {
             DataFieldCard(
-                label = "Source Details",
+                label = stringResource(R.string.source_details),
                 value = it,
                 modifier = modifier,
                 isSingleLine = false,
@@ -607,7 +607,7 @@ private fun ArchivalInfoCard(
     val modifier = Modifier.padding(bottom = 8.dp)
 
     ExpandableSummaryCard(
-        label = "archival info",
+        label = stringResource(R.string.archival),
         data = listOf(
             itemDetails.archivalDate,
             itemDetails.archivalType,
@@ -620,22 +620,14 @@ private fun ArchivalInfoCard(
     ) {
         itemDetails.archivalDate?.let {
             DataFieldCard(
-                label = "Archival Date",
+                label = stringResource(R.string.archival_date),
                 value = it,
                 modifier = modifier
             )
         }
         itemDetails.archivalType?.let {
             DataFieldCard(
-                label = "Archival Reason",
-                value = it,
-                modifier = modifier,
-                hasContainer = false
-            )
-        }
-        itemDetails.archivalDetails?.let {
-            DataFieldCard(
-                label = "Archival Details",
+                label = stringResource(R.string.archival_reason),
                 value = it,
                 modifier = modifier,
                 hasContainer = false
@@ -643,21 +635,29 @@ private fun ArchivalInfoCard(
         }
         itemDetails.price?.let {
             DataFieldCard(
-                label = "Price",
+                label = stringResource(R.string.sold_price),
                 value = it.toString(),
                 modifier = modifier
             )
         }
+        itemDetails.archivalDetails?.let {
+            DataFieldCard(
+                label = stringResource(R.string.archival_details),
+                value = it,
+                modifier = modifier,
+                hasContainer = false
+            )
+        }
         itemDetails.recipientName?.let {
             DataFieldCard(
-                label = "Recipient Name",
+                label = stringResource(R.string.recipient_name),
                 value = it,
                 modifier = modifier
             )
         }
         itemDetails.recipientAlias?.let {
             DataFieldCard(
-                label = "Recipient Alias",
+                label = stringResource(R.string.recipient_alias),
                 value = it,
                 modifier = modifier,
                 hasContainer = false
@@ -665,7 +665,7 @@ private fun ArchivalInfoCard(
         }
         itemDetails.recipientCountry?.let {
             DataFieldCard(
-                label = "Recipient Country",
+                label = stringResource(R.string.recipient_country),
                 value = it,
                 modifier = modifier,
                 hasContainer = false

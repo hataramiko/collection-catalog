@@ -4,19 +4,22 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Card
@@ -24,7 +27,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,7 +65,7 @@ fun ItemImage(
     onClick: () -> Unit,
     imageUri: Uri? = null,
     imagePath: String? = null,
-    hasAddImagePrompt: Boolean = false
+    isEditMode: Boolean = false
 ) {
     val maxHeight = LocalConfiguration.current.screenWidthDp * 0.75
     val colors = CardDefaults.cardColors(
@@ -99,12 +104,12 @@ fun ItemImage(
                     .fillMaxWidth()
                     .height(100.dp)
             ) {
-                if (hasAddImagePrompt) {
+                if (isEditMode) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_add_image),
                         contentDescription = null
                     )
-                    Text(stringResource(R.string.press_to_add_image))
+                    Text(stringResource(R.string.add_image))
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.rounded_no_image),
@@ -115,53 +120,10 @@ fun ItemImage(
             }
         }
     }
-    /*if (imagePath != null) {
-        Card(
-            colors = CardDefaults.cardColors(
-                //MaterialTheme.colorScheme.surface
-                Color(185, 185, 185)
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() }
-        ) {
-            AsyncImage(
-                model = ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(data = File(imagePath))
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .heightIn(max = maxHeight.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Fit
-            )
-        }
-    } else {
-        Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-        ) {
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_no_image),
-                    contentDescription = null
-                )
-                Text(stringResource(R.string.no_image))
-            }
-        }
-    }*/
 }
 
 @Composable
-fun pickItemImage(oldImagePath: String?): String? {
+fun pickItemImage(existingImagePath: String?): String? {
     var imageUri: Uri? by remember { mutableStateOf(null) }
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -174,68 +136,54 @@ fun pickItemImage(oldImagePath: String?): String? {
         )
     }
     val newImagePath: String? = imageUri?.let { filePathFromUri(it, LocalContext.current) }
+    val onRemove = { } //TODO
 
     if (imageUri != null) {
-        /*Card(
-            colors = CardDefaults.cardColors(Color(185, 185, 185)), //TODO see above
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
-                .clickable { onPick() }
+        ItemImageCard(
+            onRemove
         ) {
-            AsyncImage(
-                model = ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(imageUri)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .heightIn(max = maxHeight.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Fit
-            )
-        }*/
-        ItemImage(
-            onClick = { onPick() },
-            imageUri = imageUri
-        )
-        ChangeImageHint()
+            Box(
+                modifier = Modifier.padding(4.dp)
+            ) {
+                ItemImage(
+                    onClick = { onPick() },
+                    imageUri = imageUri
+                )
+            }
+        }
+        //EditImageButtonRow(onPick, onRemove)
         return newImagePath
 
-    } else if (oldImagePath != null) {
-        ItemImage(
-            onClick = { onPick() },
-            imagePath = oldImagePath
-        )
-        ChangeImageHint()
-        return oldImagePath
+    } else if (existingImagePath != null) {
+        ItemImageCard(
+            onRemove
+        ) {
+            Box(
+                modifier = Modifier.padding(4.dp)
+            ) {
+                ItemImage(
+                    onClick = { onPick() },
+                    imagePath = existingImagePath
+                )
+            }
+        }
+        //EditImageButtonRow(onPick, onRemove)
+        return existingImagePath
 
     } else {
-        /*Card(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth()
-                .height(100.dp)
-                .clickable { onPick() }
+        ItemImageCard(
+            onRemove
         ) {
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
+            Box(
+                modifier = Modifier.padding(4.dp)
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_add_image),
-                    contentDescription = null
+                ItemImage(
+                    onClick = { onPick() },
+                    isEditMode = true
                 )
-                Text(stringResource(R.string.press_to_add_image))
             }
-        }*/
-        ItemImage(
-            onClick = { onPick() },
-            hasAddImagePrompt = true
-
-        )
+        }
+        //EditImageButtonRow(onPick, onRemove, hasExistingImage = false)
         return null
     }
 }
@@ -319,6 +267,23 @@ private fun ZoomableImage(
 }
 
 @Composable
+private fun ItemImageCard(
+    onRemove: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(Color(0, 0, 0, 0)),
+        border = BorderStroke(0.5.dp, Color.LightGray),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    ) {
+        content()
+    }
+}
+
+@Composable
 private fun ChangeImageHint() {
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -335,5 +300,48 @@ private fun ChangeImageHint() {
             stringResource(R.string.press_to_change_image),
             fontSize = 12.sp
         )
+    }
+}
+
+@Composable
+private fun EditImageButtonRow(
+    onPick: () -> Unit,
+    onRemove: () -> Unit,
+    hasExistingImage: Boolean = true
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        OutlinedButton(
+            onClick = onPick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.rounded_add_image),
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(
+                text = if (hasExistingImage) {
+                    stringResource(R.string.change_image)
+                } else {
+                    stringResource(R.string.add_image)
+                }
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        TextButton(
+            onClick = onRemove,
+            enabled = hasExistingImage
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.rounded_delete),
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(stringResource(R.string.remove_image))
+        }
     }
 }

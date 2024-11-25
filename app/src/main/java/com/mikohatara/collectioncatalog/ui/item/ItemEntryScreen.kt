@@ -478,35 +478,35 @@ private fun ItemEntryScreenContent(
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = "Source Name",
+                    label = stringResource(R.string.source_name),
                     value = uiState.itemDetails.sourceName ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(sourceName = it)) }
                 )
                 EntryFormField(
                     icon = { IconBlank() },
-                    label = "Source Alias",
+                    label = stringResource(R.string.source_alias),
                     value = uiState.itemDetails.sourceAlias ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(sourceAlias = it)) }
                 )
                 EntryFormField(
                     icon = { IconBlank() },
-                    label = "Source Type",
+                    label = stringResource(R.string.source_type),
                     value = uiState.itemDetails.sourceType ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(sourceType = it)) }
                 )
                 EntryFormField(
                     icon = { IconBlank() },
-                    label = "Source Details",
-                    value = uiState.itemDetails.sourceDetails ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) }
-                )
-                EntryFormField(
-                    icon = { IconBlank() },
-                    label = "Source Country",
+                    label = stringResource(R.string.source_country),
                     value = uiState.itemDetails.sourceCountry ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
                     imeAction = if (uiState.itemType != ItemType.FORMER_PLATE) ImeAction.Done
                         else ImeAction.Next
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = stringResource(R.string.source_details),
+                    value = uiState.itemDetails.sourceDetails ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) }
                 )
             }
         }
@@ -520,7 +520,7 @@ private fun ItemEntryScreenContent(
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = "Archival Date",
+                    label = stringResource(R.string.archival_date),
                     value = uiState.itemDetails.archivalDate ?: "",
                     onValueChange = {
                         onValueChange(uiState.itemDetails.copy(archivalDate = it))
@@ -528,23 +528,7 @@ private fun ItemEntryScreenContent(
                 )
                 EntryFormField(
                     icon = { IconBlank() },
-                    label = "Recipient Name",
-                    value = uiState.itemDetails.recipientName ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(recipientName = it))
-                    }
-                )
-                EntryFormField(
-                    icon = { IconBlank() },
-                    label = "Recipient Alias",
-                    value = uiState.itemDetails.recipientAlias ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(recipientAlias = it))
-                    }
-                )
-                EntryFormField(
-                    icon = { IconBlank() },
-                    label = "Archival Reason",
+                    label = stringResource(R.string.archival_reason),
                     value = uiState.itemDetails.archivalType ?: "",
                     onValueChange = {
                         onValueChange(uiState.itemDetails.copy(archivalType = it))
@@ -552,15 +536,7 @@ private fun ItemEntryScreenContent(
                 )
                 EntryFormField(
                     icon = { IconBlank() },
-                    label = "Archival Details",
-                    value = uiState.itemDetails.archivalDetails ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(archivalDetails = it))
-                    }
-                )
-                EntryFormField(
-                    icon = { IconBlank() },
-                    label = "Price",
+                    label = stringResource(R.string.sold_price),
                     value = uiState.itemDetails.price?.toString() ?: "",
                     onValueChange = { newValue ->
                         onValueChange(uiState.itemDetails.copy(
@@ -572,7 +548,31 @@ private fun ItemEntryScreenContent(
                 )
                 EntryFormField(
                     icon = { IconBlank() },
-                    label = "Recipient Country",
+                    label = stringResource(R.string.archival_details),
+                    value = uiState.itemDetails.archivalDetails ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(archivalDetails = it))
+                    }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = stringResource(R.string.recipient_name),
+                    value = uiState.itemDetails.recipientName ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(recipientName = it))
+                    }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = stringResource(R.string.recipient_alias),
+                    value = uiState.itemDetails.recipientAlias ?: "",
+                    onValueChange = {
+                        onValueChange(uiState.itemDetails.copy(recipientAlias = it))
+                    }
+                )
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = stringResource(R.string.recipient_country),
                     value = uiState.itemDetails.recipientCountry ?: "",
                     onValueChange = {
                         onValueChange(uiState.itemDetails.copy(recipientCountry = it))

@@ -83,4 +83,23 @@
     <string name="select_all">Valitse kaikki</string>
     <string name="include_image">Sisällytä kuva</string>
     <string name="copy_dialog_empty_value">Tyhjä</string>
+    <string name="add_image">Lisää kuva</string>
+    <string name="change_image">Vaihda kuva</string>
+    <string name="remove_image">Poista kuva</string>
+    <string name="physical_attributes">Ominaisuudet</string>
+    <string name="details">Lisätietoja</string>
+    <string name="alias">Alias</string>
+    <string name="source_name">Nimi</string>
+    <string name="source_alias">Alias</string>
+    <string name="source_type">Tyyppi</string>
+    <string name="source_details">Lisätietoja</string>
+    <string name="source_country">Valtio</string>
+    <string name="archival">Arkistointi</string>
+    <string name="archival_date">Päiväys</string>
+    <string name="archival_reason">Syy</string>
+    <string name="sold_price">Hinta</string>
+    <string name="archival_details">Lisätietoja</string>
+    <string name="recipient_name">Vastaanottajan nimi</string>
+    <string name="recipient_alias">Alias</string>
+    <string name="recipient_country">Kohdemaa</string>
 </resources>

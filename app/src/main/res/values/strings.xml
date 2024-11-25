@@ -83,4 +83,23 @@
     <string name="select_all">Select all</string>
     <string name="include_image">Include image</string>
     <string name="copy_dialog_empty_value">Empty</string>
+    <string name="add_image">Add image</string>
+    <string name="change_image">Change image</string>
+    <string name="remove_image">Remove image</string>
+    <string name="physical_attributes">Attributes</string>
+    <string name="details">Details</string>
+    <string name="alias">Alias</string>
+    <string name="source_name">Name</string>
+    <string name="source_alias">Alias</string>
+    <string name="source_type">Method</string>
+    <string name="source_details">Details</string>
+    <string name="source_country">Country</string>
+    <string name="archival">Archival</string>
+    <string name="archival_date">Date</string>
+    <string name="archival_reason">Reason</string>
+    <string name="sold_price">Price</string>
+    <string name="archival_details">Details</string>
+    <string name="recipient_name">Recipient name</string>
+    <string name="recipient_alias">Alias</string>
+    <string name="recipient_country">Destination country</string>
 </resources>
