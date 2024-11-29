@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -393,7 +395,9 @@ private fun ItemEntryScreenContent(
                 )
             }
         }
-        EntryFormCard {
+        EntryFormCard(
+            label = stringResource(R.string.physical_attributes)
+        ) {
             if (uiState.itemType != ItemType.WANTED_PLATE) {
                 Row {
                     EntryFormField(
@@ -469,7 +473,9 @@ private fun ItemEntryScreenContent(
             )
         }
         if (uiState.itemType != ItemType.WANTED_PLATE) {
-            EntryFormCard {
+            EntryFormCard(
+                label = stringResource(R.string.source)
+            ) {
                 EntryFormField(
                     icon = {
                         Icon(
@@ -511,7 +517,9 @@ private fun ItemEntryScreenContent(
             }
         }
         if (uiState.itemType == ItemType.FORMER_PLATE) {
-            EntryFormCard {
+            EntryFormCard(
+                label = stringResource(R.string.archival)
+            ) {
                 EntryFormField(
                     icon  = {
                         Icon(
@@ -612,10 +620,21 @@ private fun EntryFormImage(
 
 @Composable
 private fun EntryFormCard(
+    label: String? = null,
     content: @Composable () -> Unit
 ) {
-    Card(modifier = Modifier.padding(16.dp)) {
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.padding(12.dp)
+    ) {
         Column(modifier = Modifier.padding(top = 4.dp, bottom = 12.dp, end = 16.dp)) {
+            label?.let {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = it,
+                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
+                )
+            }
             content()
         }
     }

@@ -32,8 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.ui.components.CollectionListTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
-import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 
 @Composable
 fun CollectionListScreen(
@@ -66,7 +66,7 @@ private fun CollectionListScreen(
 ) {
     Scaffold(
         topBar = {
-            ItemEntryTopAppBar(
+            CollectionListTopAppBar(
                 title = stringResource(R.string.edit_collections),
                 onBack = onBack
             )

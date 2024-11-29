@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,15 +27,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.ui.components.CollectionEntryEditTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.CollectionEntryTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.CollectionListTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
-import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -75,12 +82,12 @@ private fun CollectionEntryScreen(
     Scaffold(
         topBar = {
             if (uiState.isNew) {
-                ItemEntryTopAppBar(
+                CollectionListTopAppBar(
                     title = topBarTitle,
                     onBack = onBackBehavior
                 )
             } else {
-                CollectionEntryEditTopAppBar(
+                CollectionEntryTopAppBar(
                     title = topBarTitle,
                     onBack = onBackBehavior,
                     onDelete = { showDeletionDialog = true }
@@ -142,6 +149,7 @@ private fun CollectionEntryScreenContent(
         modifier = modifier
     ) {
         Card(
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.padding(16.dp)
         ) {
             Row(
@@ -152,8 +160,15 @@ private fun CollectionEntryScreenContent(
                     onValueChange = {
                         onValueChange(uiState.collectionDetails.copy(emoji = it))
                     },
-                    label = { Text(stringResource(R.string.emoji)) },
+                    label = {
+                        Text(
+                            stringResource(R.string.emoji),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    singleLine = true,
                     modifier = Modifier.weight(0.33f)
                 )
                 Spacer(
@@ -162,18 +177,26 @@ private fun CollectionEntryScreenContent(
                 OutlinedTextField(
                     value = uiState.collectionDetails.name ?: "",
                     onValueChange = { onValueChange(uiState.collectionDetails.copy(name = it)) },
-                    label = { Text(stringResource(R.string.collection)) },
+                    label = {
+                        Text(
+                            stringResource(R.string.collection),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    singleLine = true,
                     modifier = Modifier.weight(1f)
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
         }
         Button(
             onClick = onSave,
             enabled = uiState.isValidEntry,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 4.dp)
+                .padding(start = 24.dp, end = 24.dp, top = 8.dp)
         ) {
             Icon(
                 painter = saveButtonIcon,

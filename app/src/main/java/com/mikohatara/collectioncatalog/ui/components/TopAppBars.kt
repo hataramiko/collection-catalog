@@ -116,7 +116,7 @@ fun ItemSummaryTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemEntryTopAppBar( // also used in CollectionsScreen
+fun ItemEntryTopAppBar(
     title: String,
     onBack: () -> Unit,
     onCopy: (() -> Unit)? = null,
@@ -163,7 +163,32 @@ fun ItemEntryTopAppBar( // also used in CollectionsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CollectionEntryEditTopAppBar(
+fun CollectionListTopAppBar(
+    title: String,
+    onBack: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(
+                title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { onBack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CollectionEntryTopAppBar(
     title: String,
     onBack: () -> Unit,
     onDelete: () -> Unit
@@ -221,7 +246,7 @@ fun SettingsTopAppBar(
     onBack: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
-    MediumTopAppBar(
+    LargeTopAppBar(
         title = { Text(stringResource(R.string.settings)) },
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
