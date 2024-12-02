@@ -101,4 +101,5 @@
     <string name="recipient_name">送り先</string>
     <string name="recipient_alias">通称</string>
     <string name="recipient_country">送り先の国</string>
+    <string name="paste">貼り付け</string>
 </resources>

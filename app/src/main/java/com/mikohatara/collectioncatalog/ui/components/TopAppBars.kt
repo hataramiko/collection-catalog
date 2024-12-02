@@ -4,6 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,6 +16,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -70,6 +76,8 @@ fun ItemSummaryTopAppBar(
     onDelete: () -> Unit,
     onCopy: (() -> Unit)? = null
 ) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
     MediumTopAppBar(
         title = {
             Text(
@@ -93,19 +101,42 @@ fun ItemSummaryTopAppBar(
                     contentDescription = "Edit"
                 )
             }
-            IconButton(onClick = { onDelete() }) {
+            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                 Icon(
-                    painter = painterResource(R.drawable.rounded_delete_forever),
-                    contentDescription = "Delete"
+                    imageVector = Icons.Rounded.MoreVert,
+                    contentDescription = null
                 )
             }
-            IconButton(
-                onClick = { onCopy?.let { it() } },
-                enabled = onCopy != null
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false }
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_content_copy),
-                    contentDescription = null
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_content_copy),
+                            contentDescription = null
+                        )
+                    },
+                    text = { Text(stringResource(R.string.copy)) },
+                    onClick = {
+                        onCopy?.let { it() }
+                        isMenuExpanded = false
+                    },
+                    enabled = onCopy != null
+                )
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_delete_forever),
+                            contentDescription = null
+                        )
+                    },
+                    text = { Text(stringResource(R.string.delete)) },
+                    onClick = {
+                        onDelete()
+                        isMenuExpanded = false
+                    }
                 )
             }
         },
@@ -122,6 +153,8 @@ fun ItemEntryTopAppBar(
     onCopy: (() -> Unit)? = null,
     onPaste: (() -> Unit)? = null
 ) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
     TopAppBar(
         title = {
             Text(
@@ -139,22 +172,43 @@ fun ItemEntryTopAppBar(
             }
         },
         actions = {
-            IconButton(
-                onClick = { onCopy?.let { it() } },
-                enabled = onCopy != null
-            ) {
+            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                 Icon(
-                    painter = painterResource(R.drawable.rounded_content_copy),
+                    imageVector = Icons.Rounded.MoreVert,
                     contentDescription = null
                 )
             }
-            IconButton(
-                onClick = { onPaste?.let { it() } },
-                enabled = onPaste != null
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false }
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_content_paste),
-                    contentDescription = null
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_content_copy),
+                            contentDescription = null
+                        )
+                    },
+                    text = { Text(stringResource(R.string.copy)) },
+                    onClick = {
+                        onCopy?.let { it() }
+                        isMenuExpanded = false
+                    },
+                    enabled = onCopy != null
+                )
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_content_paste),
+                            contentDescription = null
+                        )
+                    },
+                    text = { Text(stringResource(R.string.paste)) },
+                    onClick = {
+                        onPaste?.let { it() }
+                        isMenuExpanded = false
+                    },
+                    enabled = onPaste != null
                 )
             }
         }

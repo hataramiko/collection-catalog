@@ -380,13 +380,27 @@ private fun CommonDetailsCard(
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
-            itemDetails.type?.let {
-                Text(
-                    text = it
-                )
+            Row(
+
+            ) {
+                itemDetails.year?.let {
+                    Text(
+                        text = "$it ・ "
+                    )
+                }
+                itemDetails.type?.let {
+                    Text(
+                        text = it
+                    )
+                }
+                period?.let {
+                    Text(
+                        text = " ・ $it"
+                    )
+                }
             }
         }
-        if (year != null || period != null) {
+        /*if (year != null || period != null) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -413,7 +427,8 @@ private fun CommonDetailsCard(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(14.dp))*/
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 

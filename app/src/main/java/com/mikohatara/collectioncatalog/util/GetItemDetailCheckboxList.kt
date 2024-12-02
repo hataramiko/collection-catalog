@@ -56,21 +56,42 @@ fun getItemDetailsCheckboxList(itemDetails: ItemDetails): List<ItemDetailsCheckb
     checkboxList.add(ItemDetailsCheckbox(
         stringResource(R.string.color_secondary), itemDetails.colorSecondary)
     )
-    // TODO fix labels below when the relevant translations are done
     // Source
-    checkboxList.add(ItemDetailsCheckbox("Source Name", itemDetails.sourceName))
-    checkboxList.add(ItemDetailsCheckbox("Source Alias", itemDetails.sourceAlias))
-    checkboxList.add(ItemDetailsCheckbox("Source Type", itemDetails.sourceType))
-    checkboxList.add(ItemDetailsCheckbox("Source Details", itemDetails.sourceDetails))
-    checkboxList.add(ItemDetailsCheckbox("Source Country", itemDetails.sourceCountry))
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.source) + "・" + stringResource(R.string.source_name),
+        itemDetails.sourceName)
+    )
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.source) + "・" + stringResource(R.string.source_alias),
+        itemDetails.sourceAlias)
+    )
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.source) + "・" + stringResource(R.string.source_type),
+        itemDetails.sourceType)
+    )
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.source) + "・" + stringResource(R.string.source_details),
+        itemDetails.sourceDetails)
+    )
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.source) + "・" + stringResource(R.string.source_country),
+        itemDetails.sourceCountry)
+    )
     // ArchivalDetails
-    checkboxList.add(ItemDetailsCheckbox("Archival Date", itemDetails.archivalDate))
-    checkboxList.add(ItemDetailsCheckbox("Recipient Name", itemDetails.recipientName))
-    checkboxList.add(ItemDetailsCheckbox("Recipient Alias", itemDetails.recipientAlias))
-    checkboxList.add(ItemDetailsCheckbox("Archival Reason", itemDetails.archivalType))
-    checkboxList.add(ItemDetailsCheckbox("Archival Details", itemDetails.archivalDetails))
-    checkboxList.add(ItemDetailsCheckbox("Price", itemDetails.price?.toString()))
-    checkboxList.add(ItemDetailsCheckbox("Recipient Country", itemDetails.recipientCountry))
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.archival_date), itemDetails.archivalDate))
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.recipient_name), itemDetails.recipientName))
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.recipient_alias), itemDetails.recipientAlias))
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.archival_reason), itemDetails.archivalType))
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.archival_details), itemDetails.archivalDetails))
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.sold_price), itemDetails.price?.toString()))
+    checkboxList.add(ItemDetailsCheckbox(
+        stringResource(R.string.recipient_country), itemDetails.recipientCountry))
 
     return checkboxList
 }
