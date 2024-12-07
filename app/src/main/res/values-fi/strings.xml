@@ -103,4 +103,6 @@
     <string name="recipient_alias">Alias</string>
     <string name="recipient_country">Kohdemaa</string>
     <string name="paste">Liitä</string>
+    <string name="language">Kieli</string>
+    <string name="lang_system_default">Järjestelmän oletus</string>
 </resources>

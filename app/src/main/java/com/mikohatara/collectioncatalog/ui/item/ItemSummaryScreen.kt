@@ -383,11 +383,6 @@ private fun CommonDetailsCard(
             Row(
 
             ) {
-                itemDetails.year?.let {
-                    Text(
-                        text = "$it ・ "
-                    )
-                }
                 itemDetails.type?.let {
                     Text(
                         text = it
@@ -395,9 +390,14 @@ private fun CommonDetailsCard(
                 }
                 period?.let {
                     Text(
-                        text = " ・ $it"
+                        text = "・$it"
                     )
                 }
+            }
+            itemDetails.year?.let {
+                Text(
+                    text = it.toString()
+                )
             }
         }
         /*if (year != null || period != null) {

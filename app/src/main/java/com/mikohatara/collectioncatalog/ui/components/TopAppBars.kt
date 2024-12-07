@@ -1,5 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
@@ -7,6 +9,7 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -20,9 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Item
 
@@ -109,7 +114,8 @@ fun ItemSummaryTopAppBar(
             }
             DropdownMenu(
                 expanded = isMenuExpanded,
-                onDismissRequest = { isMenuExpanded = false }
+                onDismissRequest = { isMenuExpanded = false },
+                shape = RoundedCornerShape(12.dp)
             ) {
                 DropdownMenuItem(
                     leadingIcon = {
@@ -123,8 +129,10 @@ fun ItemSummaryTopAppBar(
                         onCopy?.let { it() }
                         isMenuExpanded = false
                     },
-                    enabled = onCopy != null
+                    enabled = onCopy != null,
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 DropdownMenuItem(
                     leadingIcon = {
                         Icon(
@@ -136,7 +144,8 @@ fun ItemSummaryTopAppBar(
                     onClick = {
                         onDelete()
                         isMenuExpanded = false
-                    }
+                    },
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
             }
         },
@@ -180,7 +189,8 @@ fun ItemEntryTopAppBar(
             }
             DropdownMenu(
                 expanded = isMenuExpanded,
-                onDismissRequest = { isMenuExpanded = false }
+                onDismissRequest = { isMenuExpanded = false },
+                shape = RoundedCornerShape(12.dp)
             ) {
                 DropdownMenuItem(
                     leadingIcon = {
@@ -194,7 +204,8 @@ fun ItemEntryTopAppBar(
                         onCopy?.let { it() }
                         isMenuExpanded = false
                     },
-                    enabled = onCopy != null
+                    enabled = onCopy != null,
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
                 DropdownMenuItem(
                     leadingIcon = {
@@ -208,7 +219,8 @@ fun ItemEntryTopAppBar(
                         onPaste?.let { it() }
                         isMenuExpanded = false
                     },
-                    enabled = onPaste != null
+                    enabled = onPaste != null,
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
             }
         }
@@ -247,6 +259,8 @@ fun CollectionEntryTopAppBar(
     onBack: () -> Unit,
     onDelete: () -> Unit
 ) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
     TopAppBar(
         title = {
             Text(
@@ -264,10 +278,30 @@ fun CollectionEntryTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { onDelete() }) {
+            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                 Icon(
-                    painter = painterResource(R.drawable.rounded_delete_forever),
+                    imageVector = Icons.Rounded.MoreVert,
                     contentDescription = null
+                )
+            }
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false },
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_delete_forever),
+                            contentDescription = null
+                        )
+                    },
+                    text = { Text(stringResource(R.string.delete)) },
+                    onClick = {
+                        onDelete()
+                        isMenuExpanded = false
+                    },
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
             }
         }

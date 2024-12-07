@@ -103,4 +103,9 @@
     <string name="recipient_alias">Alias</string>
     <string name="recipient_country">Destination country</string>
     <string name="paste">Paste</string>
+    <string name="language">Language</string>
+    <string name="lang_system_default">System default</string>
+    <string name="lang_en" translatable="false">English</string>
+    <string name="lang_fi" translatable="false">Suomi</string>
+    <string name="lang_ja" translatable="false">日本語</string>
 </resources>
