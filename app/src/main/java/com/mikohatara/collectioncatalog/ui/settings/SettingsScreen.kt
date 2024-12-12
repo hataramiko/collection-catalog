@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -34,6 +35,7 @@ import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
 import com.mikohatara.collectioncatalog.util.getSortByText
+import java.util.Locale
 
 @Composable
 fun SettingsScreen(
@@ -112,7 +114,7 @@ private fun SettingsScreenContent(
             text = getSortByText(uiState.defaultSortBy)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
+            SettingsDivider()
             SettingsButton(
                 label = stringResource(R.string.language),
                 onClick = onClickSettings,
@@ -123,7 +125,7 @@ private fun SettingsScreenContent(
                         modifier = ItemScreenModifiers.icon
                     )
                 },
-                text = null
+                text = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() }
             )
         }
     }
@@ -150,7 +152,17 @@ private fun SettingsButton(
                 label,
                 fontSize = 20.sp
             )
-            text?.let { Text(text) }
+            text?.let {
+                Text(
+                    text = text,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun SettingsDivider(modifier: Modifier = Modifier) {
+    HorizontalDivider(modifier = modifier.padding(horizontal = 24.dp))
 }
