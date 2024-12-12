@@ -75,6 +75,28 @@ fun DiscardDialog(
     )
 }
 
+@Composable
+fun RedirectDialog(
+    message: String,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        text = { Text(text = message) },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm() }) {
+                Text(stringResource(R.string.continue_button))
+            }
+        }
+    )
+}
+
 @Preview
 @Composable
 fun DeletionDialogPreview() {

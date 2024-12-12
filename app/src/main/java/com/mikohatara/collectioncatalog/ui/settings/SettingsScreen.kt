@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.settings
 
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,7 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
-import com.mikohatara.collectioncatalog.ui.components.SettingsDialog
+import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
 import com.mikohatara.collectioncatalog.util.getSortByText
 
@@ -54,6 +56,7 @@ private fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -75,9 +78,14 @@ private fun SettingsScreen(
         }
     )
     if (showDialog) {
-        SettingsDialog(
-            label = stringResource(R.string.language),
-            onConfirm = { showDialog = false },
+        RedirectDialog(
+            message = stringResource(R.string.language_redirect_text),
+            onConfirm = {
+                showDialog = false
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    viewModel.redirectToLanguageSettings(context)
+                }
+            },
             onCancel = { showDialog = false }
         )
     }
@@ -92,18 +100,6 @@ private fun SettingsScreenContent(
 ) {
     Column(modifier = modifier) {
         SettingsButton(
-            label = stringResource(R.string.language),
-            onClick = onClickSettings,
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_language),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-            }
-        )
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
-        SettingsButton(
             label = stringResource(R.string.default_sort_by),
             onClick = { /*TODO*/ },
             icon = {
@@ -115,6 +111,21 @@ private fun SettingsScreenContent(
             },
             text = getSortByText(uiState.defaultSortBy)
         )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
+            SettingsButton(
+                label = stringResource(R.string.language),
+                onClick = onClickSettings,
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_language),
+                        contentDescription = null,
+                        modifier = ItemScreenModifiers.icon
+                    )
+                },
+                text = null
+            )
+        }
     }
 }
 
@@ -124,7 +135,7 @@ private fun SettingsButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: @Composable (() -> Unit)? = null,
-    text: String? = null,
+    text: String? = null
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

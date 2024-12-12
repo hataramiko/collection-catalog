@@ -108,4 +108,7 @@
     <string name="lang_en" translatable="false">English</string>
     <string name="lang_fi" translatable="false">Suomi</string>
     <string name="lang_ja" translatable="false">日本語</string>
+    <string name="ok_text" translatable="false">OK</string>
+    <string name="continue_button">Continue</string>
+    <string name="language_redirect_text">In order to change the app language, you will be redirected to the device\'s system settings.</string>
 </resources>

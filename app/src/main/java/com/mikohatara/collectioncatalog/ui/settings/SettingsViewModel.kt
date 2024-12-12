@@ -1,5 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.settings
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
@@ -34,4 +40,15 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SettingsUiState()
         )
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun redirectToLanguageSettings(context: Context) {
+        val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS)
+        val uri: Uri = Uri.fromParts("package", context.packageName, null)
+        intent.data = uri
+
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        }
+    }
 }

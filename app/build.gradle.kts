@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.runtime.rxjava)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.appcompat.resources)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -105,4 +105,6 @@
     <string name="paste">Liitä</string>
     <string name="language">Kieli</string>
     <string name="lang_system_default">Järjestelmän oletus</string>
+    <string name="continue_button">Jatka</string>
+    <string name="language_redirect_text">Sinut ohjataan laitteen järjestelmäasetuksiin sovelluksen kielen vaihtamista varten.</string>
 </resources>
