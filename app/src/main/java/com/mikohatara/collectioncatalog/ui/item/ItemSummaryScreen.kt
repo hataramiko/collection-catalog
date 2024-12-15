@@ -39,14 +39,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
@@ -58,6 +54,9 @@ import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
+import com.mikohatara.collectioncatalog.util.toCurrencyString
+import com.mikohatara.collectioncatalog.util.toLengthString
+import com.mikohatara.collectioncatalog.util.toWeightString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -400,34 +399,6 @@ private fun CommonDetailsCard(
                 )
             }
         }
-        /*if (year != null || period != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-            ) {
-                year?.let {
-                    DataFieldCard(
-                        label = stringResource(R.string.year),
-                        value = it,
-                        modifier = Modifier.weight(1f),
-                        isSingleLine = period == null
-                    )
-                }
-                if (year != null && period != null) {
-                    Spacer(modifier = Modifier.width(12.dp))
-                }
-                period?.let {
-                    DataFieldCard(
-                        label = stringResource(R.string.period),
-                        value = period,
-                        modifier = Modifier.weight(1.5f),
-                        isSingleLine = year == null
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(14.dp))*/
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
@@ -467,7 +438,7 @@ private fun UniqueDetailsCard(
         itemDetails.cost?.let {
             DataFieldCard(
                 label = stringResource(R.string.cost),
-                value = it.toString(),
+                value = it.toCurrencyString("EUR"),
                 modifier = Modifier.weight(1f),
                 isSingleLine = itemDetails.value == null
             )
@@ -478,7 +449,7 @@ private fun UniqueDetailsCard(
         itemDetails.value?.let {
             DataFieldCard(
                 label = stringResource(R.string.value),
-                value = it.toString(),
+                value = it.toCurrencyString("JPY"),
                 modifier = Modifier.weight(1f),
                 isSingleLine = itemDetails.cost == null
             )
@@ -516,7 +487,7 @@ private fun PhysicalAttributesCard(
             itemDetails.width?.let {
                 DataFieldCard(
                     label = stringResource(R.string.width),
-                    value = it.toString(),
+                    value = it.toLengthString(),
                     modifier = Modifier.weight(1f),
                     isSingleLine = itemDetails.height == null
                 )
@@ -527,7 +498,7 @@ private fun PhysicalAttributesCard(
             itemDetails.height?.let {
                 DataFieldCard(
                     label = stringResource(R.string.height),
-                    value = it.toString(),
+                    value = it.toLengthString(),
                     modifier = Modifier.weight(1f),
                     isSingleLine = itemDetails.width == null
                 )
@@ -536,7 +507,7 @@ private fun PhysicalAttributesCard(
         itemDetails.weight?.let {
             DataFieldCard(
                 label = stringResource(R.string.weight),
-                value = it.toString(),
+                value = it.toWeightString(),
                 modifier = modifier
             )
         }

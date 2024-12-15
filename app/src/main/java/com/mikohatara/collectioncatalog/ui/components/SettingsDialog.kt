@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,9 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.ui.settings.SettingsUiState
+import com.mikohatara.collectioncatalog.ui.settings.SettingsViewModel
+import com.mikohatara.collectioncatalog.util.toCountryCode
+import com.mikohatara.collectioncatalog.util.toDisplayCountry
 
 @Composable
 fun SettingsDialog(
+    uiState: SettingsUiState,
+    viewModel: SettingsViewModel,
     label: String,
     options: List<String> = emptyList(),
     onConfirm: () -> Unit,
@@ -62,32 +69,15 @@ fun SettingsDialog(
             LazyColumn(
                 modifier = Modifier//.weight(1f)
             ) {
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            //.then(onClickOption)
-                            .clickable {  }
-                    ) {
-                        RadioButton(
-                            selected = false,
-                            onClick = null,
-                            modifier = Modifier
-                                .padding(start = 24.dp, top = 16.dp, bottom = 16.dp, end = 20.dp)
-                        )
-                        Text(stringResource(R.string.lang_system_default))
-                    }
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-                    )
-                }
                 items(options) { item ->
                     SettingsRadioButton(
-                        label = item,
-                        value = item.takeIf { it.isNotBlank() }
+                        value = item,
+                        selectedOption = uiState.userCountry.toDisplayCountry(),
+                        onClick = { viewModel.setUserCountry(item) }
                     )
+                    Log.d("country", uiState.userCountry)
                 }
+
                 item {
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -118,6 +108,34 @@ fun SettingsDialog(
 
 @Composable
 private fun SettingsRadioButton(
+    value: String,
+    selectedOption: String,
+    onClick: (String) -> Unit
+) {
+    val isSelected = value == selectedOption
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(
+                selected = isSelected,
+                onClick = { onClick(value) },
+                role = Role.RadioButton
+            )
+    ) {
+        RadioButton(
+            selected = isSelected,
+            onClick = null,
+            modifier = Modifier
+                .padding(start = 24.dp, top = 16.dp, end = 20.dp, bottom = 16.dp)
+        )
+        Text(value)
+    }
+}
+
+@Composable
+private fun SettingsRadioButtonWithLabel(
     label: String,
     value: String? = null
 ) {

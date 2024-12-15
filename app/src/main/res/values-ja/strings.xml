@@ -106,4 +106,5 @@
     <string name="lang_system_default">システムのデフォルト</string>
     <string name="continue_button">続ける</string>
     <string name="language_redirect_text">アプリの言語を変更するために、デバイスのシステム設定に遷移します。</string>
+    <string name="user_country">国や地域</string>
 </resources>

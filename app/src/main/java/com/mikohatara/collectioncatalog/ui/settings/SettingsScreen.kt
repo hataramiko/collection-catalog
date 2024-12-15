@@ -33,8 +33,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
+import com.mikohatara.collectioncatalog.ui.components.SettingsDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
-import com.mikohatara.collectioncatalog.util.getSortByText
 import java.util.Locale
 
 @Composable
@@ -60,7 +60,8 @@ private fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showCountryDialog by rememberSaveable { mutableStateOf(false) }
+    var showRedirectDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -74,21 +75,38 @@ private fun SettingsScreen(
             SettingsScreenContent(
                 uiState = uiState,
                 viewModel = viewModel,
-                onClickSettings = { showDialog = true },
+                onClickCountry = { showCountryDialog = true },
+                onClickLanguage = { showRedirectDialog = true },
                 modifier = Modifier.padding(innerPadding)
             )
         }
     )
-    if (showDialog) {
+    if (showCountryDialog) {
+        SettingsDialog(
+            uiState = uiState,
+            viewModel = viewModel,
+            label = stringResource(R.string.user_country),
+            options = Locale.getAvailableLocales()
+                .map { it.displayCountry }
+                .distinct()
+                .filter { it.isNotEmpty() }
+                .sorted(),
+            onConfirm = {
+                showCountryDialog = false
+            },
+            onCancel = { showCountryDialog = false }
+        )
+    }
+    if (showRedirectDialog) {
         RedirectDialog(
             message = stringResource(R.string.language_redirect_text),
             onConfirm = {
-                showDialog = false
+                showRedirectDialog = false
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     viewModel.redirectToLanguageSettings(context)
                 }
             },
-            onCancel = { showDialog = false }
+            onCancel = { showRedirectDialog = false }
         )
     }
 }
@@ -97,27 +115,30 @@ private fun SettingsScreen(
 private fun SettingsScreenContent(
     uiState: SettingsUiState,
     viewModel: SettingsViewModel,
-    onClickSettings: () -> Unit,
+    onClickCountry: () -> Unit,
+    onClickLanguage: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val userCountry = uiState.userCountry
+    val displayCountry = Locale("", userCountry).getDisplayCountry(Locale.getDefault())
+
     Column(modifier = modifier) {
         SettingsButton(
-            label = stringResource(R.string.default_sort_by),
-            onClick = { /*TODO*/ },
+            label = stringResource(R.string.user_country),
+            onClick = onClickCountry,
             icon = {
                 Icon(
-                    painter = painterResource(R.drawable.rounded_swap_vert),
+                    painter = painterResource(R.drawable.rounded_globe),
                     contentDescription = null,
                     modifier = ItemScreenModifiers.icon
                 )
             },
-            text = getSortByText(uiState.defaultSortBy)
+            text = displayCountry
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            SettingsDivider()
             SettingsButton(
                 label = stringResource(R.string.language),
-                onClick = onClickSettings,
+                onClick = onClickLanguage,
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.rounded_language),

@@ -10,17 +10,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.home.SortBy
+import com.mikohatara.collectioncatalog.util.toCountryCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 data class SettingsUiState(
-    //TODO remove defaultSortBy. No longer applied through Settings
-    val defaultSortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC
+    val userCountry: String = Locale.getDefault().country ?: "FI"
 )
 
 @HiltViewModel
@@ -33,7 +36,9 @@ class SettingsViewModel @Inject constructor(
     //val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
     val uiState: StateFlow<SettingsUiState> =
         userPreferences.map { preferences ->
-            SettingsUiState(defaultSortBy = preferences.defaultSortOrder)
+            SettingsUiState(
+                userCountry = preferences.userCountry
+            )
         } //as StateFlow<SettingsUiState>
         .stateIn(
             scope = viewModelScope,
@@ -49,6 +54,18 @@ class SettingsViewModel @Inject constructor(
 
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
+        }
+    }
+
+    fun setUserCountry(userCountry: String) {
+        val newCountryCode = userCountry.toCountryCode()
+        _uiState.update { it.copy(userCountry = newCountryCode) }
+        updateUserCountry(newCountryCode)
+    }
+
+    private fun updateUserCountry(userCountry: String) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveUserCountry(userCountry)
         }
     }
 }
