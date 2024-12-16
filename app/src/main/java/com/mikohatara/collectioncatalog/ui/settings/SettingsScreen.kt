@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
+import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
@@ -44,11 +45,15 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    SettingsScreen(
-        uiState = uiState,
-        viewModel = viewModel,
-        onBack = onBack
-    )
+    uiState?.let {
+        SettingsScreen(
+            uiState = it,
+            viewModel = viewModel,
+            onBack = onBack
+        )
+    } ?: run {
+        Loading()
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
