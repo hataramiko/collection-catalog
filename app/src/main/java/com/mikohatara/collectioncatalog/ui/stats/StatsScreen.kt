@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.StatsTopAppBar
 import java.util.Locale
@@ -34,11 +35,13 @@ fun StatsScreen(
     viewModel: StatsViewModel = hiltViewModel(),
     onOpenDrawer: () -> Unit
 ) {
+    val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     StatsScreen(
-        uiState = uiState,
         viewModel = viewModel,
+        userPreferences = userPreferences,
+        uiState = uiState,
         onOpenDrawer = onOpenDrawer
     )
 }
@@ -46,8 +49,9 @@ fun StatsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StatsScreen(
-    uiState: StatsUiState,
     viewModel: StatsViewModel,
+    userPreferences: UserPreferences,
+    uiState: StatsUiState,
     onOpenDrawer: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -62,8 +66,9 @@ private fun StatsScreen(
         },
         content = { innerPadding ->
             StatsScreenContent(
-                uiState = uiState,
                 viewModel = viewModel,
+                userPreferences = userPreferences,
+                uiState = uiState,
                 modifier = Modifier.padding(innerPadding)
             )
         }
@@ -72,8 +77,9 @@ private fun StatsScreen(
 
 @Composable
 private fun StatsScreenContent(
-    uiState: StatsUiState,
     viewModel: StatsViewModel,
+    userPreferences: UserPreferences,
+    uiState: StatsUiState,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -87,6 +93,7 @@ private fun StatsScreenContent(
         item {
             StatsCard {
                 Table(
+                    userPreferences = userPreferences,
                     label = stringResource(R.string.country),
                     columns = viewModel.getCountries(),
                     items = uiState.items
@@ -124,6 +131,7 @@ private fun Header(
 
 @Composable
 private fun Table(
+    userPreferences: UserPreferences,
     label: String,
     columns: Set<String>,
     items: List<Plate>
@@ -143,7 +151,7 @@ private fun Table(
             val filteredItems = items.filter { it.commonDetails.country == column }
             val quantity = filteredItems.size
             val percentage = String.format(
-                Locale.getDefault(),
+                Locale.forLanguageTag(userPreferences.userCountry),
                 "%.2f",
                 quantity.toFloat() / allItems.toFloat() * 100.0
             )

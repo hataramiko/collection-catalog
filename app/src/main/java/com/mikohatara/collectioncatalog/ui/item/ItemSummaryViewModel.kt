@@ -11,13 +11,17 @@ import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.PlateRepository
+import com.mikohatara.collectioncatalog.data.UserPreferences
+import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -32,11 +36,19 @@ data class ItemSummaryUiState(
 @HiltViewModel
 class ItemSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    userPreferencesRepository: UserPreferencesRepository,
     private val plateRepository: PlateRepository
 ) : ViewModel() {
     private val itemType: ItemType =
         savedStateHandle.get<String>(ITEM_TYPE)?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
     private val itemId: Int = savedStateHandle.get<Int>(ITEM_ID)!!
+
+    val userPreferences: StateFlow<UserPreferences> = userPreferencesRepository.userPreferences
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            UserPreferences()
+        )
 
     private val _uiState = MutableStateFlow(ItemSummaryUiState())
     val uiState: StateFlow<ItemSummaryUiState> = _uiState.asStateFlow()

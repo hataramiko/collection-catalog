@@ -113,4 +113,7 @@
     <string name="language_redirect_text">In order to change the app language, you will be redirected to the device\'s system settings.</string>
     <string name="missing_translation" translatable="false">MISSING TRANSLATION</string>
     <string name="user_country">Country</string>
+    <string name="default_setting">Default</string>
+    <string name="currency">Currency</string>
+    <string name="currency_unit">Currency unit</string>
 </resources>

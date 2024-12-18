@@ -57,6 +57,6 @@ class UserPreferencesRepository @Inject constructor(
 }
 
 data class UserPreferences(
-    val userCountry: String,
-    val defaultSortOrder: SortBy
+    val userCountry: String = Locale.getDefault().country ?: "FI",
+    val defaultSortOrder: SortBy = SortBy.COUNTRY_AND_TYPE_ASC
 )

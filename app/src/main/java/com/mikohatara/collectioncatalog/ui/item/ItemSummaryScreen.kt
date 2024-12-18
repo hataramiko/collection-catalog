@@ -49,6 +49,7 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
+import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.CopyItemDetailsDialog
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
@@ -66,6 +67,7 @@ fun ItemSummaryScreen(
     onBack: () -> Unit,
     onEdit: (Item) -> Unit
 ) {
+    val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState: ItemSummaryUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val item: Item = uiState.item ?: return
@@ -73,11 +75,12 @@ fun ItemSummaryScreen(
     val collections: List<Collection> = uiState.collections
 
     ItemSummaryScreen(
+        viewModel,
+        userPreferences,
+        uiState,
         item,
         itemDetails,
         collections,
-        uiState,
-        viewModel,
         coroutineScope,
         onBack,
         onEdit,
@@ -87,11 +90,12 @@ fun ItemSummaryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemSummaryScreen(
+    viewModel: ItemSummaryViewModel,
+    userPreferences: UserPreferences,
+    uiState: ItemSummaryUiState,
     item: Item,
     itemDetails: ItemDetails,
     collections: List<Collection>,
-    uiState: ItemSummaryUiState,
-    viewModel: ItemSummaryViewModel,
     coroutineScope: CoroutineScope,
     onBack: () -> Unit,
     onEdit: (Item) -> Unit,
@@ -126,6 +130,7 @@ private fun ItemSummaryScreen(
         },
         content = { innerPadding ->
             ItemSummaryScreenContent(
+                userPreferences = userPreferences,
                 itemDetails = itemDetails,
                 collections = collections,
                 onInspectImage = { isInspectingImage = true },
@@ -164,6 +169,7 @@ private fun ItemSummaryScreen(
 
 @Composable
 private fun ItemSummaryScreenContent(
+    userPreferences: UserPreferences,
     itemDetails: ItemDetails,
     onInspectImage: () -> Unit,
     modifier: Modifier = Modifier,
@@ -183,7 +189,8 @@ private fun ItemSummaryScreenContent(
             Collections(collections = collections)
         }
         UniqueDetailsCard(
-            itemDetails = itemDetails
+            itemDetails = itemDetails,
+            localeCode = userPreferences.userCountry
         )
         PhysicalAttributesCard(
             itemDetails = itemDetails
@@ -405,7 +412,8 @@ private fun CommonDetailsCard(
 
 @Composable
 private fun UniqueDetailsCard(
-    itemDetails: ItemDetails
+    itemDetails: ItemDetails,
+    localeCode: String
 ) {
     val modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
 
@@ -438,7 +446,7 @@ private fun UniqueDetailsCard(
         itemDetails.cost?.let {
             DataFieldCard(
                 label = stringResource(R.string.cost),
-                value = it.toCurrencyString("EUR"),
+                value = it.toCurrencyString(localeCode),
                 modifier = Modifier.weight(1f),
                 isSingleLine = itemDetails.value == null
             )
@@ -449,7 +457,7 @@ private fun UniqueDetailsCard(
         itemDetails.value?.let {
             DataFieldCard(
                 label = stringResource(R.string.value),
-                value = it.toCurrencyString("JPY"),
+                value = it.toCurrencyString(localeCode),
                 modifier = Modifier.weight(1f),
                 isSingleLine = itemDetails.cost == null
             )
