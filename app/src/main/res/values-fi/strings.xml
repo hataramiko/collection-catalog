@@ -107,8 +107,9 @@
     <string name="lang_system_default">Järjestelmän oletus</string>
     <string name="continue_button">Jatka</string>
     <string name="language_redirect_text">Sinut ohjataan laitteen järjestelmäasetuksiin sovelluksen kielen vaihtamista varten.</string>
-    <string name="user_country">Sijainti</string>
+    <string name="user_country">Sovelluksen alue</string>
     <string name="default_setting">Oletus</string>
     <string name="currency">Valuutta</string>
     <string name="currency_unit">Valuuttayksikkö</string>
+    <string name="user_country_info">Aluevalinta vaikuttaa mm. numeroiden muotoiluun ja oletusmittayksiköihin.</string>
 </resources>

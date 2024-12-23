@@ -99,7 +99,8 @@ private fun SettingsScreen(
             onConfirm = {
                 showCountryDialog = false
             },
-            onCancel = { showCountryDialog = false }
+            onCancel = { showCountryDialog = false },
+            infoText = stringResource(R.string.user_country_info)
         )
     }
     if (showRedirectDialog) {

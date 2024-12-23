@@ -4,6 +4,13 @@ import android.icu.text.NumberFormat
 import android.icu.util.Currency
 import java.util.Locale
 
+fun Int.toFormattedString(countryCode: String): String {
+    val locale = Locale(countryCode, countryCode)
+    val format = NumberFormat.getInstance(locale)
+
+    return format.format(this)
+}
+
 fun Long.toCurrencyString(countryCode: String): String {
     val locale = Locale(countryCode, countryCode)
     val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
@@ -14,6 +21,16 @@ fun Long.toCurrencyString(countryCode: String): String {
     val displayAmount = if (fractions > 0) this / 100.0 else this
 
     return format.format(displayAmount)
+}
+
+fun Float.toPercentage(countryCode: String): String {
+    val locale = Locale(countryCode, countryCode)
+    val format = NumberFormat.getPercentInstance(locale).apply {
+        maximumFractionDigits = 2
+        minimumFractionDigits = 2
+    }
+
+    return format.format(this)
 }
 
 fun Int.toLengthString(): String {

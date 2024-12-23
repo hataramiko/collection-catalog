@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -27,6 +29,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -45,7 +49,8 @@ fun SettingsDialog(
     label: String,
     options: List<String> = emptyList(),
     onConfirm: () -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    infoText: String? = null
 ) {
     Dialog(onDismissRequest = onCancel) {
         Card(
@@ -53,7 +58,7 @@ fun SettingsDialog(
             colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainerHigh),
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 538.dp)
+                .heightIn(max = 555.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -67,7 +72,7 @@ fun SettingsDialog(
             }
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
             LazyColumn(
-                modifier = Modifier//.weight(1f)
+                modifier = Modifier.weight(1f)
             ) {
                 items(options) { item ->
                     SettingsRadioButton(
@@ -82,26 +87,29 @@ fun SettingsDialog(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
-            HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                TextButton(
-                    onClick = onCancel,
-                    modifier = Modifier.weight(0.9f)
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = onConfirm,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.copy))
-                }
+            if (infoText != null) {
+                InfoFooter(infoText)
             }
+            /*HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    TextButton(
+                        onClick = onCancel,
+                        modifier = Modifier.weight(0.9f)
+                    ) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = onConfirm,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.copy))
+                    }
+                }*/
         }
     }
 }
@@ -170,6 +178,37 @@ private fun SettingsRadioButtonWithLabel(
                     modifier = Modifier.offset(y = (-6).dp)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun InfoFooter(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        Row {
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                painter = painterResource(R.drawable.rounded_info),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .scale(0.75f)
+            )
+            Text(
+                text = text,
+                modifier = Modifier.padding(
+                    start = 2.dp,
+                    top = 12.dp,
+                    bottom = 12.dp,
+                    end = 16.dp
+                )
+            )
         }
     }
 }

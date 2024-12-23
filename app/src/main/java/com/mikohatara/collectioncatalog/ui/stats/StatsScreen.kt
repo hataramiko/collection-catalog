@@ -1,8 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.stats
 
+import android.icu.text.NumberFormat
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
@@ -27,7 +30,10 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
+import com.mikohatara.collectioncatalog.ui.components.ExpandableCard
 import com.mikohatara.collectioncatalog.ui.components.StatsTopAppBar
+import com.mikohatara.collectioncatalog.util.toFormattedString
+import com.mikohatara.collectioncatalog.util.toPercentage
 import java.util.Locale
 
 @Composable
@@ -83,7 +89,7 @@ private fun StatsScreenContent(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier
+        modifier = modifier.padding(horizontal = 8.dp)
     ) {
         item {
             StatsCard {
@@ -91,10 +97,19 @@ private fun StatsScreenContent(
             }
         }
         item {
-            StatsCard {
+            /*StatsCard {
                 Table(
                     userPreferences = userPreferences,
                     label = stringResource(R.string.country),
+                    columns = viewModel.getCountries(),
+                    items = uiState.items
+                )
+            }*/
+            ExpandableCard(
+                label = stringResource(R.string.country),
+            ) {
+                Table(
+                    userPreferences = userPreferences,
                     columns = viewModel.getCountries(),
                     items = uiState.items
                 )
@@ -132,29 +147,19 @@ private fun Header(
 @Composable
 private fun Table(
     userPreferences: UserPreferences,
-    label: String,
     columns: Set<String>,
     items: List<Plate>
 ) {
     val allItems = items.size
 
-    Column(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 12.dp)) {
-        Text(
-            label,
-            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
-        )
-        HorizontalDivider(
-            color = Color(0, 0, 0, 128),
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
+    Column(
+        modifier = Modifier.padding(horizontal = 4.dp)
+    ) {
         columns.forEach { column ->
             val filteredItems = items.filter { it.commonDetails.country == column }
-            val quantity = filteredItems.size
-            val percentage = String.format(
-                Locale.forLanguageTag(userPreferences.userCountry),
-                "%.2f",
-                quantity.toFloat() / allItems.toFloat() * 100.0
-            )
+            val quantity = filteredItems.size.toFormattedString(userPreferences.userCountry)
+            val percentage = (quantity.toFloat() / allItems.toFloat())
+                .toPercentage(userPreferences.userCountry)
 
             Row(modifier = Modifier.padding(horizontal = 4.dp)) {
                 Text(
@@ -162,23 +167,27 @@ private fun Table(
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    quantity.toString(),
+                    quantity,
                     modifier = Modifier
                         .align(alignment = Alignment.CenterVertically)
                         .weight(0.3f)
                 )
                 Text(
-                    "$percentage%",
+                    percentage,
                     textAlign = TextAlign.End,
                     modifier = Modifier
                         .align(alignment = Alignment.CenterVertically)
                         .weight(0.4f)
                 )
             }
-            HorizontalDivider(
-                color = Color(0, 0, 0, 128),
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+            if (column != columns.last()) {
+                HorizontalDivider(
+                    color = Color(0, 0, 0, 128),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            } else {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 }
