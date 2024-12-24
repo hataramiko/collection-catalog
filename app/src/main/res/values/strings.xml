@@ -112,9 +112,9 @@
     <string name="continue_button">Continue</string>
     <string name="language_redirect_text">In order to change the app language, you will be redirected to the device\'s system settings.</string>
     <string name="missing_translation" translatable="false">MISSING TRANSLATION</string>
-    <string name="user_country">App country</string>
+    <string name="user_country">Country</string>
     <string name="default_setting">Default</string>
     <string name="currency">Currency</string>
     <string name="currency_unit">Currency unit</string>
-    <string name="user_country_info">Number formatting and default measaurement units are determined based on your selection.</string>
+    <string name="user_country_info">The selection affects number formatting and default measurement units.</string>
 </resources>

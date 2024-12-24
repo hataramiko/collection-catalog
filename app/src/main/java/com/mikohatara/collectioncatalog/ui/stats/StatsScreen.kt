@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.stats
 
-import android.icu.text.NumberFormat
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,7 +33,6 @@ import com.mikohatara.collectioncatalog.ui.components.ExpandableCard
 import com.mikohatara.collectioncatalog.ui.components.StatsTopAppBar
 import com.mikohatara.collectioncatalog.util.toFormattedString
 import com.mikohatara.collectioncatalog.util.toPercentage
-import java.util.Locale
 
 @Composable
 fun StatsScreen(
@@ -161,7 +159,7 @@ private fun Table(
             val percentage = (quantity.toFloat() / allItems.toFloat())
                 .toPercentage(userPreferences.userCountry)
 
-            Row(modifier = Modifier.padding(horizontal = 4.dp)) {
+            Row(modifier = Modifier.padding(/*horizontal = */4.dp)) {
                 Text(
                     column,
                     modifier = Modifier.weight(1f)

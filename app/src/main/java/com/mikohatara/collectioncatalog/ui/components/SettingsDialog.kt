@@ -1,7 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.components
 
 import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,7 +37,6 @@ import androidx.compose.ui.window.Dialog
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.settings.SettingsUiState
 import com.mikohatara.collectioncatalog.ui.settings.SettingsViewModel
-import com.mikohatara.collectioncatalog.util.toCountryCode
 import com.mikohatara.collectioncatalog.util.toDisplayCountry
 
 @Composable
@@ -56,9 +53,7 @@ fun SettingsDialog(
         Card(
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainerHigh),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 555.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -71,45 +66,31 @@ fun SettingsDialog(
                 )
             }
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
-            LazyColumn(
-                modifier = Modifier.weight(1f)
+            Column(
+                modifier = Modifier.heightIn(max = 480.dp)
             ) {
-                items(options) { item ->
-                    SettingsRadioButton(
-                        value = item,
-                        selectedOption = uiState.userCountry.toDisplayCountry(),
-                        onClick = { viewModel.setUserCountry(item) }
-                    )
-                    Log.d("country", uiState.userCountry)
-                }
+                LazyColumn(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(options) { item ->
+                        SettingsRadioButton(
+                            value = item,
+                            selectedOption = uiState.userCountry.toDisplayCountry(),
+                            onClick = { viewModel.setUserCountry(item) }
+                        )
+                        Log.d("country", uiState.userCountry)
+                    }
 
-                item {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    item {
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
                 }
             }
             if (infoText != null) {
                 InfoFooter(infoText)
-            }
-            /*HorizontalDivider(modifier = Modifier.fillMaxWidth())
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                ) {
-                    TextButton(
-                        onClick = onCancel,
-                        modifier = Modifier.weight(0.9f)
-                    ) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = onConfirm,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(stringResource(R.string.copy))
-                    }
-                }*/
+            }/* else if (something) {
+                ButtonsFooter(onConfirm, onCancel)
+            }*/
         }
     }
 }
@@ -187,6 +168,8 @@ private fun InfoFooter(
     text: String,
     modifier: Modifier = Modifier
 ) {
+    val color = colorScheme.secondary
+
     Column(
         modifier = modifier
     ) {
@@ -196,12 +179,14 @@ private fun InfoFooter(
             Icon(
                 painter = painterResource(R.drawable.rounded_info),
                 contentDescription = null,
+                tint = color,
                 modifier = Modifier
                     .padding(12.dp)
                     .scale(0.75f)
             )
             Text(
                 text = text,
+                color = color,
                 modifier = Modifier.padding(
                     start = 2.dp,
                     top = 12.dp,
@@ -209,6 +194,33 @@ private fun InfoFooter(
                     end = 16.dp
                 )
             )
+        }
+    }
+}
+
+@Composable
+private fun ButtonsFooter(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        TextButton(
+            onClick = onCancel,
+            modifier = Modifier.weight(0.9f)
+        ) {
+            Text(stringResource(R.string.cancel))
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Button(
+            onClick = onConfirm,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(stringResource(R.string.copy))
         }
     }
 }
