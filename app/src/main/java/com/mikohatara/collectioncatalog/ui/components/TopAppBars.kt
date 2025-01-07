@@ -231,7 +231,8 @@ fun ItemEntryTopAppBar(
 @Composable
 fun CollectionListTopAppBar(
     title: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    colors: TopAppBarColors
 ) {
     TopAppBar(
         title = {
@@ -248,7 +249,8 @@ fun CollectionListTopAppBar(
                     contentDescription = "Back"
                 )
             }
-        }
+        },
+        colors = colors
     )
 }
 
@@ -257,7 +259,8 @@ fun CollectionListTopAppBar(
 fun CollectionEntryTopAppBar(
     title: String,
     onBack: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    colors: TopAppBarColors
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -304,7 +307,8 @@ fun CollectionEntryTopAppBar(
                     modifier = Modifier.padding(horizontal = 4.dp)
                 )
             }
-        }
+        },
+        colors = colors
     )
 }
 
