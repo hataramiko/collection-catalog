@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,7 +38,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -58,7 +58,6 @@ import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
 import com.mikohatara.collectioncatalog.util.toCurrencyString
 import com.mikohatara.collectioncatalog.util.toLengthString
 import com.mikohatara.collectioncatalog.util.toWeightString
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,19 +68,11 @@ fun ItemSummaryScreen(
 ) {
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState: ItemSummaryUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val coroutineScope = rememberCoroutineScope()
-    val item: Item = uiState.item ?: return
-    val itemDetails: ItemDetails = uiState.itemDetails
-    val collections: List<Collection> = uiState.collections
 
     ItemSummaryScreen(
         viewModel,
         userPreferences,
         uiState,
-        item,
-        itemDetails,
-        collections,
-        coroutineScope,
         onBack,
         onEdit,
     )
@@ -93,17 +84,18 @@ private fun ItemSummaryScreen(
     viewModel: ItemSummaryViewModel,
     userPreferences: UserPreferences,
     uiState: ItemSummaryUiState,
-    item: Item,
-    itemDetails: ItemDetails,
-    collections: List<Collection>,
-    coroutineScope: CoroutineScope,
     onBack: () -> Unit,
     onEdit: (Item) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val item: Item = uiState.item ?: return
+    val itemDetails: ItemDetails = uiState.itemDetails
+
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults
         .exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
     var showCopyDialog by rememberSaveable { mutableStateOf(false) }
@@ -132,7 +124,7 @@ private fun ItemSummaryScreen(
             ItemSummaryScreenContent(
                 userPreferences = userPreferences,
                 itemDetails = itemDetails,
-                collections = collections,
+                collections = uiState.collections,
                 onInspectImage = { isInspectingImage = true },
                 modifier = modifier.padding(innerPadding)
             )
@@ -236,106 +228,58 @@ private fun Collections(
 }
 
 @Composable
-private fun DataFieldCard(
-    label: String,
-    value: String = "",
+private fun DataFieldBackground(
     modifier: Modifier = Modifier,
-    isSingleLine: Boolean = true,
-    hasContainer: Boolean = true
-) {
-    val colors = if (hasContainer) {
-        CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)
-    } else {
-        CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHighest)
-    }
-
-    Card(
-        colors = colors,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        if (isSingleLine) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = label,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                Text(
-                    text = value,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = label,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    text = value,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-            }
-        }
-    }
-}
-
-/*@Composable
-private fun ItemSummarySection(
-    itemDetails: ItemDetails,
-    sectionType: SectionType,
-    sectionDetails: List<Any?>
-) {
-    if (sectionDetails.any {
-        it !is Boolean && it != null || it is Boolean && it != false && it != true
-    }) {
-        SummaryCard {
-            when (sectionType) {
-                SectionType.COMMON_DETAILS -> CommonDetailsCard(itemDetails)
-                SectionType.UNIQUE_DETAILS -> UniqueDetailsCard(itemDetails)
-                SectionType.PHYSICAL_ATTRIBUTES -> PhysicalAttributesCard(itemDetails)
-                SectionType.SOURCE_INFO -> SourceInfoCard(itemDetails)
-                SectionType.ARCHIVAL_INFO -> ArchivalInfoCard(itemDetails)
-            }
-        }
-    }
-}*/
-
-@Composable
-private fun SummaryCard(
+    colors: CardColors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
     content: @Composable () -> Unit
 ) {
     Card(
-        modifier = Modifier
+        colors = colors,
+        modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(vertical = 8.dp)
     ) {
         content()
     }
 }
 
 @Composable
-private fun SummaryCardSection(
-    icon: @Composable (() -> Unit)?,
-    content: @Composable () -> Unit
+private fun DataFieldContent(
+    label: String,
+    value: String = "",
+    modifier: Modifier = Modifier,
+    isSingleLine: Boolean = true
 ) {
-    Row {
-        icon?.invoke()
-        Card(
+    if (isSingleLine) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(top = 8.dp, end = 16.dp, bottom = 8.dp),
-            colors = CardDefaults
-                .cardColors(containerColor = Color(0, 0, 0, 25))
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
-            content()
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(
+                text = value,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = value,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
         }
     }
 }
@@ -345,12 +289,10 @@ private fun CommonDetailsCard(
     itemDetails: ItemDetails,
     image: @Composable () -> Unit
 ) {
-    val year: String? = if (itemDetails.year != null) itemDetails.year.toString() else null
-    val period: String? = if (itemDetails.periodStart != null || itemDetails.periodEnd != null) {
-        "${itemDetails.periodStart ?: ""} – ${itemDetails.periodEnd ?: ""}"
-    } else {
-        null
-    }
+    val period: String? = (itemDetails.periodStart != null || itemDetails.periodEnd != null)
+        .takeIf { it }?.let {
+            "${itemDetails.periodStart ?: ""} – ${itemDetails.periodEnd ?: ""}"
+        }
 
     Card(
         shape = RoundedCornerShape(
@@ -365,46 +307,18 @@ private fun CommonDetailsCard(
         Column(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
         ) {
-            itemDetails.country?.let {
-                Text(
-                    text = it
-                )
-            }
-            itemDetails.region1st?.let {
-                Text(
-                    text = it
-                )
-            }
-            itemDetails.region2nd?.let {
-                Text(
-                    text = it
-                )
-            }
-            itemDetails.region3rd?.let {
-                Text(
-                    text = it
-                )
+            itemDetails.let {
+                it.country?.let { value -> Text(text = value) }
+                it.region1st?.let { value -> Text(text = value) }
+                it.region2nd?.let { value -> Text(text = value) }
+                it.region3rd?.let { value -> Text(text = value) }
             }
             Spacer(modifier = Modifier.height(20.dp))
-            Row(
-
-            ) {
-                itemDetails.type?.let {
-                    Text(
-                        text = it
-                    )
-                }
-                period?.let {
-                    Text(
-                        text = "・$it"
-                    )
-                }
+            Row {
+                itemDetails.type?.let { Text(text = it) }
+                period?.let { Text(text = "・$it") }
             }
-            itemDetails.year?.let {
-                Text(
-                    text = it.toString()
-                )
-            }
+            itemDetails.year?.let { Text(text = it.toString()) }
         }
         Spacer(modifier = Modifier.height(8.dp))
     }
@@ -415,70 +329,79 @@ private fun UniqueDetailsCard(
     itemDetails: ItemDetails,
     localeCode: String
 ) {
-    val modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-
-    itemDetails.notes?.let {
-        DataFieldCard(
-            label = stringResource(R.string.notes),
-            value = it,
-            modifier = modifier,
-            isSingleLine = false
-        )
-    }
-    itemDetails.vehicle?.let {
-        DataFieldCard(
-            label = stringResource(R.string.vehicle),
-            value = it,
-            modifier = modifier,
-            isSingleLine = false
-        )
-    }
-    itemDetails.date?.let {
-        DataFieldCard(
-            label = stringResource(R.string.date),
-            value = it,
-            modifier = modifier
-        )
-    }
-    Row(
-        modifier = modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
-        itemDetails.cost?.let {
-            DataFieldCard(
-                label = stringResource(R.string.cost),
-                value = it.toCurrencyString(localeCode),
-                modifier = Modifier.weight(1f),
-                isSingleLine = itemDetails.value == null
-            )
+        if (itemDetails.notes != null || itemDetails.vehicle != null) {
+            DataFieldBackground {
+                itemDetails.notes?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.notes),
+                        value = it,
+                        isSingleLine = false
+                    )
+                }
+                itemDetails.vehicle?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.vehicle),
+                        value = it,
+                        isSingleLine = false
+                    )
+                }
+            }
         }
-        if (itemDetails.cost != null && itemDetails.value != null) {
-            Spacer(modifier = Modifier.width(16.dp))
+        itemDetails.date?.let {
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.date),
+                    value = it
+                )
+            }
         }
-        itemDetails.value?.let {
-            DataFieldCard(
-                label = stringResource(R.string.value),
-                value = it.toCurrencyString(localeCode),
-                modifier = Modifier.weight(1f),
-                isSingleLine = itemDetails.cost == null
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            itemDetails.cost?.let {
+                DataFieldBackground(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    DataFieldContent(
+                        label = stringResource(R.string.cost),
+                        value = it.toCurrencyString(localeCode),
+                        isSingleLine = itemDetails.value == null
+                    )
+                }
+            }
+            if (itemDetails.cost != null && itemDetails.value != null) {
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+            itemDetails.value?.let {
+                DataFieldBackground(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    DataFieldContent(
+                        label = stringResource(R.string.value),
+                        value = it.toCurrencyString(localeCode),
+                        isSingleLine = itemDetails.cost == null
+                    )
+                }
+            }
+        }
+        itemDetails.status?.let {
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.location),
+                    value = it
+                )
+            }
         }
     }
-    itemDetails.status?.let {
-        DataFieldCard(
-            label = stringResource(R.string.location),
-            value = it,
-            modifier = modifier
-        )
-    }
-    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable
 private fun PhysicalAttributesCard(
     itemDetails: ItemDetails
 ) {
-    val modifier = Modifier.padding(bottom = 8.dp)
-
     ExpandableSummaryCard(
         label = stringResource(R.string.physical_attributes),
         data = listOf(
@@ -490,49 +413,57 @@ private fun PhysicalAttributesCard(
         )
     ) {
         Row(
-            modifier = modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             itemDetails.width?.let {
-                DataFieldCard(
-                    label = stringResource(R.string.width),
-                    value = it.toLengthString(),
-                    modifier = Modifier.weight(1f),
-                    isSingleLine = itemDetails.height == null
-                )
+                DataFieldBackground(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    DataFieldContent(
+                        label = stringResource(R.string.width),
+                        value = it.toLengthString(),
+                        isSingleLine = itemDetails.height == null
+                    )
+                }
             }
             if (itemDetails.width != null && itemDetails.height != null) {
                 Spacer(modifier = Modifier.width(16.dp))
             }
             itemDetails.height?.let {
-                DataFieldCard(
-                    label = stringResource(R.string.height),
-                    value = it.toLengthString(),
-                    modifier = Modifier.weight(1f),
-                    isSingleLine = itemDetails.width == null
-                )
+                DataFieldBackground(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    DataFieldContent(
+                        label = stringResource(R.string.height),
+                        value = it.toLengthString(),
+                        isSingleLine = itemDetails.width == null
+                    )
+                }
             }
         }
         itemDetails.weight?.let {
-            DataFieldCard(
-                label = stringResource(R.string.weight),
-                value = it.toWeightString(),
-                modifier = modifier
-            )
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.weight),
+                    value = it.toWeightString()
+                )
+            }
         }
-        itemDetails.colorMain?.let {
-            DataFieldCard(
-                label = stringResource(R.string.color_main),
-                value = it,
-                modifier = modifier,
-                hasContainer = false
-            )
-        }
-        itemDetails.colorSecondary?.let {
-            DataFieldCard(
-                label = stringResource(R.string.color_secondary),
-                value = it,
-                hasContainer = false
-            )
+        if (itemDetails.colorMain != null || itemDetails.colorSecondary != null) {
+            DataFieldBackground {
+                itemDetails.colorMain?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.color_main),
+                        value = it
+                    )
+                }
+                itemDetails.colorSecondary?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.color_secondary),
+                        value = it
+                    )
+                }
+            }
         }
     }
 }
@@ -541,8 +472,6 @@ private fun PhysicalAttributesCard(
 private fun SourceInfoCard(
     itemDetails: ItemDetails
 ) {
-    val modifier = Modifier.padding(bottom = 8.dp)
-
     ExpandableSummaryCard(
         label = stringResource(R.string.source),
         data = listOf(
@@ -553,43 +482,46 @@ private fun SourceInfoCard(
             itemDetails.sourceDetails
         )
     ) {
-        itemDetails.sourceName?.let {
-            DataFieldCard(
-                label = stringResource(R.string.source_name),
-                value = it,
-                modifier = modifier
-            )
-        }
-        itemDetails.sourceAlias?.let {
-            DataFieldCard(
-                label = stringResource(R.string.source_alias),
-                value = it,
-                modifier = modifier,
-                hasContainer = false
-            )
+        if (itemDetails.sourceName != null || itemDetails.sourceAlias != null) {
+            DataFieldBackground {
+                itemDetails.sourceName?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.source_name),
+                        value = it
+                    )
+                }
+                itemDetails.sourceAlias?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.source_alias),
+                        value = it
+                    )
+                }
+            }
         }
         itemDetails.sourceType?.let {
-            DataFieldCard(
-                label = stringResource(R.string.source_type),
-                value = it,
-                modifier = modifier
-            )
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.source_type),
+                    value = it
+                )
+            }
         }
         itemDetails.sourceCountry?.let {
-            DataFieldCard(
-                label = stringResource(R.string.source_country),
-                value = it,
-                modifier = modifier
-            )
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.source_country),
+                    value = it
+                )
+            }
         }
         itemDetails.sourceDetails?.let {
-            DataFieldCard(
-                label = stringResource(R.string.source_details),
-                value = it,
-                modifier = modifier,
-                isSingleLine = false,
-                hasContainer = false
-            )
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.source_details),
+                    value = it,
+                    isSingleLine = false
+                )
+            }
         }
     }
 }
@@ -598,8 +530,6 @@ private fun SourceInfoCard(
 private fun ArchivalInfoCard(
     itemDetails: ItemDetails
 ) {
-    val modifier = Modifier.padding(bottom = 8.dp)
-
     ExpandableSummaryCard(
         label = stringResource(R.string.archival),
         data = listOf(
@@ -613,57 +543,62 @@ private fun ArchivalInfoCard(
         )
     ) {
         itemDetails.archivalDate?.let {
-            DataFieldCard(
-                label = stringResource(R.string.archival_date),
-                value = it,
-                modifier = modifier
-            )
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.archival_date),
+                    value = it
+                )
+            }
         }
         itemDetails.archivalType?.let {
-            DataFieldCard(
-                label = stringResource(R.string.archival_reason),
-                value = it,
-                modifier = modifier,
-                hasContainer = false
-            )
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.archival_reason),
+                    value = it
+                )
+            }
         }
         itemDetails.price?.let {
-            DataFieldCard(
-                label = stringResource(R.string.sold_price),
-                value = it.toString(),
-                modifier = modifier
-            )
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.sold_price),
+                    value = it.toString()
+                )
+            }
+        }
+        if (itemDetails.recipientName != null ||
+            itemDetails.recipientAlias != null ||
+            itemDetails.recipientCountry != null
+        ) {
+            DataFieldBackground {
+                itemDetails.recipientName?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.recipient_name),
+                        value = it
+                    )
+                }
+                itemDetails.recipientAlias?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.recipient_alias),
+                        value = it
+                    )
+                }
+                itemDetails.recipientCountry?.let {
+                    DataFieldContent(
+                        label = stringResource(R.string.recipient_country),
+                        value = it
+                    )
+                }
+            }
         }
         itemDetails.archivalDetails?.let {
-            DataFieldCard(
-                label = stringResource(R.string.archival_details),
-                value = it,
-                modifier = modifier,
-                hasContainer = false
-            )
-        }
-        itemDetails.recipientName?.let {
-            DataFieldCard(
-                label = stringResource(R.string.recipient_name),
-                value = it,
-                modifier = modifier
-            )
-        }
-        itemDetails.recipientAlias?.let {
-            DataFieldCard(
-                label = stringResource(R.string.recipient_alias),
-                value = it,
-                modifier = modifier,
-                hasContainer = false
-            )
-        }
-        itemDetails.recipientCountry?.let {
-            DataFieldCard(
-                label = stringResource(R.string.recipient_country),
-                value = it,
-                modifier = modifier,
-                hasContainer = false
-            )
+            DataFieldBackground {
+                DataFieldContent(
+                    label = stringResource(R.string.archival_details),
+                    value = it,
+                    isSingleLine = false
+                )
+            }
         }
     }
 }
@@ -713,12 +648,4 @@ private fun ExpandableSummaryCard(
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
-}
-
-private enum class SectionType {
-    COMMON_DETAILS,
-    UNIQUE_DETAILS,
-    PHYSICAL_ATTRIBUTES,
-    SOURCE_INFO,
-    ARCHIVAL_INFO
 }
