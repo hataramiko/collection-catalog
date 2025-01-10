@@ -158,6 +158,8 @@ fun ItemSummaryTopAppBar(
 @Composable
 fun ItemEntryTopAppBar(
     title: String,
+    colors: TopAppBarColors,
+    scrollBehavior: TopAppBarScrollBehavior,
     onBack: () -> Unit,
     onCopy: (() -> Unit)? = null,
     onPaste: (() -> Unit)? = null
@@ -223,7 +225,9 @@ fun ItemEntryTopAppBar(
                     modifier = Modifier.padding(horizontal = 4.dp)
                 )
             }
-        }
+        },
+        colors = colors,
+        scrollBehavior = scrollBehavior
     )
 }
 

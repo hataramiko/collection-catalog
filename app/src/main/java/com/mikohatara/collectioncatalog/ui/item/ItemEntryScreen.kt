@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,11 +17,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -66,14 +74,17 @@ fun ItemEntryScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemEntryScreen(
     uiState: ItemEntryUiState,
     viewModel: ItemEntryViewModel,
     onValueChange: (ItemDetails) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
     val topBarTitle: String = if (!uiState.isNew) {
@@ -86,9 +97,15 @@ private fun ItemEntryScreen(
     }
 
     Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             ItemEntryTopAppBar(
                 title = topBarTitle,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                ),
+                scrollBehavior = scrollBehavior,
                 onBack = onBackBehavior,
                 onCopy = { viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails) },
                 onPaste = { viewModel.pasteItemDetailsFromClipboard(context) }
@@ -137,16 +154,24 @@ private fun ItemEntryScreenContent(
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
-        /*  TODO improve image logic
-        *
-        *   Using LazyColumn instead of Column, and the ensuing recompositions of
-        *   EntryFormImage cause the selected image/filePath to reset mid-edit.
-        *
-        * */
-        EntryFormImage(uiState, onValueChange)
+        Card(
+            shape = RoundedCornerShape(
+                topStart = 0.dp,
+                topEnd = 0.dp,
+                bottomStart = 24.dp,
+                bottomEnd = 24.dp
+            ),
+            modifier = Modifier.padding(bottom = 20.dp)
+        ) {
+            /*  TODO improve image logic
+            *
+            *   Using LazyColumn instead of Column, and the ensuing recompositions of
+            *   EntryFormImage cause the selected image/filePath to reset mid-edit.
+            *
+            * */
+            EntryFormImage(uiState, onValueChange)
 
-        EntryFormCard {
-            Row {
+            Row(modifier = Modifier.padding(horizontal = 32.dp)) {
                 EntryFormField(
                     icon = { IconAbc123(ItemScreenModifiers.icon) },
                     label = stringResource(R.string.reg_no),
@@ -155,6 +180,7 @@ private fun ItemEntryScreenContent(
                     modifier = Modifier.weight(1f),
                     capitalization = KeyboardCapitalization.Characters
                 )
+                Spacer(modifier = Modifier.width(16.dp))
                 EntryFormField(
                     icon = null,
                     label = "id debug",
@@ -170,229 +196,238 @@ private fun ItemEntryScreenContent(
                 value = uiState.itemDetails.imagePath.toString(),
                 onValueChange = { /*NULL*/ },
                 enabled = false,
-                singleLine = false
+                singleLine = false,
+                modifier = Modifier.padding(horizontal = 32.dp)
             )
-        }
-        if (uiState.itemType == ItemType.PLATE && collections.isNotEmpty()) {
+
             EntryFormCard {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 8.dp)
-                ) {
-                    collections.forEach { collection ->
-                        FilterChip(
-                            selected = uiState.selectedCollections.any { it == collection },
-                            onClick = { viewModel.toggleCollectionSelection(collection) },
-                            label = { Text(collection.name) },
-                            leadingIcon = {
-                                if (!collection.emoji.isNullOrBlank()) {
-                                    Box(
-                                        contentAlignment = Alignment.Center,
-                                        modifier = Modifier.size(24.dp)
-                                    ) {
-                                        Text(collection.emoji)
-                                    }
-                                } else {
-                                    Icon(
-                                        painter = painterResource(R.drawable.rounded_bookmark),
-                                        contentDescription = null
-                                    )
-                                }
-                            },
-                            modifier = Modifier
-                        )
-                    }
-                }
-            }
-        }
-        EntryFormCard {
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_globe),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
-                label = stringResource(R.string.country),
-                value = uiState.itemDetails.country ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(country = it)) }
-            )
-            EntryFormField(
-                icon = { IconBlank() },
-                label = stringResource(R.string.subdivision),
-                value = uiState.itemDetails.region1st ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(region1st = it)) }
-            )
-            ItemEntryVerticalSpacer()
-
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_map),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
-                label = stringResource(R.string.region),
-                value = uiState.itemDetails.region2nd ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(region2nd = it)) }
-            )
-            EntryFormField(
-                icon = { IconBlank() },
-                label = stringResource(R.string.region_second),
-                value = uiState.itemDetails.region3rd ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(region3rd = it)) }
-            )
-            ItemEntryVerticalSpacer()
-
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_category),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
-                label = stringResource(R.string.type),
-                value = uiState.itemDetails.type ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(type = it)) }
-            )
-            ItemEntryVerticalSpacer()
-
-            Row { // TODO allow for usage of (1f) for each field in Row, see to icon
                 EntryFormField(
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.rounded_date_range),
+                            painter = painterResource(R.drawable.rounded_globe),
                             contentDescription = null,
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = stringResource(R.string.period_start),
-                    value = uiState.itemDetails.periodStart?.toString() ?: "",
-                    onValueChange = { newValue ->
-                        onValueChange(
-                            uiState.itemDetails.copy(
-                                periodStart = if (newValue.isValidYear()) newValue.toInt()
-                                else null)
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    keyboardType = KeyboardType.Number
+                    label = stringResource(R.string.country),
+                    value = uiState.itemDetails.country ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(country = it)) }
                 )
-                EntryFormField(
-                    icon = null,
-                    label = stringResource(R.string.period_end),
-                    value = uiState.itemDetails.periodEnd?.toString() ?: "",
-                    onValueChange = { newValue ->
-                        onValueChange(
-                            uiState.itemDetails.copy(
-                                periodEnd = if (newValue.isValidYear()) newValue.toInt()
-                                else null)
-                        )
-                    },
-                    modifier = Modifier.weight(0.725f),
-                    keyboardType = KeyboardType.Number
-                )
-            }
-            EntryFormField(
-                icon = { IconBlank() },
-                label = stringResource(R.string.year),
-                value = uiState.itemDetails.year?.toString() ?: "",
-                onValueChange = { newValue ->
-                    onValueChange(
-                        uiState.itemDetails.copy(
-                            year = if (newValue.isValidYear()) newValue.toInt() else null)
-                    )
-                },
-                keyboardType = KeyboardType.Number
-            )
-        }
-        EntryFormCard {
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_note_stack),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
-                label = stringResource(R.string.notes),
-                value = uiState.itemDetails.notes ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(notes = it)) },
-                singleLine = false
-            )
-            if (uiState.itemType != ItemType.WANTED_PLATE) {
                 EntryFormField(
                     icon = { IconBlank() },
-                    label = stringResource(R.string.vehicle),
-                    value = uiState.itemDetails.vehicle ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(vehicle = it)) },
-                    singleLine = false
+                    label = stringResource(R.string.subdivision),
+                    value = uiState.itemDetails.region1st ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(region1st = it)) }
                 )
                 ItemEntryVerticalSpacer()
 
                 EntryFormField(
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.rounded_event),
+                            painter = painterResource(R.drawable.rounded_map),
                             contentDescription = null,
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = stringResource(R.string.date),
-                    //placeholder = "1922-05-18",
-                    value = uiState.itemDetails.date ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(date = it)) },
-                    keyboardType = KeyboardType.Number,
+                    label = stringResource(R.string.region),
+                    value = uiState.itemDetails.region2nd ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(region2nd = it)) }
                 )
-                Row {
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = stringResource(R.string.region_second),
+                    value = uiState.itemDetails.region3rd ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(region3rd = it)) }
+                )
+                ItemEntryVerticalSpacer()
+
+                EntryFormField(
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_category),
+                            contentDescription = null,
+                            modifier = ItemScreenModifiers.icon
+                        )
+                    },
+                    label = stringResource(R.string.type),
+                    value = uiState.itemDetails.type ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(type = it)) }
+                )
+                ItemEntryVerticalSpacer()
+
+                Row { // TODO allow for usage of (1f) for each field in Row, see to icon
                     EntryFormField(
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.rounded_payments),
+                                painter = painterResource(R.drawable.rounded_date_range),
                                 contentDescription = null,
                                 modifier = ItemScreenModifiers.icon
                             )
                         },
-                        label = stringResource(R.string.cost),
-                        value = uiState.itemDetails.cost?.toString() ?: "",
-                        onValueChange = { onValueChange( // TODO improve input logic
-                            uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
+                        label = stringResource(R.string.period_start),
+                        value = uiState.itemDetails.periodStart?.toString() ?: "",
+                        onValueChange = { newValue ->
+                            onValueChange(
+                                uiState.itemDetails.copy(
+                                    periodStart = if (newValue.isValidYear()) newValue.toInt()
+                                    else null)
+                            )
                         },
                         modifier = Modifier.weight(1f),
-                        keyboardType = KeyboardType.Number,
+                        keyboardType = KeyboardType.Number
                     )
                     EntryFormField(
                         icon = null,
-                        label = stringResource(R.string.value),
-                        value = uiState.itemDetails.value?.toString() ?: "",
+                        label = stringResource(R.string.period_end),
+                        value = uiState.itemDetails.periodEnd?.toString() ?: "",
                         onValueChange = { newValue ->
-                            onValueChange(uiState.itemDetails.copy(
-                                value = if (newValue.isBlankOrZero()) null
-                                else newValue.toLongOrNull())
+                            onValueChange(
+                                uiState.itemDetails.copy(
+                                    periodEnd = if (newValue.isValidYear()) newValue.toInt()
+                                    else null)
                             )
                         },
                         modifier = Modifier.weight(0.725f),
-                        keyboardType = KeyboardType.Number,
+                        keyboardType = KeyboardType.Number
                     )
                 }
-                ItemEntryVerticalSpacer()
-
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = stringResource(R.string.year),
+                    value = uiState.itemDetails.year?.toString() ?: "",
+                    onValueChange = { newValue ->
+                        onValueChange(
+                            uiState.itemDetails.copy(
+                                year = if (newValue.isValidYear()) newValue.toInt() else null)
+                        )
+                    },
+                    keyboardType = KeyboardType.Number
+                )
+            }
+        }
+        if (uiState.itemType == ItemType.PLATE && collections.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                collections.forEach { collection ->
+                    FilterChip(
+                        selected = uiState.selectedCollections.any { it == collection },
+                        onClick = { viewModel.toggleCollectionSelection(collection) },
+                        label = { Text(collection.name) },
+                        leadingIcon = {
+                            if (!collection.emoji.isNullOrBlank()) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Text(collection.emoji)
+                                }
+                            } else {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_bookmark),
+                                    contentDescription = null
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                    )
+                }
+            }
+        }
+        Column(
+            modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
+        ) {
+            EntryFormFieldBackground {
                 EntryFormField(
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.rounded_pin_dist),
+                            painter = painterResource(R.drawable.rounded_note_stack),
                             contentDescription = null,
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = stringResource(R.string.location),
-                    value = uiState.itemDetails.status ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(status = it)) }
+                    label = stringResource(R.string.notes),
+                    value = uiState.itemDetails.notes ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(notes = it)) },
+                    singleLine = false
                 )
+                if (uiState.itemType != ItemType.WANTED_PLATE) {
+                    EntryFormField(
+                        icon = { IconBlank() },
+                        label = stringResource(R.string.vehicle),
+                        value = uiState.itemDetails.vehicle ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(vehicle = it)) },
+                        singleLine = false
+                    )
+                }
+            }
+            if (uiState.itemType != ItemType.WANTED_PLATE) {
+                EntryFormFieldBackground {
+                    EntryFormField(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_event),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        },
+                        label = stringResource(R.string.date),
+                        //placeholder = "1922-05-18",
+                        value = uiState.itemDetails.date ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(date = it)) },
+                        keyboardType = KeyboardType.Number,
+                    )
+                }
+                Row {
+                    EntryFormFieldBackground(modifier = Modifier.weight(1f)) {
+                        EntryFormField(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_payments),
+                                    contentDescription = null,
+                                    modifier = ItemScreenModifiers.icon
+                                )
+                            },
+                            label = stringResource(R.string.cost),
+                            value = uiState.itemDetails.cost?.toString() ?: "",
+                            onValueChange = { onValueChange( // TODO improve input logic
+                                uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
+                            },
+                            keyboardType = KeyboardType.Number,
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    EntryFormFieldBackground(modifier = Modifier.weight(1f)) {
+                        EntryFormField(
+                            icon = null,
+                            label = stringResource(R.string.value),
+                            value = uiState.itemDetails.value?.toString() ?: "",
+                            onValueChange = { newValue ->
+                                onValueChange(uiState.itemDetails.copy(
+                                    value = if (newValue.isBlankOrZero()) null
+                                    else newValue.toLongOrNull())
+                                )
+                            },
+                            keyboardType = KeyboardType.Number,
+                        )
+                    }
+                }
+                EntryFormFieldBackground {
+                    EntryFormField(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_pin_dist),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        },
+                        label = stringResource(R.string.location),
+                        value = uiState.itemDetails.status ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(status = it)) }
+                    )
+                }
             }
         }
         EntryFormCard(
@@ -400,120 +435,134 @@ private fun ItemEntryScreenContent(
         ) {
             if (uiState.itemType != ItemType.WANTED_PLATE) {
                 Row {
+                    EntryFormFieldBackground(modifier = Modifier.weight(1f)) {
+                        EntryFormField(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_ruler),
+                                    contentDescription = null,
+                                    modifier = ItemScreenModifiers.icon
+                                )
+                            },
+                            label = stringResource(R.string.width),
+                            value = uiState.itemDetails.width?.toString() ?: "",
+                            onValueChange = { newValue ->
+                                onValueChange(uiState.itemDetails.copy(
+                                    width = if (newValue.isBlankOrZero()) null
+                                    else newValue.toIntOrNull())
+                                )
+                            },
+                            keyboardType = KeyboardType.Number
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    EntryFormFieldBackground(modifier = Modifier.weight(1f)) {
+                        EntryFormField(
+                            icon = null,
+                            label = stringResource(R.string.height),
+                            value = uiState.itemDetails.height?.toString() ?: "",
+                            onValueChange = { newValue ->
+                                onValueChange(uiState.itemDetails.copy(
+                                    height = if (newValue.isBlankOrZero()) null
+                                    else newValue.toIntOrNull())
+                                )
+                            },
+                            keyboardType = KeyboardType.Number
+                        )
+                    }
+                }
+                EntryFormFieldBackground {
                     EntryFormField(
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.rounded_ruler),
+                                painter = painterResource(R.drawable.rounded_weight),
                                 contentDescription = null,
                                 modifier = ItemScreenModifiers.icon
                             )
                         },
-                        label = stringResource(R.string.width),
-                        value = uiState.itemDetails.width?.toString() ?: "",
+                        label = stringResource(R.string.weight),
+                        value = uiState.itemDetails.weight?.toString() ?: "",
                         onValueChange = { newValue ->
                             onValueChange(uiState.itemDetails.copy(
-                                width = if (newValue.isBlankOrZero()) null
-                                else newValue.toIntOrNull())
+                                weight = if (newValue.isBlankOrZero()) null
+                                else newValue.toDoubleOrNull())
                             )
                         },
-                        modifier = Modifier.weight(1f),
-                        keyboardType = KeyboardType.Number
-                    )
-                    EntryFormField(
-                        icon = null,
-                        label = stringResource(R.string.height),
-                        value = uiState.itemDetails.height?.toString() ?: "",
-                        onValueChange = { newValue ->
-                            onValueChange(uiState.itemDetails.copy(
-                                height = if (newValue.isBlankOrZero()) null
-                                else newValue.toIntOrNull())
-                            )
-                        },
-                        modifier = Modifier.weight(0.725f),
                         keyboardType = KeyboardType.Number
                     )
                 }
+            }
+            EntryFormFieldBackground {
                 EntryFormField(
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.rounded_weight),
+                            painter = painterResource(R.drawable.rounded_palette),
                             contentDescription = null,
                             modifier = ItemScreenModifiers.icon
                         )
                     },
-                    label = stringResource(R.string.weight),
-                    value = uiState.itemDetails.weight?.toString() ?: "",
-                    onValueChange = { newValue ->
-                        onValueChange(uiState.itemDetails.copy(
-                            weight = if (newValue.isBlankOrZero()) null
-                            else newValue.toDoubleOrNull())
-                        )
-                    },
-                    keyboardType = KeyboardType.Number
+                    label = stringResource(R.string.color_main),
+                    value = uiState.itemDetails.colorMain ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(colorMain = it)) }
                 )
-                ItemEntryVerticalSpacer()
+                EntryFormField(
+                    icon = { IconBlank() },
+                    label = stringResource(R.string.color_secondary),
+                    value = uiState.itemDetails.colorSecondary ?: "",
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(colorSecondary = it)) }
+                )
             }
-            EntryFormField(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_palette),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
-                label = stringResource(R.string.color_main),
-                value = uiState.itemDetails.colorMain ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(colorMain = it)) }
-            )
-            EntryFormField(
-                icon = { IconBlank() },
-                label = stringResource(R.string.color_secondary),
-                value = uiState.itemDetails.colorSecondary ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(colorSecondary = it)) }
-            )
         }
         if (uiState.itemType != ItemType.WANTED_PLATE) {
             EntryFormCard(
                 label = stringResource(R.string.source)
             ) {
-                EntryFormField(
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_person_pin_circle),
-                            contentDescription = null,
-                            modifier = ItemScreenModifiers.icon
-                        )
-                    },
-                    label = stringResource(R.string.source_name),
-                    value = uiState.itemDetails.sourceName ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceName = it)) }
-                )
-                EntryFormField(
-                    icon = { IconBlank() },
-                    label = stringResource(R.string.source_alias),
-                    value = uiState.itemDetails.sourceAlias ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceAlias = it)) }
-                )
-                EntryFormField(
-                    icon = { IconBlank() },
-                    label = stringResource(R.string.source_type),
-                    value = uiState.itemDetails.sourceType ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceType = it)) }
-                )
-                EntryFormField(
-                    icon = { IconBlank() },
-                    label = stringResource(R.string.source_country),
-                    value = uiState.itemDetails.sourceCountry ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
-                    imeAction = if (uiState.itemType != ItemType.FORMER_PLATE) ImeAction.Done
+                EntryFormFieldBackground {
+                    EntryFormField(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_person_pin_circle),
+                                contentDescription = null,
+                                modifier = ItemScreenModifiers.icon
+                            )
+                        },
+                        label = stringResource(R.string.source_name),
+                        value = uiState.itemDetails.sourceName ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceName = it)) }
+                    )
+                    EntryFormField(
+                        icon = { IconBlank() },
+                        label = stringResource(R.string.source_alias),
+                        value = uiState.itemDetails.sourceAlias ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceAlias = it)) }
+                    )
+                }
+                EntryFormFieldBackground {
+                    EntryFormField(
+                        icon = { IconBlank() },
+                        label = stringResource(R.string.source_type),
+                        value = uiState.itemDetails.sourceType ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceType = it)) }
+                    )
+                }
+                EntryFormFieldBackground {
+                    EntryFormField(
+                        icon = { IconBlank() },
+                        label = stringResource(R.string.source_country),
+                        value = uiState.itemDetails.sourceCountry ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
+                        imeAction = if (uiState.itemType != ItemType.FORMER_PLATE) ImeAction.Done
                         else ImeAction.Next
-                )
-                EntryFormField(
-                    icon = { IconBlank() },
-                    label = stringResource(R.string.source_details),
-                    value = uiState.itemDetails.sourceDetails ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) }
-                )
+                    )
+                }
+                EntryFormFieldBackground {
+                    EntryFormField(
+                        icon = { IconBlank() },
+                        label = stringResource(R.string.source_details),
+                        value = uiState.itemDetails.sourceDetails ?: "",
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) }
+                    )
+                }
             }
         }
         if (uiState.itemType == ItemType.FORMER_PLATE) {
@@ -625,16 +674,38 @@ private fun EntryFormCard(
 ) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        modifier = Modifier.padding(12.dp)
+        modifier = Modifier.padding(16.dp)
     ) {
-        Column(modifier = Modifier.padding(top = 4.dp, bottom = 12.dp, end = 16.dp)) {
+        Column(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp)
+        ) {
             label?.let {
-                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = it,
-                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
                 )
+                Spacer(modifier = Modifier.height(4.dp))
             }
+            content()
+        }
+    }
+}
+
+@Composable
+private fun EntryFormFieldBackground(
+    modifier: Modifier = Modifier,
+    colors: CardColors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
+    content: @Composable () -> Unit
+) {
+    Card(
+        colors = colors,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
+        ) {
             content()
         }
     }
@@ -664,8 +735,6 @@ private fun EntryFormField(
     val currentValue = remember(value) { value }
 
     Row(modifier = modifier.padding(vertical = 4.dp)) {
-        if (icon != null) icon() else Spacer(modifier = Modifier.width(8.dp))
-
         OutlinedTextField(
             value = currentValue,
             onValueChange = onValueChange,
