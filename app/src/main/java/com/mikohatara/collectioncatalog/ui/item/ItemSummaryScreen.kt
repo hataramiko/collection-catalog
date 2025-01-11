@@ -1,14 +1,19 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -16,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.AssistChip
@@ -38,11 +44,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
@@ -52,6 +61,7 @@ import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.CopyItemDetailsDialog
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
+import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
@@ -88,7 +98,10 @@ private fun ItemSummaryScreen(
     onEdit: (Item) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val item: Item = uiState.item ?: return
+    val item: Item = uiState.item ?: run {
+        Log.e("ItemSummaryScreen", "Item is null")
+        return
+    }
     val itemDetails: ItemDetails = uiState.itemDetails
 
     val context = LocalContext.current
@@ -167,7 +180,11 @@ private fun ItemSummaryScreenContent(
     modifier: Modifier = Modifier,
     collections: List<Collection> = emptyList()
 ) {
-    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 16.dp)
+    ) {
         CommonDetailsCard(
             itemDetails = itemDetails,
             image = {
@@ -179,6 +196,8 @@ private fun ItemSummaryScreenContent(
         )
         if (collections.isNotEmpty()) {
             Collections(collections = collections)
+        } else {
+            Spacer(modifier = Modifier.height(8.dp))
         }
         UniqueDetailsCard(
             itemDetails = itemDetails,
@@ -329,71 +348,97 @@ private fun UniqueDetailsCard(
     itemDetails: ItemDetails,
     localeCode: String
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+    val transparentColor = Color(0, 0, 0, 0)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp, vertical = 24.dp)
     ) {
-        if (itemDetails.notes != null || itemDetails.vehicle != null) {
-            DataFieldBackground {
-                itemDetails.notes?.let {
-                    DataFieldContent(
-                        label = stringResource(R.string.notes),
-                        value = it,
-                        isSingleLine = false
-                    )
-                }
-                itemDetails.vehicle?.let {
-                    DataFieldContent(
-                        label = stringResource(R.string.vehicle),
-                        value = it,
-                        isSingleLine = false
-                    )
-                }
-            }
-        }
-        itemDetails.date?.let {
-            DataFieldBackground {
-                DataFieldContent(
-                    label = stringResource(R.string.date),
-                    value = it
-                )
-            }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth()
+        Card(
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            colors = CardDefaults.cardColors(containerColor = transparentColor),
+            shape = RoundedCornerShape(20.dp)
         ) {
-            itemDetails.cost?.let {
-                DataFieldBackground(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    DataFieldContent(
-                        label = stringResource(R.string.cost),
-                        value = it.toCurrencyString(localeCode),
-                        isSingleLine = itemDetails.value == null
-                    )
+            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp)) {
+                if (itemDetails.notes != null || itemDetails.vehicle != null) {
+                    DataFieldBackground {
+                        itemDetails.notes?.let {
+                            DataFieldContent(
+                                label = stringResource(R.string.notes),
+                                value = it,
+                                isSingleLine = false
+                            )
+                        }
+                        itemDetails.vehicle?.let {
+                            DataFieldContent(
+                                label = stringResource(R.string.vehicle),
+                                value = it,
+                                isSingleLine = false
+                            )
+                        }
+                    }
                 }
-            }
-            if (itemDetails.cost != null && itemDetails.value != null) {
-                Spacer(modifier = Modifier.width(16.dp))
-            }
-            itemDetails.value?.let {
-                DataFieldBackground(
-                    modifier = Modifier.weight(1f)
+                itemDetails.date?.let {
+                    DataFieldBackground {
+                        DataFieldContent(
+                            label = stringResource(R.string.date),
+                            value = it
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    DataFieldContent(
-                        label = stringResource(R.string.value),
-                        value = it.toCurrencyString(localeCode),
-                        isSingleLine = itemDetails.cost == null
-                    )
+                    itemDetails.cost?.let {
+                        DataFieldBackground(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            DataFieldContent(
+                                label = stringResource(R.string.cost),
+                                value = it.toCurrencyString(localeCode),
+                                isSingleLine = itemDetails.value == null
+                            )
+                        }
+                    }
+                    if (itemDetails.cost != null && itemDetails.value != null) {
+                        Spacer(modifier = Modifier.width(14.dp))
+                    }
+                    itemDetails.value?.let {
+                        DataFieldBackground(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            DataFieldContent(
+                                label = stringResource(R.string.value),
+                                value = it.toCurrencyString(localeCode),
+                                isSingleLine = itemDetails.cost == null
+                            )
+                        }
+                    }
+                }
+                itemDetails.status?.let {
+                    DataFieldBackground {
+                        DataFieldContent(
+                            label = stringResource(R.string.location),
+                            value = it
+                        )
+                    }
                 }
             }
         }
-        itemDetails.status?.let {
-            DataFieldBackground {
-                DataFieldContent(
-                    label = stringResource(R.string.location),
-                    value = it
-                )
-            }
+        IconQuotationMark(
+            size = 56.dp,
+            isFlipped = true,
+            modifier = Modifier.offset(x = 24.dp, y = (-32).dp)
+        )
+        Box(
+            contentAlignment = Alignment.BottomEnd,
+            modifier = Modifier.matchParentSize()
+        ) {
+            IconQuotationMark(
+                size = 56.dp,
+                modifier = Modifier.offset(x = (-24).dp, y = 32.dp)
+            )
         }
     }
 }
@@ -427,7 +472,7 @@ private fun PhysicalAttributesCard(
                 }
             }
             if (itemDetails.width != null && itemDetails.height != null) {
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(14.dp))
             }
             itemDetails.height?.let {
                 DataFieldBackground(
@@ -616,7 +661,7 @@ private fun ExpandableSummaryCard(
         Card(
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier
-                .padding(/*horizontal = 8.dp, vertical = if (isExpanded) 16.dp else */8.dp)
+                .padding(8.dp)
                 .animateContentSize()
         ) {
             Row(
@@ -628,7 +673,7 @@ private fun ExpandableSummaryCard(
             ) {
                 Text(
                     text = label,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
                 Icon(
                     imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
@@ -644,8 +689,6 @@ private fun ExpandableSummaryCard(
                 Spacer(modifier = Modifier.height(6.dp))
             }
         }
-        if (isExpanded) {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+        Spacer(modifier = Modifier.height(if (isExpanded) 16.dp else 8.dp))
     }
 }
