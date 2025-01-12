@@ -584,8 +584,6 @@ private fun EntryCardCommonDetails(
 private fun EntryCardUniqueDetails(
     content: @Composable () -> Unit
 ) {
-    val transparentColor = Color(0, 0, 0, 0)
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -593,7 +591,7 @@ private fun EntryCardUniqueDetails(
     ) {
         Card(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-            colors = CardDefaults.cardColors(containerColor = transparentColor),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(20.dp)
         ) {
             content()

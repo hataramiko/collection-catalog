@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -117,35 +118,23 @@ fun ItemSummaryTopAppBar(
                 onDismissRequest = { isMenuExpanded = false },
                 shape = RoundedCornerShape(12.dp)
             ) {
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_content_copy),
-                            contentDescription = null
-                        )
-                    },
-                    text = { Text(stringResource(R.string.copy)) },
+                ModifiedDropdownMenuItem(
                     onClick = {
                         onCopy?.let { it() }
                         isMenuExpanded = false
                     },
-                    enabled = onCopy != null,
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    painterResource = painterResource(R.drawable.rounded_content_copy),
+                    text = stringResource(R.string.copy),
+                    enabled = onCopy != null
                 )
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_delete_forever),
-                            contentDescription = null
-                        )
-                    },
-                    text = { Text(stringResource(R.string.delete)) },
+                ModifiedDropdownMenuItem(
                     onClick = {
                         onDelete()
                         isMenuExpanded = false
                     },
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    painterResource = painterResource(R.drawable.rounded_delete_forever),
+                    text = stringResource(R.string.delete)
                 )
             }
         },
@@ -194,35 +183,23 @@ fun ItemEntryTopAppBar(
                 onDismissRequest = { isMenuExpanded = false },
                 shape = RoundedCornerShape(12.dp)
             ) {
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_content_copy),
-                            contentDescription = null
-                        )
-                    },
-                    text = { Text(stringResource(R.string.copy)) },
+                ModifiedDropdownMenuItem(
                     onClick = {
                         onCopy?.let { it() }
                         isMenuExpanded = false
                     },
-                    enabled = onCopy != null,
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    painterResource = painterResource(R.drawable.rounded_content_copy),
+                    text = stringResource(R.string.copy),
+                    enabled = onCopy != null
                 )
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_content_paste),
-                            contentDescription = null
-                        )
-                    },
-                    text = { Text(stringResource(R.string.paste)) },
+                ModifiedDropdownMenuItem(
                     onClick = {
                         onPaste?.let { it() }
                         isMenuExpanded = false
                     },
-                    enabled = onPaste != null,
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    painterResource = painterResource(R.drawable.rounded_content_paste),
+                    text = stringResource(R.string.paste),
+                    enabled = onPaste != null
                 )
             }
         },
@@ -296,19 +273,13 @@ fun CollectionEntryTopAppBar(
                 onDismissRequest = { isMenuExpanded = false },
                 shape = RoundedCornerShape(12.dp)
             ) {
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_delete_forever),
-                            contentDescription = null
-                        )
-                    },
-                    text = { Text(stringResource(R.string.delete)) },
+                ModifiedDropdownMenuItem(
                     onClick = {
                         onDelete()
                         isMenuExpanded = false
                     },
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    painterResource = painterResource(R.drawable.rounded_delete_forever),
+                    text = stringResource(R.string.delete)
                 )
             }
         },
@@ -353,5 +324,31 @@ fun SettingsTopAppBar(
             }
         },
         scrollBehavior = scrollBehavior
+    )
+}
+
+@Composable
+private fun ModifiedDropdownMenuItem(
+    onClick: () -> Unit,
+    painterResource: Painter,
+    text: String,
+    enabled: Boolean = true
+) {
+    DropdownMenuItem(
+        leadingIcon = {
+            Icon(
+                painter = painterResource,
+                contentDescription = null,
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        },
+        text = {
+            Text(
+                text = text,
+                modifier = Modifier.padding(end = 1.dp)
+            )
+        },
+        onClick = onClick,
+        enabled = enabled
     )
 }

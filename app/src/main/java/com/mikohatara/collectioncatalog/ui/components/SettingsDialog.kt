@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,11 +19,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -49,21 +51,37 @@ fun SettingsDialog(
     onCancel: () -> Unit,
     infoText: String? = null
 ) {
+    val showInfo = rememberSaveable { mutableStateOf(false) }
+
     Dialog(onDismissRequest = onCancel) {
         Card(
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainerHigh),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.height(64.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .height(64.dp)
+                    .padding(horizontal = 24.dp)
             ) {
                 Text(
                     text = label,
                     fontSize = 20.sp,
-                    modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 4.dp)
+                    modifier = Modifier.padding(top = 4.dp)
                 )
+                if (infoText != null) {
+                    IconButton(
+                        onClick = { showInfo.value = true },
+                        modifier = Modifier.scale(0.8f)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_info),
+                            contentDescription = null,
+                            tint = colorScheme.outline,
+                        )
+                    }
+                }
             }
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
             Column(
@@ -78,19 +96,47 @@ fun SettingsDialog(
                             selectedOption = uiState.userCountry.toDisplayCountry(),
                             onClick = { viewModel.setUserCountry(item) }
                         )
-                        Log.d("country", uiState.userCountry)
                     }
-
                     item {
                         Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
             }
-            if (infoText != null) {
-                InfoFooter(infoText)
-            }/* else if (something) {
-                ButtonsFooter(onConfirm, onCancel)
-            }*/
+            SingleButtonFooter(onClick = onCancel)
+        }
+    }
+
+    if (showInfo.value) {
+        Dialog(
+            onDismissRequest = { showInfo.value = false }
+        ) {
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults
+                    .cardColors(containerColor = colorScheme.surfaceContainerHighest),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = infoText ?: "",
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Row {
+                        Spacer(modifier = Modifier.weight(2f))
+                        TextButton(
+                            onClick = { showInfo.value = false },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 2.dp)
+                        ) {
+                            Text(stringResource(R.string.ok_text))
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -119,7 +165,10 @@ private fun SettingsRadioButton(
             modifier = Modifier
                 .padding(start = 24.dp, top = 16.dp, end = 20.dp, bottom = 16.dp)
         )
-        Text(value)
+        Text(
+            text = value,
+            modifier = Modifier.padding(end = 24.dp)
+        )
     }
 }
 
@@ -221,6 +270,27 @@ private fun ButtonsFooter(
             modifier = Modifier.weight(1f)
         ) {
             Text(stringResource(R.string.copy))
+        }
+    }
+}
+
+@Composable
+private fun SingleButtonFooter(
+    onClick: () -> Unit
+) {
+    HorizontalDivider(modifier = Modifier.fillMaxWidth())
+    Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+    ) {
+        Spacer(modifier = Modifier.weight(1.5f))
+        Button(
+            onClick = onClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(stringResource(R.string.ok_text))
         }
     }
 }
