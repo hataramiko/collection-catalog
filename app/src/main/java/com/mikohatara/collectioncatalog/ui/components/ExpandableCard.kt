@@ -26,8 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ExpandableCard(
+fun ExpandableCard( // TODO combine with the similar one from ItemSummaryScreen
     label: String,
+    modifier: Modifier = Modifier,
     data: List<Any?> = emptyList(),
     content: @Composable () -> Unit
 ) {
@@ -37,9 +38,7 @@ fun ExpandableCard(
     //if (data.any { it != null }) {
         Card(
             shape = RoundedCornerShape(20.dp),
-            modifier = Modifier
-                .padding(/*horizontal = 8.dp, vertical = if (isExpanded) 16.dp else */8.dp)
-                .animateContentSize()
+            modifier = modifier.animateContentSize()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

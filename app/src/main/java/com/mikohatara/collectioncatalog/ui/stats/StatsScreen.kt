@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -21,8 +23,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
@@ -87,29 +92,38 @@ private fun StatsScreenContent(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.padding(horizontal = 8.dp)
+        modifier = modifier.padding(16.dp)
     ) {
         item {
-            StatsCard {
-                Header(uiState.items.size)
+            Spacer(modifier = Modifier.height(4.dp))
+            StatsHeaderCard(
+                message = stringResource(R.string.all_plates),
+                amount = uiState.plates.size.toString()
+            )
+            Row(modifier = Modifier.padding(bottom = 32.dp)) {
+                StatsHeaderCard(
+                    message = stringResource(R.string.wishlist),
+                    amount = uiState.wishlist.size.toString(),
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                StatsHeaderCard(
+                    message = stringResource(R.string.archive),
+                    amount = uiState.archive.size.toString(),
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
         item {
-            /*StatsCard {
-                Table(
-                    userPreferences = userPreferences,
-                    label = stringResource(R.string.country),
-                    columns = viewModel.getCountries(),
-                    items = uiState.items
-                )
-            }*/
             ExpandableCard(
                 label = stringResource(R.string.country),
             ) {
                 Table(
                     userPreferences = userPreferences,
                     columns = viewModel.getCountries(),
-                    items = uiState.items
+                    items = uiState.plates
                 )
             }
         }
@@ -120,15 +134,36 @@ private fun StatsScreenContent(
 }
 
 @Composable
-private fun StatsCard(
-    content: @Composable () -> Unit
+private fun StatsHeaderCard(
+    message: String,
+    amount: String,
+    modifier: Modifier = Modifier,
+    fontSize: TextUnit = 18.sp
 ) {
     Card(
-        modifier = Modifier
+        shape = RoundedCornerShape(20.dp),
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .padding(bottom = 16.dp)
     ) {
-        content()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Text(
+                text = message,
+                fontSize = fontSize,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = amount,
+                fontSize = fontSize * 1.5,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 10.dp)
+            )
+        }
     }
 }
 
