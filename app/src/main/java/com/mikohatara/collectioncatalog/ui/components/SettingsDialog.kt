@@ -29,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -71,10 +70,7 @@ fun SettingsDialog(
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 if (infoText != null) {
-                    IconButton(
-                        onClick = { showInfo.value = true },
-                        modifier = Modifier.scale(0.8f)
-                    ) {
+                    IconButton(onClick = { showInfo.value = true }) {
                         Icon(
                             painter = painterResource(R.drawable.rounded_info),
                             contentDescription = null,
@@ -119,10 +115,10 @@ fun SettingsDialog(
                     .padding(12.dp)
             ) {
                 Column {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = infoText ?: "",
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp)
                     )
                     Row {
                         Spacer(modifier = Modifier.weight(2f))
@@ -130,7 +126,7 @@ fun SettingsDialog(
                             onClick = { showInfo.value = false },
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(end = 2.dp)
+                                .padding(end = 4.dp)
                         ) {
                             Text(stringResource(R.string.ok_text))
                         }
@@ -208,41 +204,6 @@ private fun SettingsRadioButtonWithLabel(
                     modifier = Modifier.offset(y = (-6).dp)
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun InfoFooter(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    val color = colorScheme.secondary
-
-    Column(
-        modifier = modifier
-    ) {
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
-        Row {
-            Spacer(modifier = Modifier.width(4.dp))
-            Icon(
-                painter = painterResource(R.drawable.rounded_info),
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .scale(0.75f)
-            )
-            Text(
-                text = text,
-                color = color,
-                modifier = Modifier.padding(
-                    start = 2.dp,
-                    top = 12.dp,
-                    bottom = 12.dp,
-                    end = 16.dp
-                )
-            )
         }
     }
 }

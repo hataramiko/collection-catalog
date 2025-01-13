@@ -345,7 +345,7 @@ private fun ModifiedDropdownMenuItem(
         text = {
             Text(
                 text = text,
-                modifier = Modifier.padding(end = 1.dp)
+                modifier = Modifier.padding(end = 8.dp)
             )
         },
         onClick = onClick,

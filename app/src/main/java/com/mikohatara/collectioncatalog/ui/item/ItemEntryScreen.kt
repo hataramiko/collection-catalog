@@ -283,6 +283,8 @@ private fun ItemEntryScreenContent(
                     )
                 }
             }
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
         }
         EntrySection(
             type = EntrySectionType.UNIQUE_DETAILS
@@ -455,60 +457,68 @@ private fun ItemEntryScreenContent(
             EntrySection(
                 label = stringResource(R.string.archival)
             ) {
-                EntryField(
-                    label = stringResource(R.string.archival_date),
-                    value = uiState.itemDetails.archivalDate ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(archivalDate = it))
-                    }
-                )
-                EntryField(
-                    label = stringResource(R.string.archival_reason),
-                    value = uiState.itemDetails.archivalType ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(archivalType = it))
-                    }
-                )
-                EntryField(
-                    label = stringResource(R.string.sold_price),
-                    value = uiState.itemDetails.price?.toString() ?: "",
-                    onValueChange = { newValue ->
-                        onValueChange(uiState.itemDetails.copy(
-                            price = if (newValue.isBlankOrZero()) null
-                            else newValue.toLongOrNull())
-                        )
-                    },
-                    keyboardType = KeyboardType.Number,
-                )
-                EntryField(
-                    label = stringResource(R.string.archival_details),
-                    value = uiState.itemDetails.archivalDetails ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(archivalDetails = it))
-                    }
-                )
-                EntryField(
-                    label = stringResource(R.string.recipient_name),
-                    value = uiState.itemDetails.recipientName ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(recipientName = it))
-                    }
-                )
-                EntryField(
-                    label = stringResource(R.string.recipient_alias),
-                    value = uiState.itemDetails.recipientAlias ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(recipientAlias = it))
-                    }
-                )
-                EntryField(
-                    label = stringResource(R.string.recipient_country),
-                    value = uiState.itemDetails.recipientCountry ?: "",
-                    onValueChange = {
-                        onValueChange(uiState.itemDetails.copy(recipientCountry = it))
-                    },
-                    imeAction = ImeAction.Done
-                )
+                EntryFieldBackground {
+                    EntryField(
+                        label = stringResource(R.string.archival_date),
+                        value = uiState.itemDetails.archivalDate ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(archivalDate = it))
+                        }
+                    )
+                }
+                EntryFieldBackground {
+                    EntryField(
+                        label = stringResource(R.string.archival_reason),
+                        value = uiState.itemDetails.archivalType ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(archivalType = it))
+                        }
+                    )
+                    EntryField(
+                        label = stringResource(R.string.sold_price),
+                        value = uiState.itemDetails.price?.toString() ?: "",
+                        onValueChange = { newValue ->
+                            onValueChange(uiState.itemDetails.copy(
+                                price = if (newValue.isBlankOrZero()) null
+                                else newValue.toLongOrNull())
+                            )
+                        },
+                        keyboardType = KeyboardType.Number,
+                    )
+                }
+                EntryFieldBackground {
+                    EntryField(
+                        label = stringResource(R.string.recipient_name),
+                        value = uiState.itemDetails.recipientName ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(recipientName = it))
+                        }
+                    )
+                    EntryField(
+                        label = stringResource(R.string.recipient_alias),
+                        value = uiState.itemDetails.recipientAlias ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(recipientAlias = it))
+                        }
+                    )
+                    EntryField(
+                        label = stringResource(R.string.recipient_country),
+                        value = uiState.itemDetails.recipientCountry ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(recipientCountry = it))
+                        }
+                    )
+                }
+                EntryFieldBackground {
+                    EntryField(
+                        label = stringResource(R.string.archival_details),
+                        value = uiState.itemDetails.archivalDetails ?: "",
+                        onValueChange = {
+                            onValueChange(uiState.itemDetails.copy(archivalDetails = it))
+                        },
+                        imeAction = ImeAction.Done
+                    )
+                }
             }
         }
         Button(
@@ -516,7 +526,7 @@ private fun ItemEntryScreenContent(
             //enabled = uiState.hasValidEntry,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 28.dp)
+                .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 32.dp)
         ) {
             Icon(
                 painter = saveButtonIcon,

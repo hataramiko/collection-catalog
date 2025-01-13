@@ -179,7 +179,7 @@ private fun ItemSummaryScreenContent(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .padding(bottom = 16.dp)
+            .padding(bottom = 8.dp)
     ) {
         CommonDetailsCard(
             itemDetails = itemDetails,
@@ -344,95 +344,106 @@ private fun UniqueDetailsCard(
     itemDetails: ItemDetails,
     localeCode: String
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp, vertical = 24.dp)
-    ) {
-        Card(
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-            shape = RoundedCornerShape(20.dp)
+    val data = listOf(
+        itemDetails.notes,
+        itemDetails.vehicle,
+        itemDetails.date,
+        itemDetails.cost,
+        itemDetails.value,
+        itemDetails.status
+    )
+
+    if (data.any { it != null }) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp, vertical = 24.dp)
         ) {
-            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp)) {
-                if (itemDetails.notes != null || itemDetails.vehicle != null) {
-                    DataFieldBackground {
-                        itemDetails.notes?.let {
-                            DataFieldContent(
-                                label = stringResource(R.string.notes),
-                                value = it,
-                                isSingleLine = false
-                            )
-                        }
-                        itemDetails.vehicle?.let {
-                            DataFieldContent(
-                                label = stringResource(R.string.vehicle),
-                                value = it,
-                                isSingleLine = false
-                            )
+            Card(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp)) {
+                    if (itemDetails.notes != null || itemDetails.vehicle != null) {
+                        DataFieldBackground {
+                            itemDetails.notes?.let {
+                                DataFieldContent(
+                                    label = stringResource(R.string.notes),
+                                    value = it,
+                                    isSingleLine = false
+                                )
+                            }
+                            itemDetails.vehicle?.let {
+                                DataFieldContent(
+                                    label = stringResource(R.string.vehicle),
+                                    value = it,
+                                    isSingleLine = false
+                                )
+                            }
                         }
                     }
-                }
-                itemDetails.date?.let {
-                    DataFieldBackground {
-                        DataFieldContent(
-                            label = stringResource(R.string.date),
-                            value = it
-                        )
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    itemDetails.cost?.let {
-                        DataFieldBackground(
-                            modifier = Modifier.weight(1f)
-                        ) {
+                    itemDetails.date?.let {
+                        DataFieldBackground {
                             DataFieldContent(
-                                label = stringResource(R.string.cost),
-                                value = it.toCurrencyString(localeCode),
-                                isSingleLine = itemDetails.value == null
+                                label = stringResource(R.string.date),
+                                value = it
                             )
                         }
                     }
-                    if (itemDetails.cost != null && itemDetails.value != null) {
-                        Spacer(modifier = Modifier.width(14.dp))
-                    }
-                    itemDetails.value?.let {
-                        DataFieldBackground(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            DataFieldContent(
-                                label = stringResource(R.string.value),
-                                value = it.toCurrencyString(localeCode),
-                                isSingleLine = itemDetails.cost == null
-                            )
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        itemDetails.cost?.let {
+                            DataFieldBackground(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                DataFieldContent(
+                                    label = stringResource(R.string.cost),
+                                    value = it.toCurrencyString(localeCode),
+                                    isSingleLine = itemDetails.value == null
+                                )
+                            }
+                        }
+                        if (itemDetails.cost != null && itemDetails.value != null) {
+                            Spacer(modifier = Modifier.width(14.dp))
+                        }
+                        itemDetails.value?.let {
+                            DataFieldBackground(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                DataFieldContent(
+                                    label = stringResource(R.string.value),
+                                    value = it.toCurrencyString(localeCode),
+                                    isSingleLine = itemDetails.cost == null
+                                )
+                            }
                         }
                     }
-                }
-                itemDetails.status?.let {
-                    DataFieldBackground {
-                        DataFieldContent(
-                            label = stringResource(R.string.location),
-                            value = it
-                        )
+                    itemDetails.status?.let {
+                        DataFieldBackground {
+                            DataFieldContent(
+                                label = stringResource(R.string.location),
+                                value = it
+                            )
+                        }
                     }
                 }
             }
-        }
-        IconQuotationMark(
-            size = 56.dp,
-            isFlipped = true,
-            modifier = Modifier.offset(x = 24.dp, y = (-32).dp)
-        )
-        Box(
-            contentAlignment = Alignment.BottomEnd,
-            modifier = Modifier.matchParentSize()
-        ) {
             IconQuotationMark(
                 size = 56.dp,
-                modifier = Modifier.offset(x = (-24).dp, y = 32.dp)
+                isFlipped = true,
+                modifier = Modifier.offset(x = 24.dp, y = (-32).dp)
             )
+            Box(
+                contentAlignment = Alignment.BottomEnd,
+                modifier = Modifier.matchParentSize()
+            ) {
+                IconQuotationMark(
+                    size = 56.dp,
+                    modifier = Modifier.offset(x = (-24).dp, y = 32.dp)
+                )
+            }
         }
     }
 }

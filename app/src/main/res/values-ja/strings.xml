@@ -106,9 +106,9 @@
     <string name="lang_system_default">システムのデフォルト</string>
     <string name="continue_button">続ける</string>
     <string name="language_redirect_text">アプリの言語を変更するために、デバイスのシステム設定に遷移します。</string>
-    <string name="user_country">国 / 地域</string>
+    <string name="user_country">アプリの地域</string>
     <string name="default_setting">デフォルト</string>
     <string name="currency">通貨</string>
     <string name="currency_unit">通貨単位</string>
-    <string name="user_country_info">選択された国 / 地域には、数字や通貨などの表示形式が合わせます。</string>
+    <string name="user_country_info">選択された地域には、数字や通貨などの表示形式が合わせます。</string>
 </resources>
