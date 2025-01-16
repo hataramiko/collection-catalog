@@ -6,7 +6,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
@@ -30,13 +28,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.WantedPlate
+import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
@@ -147,12 +146,9 @@ private fun WishlistScreenContent(
             }
         } else if (itemList.isEmpty()) {
             item {
-                Text(
-                    text = stringResource(R.string.is_empty_message),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 256.dp)
+                EmptyList(
+                    painter = painterResource(R.drawable.rounded_list_alt),
+                    message = stringResource(R.string.empty_list_wishlist_msg),
                 )
             }
         } else {

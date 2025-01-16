@@ -34,7 +34,8 @@ class HomeViewModel @Inject constructor(
     private val collectionRepository: CollectionRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
-    private val collectionId: Int? = savedStateHandle.get<Int>(COLLECTION_ID)
+    // Make this private and add an isCollection Boolean to the UiState?
+    val collectionId: Int? = savedStateHandle.get<Int>(COLLECTION_ID)
     private val _collection = mutableStateOf<Collection?>(null)
 
     private val _allItems = mutableStateListOf<Plate>()

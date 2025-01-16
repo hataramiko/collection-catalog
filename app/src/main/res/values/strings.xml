@@ -73,7 +73,7 @@
     <string name="color">Color</string>
     <string name="color_main">Color, Base</string>
     <string name="color_secondary">Color, Characters</string>
-    <string name="is_empty_message">Nothing to display.</string>
+    <string name="empty_list_default_msg">Nothing to display</string>
     <string name="collections">Collections</string>
     <string name="create_collection">Create new collection</string>
     <string name="edit_collections">Edit collections</string>
@@ -117,4 +117,8 @@
     <string name="currency">Currency</string>
     <string name="currency_unit">Currency unit</string>
     <string name="user_country_info">The selection affects number formatting and default measurement units.</string>
+    <string name="empty_list_archive_msg">Archive is empty</string>
+    <string name="empty_list_wishlist_msg">Wishlist is empty</string>
+    <string name="empty_list_collection_msg">This collection is empty</string>
+    <string name="empty_list_plates_msg">No plates</string>
 </resources>

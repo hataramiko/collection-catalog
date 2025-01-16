@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -20,7 +23,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -92,26 +97,28 @@ private fun StatsScreenContent(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.padding(16.dp)
+        modifier = modifier.padding(horizontal = 16.dp)
     ) {
         item {
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             StatsHeaderCard(
                 message = stringResource(R.string.all_plates),
-                amount = uiState.plates.size.toString()
+                amount = uiState.plates.size.toString(),
+                painter = painterResource(R.drawable.rounded_newsstand),
+                fontSize = 18.sp
             )
             Row(modifier = Modifier.padding(bottom = 32.dp)) {
                 StatsHeaderCard(
                     message = stringResource(R.string.wishlist),
                     amount = uiState.wishlist.size.toString(),
-                    fontSize = 16.sp,
+                    painter = painterResource(R.drawable.rounded_list_alt),
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 StatsHeaderCard(
                     message = stringResource(R.string.archive),
                     amount = uiState.archive.size.toString(),
-                    fontSize = 16.sp,
+                    painter = painterResource(R.drawable.rounded_history),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -137,8 +144,9 @@ private fun StatsScreenContent(
 private fun StatsHeaderCard(
     message: String,
     amount: String,
+    painter: Painter,
     modifier: Modifier = Modifier,
-    fontSize: TextUnit = 18.sp
+    fontSize: TextUnit = 16.sp
 ) {
     Card(
         shape = RoundedCornerShape(20.dp),
@@ -152,11 +160,22 @@ private fun StatsHeaderCard(
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
-            Text(
-                text = message,
-                fontSize = fontSize,
-                textAlign = TextAlign.Center
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically, //TODO fix
+                modifier = Modifier.offset(x = -8.dp)
+            ) {
+                Icon(
+                    painter = painter,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(
+                    text = message,
+                    fontSize = fontSize,
+                    textAlign = TextAlign.Center
+                )
+            }
             Text(
                 text = amount,
                 fontSize = fontSize * 1.5,

@@ -73,7 +73,7 @@
     <string name="color">Väri</string>
     <string name="color_main">Pohjan väri</string>
     <string name="color_secondary">Merkkien väri</string>
-    <string name="is_empty_message">Ei näytettävää.</string>
+    <string name="empty_list_default_msg">Ei näytettävää</string>
     <string name="collections">Kokoelmat</string>
     <string name="create_collection">Luo uusi kokoelma</string>
     <string name="edit_collections">Muokkaa kokoelmia</string>
@@ -112,4 +112,8 @@
     <string name="currency">Valuutta</string>
     <string name="currency_unit">Valuuttayksikkö</string>
     <string name="user_country_info">Aluevalinta vaikuttaa mm. numeroiden muotoiluun ja oletusmittayksiköihin.</string>
+    <string name="empty_list_archive_msg">Arkisto on tyhjä</string>
+    <string name="empty_list_wishlist_msg">Toivelista on tyhjä</string>
+    <string name="empty_list_collection_msg">Tämä kokoelma on tyhjä</string>
+    <string name="empty_list_plates_msg">Ei kilpiä</string>
 </resources>

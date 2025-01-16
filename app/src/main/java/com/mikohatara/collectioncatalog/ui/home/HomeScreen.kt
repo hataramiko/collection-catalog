@@ -6,7 +6,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
@@ -29,13 +27,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
@@ -169,21 +168,20 @@ private fun HomeScreenContent(
                 Loading()
             }
         } else if (itemList.isEmpty()) {
-            /*  TODO add different messages and visualizations for different types of empty
-            *
-            *   Is the entire database empty? Just Wishlist? Archive? A collection?
-            *   Or due to filters?
-            *   Also a proper empty state for Stats.
-            *
-            * */
             item {
-                Text(
-                    text = stringResource(R.string.is_empty_message),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 256.dp)
-                )
+                if (uiState.filters != FilterData()) {
+                    EmptyList()
+                } else if (viewModel.collectionId != null) {
+                    EmptyList(
+                        painter = painterResource(R.drawable.rounded_bookmark),
+                        message = stringResource(R.string.empty_list_collection_msg)
+                    )
+                } else {
+                    EmptyList(
+                        painter = painterResource(R.drawable.rounded_birb),
+                        message = stringResource(R.string.empty_list_plates_msg),
+                    )
+                }
             }
         } else {
             items(items = itemList, key = { it.id }) { item ->

@@ -72,7 +72,7 @@
     <string name="color">配色</string>
     <string name="color_main">配色、地</string>
     <string name="color_secondary">配色、字</string>
-    <string name="is_empty_message">何も表示されていません。</string>
+    <string name="empty_list_default_msg">何も表示されていません</string>
     <string name="collections">コレクション</string>
     <string name="create_collection">新しいコレクションを作成</string>
     <string name="edit_collections">コレクションを編集</string>
@@ -111,4 +111,8 @@
     <string name="currency">通貨</string>
     <string name="currency_unit">通貨単位</string>
     <string name="user_country_info">選択された地域には、数字や通貨などの表示形式が合わせます。</string>
+    <string name="empty_list_archive_msg">アーカイブは空です</string>
+    <string name="empty_list_wishlist_msg">欲しい物がありません</string>
+    <string name="empty_list_collection_msg">このコレクションは空です</string>
+    <string name="empty_list_plates_msg">プレートがありません</string>
 </resources>
