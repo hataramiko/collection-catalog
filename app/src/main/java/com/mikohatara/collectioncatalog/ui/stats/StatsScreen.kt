@@ -111,14 +111,14 @@ private fun StatsScreenContent(
                 StatsHeaderCard(
                     message = stringResource(R.string.wishlist),
                     amount = uiState.wishlist.size.toString(),
-                    painter = painterResource(R.drawable.rounded_list_alt),
+                    painter = painterResource(R.drawable.rounded_heart),
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 StatsHeaderCard(
                     message = stringResource(R.string.archive),
                     amount = uiState.archive.size.toString(),
-                    painter = painterResource(R.drawable.rounded_history),
+                    painter = painterResource(R.drawable.rounded_archive),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -161,8 +161,8 @@ private fun StatsHeaderCard(
                 .padding(20.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically, //TODO fix
-                modifier = Modifier.offset(x = -8.dp)
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.offset(x = (-2).dp)
             ) {
                 Icon(
                     painter = painter,

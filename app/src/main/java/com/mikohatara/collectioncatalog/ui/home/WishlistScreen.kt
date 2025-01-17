@@ -147,8 +147,9 @@ private fun WishlistScreenContent(
         } else if (itemList.isEmpty()) {
             item {
                 EmptyList(
-                    painter = painterResource(R.drawable.rounded_list_alt),
+                    painter = painterResource(R.drawable.rounded_heart),
                     message = stringResource(R.string.empty_list_wishlist_msg),
+                    description = stringResource(R.string.empty_list_wishlist_desc)
                 )
             }
         } else {

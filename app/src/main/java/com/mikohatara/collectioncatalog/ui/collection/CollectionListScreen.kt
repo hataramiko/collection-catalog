@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -162,8 +163,7 @@ private fun CollectionListItem(
         Spacer(modifier = Modifier.width(4.dp))
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(64.dp)
+            modifier = Modifier.size(64.dp)
         ) {
             if (icon != null) {
                 icon()
@@ -171,8 +171,9 @@ private fun CollectionListItem(
                 Text(emoji)
             } else {
                 Icon(
-                    painter = painterResource(R.drawable.rounded_bookmark),
-                    contentDescription = null
+                    painter = painterResource(R.drawable.rounded_label),
+                    contentDescription = null,
+                    modifier = Modifier.offset(x = 1.dp)
                 )
             }
         }

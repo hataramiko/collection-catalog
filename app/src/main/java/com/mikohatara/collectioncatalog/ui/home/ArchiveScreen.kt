@@ -147,8 +147,9 @@ private fun ArchiveScreenContent(
         } else if (itemList.isEmpty()) {
             item {
                 EmptyList(
-                    painter = painterResource(R.drawable.rounded_history),
-                    message = stringResource(R.string.empty_list_archive_msg)
+                    painter = painterResource(R.drawable.rounded_archive),
+                    message = stringResource(R.string.empty_list_archive_msg),
+                    description = stringResource(R.string.empty_list_archive_desc)
                 )
             }
         } else {

@@ -114,5 +114,9 @@
     <string name="empty_list_archive_msg">アーカイブは空です</string>
     <string name="empty_list_wishlist_msg">欲しい物がありません</string>
     <string name="empty_list_collection_msg">このコレクションは空です</string>
-    <string name="empty_list_plates_msg">プレートがありません</string>
+    <string name="empty_list_plates_msg">まだ何もありません</string>
+    <string name="empty_list_collection_desc">プレートを編集中、コレクションを選ぶと含められる。</string>
+    <string name="empty_list_plates_desc">最初に新しいプレートを作成する。</string>
+    <string name="empty_list_default_desc">絞り込み条件を確認してください。</string>
+    <string name="empty_list_archive_desc">既存のプレートをコピーして貼り付けと、アーカイブすることができます。</string>
 </resources>

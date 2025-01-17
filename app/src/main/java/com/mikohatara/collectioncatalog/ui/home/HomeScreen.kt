@@ -7,6 +7,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -173,13 +174,16 @@ private fun HomeScreenContent(
                     EmptyList()
                 } else if (viewModel.collectionId != null) {
                     EmptyList(
-                        painter = painterResource(R.drawable.rounded_bookmark),
-                        message = stringResource(R.string.empty_list_collection_msg)
+                        painter = painterResource(R.drawable.rounded_label),
+                        message = stringResource(R.string.empty_list_collection_msg),
+                        description = stringResource(R.string.empty_list_collection_desc),
+                        iconModifier = Modifier.offset(x = 2.dp)
                     )
                 } else {
                     EmptyList(
-                        painter = painterResource(R.drawable.rounded_birb),
+                        painter = painterResource(R.drawable.rounded_newsstand),
                         message = stringResource(R.string.empty_list_plates_msg),
+                        description = stringResource(R.string.empty_list_plates_desc),
                     )
                 }
             }

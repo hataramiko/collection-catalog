@@ -25,8 +25,9 @@ import com.mikohatara.collectioncatalog.R
 fun EmptyList(
     painter: Painter = painterResource(R.drawable.rounded_warning),
     modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
     message: String = stringResource(R.string.empty_list_default_msg),
-    description: String? = stringResource(R.string.empty_list_default_msg), //TODO replace
+    description: String? = stringResource(R.string.empty_list_default_desc),
     button: @Composable (() -> Unit)? = null
 ) {
     Spacer(modifier = Modifier.height(128.dp))
@@ -40,13 +41,13 @@ fun EmptyList(
         Icon(
             painter = painter,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.outlineVariant,
-            modifier = Modifier.size(64.dp)
+            tint = MaterialTheme.colorScheme.outline.copy(0.7f),
+            modifier = iconModifier.size(64.dp)
         )
         Text(
             text = message,
             fontSize = 22.sp,
-            fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
+            //fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 16.dp)
         )

@@ -115,5 +115,9 @@
     <string name="empty_list_archive_msg">Arkisto on tyhjä</string>
     <string name="empty_list_wishlist_msg">Toivelista on tyhjä</string>
     <string name="empty_list_collection_msg">Tämä kokoelma on tyhjä</string>
-    <string name="empty_list_plates_msg">Ei kilpiä</string>
+    <string name="empty_list_plates_msg">Ei vielä nähtävää</string>
+    <string name="empty_list_collection_desc">Lisää kilpiä kokoelmaan tekemällä valinta kilpeä muokattaessa.</string>
+    <string name="empty_list_plates_desc">Aloita lisäämällä uusi kilpi.</string>
+    <string name="empty_list_default_desc">Tarkista käytössä olevat rajausehdot virheiden varalta.</string>
+    <string name="empty_list_archive_desc">Kilpiä voidaan arkistoida kopioimalla olemassa oleva kilpi.</string>
 </resources>

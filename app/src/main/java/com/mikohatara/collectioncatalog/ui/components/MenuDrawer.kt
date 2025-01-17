@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
@@ -141,12 +142,16 @@ private fun MenuDrawerContent(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier.size(24.dp)
                             ) {
-                                Text(collection.emoji)
+                                Text(
+                                    text = collection.emoji,
+                                    modifier = Modifier.offset(y = (-1.5).dp)
+                                )
                             }
                         } else {
                             Icon(
-                                painter = painterResource(R.drawable.rounded_bookmark),
-                                contentDescription = null
+                                painter = painterResource(R.drawable.rounded_label),
+                                contentDescription = null,
+                                modifier = Modifier.offset(x = 1.dp)
                             )
                         }
                     },
@@ -186,7 +191,7 @@ private fun MenuDrawerContent(
                         label = { Text(stringResource(R.string.wishlist)) },
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.rounded_list_alt),
+                                painter = painterResource(R.drawable.rounded_heart),
                                 contentDescription = null
                             )
                         },
@@ -201,7 +206,7 @@ private fun MenuDrawerContent(
                         label = { Text(stringResource(R.string.archive)) },
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.rounded_history),
+                                painter = painterResource(R.drawable.rounded_archive),
                                 contentDescription = null
                             )
                         },
@@ -221,7 +226,7 @@ private fun MenuDrawerContent(
                         label = { Text(stringResource(R.string.statistics)) },
                         icon = {
                             Icon(
-                                painter = painterResource(R.drawable.rounded_analytics),
+                                painter = painterResource(R.drawable.rounded_bar_chart),
                                 contentDescription = null
                             )
                         },
