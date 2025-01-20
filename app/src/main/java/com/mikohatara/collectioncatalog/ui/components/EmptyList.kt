@@ -23,7 +23,7 @@ import com.mikohatara.collectioncatalog.R
 
 @Composable
 fun EmptyList(
-    painter: Painter = painterResource(R.drawable.rounded_warning),
+    painter: Painter = painterResource(R.drawable.rounded_indeterminate),
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
     message: String = stringResource(R.string.empty_list_default_msg),

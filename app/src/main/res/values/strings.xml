@@ -126,4 +126,6 @@
     <string name="empty_list_archive_desc">You can archive existing plates by copying and pasting.</string>
     <string name="empty_list_wishlist_msg">Wishlist is empty</string>
     <string name="empty_list_wishlist_desc" translatable="false">MISSING TRANSLATION</string>
+    <string name="sort_by_country_and_age_asc">Country &amp; Age, ascending</string>
+    <string name="sort_by_country_and_age_desc">Country &amp; Type, descending</string>
 </resources>

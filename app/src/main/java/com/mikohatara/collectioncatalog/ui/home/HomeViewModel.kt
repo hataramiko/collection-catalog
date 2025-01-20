@@ -87,13 +87,33 @@ class HomeViewModel @Inject constructor(
                 compareBy<Plate> { it.commonDetails.country }
                     .thenBy(nullsFirst()) { it.commonDetails.region1st }
                     .thenBy { it.commonDetails.type }
-                    //.thenBy { it.uniqueDetails.regNo }
+                    .thenBy(nullsFirst()) {
+                        it.commonDetails.year ?: it.commonDetails.periodStart
+                    }
+                    .thenBy { it.uniqueDetails.regNo }
             )
             SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedWith(
                 compareByDescending<Plate> { it.commonDetails.country }
                     .thenBy(nullsFirst()) { it.commonDetails.region1st }
                     .thenByDescending { it.commonDetails.type }
-                    //.thenByDescending { it.uniqueDetails.regNo }
+                    .thenByDescending(nullsFirst()) {
+                        it.commonDetails.year ?: it.commonDetails.periodStart
+                    }
+                    .thenByDescending { it.uniqueDetails.regNo }
+            )
+            SortBy.COUNTRY_AND_AGE_ASC -> items.sortedWith(
+                compareBy<Plate> { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
+                    .thenBy(nullsFirst()) {
+                        it.commonDetails.year ?: it.commonDetails.periodStart
+                    }
+            )
+            SortBy.COUNTRY_AND_AGE_DESC -> items.sortedWith(
+                compareByDescending<Plate> { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
+                    .thenByDescending(nullsFirst()) {
+                        it.commonDetails.year ?: it.commonDetails.periodStart
+                    }
             )
             SortBy.DATE_NEWEST -> items.sortedByDescending { it.uniqueDetails.date }
             SortBy.DATE_OLDEST -> items.sortedWith(
@@ -213,6 +233,8 @@ enum class SortBy {
     COUNTRY_DESC,
     COUNTRY_AND_TYPE_ASC,
     COUNTRY_AND_TYPE_DESC,
+    COUNTRY_AND_AGE_ASC,
+    COUNTRY_AND_AGE_DESC,
     DATE_NEWEST,
     DATE_OLDEST
 }

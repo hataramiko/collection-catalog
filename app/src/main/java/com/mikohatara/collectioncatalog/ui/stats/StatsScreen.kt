@@ -103,21 +103,21 @@ private fun StatsScreenContent(
             Spacer(modifier = Modifier.height(20.dp))
             StatsHeaderCard(
                 message = stringResource(R.string.all_plates),
-                amount = uiState.plates.size.toString(),
+                amount = uiState.plates.size.toFormattedString(userPreferences.userCountry),
                 painter = painterResource(R.drawable.rounded_newsstand),
                 fontSize = 18.sp
             )
             Row(modifier = Modifier.padding(bottom = 32.dp)) {
                 StatsHeaderCard(
                     message = stringResource(R.string.wishlist),
-                    amount = uiState.wishlist.size.toString(),
+                    amount = uiState.wishlist.size.toFormattedString(userPreferences.userCountry),
                     painter = painterResource(R.drawable.rounded_heart),
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 StatsHeaderCard(
                     message = stringResource(R.string.archive),
-                    amount = uiState.archive.size.toString(),
+                    amount = uiState.archive.size.toFormattedString(userPreferences.userCountry),
                     painter = painterResource(R.drawable.rounded_archive),
                     modifier = Modifier.weight(1f)
                 )
@@ -184,16 +184,6 @@ private fun StatsHeaderCard(
             )
         }
     }
-}
-
-@Composable
-private fun Header(
-    plateCount: Int
-) {
-    Text(
-        pluralStringResource(R.plurals.statistics_intro, plateCount, plateCount),
-        modifier = Modifier.padding(16.dp)
-    )
 }
 
 @Composable

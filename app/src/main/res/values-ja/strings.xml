@@ -119,4 +119,6 @@
     <string name="empty_list_plates_desc">最初に新しいプレートを作成する。</string>
     <string name="empty_list_default_desc">絞り込み条件を確認してください。</string>
     <string name="empty_list_archive_desc">既存のプレートをコピーして貼り付けと、アーカイブすることができます。</string>
+    <string name="sort_by_country_and_age_asc">国家も期間も昇順</string>
+    <string name="sort_by_country_and_age_desc">国家も期間も降順</string>
 </resources>

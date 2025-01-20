@@ -69,6 +69,8 @@ class ArchiveViewModel @Inject constructor(
             SortBy.COUNTRY_DESC -> items.sortedByDescending { it.commonDetails.country }
             SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedBy { it.commonDetails.type }
             SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedByDescending { it.commonDetails.type }
+            SortBy.COUNTRY_AND_AGE_ASC -> items.sortedBy { it.commonDetails.year }
+            SortBy.COUNTRY_AND_AGE_DESC -> items.sortedByDescending { it.commonDetails.year }
             SortBy.DATE_NEWEST -> items.sortedByDescending { it.archivalDetails.archivalDate }
             SortBy.DATE_OLDEST -> items.sortedBy { it.archivalDetails.archivalDate }
         }

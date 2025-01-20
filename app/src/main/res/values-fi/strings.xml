@@ -120,4 +120,6 @@
     <string name="empty_list_plates_desc">Aloita lisäämällä uusi kilpi.</string>
     <string name="empty_list_default_desc">Tarkista käytössä olevat rajausehdot virheiden varalta.</string>
     <string name="empty_list_archive_desc">Kilpiä voidaan arkistoida kopioimalla olemassa oleva kilpi.</string>
+    <string name="sort_by_country_and_age_asc">Valtio ja ikä, nouseva</string>
+    <string name="sort_by_country_and_age_desc">Valtio ja ikä, laskeva</string>
 </resources>
