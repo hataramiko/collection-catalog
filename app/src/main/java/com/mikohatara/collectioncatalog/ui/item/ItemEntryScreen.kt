@@ -158,7 +158,7 @@ private fun ItemEntryScreenContent(
     ) {
         EntrySection(
             type = EntrySectionType.COMMON_DETAILS,
-            image = { EntryFormImage(uiState, onValueChange) }
+            image = { EntryFormImage(uiState, onValueChange, Modifier.padding(10.dp)) }
         ) {
             Row {
                 EntryField(
@@ -541,9 +541,10 @@ private fun ItemEntryScreenContent(
 @Composable
 private fun EntryFormImage(
     uiState: ItemEntryUiState,
-    onValueChange: (ItemDetails) -> Unit
+    onValueChange: (ItemDetails) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val imagePath: String? = pickItemImage(uiState.itemDetails.imagePath)
+    val imagePath: String? = pickItemImage(uiState.itemDetails.imagePath, modifier)
     val updateUiState: (ItemDetails) -> Unit = {
         onValueChange(uiState.itemDetails.copy(imagePath = imagePath))
     }
