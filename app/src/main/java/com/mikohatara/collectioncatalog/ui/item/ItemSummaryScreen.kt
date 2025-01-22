@@ -36,7 +36,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -131,8 +130,8 @@ private fun ItemSummaryScreen(
                 onEdit = onEdit,
                 onDelete = { showDeletionDialog = true },
                 onCopy = {
-                    //viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails)
-                    showCopyDialog = true
+                    viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails)
+                    //showCopyDialog = true
                 }
             )
         },

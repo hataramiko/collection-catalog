@@ -216,3 +216,46 @@ fun FormerPlate.toItemDetails(): ItemDetails = ItemDetails(
     price = archivalDetails.price,
     recipientCountry = archivalDetails.recipientCountry
 )
+
+fun ItemDetails.pasteItemDetails(copy: ItemDetails): ItemDetails = ItemDetails(
+    id = id,
+    // CommonDetails
+    country = copy.country?.takeIf { it.isNotBlank() } ?: country,
+    region1st = copy.region1st?.takeIf { it.isNotBlank() } ?: region1st,
+    region2nd = copy.region2nd?.takeIf { it.isNotBlank() } ?: region2nd,
+    region3rd = copy.region3rd?.takeIf { it.isNotBlank() } ?: region3rd,
+    type = copy.type?.takeIf { it.isNotBlank() } ?: type,
+    periodStart = copy.periodStart?.takeIf { it.isValidYear() } ?: periodStart,
+    periodEnd = copy.periodEnd?.takeIf { it.isValidYear() } ?: periodEnd,
+    year = copy.year?.takeIf { it.isValidYear() } ?: year,
+    // UniqueDetails
+    regNo = copy.regNo?.takeIf { it.isNotBlank() } ?: regNo,
+    imagePath = copy.imagePath?.takeIf { it.isNotBlank() } ?: imagePath,
+    notes = copy.notes?.takeIf { it.isNotBlank() } ?: notes,
+    vehicle = copy.vehicle?.takeIf { it.isNotBlank() } ?: vehicle,
+    date = copy.date?.takeIf { it.isNotBlank() } ?: date,
+    cost = copy.cost?.takeIf { true } ?: cost,
+    value = copy.value?.takeIf { true } ?: value,
+    status = copy.status?.takeIf { it.isNotBlank() } ?: status,
+    // Size
+    width = copy.width?.takeIf { true } ?: width,
+    height = copy.height?.takeIf { true } ?: height,
+    weight = copy.weight?.takeIf { true } ?: weight,
+    // Color
+    colorMain = copy.colorMain?.takeIf { it.isNotBlank() } ?: colorMain,
+    colorSecondary = copy.colorSecondary?.takeIf { it.isNotBlank() } ?: colorSecondary,
+    // Source
+    sourceName = copy.sourceName?.takeIf { it.isNotBlank() } ?: sourceName,
+    sourceAlias = copy.sourceAlias?.takeIf { it.isNotBlank() } ?: sourceAlias,
+    sourceType = copy.sourceType?.takeIf { it.isNotBlank() } ?: sourceType,
+    sourceDetails = copy.sourceDetails?.takeIf { it.isNotBlank() } ?: sourceDetails,
+    sourceCountry = copy.sourceCountry?.takeIf { it.isNotBlank() } ?: sourceCountry,
+    // ArchivalDetails
+    archivalDate = copy.archivalDate?.takeIf { it.isNotBlank() } ?: archivalDate,
+    recipientName = copy.recipientName?.takeIf { it.isNotBlank() } ?: recipientName,
+    recipientAlias = copy.recipientAlias?.takeIf { it.isNotBlank() } ?: recipientAlias,
+    archivalType = copy.archivalType?.takeIf { it.isNotBlank() } ?: archivalType,
+    archivalDetails = copy.archivalDetails?.takeIf { it.isNotBlank() } ?: archivalDetails,
+    price = copy.price?.takeIf { true } ?: price,
+    recipientCountry = copy.recipientCountry?.takeIf { it.isNotBlank() } ?: recipientCountry
+)

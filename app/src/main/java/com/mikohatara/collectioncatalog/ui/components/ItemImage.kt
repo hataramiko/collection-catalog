@@ -303,7 +303,7 @@ private fun RemovalButton(
             contentAlignment = Alignment.TopEnd,
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(x = 4.dp, y = (-6).dp)
+                .offset(x = 4.dp, y = (-8).dp)
         ) {
             FilledIconButton(
                 onClick = onClick,

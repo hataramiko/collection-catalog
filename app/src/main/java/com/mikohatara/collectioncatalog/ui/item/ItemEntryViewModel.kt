@@ -16,6 +16,7 @@ import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.pasteItemDetails
 import com.mikohatara.collectioncatalog.util.toFormerPlate
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toPlate
@@ -135,7 +136,11 @@ class ItemEntryViewModel @Inject constructor(
             if (clipText != null) {
                 try {
                     val copiedItemDetails = Json.decodeFromString<ItemDetails>(clipText.toString())
-                    _uiState.update { it.copy(itemDetails = copiedItemDetails) }
+                    _uiState.update {
+                        it.copy(
+                            itemDetails = it.itemDetails.pasteItemDetails(copiedItemDetails)
+                        )
+                    }
                 } catch (e: Exception) {
                     // TODO something
                     // Handle invalid JSON
@@ -144,6 +149,27 @@ class ItemEntryViewModel @Inject constructor(
             }
         }
     }
+
+    /*private fun pasteItemDetails(old: ItemDetails, new: ItemDetails): ItemDetails {
+        val endValues = old::class.memberProperties.map { property ->
+
+
+
+        /*.javaClass.declaredFields.associate { field ->
+            field.isAccessible = true
+            val oldValue = field.get(old)
+            val newValue = field.get(new)
+            val endValue = when {
+                newValue == null -> oldValue
+                else -> newValue
+            }
+            field.name to endValue
+        }*/
+
+        return old.copy(
+            *(endValues.map { (name, value) -> name to value }.toTypedArray())
+        ) as ItemDetails
+    }*/
 
     private suspend fun addNewItem() = viewModelScope.launch {
         when (itemType) {

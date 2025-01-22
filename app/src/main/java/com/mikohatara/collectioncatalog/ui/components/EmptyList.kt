@@ -41,7 +41,7 @@ fun EmptyList(
         Icon(
             painter = painter,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.outline.copy(0.7f),
+            tint = MaterialTheme.colorScheme.outline.copy(0.75f),
             modifier = iconModifier.size(64.dp)
         )
         Text(
@@ -49,7 +49,7 @@ fun EmptyList(
             fontSize = 22.sp,
             //fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp, top = 32.dp)
         )
         description?.let {
             Text(
