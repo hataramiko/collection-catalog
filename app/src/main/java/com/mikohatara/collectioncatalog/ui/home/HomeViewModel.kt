@@ -115,9 +115,13 @@ class HomeViewModel @Inject constructor(
                         it.commonDetails.year ?: it.commonDetails.periodStart
                     }
             )
-            SortBy.DATE_NEWEST -> items.sortedByDescending { it.uniqueDetails.date }
+            SortBy.DATE_NEWEST -> items.sortedWith(
+                compareByDescending<Plate, String?>(nullsLast()) { it.uniqueDetails.date }
+                    .thenByDescending { it.id }
+            )
             SortBy.DATE_OLDEST -> items.sortedWith(
-                compareBy(nullsLast()) { it.uniqueDetails.date }
+                compareBy<Plate, String?>(nullsLast()) { it.uniqueDetails.date }
+                    .thenBy { it.id }
             )
         }
         _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }

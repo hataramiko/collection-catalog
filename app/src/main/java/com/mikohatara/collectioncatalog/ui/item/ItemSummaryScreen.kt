@@ -221,10 +221,12 @@ private fun ItemSummaryScreenContent(
 private fun Collections(
     collections: List<Collection>
 ) {
+    val sortedCollections = collections.sortedBy { it.name }
+
     Column(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        collections.forEach {
+        sortedCollections.forEach {
             AssistChip(
                 onClick = {},
                 label = { Text(it.name) },

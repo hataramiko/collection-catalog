@@ -37,6 +37,7 @@ data class ItemEntryUiState(
     val itemType: ItemType = ItemType.PLATE,
     val itemDetails: ItemDetails = ItemDetails(),
     val selectedCollections: List<Collection> = emptyList(),
+    val isValidEntry: Boolean = true, //TODO check if entry is valid
     val isNew: Boolean = false,
     val hasUnsavedChanges: Boolean = false
 )
@@ -73,6 +74,9 @@ class ItemEntryViewModel @Inject constructor(
     fun updateUiState(itemDetails: ItemDetails) {
         val item = uiState.value.item
         val selectedCollections = uiState.value.selectedCollections
+        val isValidEntry = !(uiState.value.itemDetails.regNo.isNullOrBlank() ||
+                uiState.value.itemDetails.country.isNullOrBlank() ||
+                uiState.value.itemDetails.type.isNullOrBlank())
         val isNew = uiState.value.isNew
         val hasUnsavedChanges = uiState.value.hasUnsavedChanges
         val initialDetails = if (isNew) ItemDetails() else when (item) {
@@ -88,6 +92,7 @@ class ItemEntryViewModel @Inject constructor(
                 itemType = itemType,
                 itemDetails = itemDetails,
                 selectedCollections = selectedCollections,
+                isValidEntry = isValidEntry,
                 isNew = isNew,
                 hasUnsavedChanges = true
             )
@@ -97,6 +102,7 @@ class ItemEntryViewModel @Inject constructor(
                 itemType = itemType,
                 itemDetails = itemDetails,
                 selectedCollections = selectedCollections,
+                isValidEntry = isValidEntry,
                 isNew = isNew
             )
         }

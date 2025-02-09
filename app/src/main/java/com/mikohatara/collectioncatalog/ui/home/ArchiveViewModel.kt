@@ -10,14 +10,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ArchiveUiState(
     val items: List<FormerPlate> = emptyList(),
-    val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
+    val sortBy: SortBy = SortBy.DATE_NEWEST,
     val filters: FilterData = FilterData(),
     val isLoading: Boolean = false
 )
@@ -39,9 +38,9 @@ class ArchiveViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val userPreferences = userPreferencesRepository.userPreferences.first()
+            /*val userPreferences = userPreferencesRepository.userPreferences.first()
             val defaultSortBy = userPreferences.defaultSortOrder
-            _uiState.update { it.copy(sortBy = defaultSortBy) }
+            _uiState.update { it.copy(sortBy = defaultSortBy) }*/
             getArchive()
         }
     }
@@ -71,7 +70,10 @@ class ArchiveViewModel @Inject constructor(
             SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedByDescending { it.commonDetails.type }
             SortBy.COUNTRY_AND_AGE_ASC -> items.sortedBy { it.commonDetails.year }
             SortBy.COUNTRY_AND_AGE_DESC -> items.sortedByDescending { it.commonDetails.year }
-            SortBy.DATE_NEWEST -> items.sortedByDescending { it.archivalDetails.archivalDate }
+            SortBy.DATE_NEWEST -> items.sortedWith(
+                compareByDescending<FormerPlate> { it.archivalDetails.archivalDate }
+                    .thenByDescending { it.uniqueDetails.regNo }
+            )
             SortBy.DATE_OLDEST -> items.sortedBy { it.archivalDetails.archivalDate }
         }
         _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }

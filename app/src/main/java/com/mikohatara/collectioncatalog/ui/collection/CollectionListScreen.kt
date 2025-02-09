@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.collection
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -103,7 +102,6 @@ private fun CollectionListScreenContent(
     onCollectionClick: (Collection) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Log.d("collectionList", collectionList.toString())
     LazyColumn(
         modifier = modifier.fillMaxWidth()
     ) {

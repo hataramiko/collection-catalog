@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -283,7 +284,7 @@ private fun ItemEntryImageFrame(
         Card(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(Color(0, 0, 0, 0)),
-            border = BorderStroke(0.5.dp, Color.LightGray),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             modifier = Modifier.fillMaxWidth()
         ) {
             content()
@@ -303,9 +304,9 @@ private fun RemovalButton(
             contentAlignment = Alignment.TopEnd,
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(x = 4.dp, y = (-8).dp)
+                .offset(x = (-2).dp, y = (-8).dp)
         ) {
-            FilledIconButton(
+            FilledTonalIconButton(
                 onClick = onClick,
                 modifier = Modifier.size(32.dp)
             ) {

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -150,6 +151,9 @@ fun ItemEntryTopAppBar(
     colors: TopAppBarColors,
     scrollBehavior: TopAppBarScrollBehavior,
     onBack: () -> Unit,
+    onSave: () -> Unit,
+    saveIcon: Painter,
+    isSaveEnabled: Boolean = true,
     onCopy: (() -> Unit)? = null,
     onPaste: (() -> Unit)? = null
 ) {
@@ -172,6 +176,15 @@ fun ItemEntryTopAppBar(
             }
         },
         actions = {
+            FilledIconButton(
+                onClick = { onSave() },
+                enabled = isSaveEnabled
+            ) {
+                Icon(
+                    painter = saveIcon,
+                    contentDescription = null
+                )
+            }
             IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                 Icon(
                     imageVector = Icons.Rounded.MoreVert,

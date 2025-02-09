@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -89,6 +90,13 @@ private fun ItemEntryScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
+    val onSaveBehavior = { viewModel.saveEntry(); onBack() }
+    val (saveButtonText, saveButtonIcon) = when (uiState.isNew) {
+        true -> stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "") to
+                painterResource(R.drawable.rounded_save)
+        false -> stringResource(R.string.save_edited_item, uiState.itemDetails.regNo ?: "") to
+                painterResource(R.drawable.rounded_save_as)
+    }
     val topBarTitle: String = if (!uiState.isNew) {
         stringResource(R.string.edit_item_title, uiState.itemDetails.regNo ?: "")
     } else {
@@ -109,6 +117,9 @@ private fun ItemEntryScreen(
                 ),
                 scrollBehavior = scrollBehavior,
                 onBack = onBackBehavior,
+                onSave = onSaveBehavior,
+                saveIcon = saveButtonIcon,
+                isSaveEnabled = uiState.isValidEntry,
                 onCopy = { viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails) },
                 onPaste = { viewModel.pasteItemDetailsFromClipboard(context) }
             )
@@ -117,12 +128,11 @@ private fun ItemEntryScreen(
             ItemEntryScreenContent(
                 uiState,
                 viewModel,
+                saveButtonText,
+                saveButtonIcon,
                 modifier = Modifier.padding(innerPadding),
                 onValueChange,
-                onSave = {
-                    viewModel.saveEntry()
-                    onBack()
-                }
+                onSave = onSaveBehavior
             )
         }
     )
@@ -141,17 +151,13 @@ private fun ItemEntryScreen(
 private fun ItemEntryScreenContent(
     uiState: ItemEntryUiState,
     viewModel: ItemEntryViewModel,
+    saveButtonText: String,
+    saveButtonIcon: Painter,
     modifier: Modifier,
     onValueChange: (ItemDetails) -> Unit = {},
     onSave: () -> Unit
 ) {
     val collections = viewModel.getCollections()
-    val (saveButtonText, saveButtonIcon) = when (uiState.isNew) {
-        true -> stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "") to
-            painterResource(R.drawable.rounded_save)
-        false -> stringResource(R.string.save_edited_item, uiState.itemDetails.regNo ?: "") to
-            painterResource(R.drawable.rounded_save_as)
-    }
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
@@ -342,12 +348,16 @@ private fun ItemEntryScreenContent(
                             )
                         }
                     }
-                    EntryFieldBackground {
-                        EntryField(
-                            label = stringResource(R.string.location),
-                            value = uiState.itemDetails.status ?: "",
-                            onValueChange = { onValueChange(uiState.itemDetails.copy(status = it)) }
-                        )
+                    if (uiState.itemType == ItemType.PLATE) {
+                        EntryFieldBackground {
+                            EntryField(
+                                label = stringResource(R.string.location),
+                                value = uiState.itemDetails.status ?: "",
+                                onValueChange = {
+                                    onValueChange(uiState.itemDetails.copy(status = it))
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -463,7 +473,8 @@ private fun ItemEntryScreenContent(
                         value = uiState.itemDetails.archivalDate ?: "",
                         onValueChange = {
                             onValueChange(uiState.itemDetails.copy(archivalDate = it))
-                        }
+                        },
+                        keyboardType = KeyboardType.Number
                     )
                 }
                 EntryFieldBackground {
@@ -523,7 +534,7 @@ private fun ItemEntryScreenContent(
         }
         Button(
             onClick = onSave,
-            //enabled = uiState.hasValidEntry,
+            enabled = uiState.isValidEntry,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 32.dp)
@@ -531,9 +542,12 @@ private fun ItemEntryScreenContent(
             Icon(
                 painter = saveButtonIcon,
                 contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(2.dp)
             )
-            Text(saveButtonText)
+            Text(
+                text = saveButtonText,
+                modifier = Modifier.padding(start = 8.dp)
+            )
         }
     }
 }
