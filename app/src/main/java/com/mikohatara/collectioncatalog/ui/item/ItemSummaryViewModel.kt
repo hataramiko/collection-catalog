@@ -15,7 +15,9 @@ import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.toFormerPlate
 import com.mikohatara.collectioncatalog.util.toItemDetails
+import com.mikohatara.collectioncatalog.util.toPlate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,6 +31,7 @@ import javax.inject.Inject
 
 data class ItemSummaryUiState(
     val item: Item? = null,
+    val itemType: ItemType = ItemType.PLATE,
     val itemDetails: ItemDetails = ItemDetails(),
     val collections: List<Collection> = emptyList()
 )
@@ -60,6 +63,7 @@ class ItemSummaryViewModel @Inject constructor(
                     it?.let {
                         _uiState.value = ItemSummaryUiState(
                             item = Item.PlateItem(it.plate),
+                            itemType = itemType,
                             itemDetails = it.plate.toItemDetails(),
                             collections = it.collections
                         )
@@ -69,6 +73,7 @@ class ItemSummaryViewModel @Inject constructor(
                     it?.let {
                         _uiState.value = ItemSummaryUiState(
                             item = Item.WantedPlateItem(it),
+                            itemType = itemType,
                             itemDetails = it.toItemDetails()
                         )
                     }
@@ -77,6 +82,7 @@ class ItemSummaryViewModel @Inject constructor(
                     it?.let {
                         _uiState.value = ItemSummaryUiState(
                             item = Item.FormerPlateItem(it),
+                            itemType = itemType,
                             itemDetails = it.toItemDetails()
                         )
                     }
@@ -97,10 +103,26 @@ class ItemSummaryViewModel @Inject constructor(
         }
     }
 
+    fun transferItem() {
+        when (uiState.value.item) {
+            is Item.WantedPlateItem -> addNewPlate()
+            is Item.PlateItem -> addNewFormerPlate()
+            else -> {}
+        }
+    }
+
     fun copyItemDetailsToClipboard(context: Context, itemDetails: ItemDetails) {
         val jsonString = Json.encodeToString(itemDetails)
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("ItemDetails", jsonString)
         clipboard.setPrimaryClip(clip)
+    }
+
+    private fun addNewPlate() = viewModelScope.launch {
+        plateRepository.addPlate(uiState.value.itemDetails.toPlate())
+    }
+
+    private fun addNewFormerPlate() = viewModelScope.launch {
+        plateRepository.addFormerPlate(uiState.value.itemDetails.toFormerPlate())
     }
 }

@@ -76,6 +76,31 @@ fun DiscardDialog(
 }
 
 @Composable
+fun TransferDialog(
+    title: String,
+    text: String,
+    confirmButtonText: String,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text(title) },
+        text = { Text(text) },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm() }) {
+                Text(confirmButtonText)
+            }
+        }
+    )
+}
+
+@Composable
 fun RedirectDialog(
     message: String,
     onConfirm: () -> Unit,

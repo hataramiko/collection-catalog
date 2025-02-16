@@ -122,4 +122,10 @@
     <string name="empty_list_archive_desc">Kilpiä voidaan arkistoida kopioimalla olemassa oleva kilpi.</string>
     <string name="sort_by_country_and_age_asc">Valtio ja ikä, nouseva</string>
     <string name="sort_by_country_and_age_desc">Valtio ja ikä, laskeva</string>
+    <string name="transfer_from_wishlist_dialog_text">Tämän pohjalta luodaan uusi kilpi, ja tämä puolestaan poistetaan toivelistalta.</string>
+    <string name="transfer_from_plates_dialog_title">Arkistoi <xliff:g name="reg_no" example="ABC-123">%s</xliff:g>?</string>
+    <string name="transfer_from_plates_dialog_text">Kilvestä luodaan kopio arkistoon ja tämä kilpi poistetaan.</string>
+    <string name="transfer_from_wishlist_dialog_title">Merkkaa toteutuneeksi?</string>
+    <string name="transfer_from_wishlist_button">Merkkaa toteutuneeksi</string>
+    <string name="transfer_from_plates_button">Arkistoi</string>
 </resources>

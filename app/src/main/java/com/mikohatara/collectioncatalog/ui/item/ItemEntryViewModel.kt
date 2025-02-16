@@ -14,6 +14,8 @@ import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.PlateRepository
+import com.mikohatara.collectioncatalog.data.UserPreferences
+import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.util.pasteItemDetails
@@ -23,9 +25,11 @@ import com.mikohatara.collectioncatalog.util.toPlate
 import com.mikohatara.collectioncatalog.util.toWantedPlate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -45,12 +49,20 @@ data class ItemEntryUiState(
 @HiltViewModel
 class ItemEntryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    userPreferencesRepository: UserPreferencesRepository,
     private val plateRepository: PlateRepository,
     private val collectionRepository: CollectionRepository
 ) : ViewModel() {
     private val itemType: ItemType =
         savedStateHandle.get<String>(ITEM_TYPE)?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
     private val itemId: Int? = savedStateHandle.get<Int>(ITEM_ID)
+
+    val userPreferences: StateFlow<UserPreferences> = userPreferencesRepository.userPreferences
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            UserPreferences()
+        )
 
     private val _allCollections = mutableStateListOf<Collection>()
 
@@ -74,7 +86,8 @@ class ItemEntryViewModel @Inject constructor(
     fun updateUiState(itemDetails: ItemDetails) {
         val item = uiState.value.item
         val selectedCollections = uiState.value.selectedCollections
-        val isValidEntry = !(uiState.value.itemDetails.regNo.isNullOrBlank() ||
+        val isValidEntry = itemType == ItemType.WANTED_PLATE ||
+                !(uiState.value.itemDetails.regNo.isNullOrBlank() ||
                 uiState.value.itemDetails.country.isNullOrBlank() ||
                 uiState.value.itemDetails.type.isNullOrBlank())
         val isNew = uiState.value.isNew

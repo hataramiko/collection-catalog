@@ -55,6 +55,7 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
+import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.CopyItemDetailsDialog
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
@@ -62,6 +63,7 @@ import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.TransferDialog
 import com.mikohatara.collectioncatalog.util.toCurrencyString
 import com.mikohatara.collectioncatalog.util.toLengthString
 import com.mikohatara.collectioncatalog.util.toWeightString
@@ -109,7 +111,26 @@ private fun ItemSummaryScreen(
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
     var showCopyDialog by rememberSaveable { mutableStateOf(false) }
+    var showTransferDialog by rememberSaveable { mutableStateOf(false) }
     val onBackBehavior = { if (isInspectingImage) isInspectingImage = false else onBack() }
+    val onTransferLambda = { showTransferDialog = true }
+        .takeIf { uiState.itemType != ItemType.FORMER_PLATE }
+    val (transferButtonText, transferButtonPainter) = when (uiState.item) {
+        is Item.WantedPlateItem -> stringResource(R.string.transfer_from_wishlist_button) to
+            painterResource(R.drawable.rounded_birb)
+        is Item.PlateItem -> stringResource(R.string.transfer_from_plates_button) to
+            painterResource(R.drawable.rounded_archive)
+        else -> "" to painterResource(R.drawable.rounded_question_mark)
+    }
+    val (transferDialogTitle, transferDialogText) = when (uiState.item) {
+        is Item.WantedPlateItem -> stringResource(
+            R.string.transfer_from_wishlist_dialog_title
+        ) to stringResource(R.string.transfer_from_wishlist_dialog_text)
+        is Item.PlateItem -> stringResource(
+            R.string.transfer_from_plates_dialog_title, uiState.itemDetails.regNo ?: ""
+        ) to stringResource(R.string.transfer_from_plates_dialog_text)
+        else -> "" to ""
+    }
 
     BackHandler {
         onBackBehavior()
@@ -132,7 +153,10 @@ private fun ItemSummaryScreen(
                 onCopy = {
                     viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails)
                     //showCopyDialog = true
-                }
+                },
+                onTransfer = onTransferLambda,
+                transferButtonText = transferButtonText,
+                transferButtonPainter = transferButtonPainter
             )
         },
         content = { innerPadding ->
@@ -170,6 +194,22 @@ private fun ItemSummaryScreen(
                 showCopyDialog = false
             },
             onCancel = { showCopyDialog = false }
+        )
+    }
+    if (showTransferDialog) {
+        TransferDialog(
+            title = transferDialogTitle,
+            text = transferDialogText,
+            confirmButtonText = stringResource(R.string.ok_text),
+            onConfirm = {
+                showTransferDialog = false
+                coroutineScope.launch {
+                    viewModel.transferItem()
+                    viewModel.deleteItem()
+                    onBack()
+                }
+            },
+            onCancel = { showTransferDialog = false }
         )
     }
 }

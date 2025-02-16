@@ -54,6 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
+import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
 import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
@@ -67,11 +68,13 @@ fun ItemEntryScreen(
     viewModel: ItemEntryViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
+    val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ItemEntryScreen(
-        uiState,
         viewModel,
+        userPreferences,
+        uiState,
         onValueChange = viewModel::updateUiState,
         onBack
     )
@@ -80,8 +83,9 @@ fun ItemEntryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemEntryScreen(
-    uiState: ItemEntryUiState,
     viewModel: ItemEntryViewModel,
+    userPreferences: UserPreferences,
+    uiState: ItemEntryUiState,
     onValueChange: (ItemDetails) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -126,8 +130,9 @@ private fun ItemEntryScreen(
         },
         content = { innerPadding ->
             ItemEntryScreenContent(
-                uiState,
                 viewModel,
+                userPreferences,
+                uiState,
                 saveButtonText,
                 saveButtonIcon,
                 modifier = Modifier.padding(innerPadding),
@@ -149,8 +154,9 @@ private fun ItemEntryScreen(
 
 @Composable
 private fun ItemEntryScreenContent(
-    uiState: ItemEntryUiState,
     viewModel: ItemEntryViewModel,
+    userPreferences: UserPreferences,
+    uiState: ItemEntryUiState,
     saveButtonText: String,
     saveButtonIcon: Painter,
     modifier: Modifier,
@@ -158,6 +164,7 @@ private fun ItemEntryScreenContent(
     onSave: () -> Unit
 ) {
     val collections = viewModel.getCollections()
+    val localeCode = userPreferences.userCountry //TODO implement units based on preferences
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
@@ -231,7 +238,7 @@ private fun ItemEntryScreenContent(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    keyboardType = KeyboardType.Number
+                    keyboardType = KeyboardType.NumberPassword
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 EntryField(
@@ -245,7 +252,7 @@ private fun ItemEntryScreenContent(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    keyboardType = KeyboardType.Number
+                    keyboardType = KeyboardType.NumberPassword
                 )
             }
             EntryField(
@@ -257,7 +264,7 @@ private fun ItemEntryScreenContent(
                             year = if (newValue.isValidYear()) newValue.toInt() else null)
                     )
                 },
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.NumberPassword
             )
             ItemEntryVerticalSpacer()
         }
@@ -330,7 +337,7 @@ private fun ItemEntryScreenContent(
                                 onValueChange = { onValueChange( // TODO improve input logic
                                     uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
                                 },
-                                keyboardType = KeyboardType.Number,
+                                keyboardType = KeyboardType.NumberPassword
                             )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
@@ -344,7 +351,7 @@ private fun ItemEntryScreenContent(
                                         else newValue.toLongOrNull())
                                     )
                                 },
-                                keyboardType = KeyboardType.Number,
+                                keyboardType = KeyboardType.NumberPassword
                             )
                         }
                     }

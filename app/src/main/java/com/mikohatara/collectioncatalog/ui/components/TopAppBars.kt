@@ -81,7 +81,10 @@ fun ItemSummaryTopAppBar(
     onBack: () -> Unit,
     onEdit: (Item) -> Unit,
     onDelete: () -> Unit,
-    onCopy: (() -> Unit)? = null
+    onCopy: (() -> Unit)? = null,
+    onTransfer: (() -> Unit)? = null,
+    transferButtonText: String = "",
+    transferButtonPainter: Painter = painterResource(R.drawable.rounded_question_mark)
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -128,7 +131,17 @@ fun ItemSummaryTopAppBar(
                     text = stringResource(R.string.copy),
                     enabled = onCopy != null
                 )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                onTransfer?.let {
+                    ModifiedDropdownMenuItem(
+                        onClick = {
+                            it()
+                            isMenuExpanded = false
+                        },
+                        painterResource = transferButtonPainter,
+                        text = transferButtonText,
+                    )
+                }
                 ModifiedDropdownMenuItem(
                     onClick = {
                         onDelete()
