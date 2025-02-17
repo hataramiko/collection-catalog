@@ -238,7 +238,7 @@ private fun ItemEntryScreenContent(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    keyboardType = KeyboardType.NumberPassword
+                    keyboardType = KeyboardType.Number
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 EntryField(
@@ -252,7 +252,7 @@ private fun ItemEntryScreenContent(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    keyboardType = KeyboardType.NumberPassword
+                    keyboardType = KeyboardType.Number
                 )
             }
             EntryField(
@@ -264,7 +264,7 @@ private fun ItemEntryScreenContent(
                             year = if (newValue.isValidYear()) newValue.toInt() else null)
                     )
                 },
-                keyboardType = KeyboardType.NumberPassword
+                keyboardType = KeyboardType.Number
             )
             ItemEntryVerticalSpacer()
         }
@@ -337,7 +337,7 @@ private fun ItemEntryScreenContent(
                                 onValueChange = { onValueChange( // TODO improve input logic
                                     uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
                                 },
-                                keyboardType = KeyboardType.NumberPassword
+                                keyboardType = KeyboardType.Number
                             )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
@@ -351,7 +351,7 @@ private fun ItemEntryScreenContent(
                                         else newValue.toLongOrNull())
                                     )
                                 },
-                                keyboardType = KeyboardType.NumberPassword
+                                keyboardType = KeyboardType.Number
                             )
                         }
                     }
@@ -456,16 +456,16 @@ private fun ItemEntryScreenContent(
                     EntryField(
                         label = stringResource(R.string.source_country),
                         value = uiState.itemDetails.sourceCountry ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) },
-                        imeAction = if (uiState.itemType != ItemType.FORMER_PLATE) ImeAction.Done
-                        else ImeAction.Next
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) }
                     )
                 }
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.source_details),
                         value = uiState.itemDetails.sourceDetails ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) }
+                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) },
+                        imeAction = if (uiState.itemType != ItemType.FORMER_PLATE) ImeAction.Done
+                        else ImeAction.Next
                     )
                 }
             }

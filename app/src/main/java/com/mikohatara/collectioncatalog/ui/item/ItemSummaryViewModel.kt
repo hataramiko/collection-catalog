@@ -103,7 +103,7 @@ class ItemSummaryViewModel @Inject constructor(
         }
     }
 
-    fun transferItem() {
+    fun transferItem() = viewModelScope.launch {
         when (uiState.value.item) {
             is Item.WantedPlateItem -> addNewPlate()
             is Item.PlateItem -> addNewFormerPlate()
@@ -118,11 +118,20 @@ class ItemSummaryViewModel @Inject constructor(
         clipboard.setPrimaryClip(clip)
     }
 
-    private fun addNewPlate() = viewModelScope.launch {
-        plateRepository.addPlate(uiState.value.itemDetails.toPlate())
+    private suspend fun addNewPlate() {
+        val regNo = uiState.value.itemDetails.regNo.takeIf { !it.isNullOrBlank() }
+        val country = uiState.value.itemDetails.country.takeIf { !it.isNullOrBlank() }
+        val type = uiState.value.itemDetails.type.takeIf { !it.isNullOrBlank() }
+
+        plateRepository.addPlate(uiState.value.itemDetails.copy(
+            id = null,
+            regNo = regNo ?: "–",
+            country = country ?: "–",
+            type = type ?: "–"
+        ).toPlate())
     }
 
-    private fun addNewFormerPlate() = viewModelScope.launch {
-        plateRepository.addFormerPlate(uiState.value.itemDetails.toFormerPlate())
+    private suspend fun addNewFormerPlate() {
+        plateRepository.addFormerPlate(uiState.value.itemDetails.copy(id = null).toFormerPlate())
     }
 }
