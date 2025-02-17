@@ -127,4 +127,10 @@
     <string name="transfer_from_wishlist_dialog_title">完了にしますか？</string>
     <string name="transfer_from_wishlist_button">完了にする</string>
     <string name="transfer_from_plates_button">アーカイブ</string>
+    <plurals name="plates_list_size">
+        <item quantity="other">%d枚のプレート</item>
+    </plurals>
+    <plurals name="wishlist_list_size">
+        <item quantity="other">%d件の欲しい物</item>
+    </plurals>
 </resources>

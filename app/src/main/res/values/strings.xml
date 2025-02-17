@@ -134,4 +134,12 @@
     <string name="transfer_from_plates_dialog_text">A copy of this plate will be added to the archive, and the plate will be deleted.</string>
     <string name="transfer_from_wishlist_button">Mark as complete</string>
     <string name="transfer_from_plates_button">Archive</string>
+    <plurals name="plates_list_size">
+        <item quantity="one">%d plate</item>
+        <item quantity="other">%d plates</item>
+    </plurals>
+    <plurals name="wishlist_list_size">
+        <item quantity="one">%d entry</item>
+        <item quantity="other">%d entries</item>
+    </plurals>
 </resources>

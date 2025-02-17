@@ -128,4 +128,12 @@
     <string name="transfer_from_wishlist_dialog_title">Merkkaa toteutuneeksi?</string>
     <string name="transfer_from_wishlist_button">Merkkaa toteutuneeksi</string>
     <string name="transfer_from_plates_button">Arkistoi</string>
+    <plurals name="plates_list_size">
+        <item quantity="one">%d kilpi</item>
+        <item quantity="other">%d kilpeä</item>
+    </plurals>
+    <plurals name="wishlist_list_size">
+        <item quantity="one">%d esine</item>
+        <item quantity="other">%d esinettä</item>
+    </plurals>
 </resources>

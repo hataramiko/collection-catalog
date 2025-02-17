@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -164,7 +165,12 @@ private fun ArchiveScreenContent(
                 }
             }
             item {
-                EndOfList(hasCircle = true)
+                EndOfList(
+                    hasCircle = true,
+                    text = pluralStringResource(
+                        R.plurals.plates_list_size, itemList.size, itemList.size
+                    )
+                )
             }
         }
     }
