@@ -37,6 +37,6 @@ fun Int.toLengthString(): String {
     return "$this mm"
 }
 
-fun Double.toWeightString(): String {
-    return "$this kg"
+fun Int.toWeightString(): String {
+    return "$this g"
 }

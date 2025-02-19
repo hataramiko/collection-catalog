@@ -38,7 +38,7 @@ data class ItemDetails(
     // Size
     val width: Int? = null,
     val height: Int? = null,
-    val weight: Double? = null,
+    val weight: Int? = null,
     // Color
     val colorMain: String? = null,
     val colorSecondary: String? = null,

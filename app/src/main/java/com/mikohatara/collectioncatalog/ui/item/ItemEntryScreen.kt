@@ -372,49 +372,47 @@ private fun ItemEntryScreenContent(
         EntrySection(
             label = stringResource(R.string.physical_attributes)
         ) {
-            if (uiState.itemType != ItemType.WANTED_PLATE) {
-                Row {
-                    EntryFieldBackground(modifier = Modifier.weight(1f)) {
-                        EntryField(
-                            label = stringResource(R.string.width),
-                            value = uiState.itemDetails.width?.toString() ?: "",
-                            onValueChange = { newValue ->
-                                onValueChange(uiState.itemDetails.copy(
-                                    width = if (newValue.isBlankOrZero()) null
-                                    else newValue.toIntOrNull())
-                                )
-                            },
-                            keyboardType = KeyboardType.Number
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    EntryFieldBackground(modifier = Modifier.weight(1f)) {
-                        EntryField(
-                            label = stringResource(R.string.height),
-                            value = uiState.itemDetails.height?.toString() ?: "",
-                            onValueChange = { newValue ->
-                                onValueChange(uiState.itemDetails.copy(
-                                    height = if (newValue.isBlankOrZero()) null
-                                    else newValue.toIntOrNull())
-                                )
-                            },
-                            keyboardType = KeyboardType.Number
-                        )
-                    }
-                }
-                EntryFieldBackground {
+            Row {
+                EntryFieldBackground(modifier = Modifier.weight(1f)) {
                     EntryField(
-                        label = stringResource(R.string.weight),
-                        value = uiState.itemDetails.weight?.toString() ?: "",
+                        label = stringResource(R.string.width),
+                        value = uiState.itemDetails.width?.toString() ?: "",
                         onValueChange = { newValue ->
                             onValueChange(uiState.itemDetails.copy(
-                                weight = if (newValue.isBlankOrZero()) null
-                                else newValue.toDoubleOrNull())
+                                width = if (newValue.isBlankOrZero()) null
+                                else newValue.toIntOrNull())
                             )
                         },
                         keyboardType = KeyboardType.Number
                     )
                 }
+                Spacer(modifier = Modifier.width(10.dp))
+                EntryFieldBackground(modifier = Modifier.weight(1f)) {
+                    EntryField(
+                        label = stringResource(R.string.height),
+                        value = uiState.itemDetails.height?.toString() ?: "",
+                        onValueChange = { newValue ->
+                            onValueChange(uiState.itemDetails.copy(
+                                height = if (newValue.isBlankOrZero()) null
+                                else newValue.toIntOrNull())
+                            )
+                        },
+                        keyboardType = KeyboardType.Number
+                    )
+                }
+            }
+            EntryFieldBackground {
+                EntryField(
+                    label = stringResource(R.string.weight),
+                    value = uiState.itemDetails.weight?.toString() ?: "",
+                    onValueChange = { newValue ->
+                        onValueChange(uiState.itemDetails.copy(
+                            weight = if (newValue.isBlankOrZero()) null
+                            else newValue.toIntOrNull())
+                        )
+                    },
+                    keyboardType = KeyboardType.Number
+                )
             }
             EntryFieldBackground {
                 EntryField(

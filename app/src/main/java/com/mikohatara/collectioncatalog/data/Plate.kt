@@ -22,6 +22,7 @@ data class WantedPlate(
     @ColumnInfo(name = "image_path") val imagePath: String?,
     @ColumnInfo(name = "notes") val notes: String?,
     @Embedded val commonDetails: CommonDetails,
+    @Embedded val size: Size,
     @Embedded val color: Color
 )
 
@@ -61,7 +62,7 @@ data class UniqueDetails( // TODO include "condition" and/or "grade"???
 data class Size(
     @ColumnInfo(name = "width") val width: Int?,
     @ColumnInfo(name = "height") val height: Int?,
-    @ColumnInfo(name = "weight") val weight: Double?
+    @ColumnInfo(name = "weight") val weight: Int?
 )
 
 data class Color(

@@ -66,6 +66,11 @@ fun ItemDetails.toWantedPlate(): WantedPlate = WantedPlate(
         periodEnd?.takeIf { it.isValidYear() },
         year?.takeIf { it.isValidYear() }
     ),
+    Size(
+        width,
+        height,
+        weight
+    ),
     Color(
         colorMain?.takeIf { it.isNotBlank() },
         colorSecondary?.takeIf { it.isNotBlank() }
@@ -161,8 +166,6 @@ fun WantedPlate.toItemDetails(): ItemDetails = ItemDetails(
     regNo = regNo,
     imagePath = imagePath,
     notes = notes,
-    colorMain = color.main,
-    colorSecondary = color.secondary,
     // CommonDetails
     country = commonDetails.country,
     region1st = commonDetails.region1st,
@@ -171,7 +174,14 @@ fun WantedPlate.toItemDetails(): ItemDetails = ItemDetails(
     type = commonDetails.type,
     periodStart = commonDetails.periodStart,
     periodEnd = commonDetails.periodEnd,
-    year = commonDetails.year
+    year = commonDetails.year,
+    // Size
+    width = size.width,
+    height = size.height,
+    weight = size.weight,
+    // Color
+    colorMain = color.main,
+    colorSecondary = color.secondary,
 )
 
 fun FormerPlate.toItemDetails(): ItemDetails = ItemDetails(
