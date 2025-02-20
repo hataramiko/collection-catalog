@@ -29,7 +29,7 @@ class WishlistViewModel @Inject constructor(
 ) : ViewModel() {
     private val _allItems = mutableListOf<WantedPlate>()
     val showSortByBottomSheet = mutableStateOf(false)
-    val showFiltersBottomSheet = mutableStateOf(false)
+    val showFilterBottomSheet = mutableStateOf(false)
 
     private val _isTopRowHidden = MutableStateFlow(false)
     val isTopRowHidden: StateFlow<Boolean> = _isTopRowHidden.asStateFlow()

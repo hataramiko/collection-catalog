@@ -136,4 +136,5 @@
         <item quantity="one">%d esine</item>
         <item quantity="other">%d esinettä</item>
     </plurals>
+    <string name="version">Versio</string>
 </resources>

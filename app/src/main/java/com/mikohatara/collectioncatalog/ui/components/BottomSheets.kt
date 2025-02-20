@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Badge
@@ -28,8 +26,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.home.HomeUiState
 import com.mikohatara.collectioncatalog.ui.home.HomeViewModel
+import com.mikohatara.collectioncatalog.ui.home.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
 
 //TODO maybe combine SortByBottomSheet and FilterBottomSheet into one BottomSheet?
@@ -80,11 +77,11 @@ fun BottomSheet(
 @Composable
 fun SortByBottomSheet(
     onDismiss: () -> Unit,
-    uiState: HomeUiState,
-    viewModel: HomeViewModel
+    onClick: (SortBy) -> Unit,
+    sortByOptions: List<SortBy>,
+    selectedSortBy: SortBy
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val sortByOptions = viewModel.getSortByOptions()
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -96,24 +93,24 @@ fun SortByBottomSheet(
                 .selectableGroup()
                 .padding(top = 8.dp, bottom = 16.dp)
         ) {
-            sortByOptions.forEach { option ->
+            sortByOptions.forEach { sortByOption ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .selectable(
-                            selected = (option == uiState.sortBy),
-                            onClick = { viewModel.setSortBy(option) },
+                            selected = (sortByOption == selectedSortBy),
+                            onClick = { onClick(sortByOption) },
                             role = Role.RadioButton
                         )
                 ) {
                     RadioButton(
-                        selected = (option == uiState.sortBy),
+                        selected = (sortByOption == selectedSortBy),
                         onClick = null,
                         modifier = Modifier
                             .padding(start = 32.dp, top = 12.dp, end = 16.dp, bottom = 12.dp)
                     )
-                    Text(getSortByText(option))
+                    Text(getSortByText(sortByOption))
                 }
             }
         }

@@ -38,8 +38,10 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.WantedPlate
 import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
+import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
+import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.TopRow
 import com.mikohatara.collectioncatalog.ui.components.WishlistCard
 
@@ -106,8 +108,24 @@ private fun WishlistScreen(
                 topBarState = scrollBehavior.state,
                 itemList = itemList,
                 onItemClick = onItemClick,
+                onSortByClick = {},
+                onFilterClick = {},
                 modifier = Modifier.padding(innerPadding)
             )
+            /*if (viewModel.showSortByBottomSheet.value) {
+                SortByBottomSheet(
+                    onDismiss = { viewModel.showSortByBottomSheet.value = false },
+                    uiState = uiState,
+                    viewModel = viewModel
+                )
+            }
+            if (viewModel.showFilterBottomSheet.value) {
+                FilterBottomSheet(
+                    onDismiss = { viewModel.showFilterBottomSheet.value = false },
+                    uiState = uiState,
+                    viewModel = viewModel
+                )
+            }*/
         }
     )
 }
@@ -120,6 +138,8 @@ private fun WishlistScreenContent(
     topBarState: TopAppBarState,
     itemList: List<WantedPlate>,
     onItemClick: (WantedPlate) -> Unit,
+    onSortByClick: () -> Unit,
+    onFilterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -139,7 +159,7 @@ private fun WishlistScreenContent(
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
-            TopRow(viewModel.isTopRowHidden.value, isAtTop.value, {}, {})
+            TopRow(viewModel.isTopRowHidden.value, isAtTop.value, onSortByClick, onFilterClick)
         }
         if (uiState.isLoading) {
             item {

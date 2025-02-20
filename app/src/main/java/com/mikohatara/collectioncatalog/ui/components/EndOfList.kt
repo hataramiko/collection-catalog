@@ -39,16 +39,10 @@ fun EndOfList(
             )
         }
     } else if (text != null) {
-        HorizontalDivider(
-            color = color,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp)
-        )
         Text(
             text = text,
             color = color,
-            modifier = Modifier.padding(bottom = 22.dp, top = 2.dp)
+            modifier = Modifier.padding(vertical = 16.dp)
         )
     } else {
         Spacer(modifier = modifier.height(48.dp))

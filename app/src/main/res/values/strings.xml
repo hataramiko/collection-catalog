@@ -142,4 +142,5 @@
         <item quantity="one">%d entry</item>
         <item quantity="other">%d entries</item>
     </plurals>
+    <string name="version">Version</string>
 </resources>

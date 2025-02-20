@@ -28,6 +28,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.pm.PackageInfoCompat
+import androidx.core.content.pm.PackageInfoCompat.getLongVersionCode
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
@@ -155,6 +157,7 @@ private fun SettingsScreenContent(
                 text = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() }
             )
         }
+        Version()
     }
 }
 
@@ -163,20 +166,28 @@ private fun SettingsButton(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     icon: @Composable (() -> Unit)? = null,
     text: String? = null
 ) {
+    val labelColor = if (enabled) {
+        MaterialTheme.colorScheme.onBackground
+    } else {
+        MaterialTheme.colorScheme.outlineVariant
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(enabled = enabled) { onClick() }
             .padding(8.dp)
     ) {
         if (icon != null) icon() else Spacer(modifier = Modifier.size(64.dp))
         Column {
             Text(
-                label,
+                text = label,
+                color = labelColor,
                 fontSize = 20.sp
             )
             text?.let {
@@ -190,6 +201,22 @@ private fun SettingsButton(
 }
 
 @Composable
+private fun Version() {
+    val packageManager = LocalContext.current.packageManager
+    val packageName = LocalContext.current.packageName
+    val versionName = packageManager.getPackageInfo(packageName, 0).versionName
+    val versionCode = getLongVersionCode(packageManager.getPackageInfo(packageName, 0))
+
+    SettingsDivider()
+    SettingsButton(
+        label = stringResource(R.string.version),
+        onClick = {},
+        enabled = false,
+        text = "$versionName ($versionCode)"
+    )
+}
+
+@Composable
 private fun SettingsDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(modifier = modifier.padding(horizontal = 24.dp))
+    HorizontalDivider(modifier = modifier.padding(horizontal = 24.dp, vertical = 12.dp))
 }

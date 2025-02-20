@@ -37,9 +37,11 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.FormerPlate
 import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
+import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.Loading
+import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.TopRow
 
 @Composable
@@ -51,7 +53,7 @@ fun ArchiveScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    WishlistScreen(
+    ArchiveScreen(
         itemList = uiState.items,
         uiState = uiState,
         viewModel = viewModel,
@@ -63,7 +65,7 @@ fun ArchiveScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun WishlistScreen(
+private fun ArchiveScreen(
     itemList: List<FormerPlate>,
     uiState: ArchiveUiState,
     viewModel: ArchiveViewModel,
@@ -105,8 +107,24 @@ private fun WishlistScreen(
                 topBarState = scrollBehavior.state,
                 itemList = itemList,
                 onItemClick = onItemClick,
+                onSortByClick = {},
+                onFilterClick = {},
                 modifier = modifier.padding(innerPadding)
             )
+            /*if (viewModel.showSortByBottomSheet.value) {
+                SortByBottomSheet(
+                    onDismiss = { viewModel.showSortByBottomSheet.value = false },
+                    uiState = uiState,
+                    viewModel = viewModel
+                )
+            }
+            if (viewModel.showFilterBottomSheet.value) {
+                FilterBottomSheet(
+                    onDismiss = { viewModel.showFilterBottomSheet.value = false },
+                    uiState = uiState,
+                    viewModel = viewModel
+                )
+            }*/
         }
     )
 }
@@ -119,6 +137,8 @@ private fun ArchiveScreenContent(
     topBarState: TopAppBarState,
     itemList: List<FormerPlate>,
     onItemClick: (FormerPlate) -> Unit,
+    onSortByClick: () -> Unit,
+    onFilterClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val maxItemWidth = itemList.maxOfOrNull { it.size.width ?: 1 } ?: 1
@@ -139,7 +159,7 @@ private fun ArchiveScreenContent(
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
-            TopRow(viewModel.isTopRowHidden.value, isAtTop.value, {}, {})
+            TopRow(viewModel.isTopRowHidden.value, isAtTop.value, onSortByClick, onFilterClick)
         }
         if (uiState.isLoading) {
             item {
