@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val userPreferences = userPreferencesRepository.userPreferences.first()
-            val defaultSortBy = userPreferences.defaultSortOrder
+            val defaultSortBy = userPreferences.defaultSortOrderMain
             _uiState.update { it.copy(sortBy = defaultSortBy) }
             getPlates()
             collectionId?.let {
@@ -115,14 +115,16 @@ class HomeViewModel @Inject constructor(
                         it.commonDetails.year ?: it.commonDetails.periodStart
                     }
             )
-            SortBy.DATE_NEWEST -> items.sortedWith(
+            SortBy.START_DATE_NEWEST -> items.sortedWith(
                 compareByDescending<Plate, String?>(nullsLast()) { it.uniqueDetails.date }
                     .thenByDescending { it.id }
             )
-            SortBy.DATE_OLDEST -> items.sortedWith(
+            SortBy.START_DATE_OLDEST -> items.sortedWith(
                 compareBy<Plate, String?>(nullsLast()) { it.uniqueDetails.date }
                     .thenBy { it.id }
             )
+            SortBy.END_DATE_NEWEST -> items
+            SortBy.END_DATE_OLDEST -> items
         }
         _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }
         updateDefaultSortBy(sortBy)
@@ -174,7 +176,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getSortByOptions(): List<SortBy> {
-        val sortByOptions = SortBy.entries.toList()
+        val sortByOptions = SortBy.entries.filter {
+            it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
+        }
         return sortByOptions
     }
 
@@ -224,7 +228,7 @@ class HomeViewModel @Inject constructor(
 
     private fun updateDefaultSortBy(sortBy: SortBy) {
         viewModelScope.launch {
-            userPreferencesRepository.saveDefaultSortOrder(sortBy)
+            userPreferencesRepository.saveDefaultSortOrderMain(sortBy)
         }
     }
 
@@ -239,8 +243,10 @@ enum class SortBy {
     COUNTRY_AND_TYPE_DESC,
     COUNTRY_AND_AGE_ASC,
     COUNTRY_AND_AGE_DESC,
-    DATE_NEWEST,
-    DATE_OLDEST
+    START_DATE_NEWEST,
+    START_DATE_OLDEST,
+    END_DATE_NEWEST,
+    END_DATE_OLDEST
 }
 
 data class FilterData(

@@ -14,7 +14,9 @@ fun getSortByText(sortBy: SortBy): String {
         SortBy.COUNTRY_AND_TYPE_DESC -> stringResource(R.string.sort_by_country_and_type_desc)
         SortBy.COUNTRY_AND_AGE_ASC -> stringResource(R.string.sort_by_country_and_age_asc)
         SortBy.COUNTRY_AND_AGE_DESC -> stringResource(R.string.sort_by_country_and_age_desc)
-        SortBy.DATE_NEWEST -> stringResource(R.string.sort_by_date_newest)
-        SortBy.DATE_OLDEST -> stringResource(R.string.sort_by_date_oldest)
+        SortBy.START_DATE_NEWEST -> stringResource(R.string.sort_by_date_newest)
+        SortBy.START_DATE_OLDEST -> stringResource(R.string.sort_by_date_oldest)
+        SortBy.END_DATE_NEWEST -> "Most recent archival" //TODO add stringRes
+        SortBy.END_DATE_OLDEST -> "Earliest archival"
     }
 }

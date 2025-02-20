@@ -40,7 +40,7 @@ class WishlistViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val userPreferences = userPreferencesRepository.userPreferences.first()
-            val defaultSortBy = userPreferences.defaultSortOrder
+            val defaultSortBy = userPreferences.defaultSortOrderWishlist
             _uiState.update { it.copy(sortBy = defaultSortBy) }
             getWishlist()
         }
@@ -71,9 +71,27 @@ class WishlistViewModel @Inject constructor(
             SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedByDescending { it.commonDetails.type }
             SortBy.COUNTRY_AND_AGE_ASC -> items.sortedBy { it.commonDetails.year }
             SortBy.COUNTRY_AND_AGE_DESC -> items.sortedByDescending { it.commonDetails.year }
-            SortBy.DATE_NEWEST -> items.sortedByDescending { it.commonDetails.country }
-            SortBy.DATE_OLDEST -> items.sortedBy { it.commonDetails.country }
+            SortBy.START_DATE_NEWEST -> items.sortedByDescending { it.commonDetails.country }
+            SortBy.START_DATE_OLDEST -> items.sortedBy { it.commonDetails.country }
+            SortBy.END_DATE_NEWEST -> items
+            SortBy.END_DATE_OLDEST -> items
         }
         _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }
+        updateDefaultSortBy(sortBy)
+    }
+
+    fun getSortByOptions(): List<SortBy> {
+        val sortByOptions = SortBy.entries.filter {
+            it != SortBy.COUNTRY_AND_AGE_ASC && it != SortBy.COUNTRY_AND_AGE_DESC &&
+            it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST &&
+            it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
+        }
+        return sortByOptions
+    }
+
+    private fun updateDefaultSortBy(sortBy: SortBy) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveDefaultSortOrderWishlist(sortBy)
+        }
     }
 }

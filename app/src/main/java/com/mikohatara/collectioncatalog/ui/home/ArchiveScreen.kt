@@ -107,18 +107,22 @@ private fun ArchiveScreen(
                 topBarState = scrollBehavior.state,
                 itemList = itemList,
                 onItemClick = onItemClick,
-                onSortByClick = {},
+                onSortByClick = { viewModel.showSortByBottomSheet.value = true },
                 onFilterClick = {},
                 modifier = modifier.padding(innerPadding)
             )
-            /*if (viewModel.showSortByBottomSheet.value) {
+            if (viewModel.showSortByBottomSheet.value) {
                 SortByBottomSheet(
                     onDismiss = { viewModel.showSortByBottomSheet.value = false },
-                    uiState = uiState,
-                    viewModel = viewModel
+                    onClick = { sortBy ->
+                        viewModel.setSortBy(sortBy)
+                        //viewModel.showSortByBottomSheet.value = false
+                    },
+                    sortByOptions = viewModel.getSortByOptions(),
+                    selectedSortBy = uiState.sortBy
                 )
             }
-            if (viewModel.showFilterBottomSheet.value) {
+            /*if (viewModel.showFilterBottomSheet.value) {
                 FilterBottomSheet(
                     onDismiss = { viewModel.showFilterBottomSheet.value = false },
                     uiState = uiState,

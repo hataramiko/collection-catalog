@@ -19,7 +19,9 @@ class UserPreferencesRepository @Inject constructor(
 ) {
     private companion object {
         val USER_COUNTRY = stringPreferencesKey("user_country")
-        val DEFAULT_SORT_ORDER = stringPreferencesKey("default_sort_order")
+        val DEFAULT_SORT_ORDER_MAIN = stringPreferencesKey("default_sort_order_main")
+        val DEFAULT_SORT_ORDER_WISHLIST = stringPreferencesKey("default_sort_order_wishlist")
+        val DEFAULT_SORT_ORDER_ARCHIVE = stringPreferencesKey("default_sort_order_archive")
         const val LOG_TAG = "UserPreferencesRepository"
     }
 
@@ -34,12 +36,20 @@ class UserPreferencesRepository @Inject constructor(
         }
         .map { preferences ->
             val userCountry = preferences[USER_COUNTRY] ?: Locale.getDefault().country ?: "FI"
-            val defaultSortOrder = SortBy.valueOf(
-                preferences[DEFAULT_SORT_ORDER] ?: SortBy.COUNTRY_AND_TYPE_ASC.toString()
+            val defaultSortOrderMain = SortBy.valueOf(
+                preferences[DEFAULT_SORT_ORDER_MAIN] ?: SortBy.COUNTRY_AND_TYPE_ASC.toString()
+            )
+            val defaultSortOrderWishlist = SortBy.valueOf(
+                preferences[DEFAULT_SORT_ORDER_WISHLIST] ?: SortBy.COUNTRY_AND_TYPE_ASC.toString()
+            )
+            val defaultSortOrderArchive = SortBy.valueOf(
+                preferences[DEFAULT_SORT_ORDER_ARCHIVE] ?: SortBy.COUNTRY_AND_TYPE_ASC.toString()
             )
             UserPreferences(
                 userCountry,
-                defaultSortOrder
+                defaultSortOrderMain,
+                defaultSortOrderWishlist,
+                defaultSortOrderArchive
             )
         }
 
@@ -49,14 +59,28 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun saveDefaultSortOrder(sortOrder: SortBy) {
+    suspend fun saveDefaultSortOrderMain(sortOrder: SortBy) {
         dataStore.edit { preferences ->
-            preferences[DEFAULT_SORT_ORDER] = sortOrder.toString()
+            preferences[DEFAULT_SORT_ORDER_MAIN] = sortOrder.toString()
+        }
+    }
+
+    suspend fun saveDefaultSortOrderWishlist(sortOrder: SortBy) {
+        dataStore.edit { preferences ->
+            preferences[DEFAULT_SORT_ORDER_WISHLIST] = sortOrder.toString()
+        }
+    }
+
+    suspend fun saveDefaultSortOrderArchive(sortOrder: SortBy) {
+        dataStore.edit { preferences ->
+            preferences[DEFAULT_SORT_ORDER_ARCHIVE] = sortOrder.toString()
         }
     }
 }
 
 data class UserPreferences(
     val userCountry: String = Locale.getDefault().country ?: "FI",
-    val defaultSortOrder: SortBy = SortBy.COUNTRY_AND_TYPE_ASC
+    val defaultSortOrderMain: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
+    val defaultSortOrderWishlist: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
+    val defaultSortOrderArchive: SortBy = SortBy.COUNTRY_AND_TYPE_ASC
 )
