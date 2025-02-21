@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.ui.home.HomeUiState
+import com.mikohatara.collectioncatalog.ui.home.FilterData
 import com.mikohatara.collectioncatalog.ui.home.HomeViewModel
 import com.mikohatara.collectioncatalog.ui.home.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
@@ -122,15 +122,18 @@ fun SortByBottomSheet(
 @Composable
 fun FilterBottomSheet(
     onDismiss: () -> Unit,
-    uiState: HomeUiState,
-    viewModel: HomeViewModel
+    filters: FilterData,
+    onApply: () -> Unit,
+    onReset: () -> Unit,
+    countries: Set<String>,
+    toggleCountry: (String) -> Unit,
+    types: Set<String>,
+    toggleType: (String) -> Unit,
+    locations: Set<String>? = null,
+    toggleLocation: ((String) -> Unit)? = null
 ) {
     val sheetState = rememberModalBottomSheetState()
     var sheetHeight by remember { mutableIntStateOf(0) }
-
-    val countries = viewModel.getCountries()
-    val types = viewModel.getTypes()
-    val locations = viewModel.getLocations()
 
     var isCountriesExpanded by remember { mutableStateOf(false) }
     var isTypesExpanded by remember { mutableStateOf(false) }
@@ -149,7 +152,7 @@ fun FilterBottomSheet(
                 stickyHeader {
                     FilterListLabel(
                         label = stringResource(R.string.country),
-                        activeFilters = uiState.filters.country,
+                        activeFilters = filters.country,
                         isExpanded = isCountriesExpanded,
                         onExpand = { isCountriesExpanded = !isCountriesExpanded }
                     )
@@ -157,15 +160,15 @@ fun FilterBottomSheet(
                 item {
                     FilterListContent(
                         filterOptions = countries,
-                        activeFilters = uiState.filters.country,
+                        activeFilters = filters.country,
                         isExpanded = isCountriesExpanded,
-                        onToggleFilter = { viewModel.toggleCountryFilter(it) }
+                        onToggleFilter = { toggleCountry(it) }
                     )
                 }
                 stickyHeader {
                     FilterListLabel(
                         label = stringResource(R.string.type),
-                        activeFilters = uiState.filters.type,
+                        activeFilters = filters.type,
                         isExpanded = isTypesExpanded,
                         onExpand = { isTypesExpanded = !isTypesExpanded }
                     )
@@ -173,26 +176,28 @@ fun FilterBottomSheet(
                 item {
                     FilterListContent(
                         filterOptions = types,
-                        activeFilters = uiState.filters.type,
+                        activeFilters = filters.type,
                         isExpanded = isTypesExpanded,
-                        onToggleFilter = { viewModel.toggleTypeFilter(it) }
+                        onToggleFilter = { toggleType(it) }
                     )
                 }
-                stickyHeader {
-                    FilterListLabel(
-                        label = stringResource(R.string.location),
-                        activeFilters = uiState.filters.location,
-                        isExpanded = isLocationsExpanded,
-                        onExpand = { isLocationsExpanded = !isLocationsExpanded }
-                    )
-                }
-                item {
-                    FilterListContent(
-                        filterOptions = locations,
-                        activeFilters = uiState.filters.location,
-                        isExpanded = isLocationsExpanded,
-                        onToggleFilter = { viewModel.toggleLocationFilter(it) }
-                    )
+                if (locations != null && toggleLocation != null) {
+                    stickyHeader {
+                        FilterListLabel(
+                            label = stringResource(R.string.location),
+                            activeFilters = filters.location,
+                            isExpanded = isLocationsExpanded,
+                            onExpand = { isLocationsExpanded = !isLocationsExpanded }
+                        )
+                    }
+                    item {
+                        FilterListContent(
+                            filterOptions = locations,
+                            activeFilters = filters.location,
+                            isExpanded = isLocationsExpanded,
+                            onToggleFilter = { toggleLocation(it) }
+                        )
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(128.dp))
@@ -202,11 +207,10 @@ fun FilterBottomSheet(
         FilterFooter(
             sheetState = sheetState,
             sheetHeight = sheetHeight,
-            filterCount = uiState.filters.country.size + uiState.filters.type.size +
-                uiState.filters.location.size,
-            onReset = { viewModel.resetFilter() },
+            filterCount = filters.country.size + filters.type.size + filters.location.size,
+            onReset = { onReset() },
             onApply = {
-                viewModel.setFilter()
+                onApply()
                 onDismiss()
             }
         )

@@ -128,8 +128,15 @@ private fun HomeScreen(
             if (viewModel.showFilterBottomSheet.value) {
                 FilterBottomSheet(
                     onDismiss = { viewModel.showFilterBottomSheet.value = false },
-                    uiState = uiState,
-                    viewModel = viewModel
+                    filters = uiState.filters,
+                    onApply = { viewModel.setFilter() },
+                    onReset = { viewModel.resetFilter() },
+                    countries = viewModel.getCountries(),
+                    toggleCountry = { viewModel.toggleCountryFilter(it) },
+                    types = viewModel.getTypes(),
+                    toggleType = { viewModel.toggleTypeFilter(it) },
+                    locations = viewModel.getLocations(),
+                    toggleLocation = { viewModel.toggleLocationFilter(it) }
                 )
             }
         }
