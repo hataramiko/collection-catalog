@@ -89,9 +89,59 @@ class WishlistViewModel @Inject constructor(
         return sortByOptions
     }
 
+    fun setFilter() {
+        val filters = _uiState.value.filters
+
+        val filteredItems = _allItems.filter { item ->
+            when {
+                filters.country.isNotEmpty() && filters.country.none {
+                    it == item.commonDetails.country
+                } -> false
+                filters.type.isNotEmpty() && filters.type.none {
+                    it == item.commonDetails.type
+                } -> false
+                else -> true
+            }
+        }
+        _uiState.update { it.copy(items = filteredItems) }
+        setSortBy(uiState.value.sortBy)
+    }
+
+    fun toggleCountryFilter(country: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.country, country)
+        _uiState.update { it.copy(filters = it.filters.copy(country = newFilter)) }
+    }
+
+    fun toggleTypeFilter(type: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.type, type)
+        _uiState.update { it.copy(filters = it.filters.copy(type = newFilter)) }
+    }
+
+    fun resetFilter() {
+        _uiState.update { it.copy(filters = FilterData()) }
+        setFilter()
+    }
+
+    fun getCountries(): Set<String> {
+        return _allItems.map { it.commonDetails.country }
+            .filter { it.isNotBlank() }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getTypes(): Set<String> {
+        return _allItems.map { it.commonDetails.type }
+            .filter { it.isNotBlank() }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
     private fun updateDefaultSortBy(sortBy: SortBy) {
         viewModelScope.launch {
             userPreferencesRepository.saveDefaultSortOrderWishlist(sortBy)
         }
     }
+
+    private fun <T> toggleFilter(filters: Set<T>, item: T): Set<T> =
+        if (item in filters) filters - item else filters + item
 }

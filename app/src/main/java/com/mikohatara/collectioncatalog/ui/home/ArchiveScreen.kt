@@ -108,7 +108,7 @@ private fun ArchiveScreen(
                 itemList = itemList,
                 onItemClick = onItemClick,
                 onSortByClick = { viewModel.showSortByBottomSheet.value = true },
-                onFilterClick = {},
+                onFilterClick = { viewModel.showFilterBottomSheet.value = true },
                 modifier = modifier.padding(innerPadding)
             )
             if (viewModel.showSortByBottomSheet.value) {
@@ -122,13 +122,18 @@ private fun ArchiveScreen(
                     selectedSortBy = uiState.sortBy
                 )
             }
-            /*if (viewModel.showFilterBottomSheet.value) {
+            if (viewModel.showFilterBottomSheet.value) {
                 FilterBottomSheet(
                     onDismiss = { viewModel.showFilterBottomSheet.value = false },
-                    uiState = uiState,
-                    viewModel = viewModel
+                    filters = uiState.filters,
+                    onApply = { viewModel.setFilter() },
+                    onReset = { viewModel.resetFilter() },
+                    countries = viewModel.getCountries(),
+                    toggleCountry = { viewModel.toggleCountryFilter(it) },
+                    types = viewModel.getTypes(),
+                    toggleType = { viewModel.toggleTypeFilter(it) }
                 )
-            }*/
+            }
         }
     )
 }
