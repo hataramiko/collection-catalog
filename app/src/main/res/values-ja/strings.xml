@@ -134,4 +134,5 @@
         <item quantity="other">%d件の欲しい物</item>
     </plurals>
     <string name="version">バージョン</string>
+    <string name="search_placeholder">登録番号を検索</string>
 </resources>

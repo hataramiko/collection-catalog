@@ -173,7 +173,7 @@ private fun SettingsButton(
     val labelColor = if (enabled) {
         MaterialTheme.colorScheme.onBackground
     } else {
-        MaterialTheme.colorScheme.outlineVariant
+        MaterialTheme.colorScheme.outline
     }
 
     Row(

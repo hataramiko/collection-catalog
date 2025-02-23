@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.FormerPlate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
+import com.mikohatara.collectioncatalog.util.normalizeString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,8 @@ data class ArchiveUiState(
     val items: List<FormerPlate> = emptyList(),
     val sortBy: SortBy = SortBy.START_DATE_NEWEST,
     val filters: FilterData = FilterData(),
+    val isSearchActive: Boolean = false,
+    val searchQuery: String = "",
     val isLoading: Boolean = false
 )
 
@@ -60,6 +63,16 @@ class ArchiveViewModel @Inject constructor(
 
     fun updateTopRowVisibility(itemIndex: Int, topBarCollapsedFraction: Float) {
         _isTopRowHidden.value = (topBarCollapsedFraction > 0.5f) && (itemIndex > 0)
+    }
+
+    fun updateSearchQuery(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+        searchItems()
+    }
+
+    fun toggleSearch() {
+        _uiState.update { it.copy(isSearchActive = !it.isSearchActive) }
+        updateSearchQuery("")
     }
 
     fun setSortBy(sortBy: SortBy) {
@@ -133,6 +146,22 @@ class ArchiveViewModel @Inject constructor(
         return _allItems.map { it.commonDetails.type }
             .sortedWith(compareBy { it })
             .toSet()
+    }
+
+    private fun searchItems() {
+        val query = _uiState.value.searchQuery.lowercase()
+        setFilter()
+        val searchResults = if (query.isBlank()) {
+            uiState.value.items.toList()
+        } else {
+            val queryNormalized = normalizeString(query)
+            uiState.value.items.filter {
+                val regNoNormalized = normalizeString(it.uniqueDetails.regNo)
+                regNoNormalized.contains(queryNormalized)
+            }
+        }
+        _uiState.update { it.copy(items = searchResults) }
+        setSortBy(uiState.value.sortBy)
     }
 
     private fun updateDefaultSortBy(sortBy: SortBy) {

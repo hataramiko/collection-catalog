@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -76,6 +77,11 @@ private fun ArchiveScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
+    val onBackBehavior = { if (uiState.isSearchActive) viewModel.toggleSearch() }
+
+    BackHandler {
+        onBackBehavior()
+    }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -83,6 +89,10 @@ private fun ArchiveScreen(
             HomeTopAppBar(
                 title = stringResource(R.string.archive),
                 onOpenDrawer = onOpenDrawer,
+                onToggleSearch = { viewModel.toggleSearch() },
+                isSearchActive = uiState.isSearchActive,
+                searchQuery = uiState.searchQuery,
+                onSearchQueryChange = { viewModel.updateSearchQuery(it) },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -176,11 +186,20 @@ private fun ArchiveScreenContent(
             }
         } else if (itemList.isEmpty()) {
             item {
-                EmptyList(
-                    painter = painterResource(R.drawable.rounded_archive),
-                    message = stringResource(R.string.empty_list_archive_msg),
-                    description = stringResource(R.string.empty_list_archive_desc)
-                )
+                if (uiState.searchQuery != "") {
+                    EmptyList(
+                        message = "Nothing found",
+                        description = "Try changing your search query"
+                    )
+                } else if (uiState.filters != FilterData()) {
+                    EmptyList()
+                } else {
+                    EmptyList(
+                        painter = painterResource(R.drawable.rounded_archive),
+                        message = stringResource(R.string.empty_list_archive_msg),
+                        description = stringResource(R.string.empty_list_archive_desc)
+                    )
+                }
             }
         } else {
             items(items = itemList, key = { it.id }) { item ->

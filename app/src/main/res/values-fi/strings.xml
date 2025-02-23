@@ -137,4 +137,5 @@
         <item quantity="other">%d esinettä</item>
     </plurals>
     <string name="version">Versio</string>
+    <string name="search_placeholder">Hae rekisteritunnusta</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -18,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
@@ -78,7 +80,12 @@ private fun HomeScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
     val topBarTitle = viewModel.getCollectionName() ?: stringResource(R.string.all_plates)
+    val onBackBehavior = { if (uiState.isSearchActive) viewModel.toggleSearch() }
     //" (${itemList.size})"
+
+    BackHandler {
+        onBackBehavior()
+    }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -86,6 +93,10 @@ private fun HomeScreen(
             HomeTopAppBar(
                 title = topBarTitle,
                 onOpenDrawer = onOpenDrawer,
+                onToggleSearch = { viewModel.toggleSearch() },
+                isSearchActive = uiState.isSearchActive,
+                searchQuery = uiState.searchQuery,
+                onSearchQueryChange = { viewModel.updateSearchQuery(it) },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -182,7 +193,12 @@ private fun HomeScreenContent(
             }
         } else if (itemList.isEmpty()) {
             item {
-                if (uiState.filters != FilterData()) {
+                if (uiState.searchQuery != "") {
+                    EmptyList(
+                        message = "Nothing found",
+                        description = "Try changing your search query"
+                    )
+                } else if (uiState.filters != FilterData()) {
                     EmptyList()
                 } else if (viewModel.collectionId != null) {
                     EmptyList(

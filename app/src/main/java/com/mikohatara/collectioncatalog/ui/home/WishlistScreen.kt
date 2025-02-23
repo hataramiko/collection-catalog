@@ -176,11 +176,15 @@ private fun WishlistScreenContent(
             }
         } else if (itemList.isEmpty()) {
             item {
-                EmptyList(
-                    painter = painterResource(R.drawable.rounded_heart),
-                    message = stringResource(R.string.empty_list_wishlist_msg),
-                    description = stringResource(R.string.empty_list_wishlist_desc)
-                )
+                if (uiState.filters != FilterData()) {
+                    EmptyList()
+                } else {
+                    EmptyList(
+                        painter = painterResource(R.drawable.rounded_heart),
+                        message = stringResource(R.string.empty_list_wishlist_msg),
+                        description = stringResource(R.string.empty_list_wishlist_desc)
+                    )
+                }
             }
         } else {
             items(items = itemList, key = { it.id }) { item ->

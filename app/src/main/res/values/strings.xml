@@ -143,4 +143,5 @@
         <item quantity="other">%d entries</item>
     </plurals>
     <string name="version">Version</string>
+    <string name="search_placeholder">Search by registration number</string>
 </resources>
