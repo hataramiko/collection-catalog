@@ -131,6 +131,13 @@ private fun ItemSummaryScreen(
         ) to stringResource(R.string.transfer_from_plates_dialog_text)
         else -> "" to ""
     }
+    val transferToast = when (uiState.item) {
+        is Item.WantedPlateItem -> stringResource(R.string.transferred_from_wishlist_message)
+        is Item.PlateItem -> stringResource(
+            R.string.transferred_from_plates_message, uiState.itemDetails.regNo ?: ""
+        )
+        else -> ""
+    }
 
     BackHandler {
         onBackBehavior()
@@ -206,6 +213,7 @@ private fun ItemSummaryScreen(
                 coroutineScope.launch {
                     viewModel.transferItem()
                     viewModel.deleteItem()
+                    viewModel.showToast(context, transferToast)
                     onBack()
                 }
             },

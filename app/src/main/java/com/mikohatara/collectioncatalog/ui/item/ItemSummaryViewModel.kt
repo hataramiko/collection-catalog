@@ -3,6 +3,9 @@ package com.mikohatara.collectioncatalog.ui.item
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -116,6 +119,13 @@ class ItemSummaryViewModel @Inject constructor(
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("ItemDetails", jsonString)
         clipboard.setPrimaryClip(clip)
+    }
+
+    fun showToast(context: Context, message: String) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private suspend fun addNewPlate() {
