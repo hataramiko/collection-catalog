@@ -2,6 +2,8 @@ package com.mikohatara.collectioncatalog.ui.item
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -24,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -712,15 +717,9 @@ private fun EntryField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next
 ) {
-    /*  TODO modify EntryFormField
-    *
-    *   - Pre- and Suffix for currencies etc. units?
-    *   - Fix singleLine
-    *   - Get rid of Row, separate icon and the TextField, place inside a Column?
-    *       (utilize Spacer or Divider???)
-    *
-    * */
     val currentValue = remember(value) { value }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
 
     Row(modifier = modifier.padding(vertical = 4.dp)) {
         OutlinedTextField(
@@ -738,9 +737,18 @@ private fun EntryField(
                     overflow = TextOverflow.Ellipsis
                 )
             },
+            trailingIcon = { if (isFocused && currentValue.isNotEmpty()) {
+                IconButton(onClick = { onValueChange("") }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Clear,
+                        contentDescription = null
+                    )
+                }
+            }},
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = singleLine
+            singleLine = singleLine,
+            interactionSource = interactionSource
         )
     }
 }
