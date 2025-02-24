@@ -28,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.content.pm.PackageInfoCompat.getLongVersionCode
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +37,7 @@ import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
+import com.mikohatara.collectioncatalog.util.toDisplayCountry
 import java.util.Locale
 
 @Composable
@@ -90,18 +90,15 @@ private fun SettingsScreen(
     )
     if (showCountryDialog) {
         SettingsDialog(
-            uiState = uiState,
-            viewModel = viewModel,
             label = stringResource(R.string.user_country),
             options = Locale.getAvailableLocales()
                 .map { it.displayCountry }
                 .distinct()
                 .filter { it.isNotEmpty() }
                 .sorted(),
-            onConfirm = {
-                showCountryDialog = false
-            },
-            onCancel = { showCountryDialog = false },
+            selectedOption = uiState.userCountry.toDisplayCountry(),
+            onToggleSelection = { viewModel.setUserCountry(it) },
+            onDismiss = { showCountryDialog = false },
             infoText = stringResource(R.string.user_country_info)
         )
     }

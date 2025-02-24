@@ -36,7 +36,7 @@ class DatabaseModule {
     /*  I wrote this before realizing I hadn't applied AutoMigration to the Database,
     *   so I didn't actually use this, but let it lay here as a reminder.
     * */
-    private val MIGRATION_7_9 = object : Migration(8, 9) {
+    private val MIGRATION_8_9 = object : Migration(8, 9) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `archive` ( " +
@@ -59,6 +59,26 @@ class DatabaseModule {
         }
     }
 
+    private val MIGRATION_16_17 = object : Migration(16, 17) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `_new_collections` ( " +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`emoji` TEXT, `name` TEXT NOT NULL, `color` TEXT NOT NULL)"
+            )
+            db.execSQL(
+                "INSERT INTO `_new_collections` (`id`, `emoji`, `name`, `color`) " +
+                        "SELECT `id`, `emoji`, `name`, 'DEFAULT' FROM `collections`"
+            )
+            db.execSQL(
+                "DROP TABLE `collections`"
+            )
+            db.execSQL(
+                "ALTER TABLE `_new_collections` RENAME TO `collections`"
+            )
+        }
+    }
+
     @Provides
     fun providePlateDao(plateDatabase: PlateDatabase): PlateDao {
         return plateDatabase.plateDao()
@@ -77,7 +97,7 @@ class DatabaseModule {
             PlateDatabase::class.java,
             "Plate"
         )
-            .addMigrations(MIGRATION_7_8)
+            .addMigrations(MIGRATION_16_17)
             .fallbackToDestructiveMigration()
             .build()
     }

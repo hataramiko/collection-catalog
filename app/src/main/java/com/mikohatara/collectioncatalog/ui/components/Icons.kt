@@ -32,6 +32,20 @@ fun IconAbc123(modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun IconCollectionLabel(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.primary
+) {
+    Icon(
+        painter = painterResource(R.drawable.rounded_label),
+        contentDescription = null,
+        tint = tint,
+        modifier = modifier
+            .offset(x = 1.dp)
+    )
+}
+
+@Composable
 fun IconQuotationMark(
     modifier: Modifier = Modifier,
     size: Dp = 24.dp,

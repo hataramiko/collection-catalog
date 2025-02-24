@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
@@ -22,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -36,23 +39,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.ui.settings.SettingsUiState
-import com.mikohatara.collectioncatalog.ui.settings.SettingsViewModel
-import com.mikohatara.collectioncatalog.util.toDisplayCountry
+import com.mikohatara.collectioncatalog.ui.collection.isCollectionColor
+import com.mikohatara.collectioncatalog.ui.collection.toColor
 
 @Composable
 fun SettingsDialog(
-    uiState: SettingsUiState,
-    viewModel: SettingsViewModel,
     label: String,
     options: List<String> = emptyList(),
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit,
+    selectedOption: String,
+    onToggleSelection: (String) -> Unit,
+    onDismiss: () -> Unit,
     infoText: String? = null
 ) {
     val showInfo = rememberSaveable { mutableStateOf(false) }
 
-    Dialog(onDismissRequest = onCancel) {
+    Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainerHigh),
@@ -81,24 +82,26 @@ fun SettingsDialog(
             }
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
             Column(
-                modifier = Modifier.heightIn(max = 480.dp)
+                modifier = Modifier
+                    .heightIn(max = 480.dp)
+                    .wrapContentHeight()
             ) {
                 LazyColumn(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp, bottom = 8.dp)
                 ) {
                     items(options) { item ->
                         SettingsRadioButton(
                             value = item,
-                            selectedOption = uiState.userCountry.toDisplayCountry(),
-                            onClick = { viewModel.setUserCountry(item) }
+                            selectedOption = selectedOption,
+                            onClick = { onToggleSelection(item) },
+                            color = if (item.isCollectionColor()) item.toColor() else null
                         )
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
             }
-            SingleButtonFooter(onClick = onCancel)
+            SingleButtonFooter(onClick = onDismiss)
         }
     }
 
@@ -141,9 +144,15 @@ fun SettingsDialog(
 private fun SettingsRadioButton(
     value: String,
     selectedOption: String,
-    onClick: (String) -> Unit
+    onClick: (String) -> Unit,
+    color: Color? = null
 ) {
     val isSelected = value == selectedOption
+    val colors = if (color != null) {
+        RadioButtonDefaults.colors(color, color, color, color)
+    } else {
+        RadioButtonDefaults.colors()
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -158,6 +167,7 @@ private fun SettingsRadioButton(
         RadioButton(
             selected = isSelected,
             onClick = null,
+            colors = colors,
             modifier = Modifier
                 .padding(start = 24.dp, top = 16.dp, end = 20.dp, bottom = 16.dp)
         )

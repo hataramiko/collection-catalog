@@ -1,9 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.collection
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -72,23 +74,31 @@ class CollectionEntryViewModel @Inject constructor(
         if (uiState.value.isNew) addNewCollection() else updateCollection()
     }
 
-    suspend fun deleteCollection() = viewModelScope.launch {
+    fun deleteCollection() = viewModelScope.launch {
         uiState.value.collection?.let { collectionRepository.deleteCollectionWithPlates(it) }
     }
 
-    private suspend fun addNewCollection() = viewModelScope.launch {
+    fun updateCollectionColor(input: String) {
+        val newColor = CollectionColor.entries.find { it.name == input } ?: CollectionColor.DEFAULT
+        _uiState.update {
+            it.copy(collectionDetails = it.collectionDetails.copy(color = newColor))
+        }
+    }
+
+    private fun addNewCollection() = viewModelScope.launch {
         collectionRepository.addCollection(uiState.value.collectionDetails.toCollection())
     }
 
-    private suspend fun updateCollection() = viewModelScope.launch {
+    private fun updateCollection() = viewModelScope.launch {
         collectionRepository.updateCollection(uiState.value.collectionDetails.toCollection())
     }
 
     private fun loadCollection(collectionId: Int) = viewModelScope.launch {
         collectionRepository.getCollectionStream(collectionId).let {
+            val collection = it.firstOrNull()
             _uiState.value = CollectionEntryUiState(
-                collection = it.firstOrNull(),
-                collectionDetails = it.firstOrNull()?.toCollectionDetails() ?: CollectionDetails(),
+                collection = collection,
+                collectionDetails = collection?.toCollectionDetails() ?: CollectionDetails(),
                 isNew = false,
                 isValidEntry = true
             )
@@ -100,16 +110,27 @@ data class CollectionDetails(
     val id: Int? = null,
     val emoji: String? = null,
     val name: String? = null,
+    val color: CollectionColor? = null
 )
 
 fun Collection.toCollectionDetails(): CollectionDetails = CollectionDetails(
     id = id,
     emoji = emoji,
-    name = name
+    name = name,
+    color = color
 )
 
 fun CollectionDetails.toCollection(): Collection = Collection(
     id ?: 0,
     emoji?.takeIf { it.isNotBlank() },
-    name ?: ""
+    name ?: "",
+    color ?: CollectionColor.DEFAULT
 )
+
+fun String.isCollectionColor(): Boolean {
+    return CollectionColor.entries.any { it.name == this }
+}
+
+fun String.toColor(): Color {
+    return CollectionColor.entries.find { it.name == this }?.color ?: Color.Unspecified
+}

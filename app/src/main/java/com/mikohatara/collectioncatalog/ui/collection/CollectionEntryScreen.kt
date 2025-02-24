@@ -34,10 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.ui.components.CollectionEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.CollectionListTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
+import com.mikohatara.collectioncatalog.ui.components.SettingsDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -69,6 +71,7 @@ private fun CollectionEntryScreen(
 ) {
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
+    var showColorDialog by rememberSaveable { mutableStateOf(false) }
     val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
     val topAppBarColors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -104,6 +107,7 @@ private fun CollectionEntryScreen(
                 uiState = uiState,
                 modifier = Modifier.padding(innerPadding),
                 onValueChange = onValueChange,
+                onPickColor = { showColorDialog = true },
                 onSave = {
                     viewModel.saveEntry()
                     onBack()
@@ -111,6 +115,15 @@ private fun CollectionEntryScreen(
             )
         }
     )
+    if (showColorDialog) {
+        SettingsDialog(
+            label = stringResource(R.string.collection_color),
+            options = CollectionColor.entries.map { it.name },
+            selectedOption = uiState.collectionDetails.color.toString(),
+            onToggleSelection = { viewModel.updateCollectionColor(it) },
+            onDismiss = { showColorDialog = false }
+        )
+    }
     if (showDiscardDialog) {
         DiscardDialog(
             onConfirm = {
@@ -139,6 +152,7 @@ private fun CollectionEntryScreenContent(
     uiState: CollectionEntryUiState,
     modifier: Modifier = Modifier,
     onValueChange: (CollectionDetails) -> Unit = {},
+    onPickColor: () -> Unit,
     onSave: () -> Unit
 ) {
     val (saveButtonIcon, saveButtonText) = when (uiState.isNew) {
@@ -162,6 +176,7 @@ private fun CollectionEntryScreenContent(
                 bottomEnd = 24.dp
             )
         ) {
+            Button(onClick = onPickColor) { }
             Row(
                 modifier = Modifier.padding(24.dp)
             ) {
