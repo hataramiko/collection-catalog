@@ -110,7 +110,7 @@ data class CollectionDetails(
     val id: Int? = null,
     val emoji: String? = null,
     val name: String? = null,
-    val color: CollectionColor? = null
+    val color: CollectionColor = CollectionColor.DEFAULT
 )
 
 fun Collection.toCollectionDetails(): CollectionDetails = CollectionDetails(
@@ -124,7 +124,7 @@ fun CollectionDetails.toCollection(): Collection = Collection(
     id ?: 0,
     emoji?.takeIf { it.isNotBlank() },
     name ?: "",
-    color ?: CollectionColor.DEFAULT
+    color
 )
 
 fun String.isCollectionColor(): Boolean {

@@ -34,14 +34,15 @@ fun IconAbc123(modifier: Modifier = Modifier) {
 @Composable
 fun IconCollectionLabel(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.primary
+    tint: Color? = null
 ) {
+    val defaultTint = MaterialTheme.colorScheme.onSurfaceVariant
+
     Icon(
         painter = painterResource(R.drawable.rounded_label),
         contentDescription = null,
-        tint = tint,
-        modifier = modifier
-            .offset(x = 1.dp)
+        tint = tint ?: defaultTint,
+        modifier = modifier.offset(x = 1.dp)
     )
 }
 

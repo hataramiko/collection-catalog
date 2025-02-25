@@ -29,15 +29,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.ui.components.CollectionListTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
+import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 
 @Composable
 fun CollectionListScreen(
@@ -123,7 +124,7 @@ private fun CollectionListScreenContent(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = null
                         )
-                    }
+                    },
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -131,7 +132,8 @@ private fun CollectionListScreenContent(
         items(items = collectionList, key = { it.id }) { collection ->
             CollectionListItem(
                 label = collection.name,
-                emoji = collection.emoji
+                emoji = collection.emoji,
+                collectionColor = collection.color
             ) {
                 onCollectionClick(collection)
             }
@@ -147,6 +149,7 @@ private fun CollectionListItem(
     label: String,
     modifier: Modifier = Modifier,
     emoji: String? = null,
+    collectionColor: CollectionColor? = null,
     icon: @Composable (() -> Unit)? = null,
     onClick: () -> Unit,
 ) {
@@ -166,12 +169,22 @@ private fun CollectionListItem(
             if (icon != null) {
                 icon()
             } else if (emoji != null) {
-                Text(emoji)
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Text(
+                        text = emoji,
+                        modifier = Modifier.offset(y = (-1.5).dp)
+                    )
+                }
             } else {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_label),
-                    contentDescription = null,
-                    modifier = Modifier.offset(x = 1.dp)
+                IconCollectionLabel(
+                    tint = if (collectionColor != CollectionColor.DEFAULT) {
+                        collectionColor?.color
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
+                    }
                 )
             }
         }

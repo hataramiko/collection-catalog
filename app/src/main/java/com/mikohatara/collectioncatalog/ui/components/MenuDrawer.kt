@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_COLLECTION_ROUTE
@@ -134,6 +136,9 @@ private fun MenuDrawerContent(
                 }
             }
             items(items = collectionList, key = { it.id }) { collection ->
+                val selected = currentRoute == HOME_COLLECTION_ROUTE &&
+                        collectionId == collection.id
+
                 NavigationDrawerItem(
                     label = { Text(collection.name) },
                     icon = {
@@ -148,15 +153,18 @@ private fun MenuDrawerContent(
                                 )
                             }
                         } else {
-                            Icon(
-                                painter = painterResource(R.drawable.rounded_label),
-                                contentDescription = null,
-                                modifier = Modifier.offset(x = 1.dp)
+                            IconCollectionLabel(
+                                tint = if (collection.color != CollectionColor.DEFAULT) {
+                                    collection.color.color
+                                } else if (selected) {
+                                    MaterialTheme.colorScheme.onSecondaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
                             )
                         }
                     },
-                    selected = currentRoute == HOME_COLLECTION_ROUTE &&
-                        collectionId == collection.id,
+                    selected = selected,
                     onClick = {
                         navActions.navigateToHomeScreen(collection.id)
                         onCloseDrawer()

@@ -1,11 +1,15 @@
 package com.mikohatara.collectioncatalog.ui.collection
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -163,6 +169,11 @@ private fun CollectionEntryScreenContent(
             R.string.save_edited_item, uiState.collectionDetails.name ?: ""
         )
     }
+    val tint = if (uiState.collectionDetails.color == CollectionColor.DEFAULT) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        uiState.collectionDetails.color.color
+    }
 
     Column(
         modifier = modifier
@@ -176,9 +187,26 @@ private fun CollectionEntryScreenContent(
                 bottomEnd = 24.dp
             )
         ) {
-            Button(onClick = onPickColor) { }
+            Spacer(modifier = Modifier.height(24.dp))
+            OutlinedTextField(
+                value = uiState.collectionDetails.name ?: "",
+                onValueChange = { onValueChange(uiState.collectionDetails.copy(name = it)) },
+                label = {
+                    Text(
+                        stringResource(R.string.collection),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+            )
             Row(
-                modifier = Modifier.padding(24.dp)
+                verticalAlignment = Alignment.Bottom,
+                modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
             ) {
                 OutlinedTextField(
                     value = uiState.collectionDetails.emoji ?: "",
@@ -197,24 +225,36 @@ private fun CollectionEntryScreenContent(
                     modifier = Modifier.weight(0.33f)
                 )
                 Spacer(
-                    modifier = Modifier.width(8.dp)
+                    modifier = Modifier.width(12.dp)
                 )
-                OutlinedTextField(
-                    value = uiState.collectionDetails.name ?: "",
-                    onValueChange = { onValueChange(uiState.collectionDetails.copy(name = it)) },
-                    label = {
+                OutlinedButton(
+                    onClick = onPickColor,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_circle),
+                        contentDescription = null,
+                        tint = tint,
+                        modifier = Modifier
+                            //.padding(end = 0.dp)
+                            .size(28.dp)
+                            .offset(x = (-8).dp)
+                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(
-                            stringResource(R.string.collection),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            text = stringResource(R.string.collection_color),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.offset(x = (-4).dp)
                         )
-                    },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
+                    }
+                }
             }
-            //Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Button(
                 onClick = onSave,
                 enabled = uiState.isValidEntry,

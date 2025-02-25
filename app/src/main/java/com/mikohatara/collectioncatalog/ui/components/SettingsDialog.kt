@@ -86,11 +86,10 @@ fun SettingsDialog(
                     .heightIn(max = 480.dp)
                     .wrapContentHeight()
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, bottom = 8.dp)
-                ) {
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    item {
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
                     items(options) { item ->
                         SettingsRadioButton(
                             value = item,
@@ -98,6 +97,9 @@ fun SettingsDialog(
                             onClick = { onToggleSelection(item) },
                             color = if (item.isCollectionColor()) item.toColor() else null
                         )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
