@@ -15,7 +15,10 @@ data class Collection(
 
 enum class CollectionColor(val color: Color) {
     DEFAULT(Color.Unspecified),
-    RED(Color.Red),
-    YELLOW(Color.Yellow),
-    GREEN(Color.Green),
+    RED(Color(0xFFF44336)),
+    ORANGE(Color(0xFFFF9800)),
+    YELLOW(Color(0xFFFFEB3B)),
+    GREEN(Color(0xFF4CAF50)),
+    BLUE(Color(0xFF2196F3)),
+    PURPLE(Color(0xFF793AB7)),
 }

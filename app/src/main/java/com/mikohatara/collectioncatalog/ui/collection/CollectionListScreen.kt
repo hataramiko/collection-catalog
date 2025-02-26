@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.collection
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -29,7 +30,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -182,15 +185,15 @@ private fun CollectionListItem(
                 IconCollectionLabel(
                     tint = if (collectionColor != CollectionColor.DEFAULT) {
                         collectionColor?.color
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                    }
+                    } else null
                 )
             }
         }
         Text(
             text = label,
-            modifier = Modifier
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(end = 32.dp)
         )
     }
 }

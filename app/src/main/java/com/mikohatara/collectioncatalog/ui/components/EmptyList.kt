@@ -28,6 +28,7 @@ fun EmptyList(
     iconModifier: Modifier = Modifier,
     message: String = stringResource(R.string.empty_list_default_msg),
     description: String? = stringResource(R.string.empty_list_default_desc),
+    collectionIcon: @Composable (() -> Unit)? = null,
     button: @Composable (() -> Unit)? = null
 ) {
     Spacer(modifier = Modifier.height(128.dp))
@@ -38,6 +39,7 @@ fun EmptyList(
             .fillMaxSize()
             .padding(horizontal = 32.dp)
     ) {
+        if (collectionIcon != null) collectionIcon() else
         Icon(
             painter = painter,
             contentDescription = null,

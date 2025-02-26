@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import com.mikohatara.collectioncatalog.R
@@ -140,7 +141,13 @@ private fun MenuDrawerContent(
                         collectionId == collection.id
 
                 NavigationDrawerItem(
-                    label = { Text(collection.name) },
+                    label = {
+                        Text(
+                            text = collection.name,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     icon = {
                         if (collection.emoji != null) {
                             Box(
@@ -158,9 +165,7 @@ private fun MenuDrawerContent(
                                     collection.color.color
                                 } else if (selected) {
                                     MaterialTheme.colorScheme.onSecondaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                }
+                                } else null
                             )
                         }
                     },

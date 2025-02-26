@@ -27,11 +27,13 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -57,10 +59,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
+import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
@@ -278,10 +282,27 @@ private fun ItemEntryScreenContent(
                 type = EntrySectionType.COLLECTIONS,
             ) {
                 collections.forEach { collection ->
+                    val collectionColor = if (collection.color != CollectionColor.DEFAULT) {
+                        collection.color.color
+                    } else null
+
+                    val chipColors = if (collection.color != CollectionColor.DEFAULT) {
+                        FilterChipDefaults.filterChipColors(
+                            containerColor = collection.color.color.copy(alpha = 0.1f),
+                            disabledContainerColor = collection.color.color.copy(alpha = 0.1f),
+                            selectedContainerColor = collection.color.color.copy(alpha = 0.33f),
+                            disabledSelectedContainerColor = collection.color.color.copy(alpha = 0.1f)
+                        )
+                    } else FilterChipDefaults.filterChipColors()
+
                     FilterChip(
                         selected = uiState.selectedCollections.any { it == collection },
                         onClick = { viewModel.toggleCollectionSelection(collection) },
-                        label = { Text(collection.name) },
+                        label = { Text(
+                            text = collection.name,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) },
                         leadingIcon = {
                             if (!collection.emoji.isNullOrBlank()) {
                                 Box(
@@ -291,13 +312,12 @@ private fun ItemEntryScreenContent(
                                     Text(collection.emoji)
                                 }
                             } else {
-                                Icon(
-                                    painter = painterResource(R.drawable.rounded_bookmark),
-                                    contentDescription = null
+                                IconCollectionLabel(
+                                    tint = collectionColor
                                 )
                             }
                         },
-                        modifier = Modifier
+                        colors = chipColors
                     )
                 }
             }
@@ -313,7 +333,8 @@ private fun ItemEntryScreenContent(
                         label = stringResource(R.string.notes),
                         value = uiState.itemDetails.notes ?: "",
                         onValueChange = { onValueChange(uiState.itemDetails.copy(notes = it)) },
-                        singleLine = false
+                        singleLine = false,
+                        imeAction = ImeAction.None
                     )
                     if (uiState.itemType != ItemType.WANTED_PLATE) {
                         EntryField(

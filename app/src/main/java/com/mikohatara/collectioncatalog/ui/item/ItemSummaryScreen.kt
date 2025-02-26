@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -48,17 +49,20 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.CopyItemDetailsDialog
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
+import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.InspectItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemImage
@@ -275,9 +279,24 @@ private fun Collections(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         sortedCollections.forEach {
+            val collectionColor = if (it.color != CollectionColor.DEFAULT) {
+                it.color.color
+            } else null
+
+            val chipColors = if (it.color != CollectionColor.DEFAULT) {
+                AssistChipDefaults.assistChipColors(
+                    containerColor = it.color.color.copy(alpha = 0.1f),
+                    disabledContainerColor = it.color.color.copy(alpha = 0.1f)
+                )
+            } else AssistChipDefaults.assistChipColors()
+
             AssistChip(
                 onClick = {},
-                label = { Text(it.name) },
+                label = { Text(
+                    text = it.name,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                ) },
                 leadingIcon = {
                     if (!it.emoji.isNullOrBlank()) {
                         Box(
@@ -287,12 +306,12 @@ private fun Collections(
                             Text(it.emoji)
                         }
                     } else {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_bookmark),
-                            contentDescription = null
+                        IconCollectionLabel(
+                            tint = collectionColor
                         )
                     }
-                }
+                },
+                colors = chipColors
             )
         }
     }
