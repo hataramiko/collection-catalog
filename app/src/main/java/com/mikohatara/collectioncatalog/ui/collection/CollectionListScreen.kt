@@ -21,6 +21,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -121,6 +122,7 @@ private fun CollectionListScreenContent(
             ) {
                 CollectionListItem(
                     label = stringResource(R.string.create_collection),
+                    color = LocalContentColor.current,
                     onClick = { onAddNew() },
                     icon = {
                         Icon(
@@ -135,8 +137,8 @@ private fun CollectionListScreenContent(
         items(items = collectionList, key = { it.id }) { collection ->
             CollectionListItem(
                 label = collection.name,
-                emoji = collection.emoji,
-                collectionColor = collection.color
+                color = collection.color.color,
+                emoji = collection.emoji
             ) {
                 onCollectionClick(collection)
             }
@@ -150,9 +152,9 @@ private fun CollectionListScreenContent(
 @Composable
 private fun CollectionListItem(
     label: String,
+    color: Color,
     modifier: Modifier = Modifier,
     emoji: String? = null,
-    collectionColor: CollectionColor? = null,
     icon: @Composable (() -> Unit)? = null,
     onClick: () -> Unit,
 ) {
@@ -183,9 +185,7 @@ private fun CollectionListItem(
                 }
             } else {
                 IconCollectionLabel(
-                    tint = if (collectionColor != CollectionColor.DEFAULT) {
-                        collectionColor?.color
-                    } else null
+                    color = color
                 )
             }
         }

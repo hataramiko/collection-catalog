@@ -28,6 +28,7 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -121,7 +122,7 @@ private fun ItemSummaryScreen(
         .takeIf { uiState.itemType != ItemType.FORMER_PLATE }
     val (transferButtonText, transferButtonPainter) = when (uiState.item) {
         is Item.WantedPlateItem -> stringResource(R.string.transfer_from_wishlist_button) to
-            painterResource(R.drawable.rounded_birb)
+            painterResource(R.drawable.rounded_task_alt_24)
         is Item.PlateItem -> stringResource(R.string.transfer_from_plates_button) to
             painterResource(R.drawable.rounded_archive)
         else -> "" to painterResource(R.drawable.rounded_question_mark)
@@ -278,40 +279,36 @@ private fun Collections(
     Column(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        sortedCollections.forEach {
-            val collectionColor = if (it.color != CollectionColor.DEFAULT) {
-                it.color.color
-            } else null
-
-            val chipColors = if (it.color != CollectionColor.DEFAULT) {
+        sortedCollections.forEach { collection ->
+            val chipColors = if (collection.color != CollectionColor.DEFAULT) {
                 AssistChipDefaults.assistChipColors(
-                    containerColor = it.color.color.copy(alpha = 0.1f),
-                    disabledContainerColor = it.color.color.copy(alpha = 0.1f)
+                    containerColor = collection.color.color.copy(alpha = 0.1f),
+                    disabledContainerColor = collection.color.color.copy(alpha = 0.1f)
                 )
             } else AssistChipDefaults.assistChipColors()
 
             AssistChip(
                 onClick = {},
                 label = { Text(
-                    text = it.name,
+                    text = collection.name,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 ) },
                 leadingIcon = {
-                    if (!it.emoji.isNullOrBlank()) {
+                    if (!collection.emoji.isNullOrBlank()) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.size(24.dp)
                         ) {
-                            Text(it.emoji)
+                            Text(collection.emoji)
                         }
                     } else {
                         IconCollectionLabel(
-                            tint = collectionColor
+                            color = collection.color.color
                         )
                     }
                 },
-                colors = chipColors
+                //colors = chipColors
             )
         }
     }

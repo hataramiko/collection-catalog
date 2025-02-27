@@ -5,15 +5,20 @@ import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.CollectionColor
 
 @Composable
 fun IconAbc123(modifier: Modifier = Modifier) {
@@ -33,17 +38,28 @@ fun IconAbc123(modifier: Modifier = Modifier) {
 
 @Composable
 fun IconCollectionLabel(
-    modifier: Modifier = Modifier,
-    tint: Color? = null
+    color: Color,
+    modifier: Modifier = Modifier
 ) {
-    val defaultTint = MaterialTheme.colorScheme.onSurfaceVariant
+    val defaultTint = LocalContentColor.current
+    val tint = if (color != CollectionColor.DEFAULT.color) color else defaultTint
 
-    Icon(
-        painter = painterResource(R.drawable.rounded_label),
-        contentDescription = null,
-        tint = tint ?: defaultTint,
-        modifier = modifier.offset(x = 1.dp)
-    )
+    Box(contentAlignment = Alignment.Center) {
+        Icon(
+            painter = painterResource(R.drawable.rounded_label),
+            contentDescription = null,
+            tint = tint,
+            modifier = modifier.offset(x = 1.dp)
+        )
+        if (color != CollectionColor.DEFAULT.color) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_label_24),
+                contentDescription = null,
+                tint = tint.copy(alpha = 0.1f),
+                modifier = modifier.scale(scaleX = 0.9f, scaleY = 0.9f),
+            )
+        }
+    }
 }
 
 @Composable

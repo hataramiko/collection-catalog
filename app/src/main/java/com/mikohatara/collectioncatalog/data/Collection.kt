@@ -10,7 +10,8 @@ data class Collection(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "emoji") val emoji: String?,
     @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "color") val color: CollectionColor = CollectionColor.DEFAULT
+    @ColumnInfo(name = "color") val color: CollectionColor = CollectionColor.DEFAULT,
+    @ColumnInfo(name = "order") val order: Int = 0
 )
 
 enum class CollectionColor(val color: Color) {

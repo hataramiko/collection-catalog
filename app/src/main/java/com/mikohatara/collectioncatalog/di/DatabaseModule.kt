@@ -79,6 +79,14 @@ class DatabaseModule {
         }
     }
 
+    private val MIGRATION_17_18 = object : Migration(17, 18) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "ALTER TABLE `collections` ADD COLUMN `order` INTEGER NOT NULL DEFAULT 0"
+            )
+        }
+    }
+
     @Provides
     fun providePlateDao(plateDatabase: PlateDatabase): PlateDao {
         return plateDatabase.plateDao()
@@ -97,7 +105,7 @@ class DatabaseModule {
             PlateDatabase::class.java,
             "Plate"
         )
-            .addMigrations(MIGRATION_16_17)
+            .addMigrations(MIGRATION_17_18)
             .fallbackToDestructiveMigration()
             .build()
     }

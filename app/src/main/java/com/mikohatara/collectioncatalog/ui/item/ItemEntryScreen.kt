@@ -282,16 +282,12 @@ private fun ItemEntryScreenContent(
                 type = EntrySectionType.COLLECTIONS,
             ) {
                 collections.forEach { collection ->
-                    val collectionColor = if (collection.color != CollectionColor.DEFAULT) {
-                        collection.color.color
-                    } else null
-
                     val chipColors = if (collection.color != CollectionColor.DEFAULT) {
                         FilterChipDefaults.filterChipColors(
-                            containerColor = collection.color.color.copy(alpha = 0.1f),
-                            disabledContainerColor = collection.color.color.copy(alpha = 0.1f),
-                            selectedContainerColor = collection.color.color.copy(alpha = 0.33f),
-                            disabledSelectedContainerColor = collection.color.color.copy(alpha = 0.1f)
+                            //containerColor = collection.color.color.copy(alpha = 0.1f),
+                            //disabledContainerColor = collection.color.color.copy(alpha = 0.1f),
+                            //selectedContainerColor = collection.color.color.copy(alpha = 0.33f),
+                            //disabledSelectedContainerColor = collection.color.color.copy(alpha = 0.1f)
                         )
                     } else FilterChipDefaults.filterChipColors()
 
@@ -313,11 +309,11 @@ private fun ItemEntryScreenContent(
                                 }
                             } else {
                                 IconCollectionLabel(
-                                    tint = collectionColor
+                                    color = collection.color.color
                                 )
                             }
                         },
-                        colors = chipColors
+                        //colors = chipColors
                     )
                 }
             }

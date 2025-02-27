@@ -161,11 +161,7 @@ private fun MenuDrawerContent(
                             }
                         } else {
                             IconCollectionLabel(
-                                tint = if (collection.color != CollectionColor.DEFAULT) {
-                                    collection.color.color
-                                } else if (selected) {
-                                    MaterialTheme.colorScheme.onSecondaryContainer
-                                } else null
+                                color = collection.color.color
                             )
                         }
                     },

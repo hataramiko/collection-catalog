@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-    version = 17,
+    version = 18,
     entities = [
         Plate::class,
         WantedPlate::class,
@@ -13,7 +13,7 @@ import androidx.room.RoomDatabase
         Collection::class,
         PlateCollectionCrossRef::class
     ],
-    autoMigrations = [AutoMigration(from = 16, to = 17)]
+    //autoMigrations = [AutoMigration(from = 17, to = 18)]
 )
 abstract class PlateDatabase : RoomDatabase() { // TODO rename class
     abstract fun plateDao(): PlateDao
