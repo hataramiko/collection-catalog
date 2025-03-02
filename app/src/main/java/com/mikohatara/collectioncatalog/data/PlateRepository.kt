@@ -8,6 +8,8 @@ interface PlateRepository {
     suspend fun addPlate(plate: Plate): Long
     suspend fun addPlateWithCollections(plate: Plate, collectionIds: List<Int>)
 
+    suspend fun addPlates(plates: List<Plate>)
+
     suspend fun updatePlate(plate: Plate)
     suspend fun updatePlateWithCollections(plate: Plate, collectionIds: List<Int>)
 
@@ -50,6 +52,8 @@ class OfflinePlateRepository @Inject constructor(
     override suspend fun addPlate(plate: Plate) = plateDao.insertPlate(plate)
     override suspend fun addPlateWithCollections(plate: Plate, collectionIds: List<Int>) =
         plateDao.insertPlateWithCollections(plate, collectionIds)
+
+    override suspend fun addPlates(plates: List<Plate>) = plateDao.insertPlates(plates)
 
     override suspend fun updatePlate(plate: Plate) = plateDao.updatePlate(plate)
     override suspend fun updatePlateWithCollections(plate: Plate, collectionIds: List<Int>) =

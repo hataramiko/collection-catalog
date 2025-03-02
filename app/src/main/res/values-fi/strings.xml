@@ -141,4 +141,8 @@
     <string name="transferred_from_wishlist_message">Uusi kilpi on luotu</string>
     <string name="transferred_from_plates_message"><xliff:g name="reg_no" example="ABC-123">%s</xliff:g> on arkistoitu</string>
     <string name="collection_color">Kokoelman väri</string>
+    <string name="export_text">Tuo</string>
+    <string name="import_text">Vie</string>
+    <string name="export_csv">Tuo CSV</string>
+    <string name="import_csv">Vie CSV</string>
 </resources>

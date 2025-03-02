@@ -107,6 +107,9 @@ dependencies {
 
     // Zoomable
     implementation(libs.usuiat.zoomable)
+
+    // Opencsv
+    implementation(libs.opencsv.core)
 }
 
 // Hilt - Allow references to generated code

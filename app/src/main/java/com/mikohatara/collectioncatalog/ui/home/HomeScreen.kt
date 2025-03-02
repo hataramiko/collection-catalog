@@ -1,6 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -19,17 +22,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -77,14 +81,29 @@ private fun HomeScreen(
     onOpenDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
     val topBarTitle = viewModel.getCollectionName() ?: stringResource(R.string.all_plates)
     val onBackBehavior = { if (uiState.isSearchActive) viewModel.toggleSearch() }
     //" (${itemList.size})"
+    val pickCsv = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri: Uri? ->
+            uri?.let {
+                viewModel.importItems(context, it)
+            }
+        }
+    )
 
     BackHandler {
         onBackBehavior()
+    }
+
+    LaunchedEffect(key1 = uiState.importResult) {
+        if (uiState.importResult != null) {
+            viewModel.clearImportResult()
+        }
     }
 
     Scaffold(
@@ -94,6 +113,10 @@ private fun HomeScreen(
                 title = topBarTitle,
                 onOpenDrawer = onOpenDrawer,
                 onToggleSearch = { viewModel.toggleSearch() },
+                onImport = { pickCsv.launch(
+                    arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*")
+                ) },
+                onExport = { viewModel.exportItems(context) },
                 isSearchActive = uiState.isSearchActive,
                 searchQuery = uiState.searchQuery,
                 onSearchQueryChange = { viewModel.updateSearchQuery(it) },

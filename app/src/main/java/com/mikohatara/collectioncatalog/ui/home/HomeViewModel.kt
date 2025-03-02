@@ -1,5 +1,8 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import android.content.Context
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -11,6 +14,8 @@ import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
+import com.mikohatara.collectioncatalog.util.exportPlatesToCsv
+import com.mikohatara.collectioncatalog.util.importPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,8 +32,21 @@ data class HomeUiState(
     val filters: FilterData = FilterData(),
     val isSearchActive: Boolean = false,
     val searchQuery: String = "",
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isExporting: Boolean = false,
+    val exportResult: ExportResult? = null,
+    val importResult: ImportResult? = null
 )
+
+sealed class ExportResult {
+    data class Success(val message: String) : ExportResult()
+    data class Failure(val message: String) : ExportResult()
+}
+
+sealed class ImportResult {
+    data class Success(val message: String) : ImportResult()
+    data class Failure(val message: String) : ImportResult()
+}
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -211,6 +229,68 @@ class HomeViewModel @Inject constructor(
         return _allItems.mapNotNull { it.uniqueDetails.status }
             .sortedWith(compareBy { it })
             .toSet()
+    }
+
+    fun exportItems(context: Context) {
+        _uiState.update { it.copy(isExporting = true, exportResult = null) }
+
+        val timestamp = System.currentTimeMillis()
+        val fileName = "CollectionCatalog_Export_$timestamp.csv"
+
+        viewModelScope.launch {
+            try {
+                val items = _uiState.value.items
+                exportPlatesToCsv(context, items, fileName)
+                _uiState.update { it.copy(
+                    isExporting = false,
+                    exportResult = ExportResult.Success(
+                        message = context.getExternalFilesDir(
+                            android.os.Environment.DIRECTORY_DOCUMENTS
+                        )?.absolutePath + "/$fileName"
+                    )
+                ) }
+            } catch (e: Exception) {
+                Log.e("HomeViewModel, export", "Export failed", e)
+                _uiState.update { it.copy(
+                    isExporting = false,
+                    exportResult = ExportResult.Failure("Exporting failed: ${e.message}")
+                ) }
+            }
+        }
+    }
+
+    fun clearExportResult() {
+        _uiState.update { it.copy(isExporting = false, exportResult = null) }
+    }
+
+    fun importItems(context: Context, uri: Uri) {
+        _uiState.update { it.copy(importResult = null) }
+        viewModelScope.launch {
+            try {
+                val plates = importPlatesFromCsv(context, uri)
+                if (plates != null) {
+                    plates.forEach {
+                        plateRepository.addPlate(it)
+                    }
+                    //plateRepository.addPlates(plates)
+                    Log.d("HomeViewModel, import", "Importing ${plates.size} plates")
+                    _uiState.update { it.copy(
+                        importResult = ImportResult.Success("Imported ${plates.size} plates")
+                    ) }
+                } else {
+                    Log.e("HomeViewModel, import", "Importing failed, plates list empty")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeViewModel, import", "Importing failed", e)
+                _uiState.update { it.copy(
+                    importResult = ImportResult.Failure("Importing failed: ${e.message}")
+                ) }
+            }
+        }
+    }
+
+    fun clearImportResult() {
+        _uiState.update { it.copy(importResult = null) }
     }
 
     private fun getPlates() {

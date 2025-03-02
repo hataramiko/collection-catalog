@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Clear
@@ -23,7 +22,6 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -54,11 +52,14 @@ fun HomeTopAppBar(
     title: String,
     onOpenDrawer: () -> Unit,
     onToggleSearch: (() -> Unit)? = null,
+    onImport: (() -> Unit)? = null,
+    onExport: (() -> Unit)? = null,
     isSearchActive: Boolean = false,
     searchQuery: String = "",
     onSearchQueryChange: (String) -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -139,13 +140,37 @@ fun HomeTopAppBar(
                     )
                 }
                 IconButton(
-                    onClick = {  },
-                    enabled = false
+                    onClick = { isMenuExpanded = !isMenuExpanded },
+                    enabled = onExport != null || onImport != null
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,
                         contentDescription = null
                     )
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false },
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        ModifiedDropdownMenuItem(
+                            onClick = {
+                                onImport?.let { it() }
+                                isMenuExpanded = false
+                            },
+                            painterResource = painterResource(R.drawable.rounded_download_24),
+                            text = stringResource(R.string.import_text),
+                            enabled = onImport != null
+                        )
+                        ModifiedDropdownMenuItem(
+                            onClick = {
+                                onExport?.let { it() }
+                                isMenuExpanded = false
+                            },
+                            painterResource = painterResource(R.drawable.rounded_upload_24),
+                            text = stringResource(R.string.export_text),
+                            enabled = onExport != null
+                        )
+                    }
                 }
             },
             scrollBehavior = scrollBehavior
