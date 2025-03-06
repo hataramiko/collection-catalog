@@ -142,6 +142,9 @@ class ItemSummaryViewModel @Inject constructor(
     }
 
     private suspend fun addNewFormerPlate() {
-        plateRepository.addFormerPlate(uiState.value.itemDetails.copy(id = null).toFormerPlate())
+        plateRepository.addFormerPlate(uiState.value.itemDetails.copy(
+            id = null,
+            status = null
+        ).toFormerPlate())
     }
 }

@@ -264,7 +264,8 @@ private fun ItemSummaryScreenContent(
             itemDetails = itemDetails
         )
         ArchivalInfoCard(
-            itemDetails = itemDetails
+            itemDetails = itemDetails,
+            localeCode = userPreferences.userCountry
         )
     }
 }
@@ -649,7 +650,8 @@ private fun SourceInfoCard(
 
 @Composable
 private fun ArchivalInfoCard(
-    itemDetails: ItemDetails
+    itemDetails: ItemDetails,
+    localeCode: String
 ) {
     ExpandableSummaryCard(
         label = stringResource(R.string.archival),
@@ -683,7 +685,7 @@ private fun ArchivalInfoCard(
             DataFieldBackground {
                 DataFieldContent(
                     label = stringResource(R.string.sold_price),
-                    value = it.toString()
+                    value = it.toCurrencyString(localeCode)
                 )
             }
         }

@@ -87,10 +87,15 @@ class ArchiveViewModel @Inject constructor(
             SortBy.START_DATE_NEWEST -> items
             SortBy.START_DATE_OLDEST -> items
             SortBy.END_DATE_NEWEST -> items.sortedWith(
-                compareByDescending<FormerPlate> { it.archivalDetails.archivalDate }
-                    .thenByDescending { it.uniqueDetails.regNo }
+                compareByDescending<FormerPlate, String?>(nullsFirst()) {
+                    it.archivalDetails.archivalDate
+                }
+                    .thenByDescending { it.id }
             )
-            SortBy.END_DATE_OLDEST -> items.sortedBy { it.archivalDetails.archivalDate }
+            SortBy.END_DATE_OLDEST -> items.sortedWith(
+                compareBy<FormerPlate, String?>(nullsLast()) { it.archivalDetails.archivalDate }
+                    .thenBy { it.id }
+            )
         }
         _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }
         updateDefaultSortBy(sortBy)
