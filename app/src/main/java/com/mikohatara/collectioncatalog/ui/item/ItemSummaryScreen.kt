@@ -49,6 +49,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -340,6 +341,7 @@ private fun DataFieldContent(
     if (isSingleLine) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -347,11 +349,12 @@ private fun DataFieldContent(
             Text(
                 text = label,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp).weight(0.9f)
             )
             Text(
                 text = value,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                textAlign = TextAlign.End,
+                modifier = Modifier.padding(horizontal = 8.dp).weight(1f)
             )
         }
     } else {
@@ -365,7 +368,7 @@ private fun DataFieldContent(
             )
             Text(
                 text = value,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)
             )
         }
     }

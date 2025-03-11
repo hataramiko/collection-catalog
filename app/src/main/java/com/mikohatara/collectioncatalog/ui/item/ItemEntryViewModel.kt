@@ -190,7 +190,7 @@ class ItemEntryViewModel @Inject constructor(
         ) as ItemDetails
     }*/
 
-    private suspend fun addNewItem() = viewModelScope.launch {
+    private fun addNewItem() = viewModelScope.launch {
         when (itemType) {
             ItemType.PLATE -> plateRepository
                 .addPlateWithCollections(
@@ -204,7 +204,7 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateItem() = viewModelScope.launch {
+    private fun updateItem() = viewModelScope.launch {
         when (itemType) {
             ItemType.PLATE -> plateRepository
                 .updatePlateWithCollections(
@@ -213,8 +213,8 @@ class ItemEntryViewModel @Inject constructor(
                 )
             ItemType.WANTED_PLATE -> plateRepository
                 .updateWantedPlate(uiState.value.itemDetails.toWantedPlate())
-            ItemType.FORMER_PLATE -> plateRepository
-                .updateFormerPlate(uiState.value.itemDetails.toFormerPlate())
+            ItemType.FORMER_PLATE -> plateRepository // Use the copy to make sure status is null
+                .updateFormerPlate(uiState.value.itemDetails.copy(status = null).toFormerPlate())
         }
     }
 
