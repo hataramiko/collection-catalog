@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -37,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,11 +80,17 @@ fun ItemEntryScreen(
 ) {
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.deleteUnusedImages(context)
+    }
 
     ItemEntryScreen(
         viewModel,
         userPreferences,
         uiState,
+        context,
         onValueChange = viewModel::updateUiState,
         onBack
     )
@@ -94,15 +102,15 @@ private fun ItemEntryScreen(
     viewModel: ItemEntryViewModel,
     userPreferences: UserPreferences,
     uiState: ItemEntryUiState,
+    context: Context,
     onValueChange: (ItemDetails) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
-    val onSaveBehavior = { viewModel.saveEntry(); onBack() }
+    val onSaveBehavior = { viewModel.saveEntry(context); onBack() }
     val (saveButtonText, saveButtonIcon) = when (uiState.isNew) {
         true -> stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "") to
                 painterResource(R.drawable.rounded_save)
@@ -179,7 +187,7 @@ private fun ItemEntryScreenContent(
     ) {
         EntrySection(
             type = EntrySectionType.COMMON_DETAILS,
-            image = { EntryFormImage(uiState, onValueChange, Modifier.padding(10.dp)) }
+            image = { EntryFormImage(viewModel, uiState, Modifier.padding(10.dp)) }
         ) {
             Row {
                 EntryField(
@@ -580,15 +588,17 @@ private fun ItemEntryScreenContent(
 
 @Composable
 private fun EntryFormImage(
+    viewModel: ItemEntryViewModel,
     uiState: ItemEntryUiState,
-    onValueChange: (ItemDetails) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val imagePath: String? = pickItemImage(uiState.itemDetails.imagePath, modifier)
-    val updateUiState: (ItemDetails) -> Unit = {
-        onValueChange(uiState.itemDetails.copy(imagePath = imagePath))
-    }
-    updateUiState.invoke(uiState.itemDetails)
+    pickItemImage(
+        existingImagePath = uiState.itemDetails.imagePath,
+        modifier = modifier,
+        temporaryImageUri = uiState.temporaryImageUri,
+        onPick = viewModel::handlePickedImage,
+        onRemove = viewModel::clearImagePath
+    )
 }
 
 @Composable

@@ -3,6 +3,7 @@ package com.mikohatara.collectioncatalog.ui.item
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
@@ -18,6 +19,7 @@ import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.filePathFromUri
 import com.mikohatara.collectioncatalog.util.pasteItemDetails
 import com.mikohatara.collectioncatalog.util.toFormerPlate
 import com.mikohatara.collectioncatalog.util.toItemDetails
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -40,6 +43,7 @@ data class ItemEntryUiState(
     val item: Item? = null,
     val itemType: ItemType = ItemType.PLATE,
     val itemDetails: ItemDetails = ItemDetails(),
+    val temporaryImageUri: Uri? = null,
     val selectedCollections: List<Collection> = emptyList(),
     val isValidEntry: Boolean = true,
     val isNew: Boolean = false,
@@ -121,8 +125,37 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 
-    fun saveEntry() = viewModelScope.launch {
+    fun saveEntry(context: Context) = viewModelScope.launch {
+        if (uiState.value.temporaryImageUri != null) saveImageToInternalStorage(context)
+        if (uiState.value.itemDetails.imagePath == null && !uiState.value.isNew) clearImagePath()
         if (uiState.value.isNew) addNewItem() else updateItem()
+        _uiState.update { it.copy(hasUnsavedChanges = false) }
+    }
+
+    fun handlePickedImage(uri: Uri?) {
+        _uiState.update { it.copy(temporaryImageUri = uri) }
+    }
+
+    fun saveImageToInternalStorage(context: Context) {
+        uiState.value.temporaryImageUri?.let { uri ->
+            val newImagePath = filePathFromUri(uri, context)
+            val newItemDetails = uiState.value.itemDetails.copy(imagePath = newImagePath)
+            updateUiState(newItemDetails)
+        }
+    }
+
+    fun clearImagePath() {
+        val newItemDetails = uiState.value.itemDetails.copy(imagePath = null)
+        updateUiState(newItemDetails)
+    }
+
+    fun deleteUnusedImages(context: Context) {
+        val directory = context.filesDir
+        val files = directory.listFiles()
+        val imagesInUse: List<String> = getImagesInUse()
+        files?.forEach {
+            if (!imagesInUse.contains(it.absolutePath)) it.delete()
+        }
     }
 
     fun getCollections(): List<Collection> {
@@ -168,27 +201,6 @@ class ItemEntryViewModel @Inject constructor(
             }
         }
     }
-
-    /*private fun pasteItemDetails(old: ItemDetails, new: ItemDetails): ItemDetails {
-        val endValues = old::class.memberProperties.map { property ->
-
-
-
-        /*.javaClass.declaredFields.associate { field ->
-            field.isAccessible = true
-            val oldValue = field.get(old)
-            val newValue = field.get(new)
-            val endValue = when {
-                newValue == null -> oldValue
-                else -> newValue
-            }
-            field.name to endValue
-        }*/
-
-        return old.copy(
-            *(endValues.map { (name, value) -> name to value }.toTypedArray())
-        ) as ItemDetails
-    }*/
 
     private fun addNewItem() = viewModelScope.launch {
         when (itemType) {
@@ -252,5 +264,17 @@ class ItemEntryViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun getImagesInUse(): List<String> = runBlocking {
+        val plates = plateRepository.getAllPlatesStream().firstOrNull() ?: emptyList()
+        val wantedPlates = plateRepository.getAllWantedPlatesStream().firstOrNull() ?: emptyList()
+        val formerPlates = plateRepository.getAllFormerPlatesStream().firstOrNull() ?: emptyList()
+
+        val result = plates.mapNotNull { it.uniqueDetails.imagePath }
+            .plus(wantedPlates.mapNotNull { it.imagePath })
+            .plus(formerPlates.mapNotNull { it.uniqueDetails.imagePath })
+
+        return@runBlocking result
     }
 }

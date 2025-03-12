@@ -23,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,7 +52,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.util.filePathFromUri
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import java.io.File
@@ -124,50 +122,45 @@ fun ItemImage(
 @Composable
 fun pickItemImage(
     existingImagePath: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    temporaryImageUri: Uri? = null,
+    onPick: (Uri?) -> Unit = {},
+    onRemove: () -> Unit = {}
 ): String? {
-    var imageUri: Uri? by remember { mutableStateOf(null) }
-    var removeImage by remember { mutableStateOf(false) }
+    var removeTemporaryImage by remember { mutableStateOf(false) }
     val photoPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        if (uri != null) imageUri = uri
+        ActivityResultContracts.PickVisualMedia()) { uri ->
+            onPick(uri)
     }
-    val onPick = {
-        photoPicker.launch(
-            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-        )
-    }
-    val newImagePath: String? = imageUri?.let { filePathFromUri(it, LocalContext.current) }
-    val onRemove = { removeImage = true }
+    val launchPicker = { photoPicker.launch(PickVisualMediaRequest(
+        mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)) }
+    val toggleRemove = { removeTemporaryImage = true }
 
-    if (removeImage) {
-        imageUri = null
-        removeImage = false
-        return null
+    if (removeTemporaryImage) {
+        onRemove()
+        removeTemporaryImage = false
     }
-    if (imageUri != null) {
+
+    if (temporaryImageUri != null) {
         ItemEntryImageFrame(
-            onPick,
-            onRemove,
+            toggleRemove,
             modifier
         ) {
             ItemImage(
-                onClick = { onPick() },
-                imageUri = imageUri,
+                onClick = { launchPicker() },
+                imageUri = temporaryImageUri,
                 modifier = Modifier.padding(4.dp)
             )
         }
-        return newImagePath
+        return null
 
     } else if (existingImagePath != null) {
         ItemEntryImageFrame(
-            onPick,
-            onRemove,
+            toggleRemove,
             modifier
         ) {
             ItemImage(
-                onClick = { onPick() },
+                onClick = { launchPicker() },
                 imagePath = existingImagePath,
                 modifier = Modifier.padding(4.dp)
             )
@@ -176,13 +169,12 @@ fun pickItemImage(
 
     } else {
         ItemEntryImageFrame(
-            onPick,
-            onRemove,
+            toggleRemove,
             modifier,
             hasExistingImage = false
         ) {
             ItemImage(
-                onClick = { onPick() },
+                onClick = { launchPicker() },
                 isEditMode = true,
                 modifier = Modifier.padding(4.dp)
             )
@@ -272,7 +264,6 @@ private fun ZoomableImage(
 
 @Composable
 private fun ItemEntryImageFrame(
-    onPick: () -> Unit,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
     hasExistingImage: Boolean = true,
@@ -290,7 +281,6 @@ private fun ItemEntryImageFrame(
             content()
         }
         RemovalButton(onRemove, hasExistingImage)
-        //EditImageButtonRow(onPick, onRemove, hasExistingImage)
     }
 }
 
@@ -316,77 +306,5 @@ private fun RemovalButton(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun EditImageButtonRow(
-    onPick: () -> Unit,
-    onRemove: () -> Unit,
-    hasExistingImage: Boolean = true
-) {
-    Box(
-        contentAlignment = Alignment.TopEnd,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(6.dp)
-            //.offset(x = (-3).dp, y = 3.dp)
-    ) {
-        /*Button(
-            onClick = onPick
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.rounded_add_image),
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(
-                text = if (hasExistingImage) {
-                    stringResource(R.string.change_image)
-                } else {
-                    stringResource(R.string.add_image)
-                }
-            )
-        }*/
-        FilledIconButton(
-            onClick = onRemove,
-            enabled = hasExistingImage,
-            modifier = Modifier
-                .size(32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Clear,
-                contentDescription = null
-            )
-        }
-        /*OutlinedButton(
-            onClick = onPick,
-            modifier = Modifier.weight(1f)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.rounded_add_image),
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(
-                text = if (hasExistingImage) {
-                    stringResource(R.string.change_image)
-                } else {
-                    stringResource(R.string.add_image)
-                }
-            )
-        }
-        Spacer(modifier = Modifier.width(8.dp))
-        TextButton(
-            onClick = onRemove,
-            enabled = hasExistingImage
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.rounded_delete),
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(stringResource(R.string.remove_image))
-        }*/
     }
 }
