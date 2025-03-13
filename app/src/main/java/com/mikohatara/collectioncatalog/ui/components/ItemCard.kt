@@ -1,5 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,12 +25,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.mikohatara.collectioncatalog.R
 import java.io.File
@@ -91,40 +93,71 @@ private fun ItemCard(
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val onClick = remember { Modifier.clickable { onCardClick() } }
     val screenWidth = LocalConfiguration.current.screenWidthDp
 
-    val maxWidthAsFloat = if (maxWidth > 0) maxWidth.toFloat() else 1f
-    val itemWidthAsFloat = itemWidth?.toFloat() ?: maxWidthAsFloat
+    val maxWidthAsFloat = remember(maxWidth) { if (maxWidth > 0) maxWidth.toFloat() else 1f }
+    val itemWidthAsFloat = remember(itemWidth) { itemWidth?.toFloat() ?: maxWidthAsFloat }
 
-    val scale = screenWidth / maxWidthAsFloat
-    val imageWidth = itemWidthAsFloat * scale
+    val scale = remember(screenWidth, maxWidthAsFloat) { screenWidth / maxWidthAsFloat }
+    val imageWidth = remember(scale, itemWidthAsFloat) { itemWidthAsFloat * scale }
 
     Card(
         modifier = modifier.then(onClick)
     ) {
         if (imagePath != null) {
-            Box {
-                Text(
-                    text = stringResource(R.string.image_loading),
-                    softWrap = false,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .widthIn(max = imageWidth.dp)
-                        .align(Alignment.Center)
-                )
-                AsyncImage(
-                    model = ImageRequest
-                        .Builder(LocalContext.current)
-                        .data(data = File(imagePath))
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null,
-                    modifier = modifier
-                        .width(imageWidth.dp),
-                    contentScale = ContentScale.FillWidth,
-                )
+            val imageUri = remember { Uri.fromFile(File(imagePath)) }
+            val painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(context)
+                    .data(imageUri)
+                    .size(imageWidth.toInt() * 2)
+                    .crossfade(true)
+                    .build()
+            )
+            val painterState = painter.state
+
+            when (painterState) {
+                is AsyncImagePainter.State.Empty,
+                is AsyncImagePainter.State.Loading -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .width(imageWidth.dp)
+                            .height(80.dp)
+                    ) {
+                        Text(
+                            text = title,//stringResource(R.string.loading),
+                            color = MaterialTheme.colorScheme.background,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                is AsyncImagePainter.State.Success -> {
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = modifier.width(imageWidth.dp),
+                        contentScale = ContentScale.FillWidth,
+                    )
+                }
+                is AsyncImagePainter.State.Error -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .width(imageWidth.dp)
+                            .height(80.dp)
+                    ) {
+                        Text(
+                            text = "ERROR", //TODO add localized text
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         } else {
             Row(
