@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -131,26 +132,14 @@ private fun SettingsScreenContent(
         SettingsButton(
             label = stringResource(R.string.user_country),
             onClick = onClickCountry,
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_globe),
-                    contentDescription = null,
-                    modifier = ItemScreenModifiers.icon
-                )
-            },
+            painter = painterResource(R.drawable.rounded_globe),
             text = displayCountry
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             SettingsButton(
                 label = stringResource(R.string.language),
                 onClick = onClickLanguage,
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_language),
-                        contentDescription = null,
-                        modifier = ItemScreenModifiers.icon
-                    )
-                },
+                painter = painterResource(R.drawable.rounded_language),
                 text = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() }
             )
         }
@@ -164,13 +153,14 @@ private fun SettingsButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    icon: @Composable (() -> Unit)? = null,
+    painter: Painter? = null,
     text: String? = null
 ) {
+    val secondaryColor = MaterialTheme.colorScheme.outline
     val labelColor = if (enabled) {
         MaterialTheme.colorScheme.onBackground
     } else {
-        MaterialTheme.colorScheme.secondary
+        MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Row(
@@ -180,7 +170,14 @@ private fun SettingsButton(
             .clickable(enabled = enabled) { onClick() }
             .padding(8.dp)
     ) {
-        if (icon != null) icon() else Spacer(modifier = Modifier.size(64.dp))
+        if (painter != null) {
+            Icon(
+                painter = painter,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = ItemScreenModifiers.icon
+            )
+        } else Spacer(modifier = Modifier.size(64.dp))
         Column {
             Text(
                 text = label,
@@ -190,7 +187,7 @@ private fun SettingsButton(
             text?.let {
                 Text(
                     text = text,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = secondaryColor
                 )
             }
         }

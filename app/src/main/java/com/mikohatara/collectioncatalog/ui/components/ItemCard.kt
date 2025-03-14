@@ -3,9 +3,11 @@ package com.mikohatara.collectioncatalog.ui.components
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
@@ -120,20 +123,10 @@ private fun ItemCard(
             when (painterState) {
                 is AsyncImagePainter.State.Empty,
                 is AsyncImagePainter.State.Loading -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .width(imageWidth.dp)
-                            .height(80.dp)
-                    ) {
-                        Text(
-                            text = title,//stringResource(R.string.loading),
-                            color = MaterialTheme.colorScheme.background,
-                            softWrap = false,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    ItemCardContentLoading(
+                        title = title,
+                        imageWidth = imageWidth.dp
+                    )
                 }
                 is AsyncImagePainter.State.Success -> {
                     Image(
@@ -144,38 +137,14 @@ private fun ItemCard(
                     )
                 }
                 is AsyncImagePainter.State.Error -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .width(imageWidth.dp)
-                            .height(80.dp)
-                    ) {
-                        Text(
-                            text = "ERROR", //TODO add localized text
-                            softWrap = false,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    ItemCardContentError(imageWidth.dp)
                 }
             }
         } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            ItemCardContentNoImage(
+                title = title,
                 modifier = modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_no_image),
-                    contentDescription = null,
-                    modifier = modifier
-                        .padding(20.dp)
-                )
-                Text(
-                    text = "$title\n${stringResource(R.string.no_image)}"
-                )
-            }
+            )
         }
     }
 }
@@ -265,6 +234,84 @@ private fun WishlistCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ItemCardContentLoading(
+    title: String,
+    imageWidth: Dp
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .width(imageWidth)
+            .height(80.dp)
+    ) {
+        Text(
+            text = title,
+            color = MaterialTheme.colorScheme.background,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = stringResource(R.string.loading),
+            color = MaterialTheme.colorScheme.background,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun ItemCardContentNoImage(
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    val secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(80.dp)
+    ) {
+        Spacer(modifier = Modifier.width(2.dp))
+        Icon(
+            painter = painterResource(R.drawable.rounded_no_image),
+            contentDescription = null,
+            tint = secondaryColor,
+            modifier = modifier.padding(24.dp)
+        )
+        Column {
+            Text(title)
+            Text(
+                text = stringResource(R.string.no_image),
+                color = secondaryColor
+            )
+        }
+    }
+}
+
+@Composable
+private fun ItemCardContentError(
+    imageWidth: Dp
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .width(imageWidth)
+            .height(80.dp)
+    ) {
+        Text(
+            text = "ERROR", //TODO add localized text
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
