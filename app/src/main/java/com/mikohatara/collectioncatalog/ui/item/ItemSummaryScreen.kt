@@ -379,6 +379,7 @@ private fun CommonDetailsCard(
     itemDetails: ItemDetails,
     image: @Composable () -> Unit
 ) {
+    val secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
     val period: String? = (itemDetails.periodStart != null || itemDetails.periodEnd != null)
         .takeIf { it }?.let {
             "${itemDetails.periodStart ?: ""} – ${itemDetails.periodEnd ?: ""}"
@@ -399,16 +400,16 @@ private fun CommonDetailsCard(
         ) {
             itemDetails.let {
                 it.country?.let { value -> Text(text = value) }
-                it.region1st?.let { value -> Text(text = value) }
-                it.region2nd?.let { value -> Text(text = value) }
-                it.region3rd?.let { value -> Text(text = value) }
+                it.region1st?.let { value -> Text(text = value, color = secondaryColor) }
+                it.region2nd?.let { value -> Text(text = value, color = secondaryColor) }
+                it.region3rd?.let { value -> Text(text = value, color = secondaryColor) }
             }
             Spacer(modifier = Modifier.height(20.dp))
             Row {
                 itemDetails.type?.let { Text(text = it) }
-                period?.let { Text(text = "・$it") }
+                period?.let { Text(text = "・$it", color = secondaryColor) }
             }
-            itemDetails.year?.let { Text(text = it.toString()) }
+            itemDetails.year?.let { Text(text = it.toString(), color = secondaryColor) }
         }
         Spacer(modifier = Modifier.height(8.dp))
     }

@@ -25,7 +25,7 @@
     <string name="filter">Rajaa</string>
     <string name="cancel">Peruuta</string>
     <string name="cost">Menot</string>
-    <string name="image_loading">Ladataan kuvaa</string>
+    <string name="image_loading">Kuvaa ladataan...</string>
     <string name="loading">Ladataan...</string>
     <string name="country">Valtio</string>
     <string name="region">Alue</string>
@@ -133,8 +133,8 @@
         <item quantity="other">%d kilpeä</item>
     </plurals>
     <plurals name="wishlist_list_size">
-        <item quantity="one">%d esine</item>
-        <item quantity="other">%d esinettä</item>
+        <item quantity="one">%d kilpi</item>
+        <item quantity="other">%d kilpeä</item>
     </plurals>
     <string name="version">Versio</string>
     <string name="search_placeholder">Hae rekisteritunnusta</string>
@@ -145,4 +145,6 @@
     <string name="import_text">Tuo</string>
     <string name="export_csv">Vie CSV</string>
     <string name="import_csv">Tuo CSV</string>
+    <string name="image_error">Kuvavirhe</string>
+    <string name="error">Virhe</string>
 </resources>

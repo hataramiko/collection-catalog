@@ -25,7 +25,7 @@
     <string name="filter">絞り込み</string>
     <string name="cancel">キャンセル</string>
     <string name="cost">費用</string>
-    <string name="image_loading">画像ロード中</string>
+    <string name="image_loading">画像ロード中...</string>
     <string name="loading">ロード中...</string>
     <string name="country">国家</string>
     <string name="region">地域</string>
@@ -142,4 +142,6 @@
     <string name="import_text">インポート</string>
     <string name="export_csv">CSVをエクスポート</string>
     <string name="import_csv">CSVをインポート</string>
+    <string name="image_error">画像のエラー</string>
+    <string name="error">エラー</string>
 </resources>

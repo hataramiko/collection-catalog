@@ -65,16 +65,20 @@ fun ItemImage(
     isEditMode: Boolean = false
 ) {
     val maxHeight = LocalConfiguration.current.screenWidthDp * 0.75
-    val colors = CardDefaults.cardColors(
-        if (imageUri != null || imagePath != null) {
-            Color(185, 185, 185) // TODO replace with a dynamic background color
-        } else {
-            MaterialTheme.colorScheme.surface
-        }
-    )
+    val colors = if (imageUri != null || imagePath != null) {
+        CardDefaults.cardColors(
+            containerColor = Color(185, 185, 185) // TODO replace with a dynamic background color
+        )
+    } else {
+        CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface
+        )
+    }
 
     Card(
         onClick = onClick,
+        enabled = (isEditMode || imageUri != null || imagePath != null),
         colors = colors,
         modifier = modifier
             .fillMaxWidth()
@@ -104,15 +108,24 @@ fun ItemImage(
                 if (isEditMode) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_add_image),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
                     )
-                    Text(stringResource(R.string.add_image))
+                    Text(
+                        text = stringResource(R.string.add_image),
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.rounded_no_image),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
                     )
-                    Text(stringResource(R.string.no_image))
+                    Text(
+                        text = stringResource(R.string.no_image),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
                 }
             }
         }

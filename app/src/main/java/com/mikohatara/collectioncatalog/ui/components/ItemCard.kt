@@ -2,12 +2,12 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,12 +28,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -107,6 +108,7 @@ private fun ItemCard(
     val imageWidth = remember(scale, itemWidthAsFloat) { itemWidthAsFloat * scale }
 
     Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHigh),
         modifier = modifier.then(onClick)
     ) {
         if (imagePath != null) {
@@ -137,13 +139,15 @@ private fun ItemCard(
                     )
                 }
                 is AsyncImagePainter.State.Error -> {
-                    ItemCardContentError(imageWidth.dp)
+                    ItemCardContentError(
+                        title = title,
+                        imageWidth = imageWidth.dp
+                    )
                 }
             }
         } else {
             ItemCardContentNoImage(
-                title = title,
-                modifier = modifier
+                title = title
             )
         }
     }
@@ -165,17 +169,20 @@ private fun WishlistCard(
     periodEnd: String? = null,
     year: String? = null,
 ) {
+    val context = LocalContext.current
     val onClick = remember { Modifier.clickable { onCardClick() } }
+
     val regions = listOfNotNull(region1st, region2nd, region3rd).filterNot { it.isBlank() }
     val mainText = listOf(country).plus(regions).joinToString(", ")
     val period = if (periodStart.isNullOrBlank() && periodEnd.isNullOrBlank()) {
         null
     } else {
-        "${periodStart ?: ""} – ${periodEnd ?: ""}".trim()
+        "${periodStart ?: ""} – ${periodEnd ?: ""}"
     }
-    val subText = listOfNotNull(type, notes)
+
+    val subText = listOfNotNull(type, period, year)
         .filterNot { it.isBlank() }
-        .joinToString(", ")
+        .joinToString("・")
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -184,6 +191,7 @@ private fun WishlistCard(
             .then(onClick)
     ) {
         Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHigh),
             modifier = Modifier.size(80.dp)
         ) {
             Box(
@@ -191,28 +199,59 @@ private fun WishlistCard(
                 modifier = Modifier.fillMaxSize()
             ) {
                 if (imagePath != null) {
-                    /*Text(
-                        text = stringResource(R.string.image_loading),
-                        softWrap = false,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                    )*/
-                    AsyncImage(
-                        model = ImageRequest
-                            .Builder(LocalContext.current)
-                            .data(data = File(imagePath))
+                    val imageUri = remember { Uri.fromFile(File(imagePath)) }
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(context)
+                            .data(imageUri)
+                            .size(512)
                             .crossfade(true)
-                            .build(),
-                        contentDescription = null,
-                        modifier = Modifier,
-                        contentScale = ContentScale.Fit,
+                            .build()
                     )
+                    val painterState = painter.state
+
+                    when (painterState) {
+                        is AsyncImagePainter.State.Empty,
+                        is AsyncImagePainter.State.Loading -> {
+                            Card(
+                                colors = CardDefaults
+                                    .cardColors(MaterialTheme.colorScheme.surfaceContainerLow),
+                                modifier = Modifier.fillMaxSize()
+                            ) {}
+                        }
+                        is AsyncImagePainter.State.Success -> {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                            ) {
+                                Image(
+                                    painter = painter,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Fit,
+                                )
+                            }
+                        }
+                        is AsyncImagePainter.State.Error -> {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.surfaceContainer)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_broken_image_24),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
+                    }
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.rounded_no_image),
                         contentDescription = null,
-                        modifier = Modifier
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -220,17 +259,28 @@ private fun WishlistCard(
         Column(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            Text(
-                text = mainText,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            if (mainText.isNotBlank()) {
+                Text(
+                    text = mainText,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
             if (subText.isNotBlank()) {
                 Text(
                     text = subText,
+                    color = MaterialTheme.colorScheme.outline,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            notes?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.secondary
+                    modifier = Modifier.padding(top = 2.dp)
                 )
             }
         }
@@ -242,27 +292,32 @@ private fun ItemCardContentLoading(
     title: String,
     imageWidth: Dp
 ) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow),
         modifier = Modifier
             .width(imageWidth)
             .height(80.dp)
     ) {
-        Text(
-            text = title,
-            color = MaterialTheme.colorScheme.background,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
-        )
-        Text(
-            text = stringResource(R.string.loading),
-            color = MaterialTheme.colorScheme.background,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
-        )
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.rounded_broken_image_24),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier.padding(start = 4.dp, end = 8.dp)
+            )
+            Text(
+                text = "$title...",
+                color = MaterialTheme.colorScheme.outlineVariant,
+                fontWeight = FontWeight.Medium,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -271,26 +326,26 @@ private fun ItemCardContentNoImage(
     title: String,
     modifier: Modifier = Modifier
 ) {
-    val secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
     ) {
-        Spacer(modifier = Modifier.width(2.dp))
         Icon(
             painter = painterResource(R.drawable.rounded_no_image),
             contentDescription = null,
-            tint = secondaryColor,
-            modifier = modifier.padding(24.dp)
+            tint = MaterialTheme.colorScheme.secondary,
+            modifier = modifier.padding(26.dp)
         )
         Column {
-            Text(title)
+            Text(
+                text = title,
+                fontWeight = FontWeight.Medium
+            )
             Text(
                 text = stringResource(R.string.no_image),
-                color = secondaryColor
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -298,20 +353,41 @@ private fun ItemCardContentNoImage(
 
 @Composable
 private fun ItemCardContentError(
-    imageWidth: Dp
+    title: String,
+    imageWidth: Dp,
+    modifier: Modifier = Modifier
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
         modifier = Modifier
             .width(imageWidth)
             .height(80.dp)
     ) {
-        Text(
-            text = "ERROR", //TODO add localized text
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.rounded_broken_image_24),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = modifier.padding(26.dp)
+            )
+            Column {
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Medium,
+                    softWrap = false,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = stringResource(R.string.error),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    softWrap = false,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }
 

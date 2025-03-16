@@ -156,11 +156,10 @@ private fun SettingsButton(
     painter: Painter? = null,
     text: String? = null
 ) {
-    val secondaryColor = MaterialTheme.colorScheme.outline
-    val labelColor = if (enabled) {
-        MaterialTheme.colorScheme.onBackground
+    val (labelColor, valueColor) = if (enabled) {
+        MaterialTheme.colorScheme.onBackground to MaterialTheme.colorScheme.secondary
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        MaterialTheme.colorScheme.onSurfaceVariant to MaterialTheme.colorScheme.outline
     }
 
     Row(
@@ -187,7 +186,7 @@ private fun SettingsButton(
             text?.let {
                 Text(
                     text = text,
-                    color = secondaryColor
+                    color = valueColor
                 )
             }
         }
