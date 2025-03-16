@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -34,9 +39,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.mikohatara.collectioncatalog.R
 import java.io.File
 
@@ -184,6 +191,41 @@ private fun WishlistCard(
         .filterNot { it.isBlank() }
         .joinToString("・")
 
+    val defaultColor = MaterialTheme.colorScheme.surfaceContainerHigh
+    var containerColor by remember { mutableStateOf(defaultColor) }
+
+    LaunchedEffect(imagePath) {
+        containerColor = defaultColor
+
+        if (imagePath != null) {
+            val imageUri = Uri.fromFile(File(imagePath))
+            val imageLoader = ImageLoader.Builder(context).build()
+            val imageRequest = ImageRequest.Builder(context)
+                .data(imageUri)
+                .allowHardware(false)
+                .build()
+
+            val result = try {
+                imageLoader.execute(imageRequest)
+            } catch (e: Exception) {
+                //TODO add error message
+                null
+            }
+
+            if (result != null && result is SuccessResult) {
+                val drawable = result.drawable
+
+                if (drawable is BitmapDrawable) {
+                    val bitmap = drawable.bitmap
+                    val newColor = generatePalette(bitmap)
+                    if (newColor != null) {
+                        containerColor = newColor
+                    }
+                }
+            }
+        }
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -223,7 +265,7 @@ private fun WishlistCard(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                                    .background(containerColor)
                             ) {
                                 Image(
                                     painter = painter,
@@ -279,8 +321,7 @@ private fun WishlistCard(
                     text = it,
                     color = MaterialTheme.colorScheme.outlineVariant,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 2.dp)
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

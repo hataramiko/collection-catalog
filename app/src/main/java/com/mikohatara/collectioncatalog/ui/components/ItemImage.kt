@@ -1,5 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -29,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,9 +52,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.palette.graphics.Palette
+import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.mikohatara.collectioncatalog.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import java.io.File
@@ -64,15 +72,52 @@ fun ItemImage(
     imagePath: String? = null,
     isEditMode: Boolean = false
 ) {
+    val context = LocalContext.current
     val maxHeight = LocalConfiguration.current.screenWidthDp * 0.75
-    val colors = if (imageUri != null || imagePath != null) {
+    val defaultColor = MaterialTheme.colorScheme.surface
+    var containerColor by remember { mutableStateOf(defaultColor) }
+    var isContainerDefaultColor by remember { mutableStateOf(true) }
+
+    LaunchedEffect(imageUri, imagePath) {
+        isContainerDefaultColor = true
+        containerColor = defaultColor
+
+        if (imageUri != null || imagePath != null) {
+            val imageLoader = ImageLoader.Builder(context).build()
+            val imageRequest = ImageRequest.Builder(context)
+                .data(imageUri ?: imagePath)
+                .allowHardware(false)
+                .build()
+
+            val result = try {
+                imageLoader.execute(imageRequest)
+            } catch (e: Exception) {
+                //TODO add error message
+                null
+            }
+
+            if (result != null && result is SuccessResult) {
+                val drawable = result.drawable
+                if (drawable is BitmapDrawable) {
+                    val bitmap = drawable.bitmap
+                    val newColor = generatePalette(bitmap)
+                    if (newColor != null) {
+                        containerColor = newColor
+                        isContainerDefaultColor = false
+                    }
+                }
+            }
+        }
+    }
+
+    val colors = if (isContainerDefaultColor) {
         CardDefaults.cardColors(
-            containerColor = Color(185, 185, 185) // TODO replace with a dynamic background color
+            containerColor = defaultColor,
+            disabledContainerColor = defaultColor
         )
     } else {
         CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            disabledContainerColor = MaterialTheme.colorScheme.surface
+            containerColor = containerColor
         )
     }
 
@@ -319,5 +364,26 @@ private fun RemovalButton(
                 )
             }
         }
+    }
+}
+
+suspend fun generatePalette(bitmap: Bitmap): Color? {
+    return withContext(Dispatchers.IO) {
+        val palette = Palette.from(bitmap).generate()
+        val vibrantSwatch = palette.vibrantSwatch
+        val lightVibrantSwatch = palette.lightVibrantSwatch
+        val darkVibrantSwatch = palette.darkVibrantSwatch
+        val mutedSwatch = palette.mutedSwatch
+        val lightMutedSwatch = palette.lightMutedSwatch
+        val darkMutedSwatch = palette.darkMutedSwatch
+
+        val color = listOfNotNull(
+            vibrantSwatch, lightVibrantSwatch, darkVibrantSwatch,
+            mutedSwatch, lightMutedSwatch, darkMutedSwatch
+        ).firstOrNull()?.rgb
+
+        if (color != null) {
+            Color(color)
+        } else null
     }
 }
