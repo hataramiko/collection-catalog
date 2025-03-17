@@ -45,6 +45,8 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.util.generatePalette
+import com.mikohatara.collectioncatalog.util.getBitmapFromEdges
 import java.io.File
 
 @Composable
@@ -105,8 +107,9 @@ private fun ItemCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
     val onClick = remember { Modifier.clickable { onCardClick() } }
-    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val screenWidth = remember { configuration.screenWidthDp }
 
     val maxWidthAsFloat = remember(maxWidth) { if (maxWidth > 0) maxWidth.toFloat() else 1f }
     val itemWidthAsFloat = remember(itemWidth) { itemWidth?.toFloat() ?: maxWidthAsFloat }
@@ -214,10 +217,10 @@ private fun WishlistCard(
 
             if (result != null && result is SuccessResult) {
                 val drawable = result.drawable
-
                 if (drawable is BitmapDrawable) {
-                    val bitmap = drawable.bitmap
-                    val newColor = generatePalette(bitmap)
+                    val entireBitmap = drawable.bitmap
+                    //val edgesOnlyBitmap = getBitmapFromEdges(entireBitmap)
+                    val newColor = generatePalette(entireBitmap)
                     if (newColor != null) {
                         containerColor = newColor
                     }
@@ -345,7 +348,7 @@ private fun ItemCardContentLoading(
             modifier = Modifier.fillMaxSize()
         ) {
             Icon(
-                painter = painterResource(R.drawable.rounded_broken_image_24),
+                painter = painterResource(R.drawable.rounded_pending_24),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.outlineVariant,
                 modifier = Modifier.padding(start = 4.dp, end = 8.dp)

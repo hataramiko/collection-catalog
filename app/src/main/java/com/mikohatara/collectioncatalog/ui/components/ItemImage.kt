@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.components
 
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -52,14 +51,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.palette.graphics.Palette
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.mikohatara.collectioncatalog.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.mikohatara.collectioncatalog.util.generatePalette
+import com.mikohatara.collectioncatalog.util.getBitmapFromEdges
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import java.io.File
@@ -99,8 +97,9 @@ fun ItemImage(
             if (result != null && result is SuccessResult) {
                 val drawable = result.drawable
                 if (drawable is BitmapDrawable) {
-                    val bitmap = drawable.bitmap
-                    val newColor = generatePalette(bitmap)
+                    val entireBitmap = drawable.bitmap
+                    val edgesOnlyBitmap = getBitmapFromEdges(entireBitmap, true)
+                    val newColor = generatePalette(edgesOnlyBitmap)
                     if (newColor != null) {
                         containerColor = newColor
                         isContainerDefaultColor = false
@@ -364,26 +363,5 @@ private fun RemovalButton(
                 )
             }
         }
-    }
-}
-
-suspend fun generatePalette(bitmap: Bitmap): Color? {
-    return withContext(Dispatchers.IO) {
-        val palette = Palette.from(bitmap).generate()
-        val vibrantSwatch = palette.vibrantSwatch
-        val lightVibrantSwatch = palette.lightVibrantSwatch
-        val darkVibrantSwatch = palette.darkVibrantSwatch
-        val mutedSwatch = palette.mutedSwatch
-        val lightMutedSwatch = palette.lightMutedSwatch
-        val darkMutedSwatch = palette.darkMutedSwatch
-
-        val color = listOfNotNull(
-            vibrantSwatch, lightVibrantSwatch, darkVibrantSwatch,
-            mutedSwatch, lightMutedSwatch, darkMutedSwatch
-        ).firstOrNull()?.rgb
-
-        if (color != null) {
-            Color(color)
-        } else null
     }
 }

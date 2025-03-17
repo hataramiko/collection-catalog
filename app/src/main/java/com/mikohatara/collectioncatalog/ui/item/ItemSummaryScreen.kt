@@ -407,7 +407,7 @@ private fun CommonDetailsCard(
             Spacer(modifier = Modifier.height(20.dp))
             Row {
                 itemDetails.type?.let { Text(text = it) }
-                period?.let { Text(text = "・$it", color = secondaryColor) }
+                period?.let { Text(text = "・$it") }
             }
             itemDetails.year?.let { Text(text = it.toString(), color = secondaryColor) }
         }
