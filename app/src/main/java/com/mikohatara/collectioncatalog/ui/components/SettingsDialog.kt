@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -39,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.ui.collection.isCollectionColor
-import com.mikohatara.collectioncatalog.ui.collection.toColor
+import com.mikohatara.collectioncatalog.util.isCollectionColor
+import com.mikohatara.collectioncatalog.util.toColor
 
 @Composable
 fun SettingsDialog(
@@ -51,6 +52,7 @@ fun SettingsDialog(
     onDismiss: () -> Unit,
     infoText: String? = null
 ) {
+    val context = LocalContext.current
     val showInfo = rememberSaveable { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -95,7 +97,9 @@ fun SettingsDialog(
                             value = item,
                             selectedOption = selectedOption,
                             onClick = { onToggleSelection(item) },
-                            color = if (item.isCollectionColor()) item.toColor() else null
+                            color = if (item.isCollectionColor(context)) {
+                                item.toColor(context)
+                            } else null
                         )
                     }
                     item {

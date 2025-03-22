@@ -144,4 +144,11 @@
     <string name="import_csv">CSVをインポート</string>
     <string name="image_error">画像のエラー</string>
     <string name="error">エラー</string>
+    <string name="collection_color_default">デフォルト</string>
+    <string name="collection_color_red">赤</string>
+    <string name="collection_color_orange">橙</string>
+    <string name="collection_color_yellow">黄</string>
+    <string name="collection_color_green">緑</string>
+    <string name="collection_color_blue">青</string>
+    <string name="collection_color_violet">紫</string>
 </resources>

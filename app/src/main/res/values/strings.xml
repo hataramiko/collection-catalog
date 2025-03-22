@@ -153,4 +153,11 @@
     <string name="import_csv">Import CSV</string>
     <string name="image_error">Image error</string>
     <string name="error">Error</string>
+    <string name="collection_color_default">Default</string>
+    <string name="collection_color_red">Red</string>
+    <string name="collection_color_orange">Orange</string>
+    <string name="collection_color_yellow">Yellow</string>
+    <string name="collection_color_green">Green</string>
+    <string name="collection_color_blue">Blue</string>
+    <string name="collection_color_violet">Violet</string>
 </resources>

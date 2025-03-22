@@ -54,7 +54,40 @@ fun IconCollectionLabel(
                 painter = painterResource(R.drawable.baseline_label_24),
                 contentDescription = null,
                 tint = tint.copy(alpha = 0.15f),
-                modifier = modifier.scale(scaleX = 0.9f, scaleY = 0.9f),
+                modifier = modifier.scale(scaleX = 0.9f, scaleY = 0.9f)
+            )
+        }
+    }
+}
+
+@Composable
+fun IconCollectionColor(
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    val defaultTint = LocalContentColor.current
+    val tint = if (color != CollectionColor.DEFAULT.color) color else defaultTint
+
+    if (tint == defaultTint) {
+        Icon(
+            painter = painterResource(R.drawable.rounded_format_color_reset_24),
+            contentDescription = null,
+            tint = tint,
+            modifier = modifier
+        )
+    } else {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                painter = painterResource(R.drawable.rounded_invert_colors_24),
+                contentDescription = null,
+                tint = tint,
+                modifier = modifier
+            )
+            Icon(
+                painter = painterResource(R.drawable.rounded_invert_colors_24),
+                contentDescription = null,
+                tint = tint,
+                modifier = modifier.scale(scaleX = -0.9f, scaleY = 0.9f).offset(x = (-0.3).dp)
             )
         }
     }

@@ -1,6 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.collection
 
-import androidx.compose.ui.graphics.Color
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +8,7 @@ import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
+import com.mikohatara.collectioncatalog.util.getCollectionColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -78,8 +79,10 @@ class CollectionEntryViewModel @Inject constructor(
         uiState.value.collection?.let { collectionRepository.deleteCollectionWithPlates(it) }
     }
 
-    fun updateCollectionColor(input: String) {
-        val newColor = CollectionColor.entries.find { it.name == input } ?: CollectionColor.DEFAULT
+    fun updateCollectionColor(input: String, context: Context) {
+        val newColor = CollectionColor.entries.find {
+            getCollectionColor(it, context) == input
+        } ?: CollectionColor.DEFAULT
         _uiState.update {
             it.copy(collectionDetails = it.collectionDetails.copy(color = newColor))
         }
@@ -126,11 +129,3 @@ fun CollectionDetails.toCollection(): Collection = Collection(
     name ?: "",
     color
 )
-
-fun String.isCollectionColor(): Boolean {
-    return CollectionColor.entries.any { it.name == this }
-}
-
-fun String.toColor(): Color {
-    return CollectionColor.entries.find { it.name == this }?.color ?: Color.Unspecified
-}

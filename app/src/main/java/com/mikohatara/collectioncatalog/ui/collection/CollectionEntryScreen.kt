@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -45,7 +46,9 @@ import com.mikohatara.collectioncatalog.ui.components.CollectionEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.CollectionListTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
+import com.mikohatara.collectioncatalog.ui.components.IconCollectionColor
 import com.mikohatara.collectioncatalog.ui.components.SettingsDialog
+import com.mikohatara.collectioncatalog.util.getCollectionColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -75,6 +78,7 @@ private fun CollectionEntryScreen(
     onValueChange: (CollectionDetails) -> Unit,
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
     var showColorDialog by rememberSaveable { mutableStateOf(false) }
@@ -124,9 +128,9 @@ private fun CollectionEntryScreen(
     if (showColorDialog) {
         SettingsDialog(
             label = stringResource(R.string.collection_color),
-            options = CollectionColor.entries.map { it.name },
-            selectedOption = uiState.collectionDetails.color.toString(),
-            onToggleSelection = { viewModel.updateCollectionColor(it) },
+            options = CollectionColor.entries.map { getCollectionColor(it, context) },
+            selectedOption = getCollectionColor(uiState.collectionDetails.color, context),
+            onToggleSelection = { viewModel.updateCollectionColor(it, context) },
             onDismiss = { showColorDialog = false }
         )
     }
@@ -224,24 +228,14 @@ private fun CollectionEntryScreenContent(
                     singleLine = true,
                     modifier = Modifier.weight(0.33f)
                 )
-                Spacer(
-                    modifier = Modifier.width(12.dp)
-                )
                 OutlinedButton(
                     onClick = onPickColor,
                     modifier = Modifier
+                        .padding(start = 16.dp)
                         .weight(1f)
-                        .height(56.dp)
+                        .height(48.dp)
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_circle),
-                        contentDescription = null,
-                        tint = tint,
-                        modifier = Modifier
-                            //.padding(end = 0.dp)
-                            .size(28.dp)
-                            .offset(x = (-8).dp)
-                    )
+                    IconCollectionColor(tint, Modifier.offset(x = (-8).dp))
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxWidth()
@@ -249,12 +243,13 @@ private fun CollectionEntryScreenContent(
                         Text(
                             text = stringResource(R.string.collection_color),
                             color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.offset(x = (-4).dp)
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = onSave,
                 enabled = uiState.isValidEntry,

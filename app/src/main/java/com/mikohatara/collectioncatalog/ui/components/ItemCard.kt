@@ -219,8 +219,8 @@ private fun WishlistCard(
                 val drawable = result.drawable
                 if (drawable is BitmapDrawable) {
                     val entireBitmap = drawable.bitmap
-                    //val edgesOnlyBitmap = getBitmapFromEdges(entireBitmap)
-                    val newColor = generatePalette(entireBitmap)
+                    val edgesOnlyBitmap = getBitmapFromEdges(entireBitmap)
+                    val newColor = generatePalette(edgesOnlyBitmap)
                     if (newColor != null) {
                         containerColor = newColor
                     }
@@ -257,11 +257,18 @@ private fun WishlistCard(
                     when (painterState) {
                         is AsyncImagePainter.State.Empty,
                         is AsyncImagePainter.State.Loading -> {
-                            Card(
-                                colors = CardDefaults
-                                    .cardColors(MaterialTheme.colorScheme.surfaceContainerLow),
-                                modifier = Modifier.fillMaxSize()
-                            ) {}
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_hourglass_24),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.outlineVariant
+                                )
+                            }
                         }
                         is AsyncImagePainter.State.Success -> {
                             Box(
@@ -348,7 +355,7 @@ private fun ItemCardContentLoading(
             modifier = Modifier.fillMaxSize()
         ) {
             Icon(
-                painter = painterResource(R.drawable.rounded_pending_24),
+                painter = painterResource(R.drawable.rounded_hourglass_24),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.outlineVariant,
                 modifier = Modifier.padding(start = 4.dp, end = 8.dp)

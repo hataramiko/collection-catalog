@@ -147,4 +147,11 @@
     <string name="import_csv">Tuo CSV</string>
     <string name="image_error">Kuvavirhe</string>
     <string name="error">Virhe</string>
+    <string name="collection_color_default">Oletus</string>
+    <string name="collection_color_red">Punainen</string>
+    <string name="collection_color_orange">Oranssi</string>
+    <string name="collection_color_yellow">Keltainen</string>
+    <string name="collection_color_green">Vihreä</string>
+    <string name="collection_color_blue">Sininen</string>
+    <string name="collection_color_violet">Violetti</string>
 </resources>
