@@ -7,7 +7,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -177,7 +176,10 @@ private fun WishlistScreenContent(
         } else if (itemList.isEmpty()) {
             item {
                 if (uiState.filters != FilterData()) {
-                    EmptyList()
+                    EmptyList(
+                        message = stringResource(R.string.empty_list_filter_msg),
+                        description = stringResource(R.string.empty_list_filter_desc)
+                    )
                 } else {
                     EmptyList(
                         painter = painterResource(R.drawable.rounded_heart),

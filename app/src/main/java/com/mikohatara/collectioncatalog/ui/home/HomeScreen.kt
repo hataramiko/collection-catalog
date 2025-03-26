@@ -218,17 +218,24 @@ private fun HomeScreenContent(
             item {
                 if (uiState.searchQuery != "") {
                     EmptyList(
-                        message = "Nothing found",
-                        description = "Try changing your search query"
+                        painter = painterResource(R.drawable.rounded_frame_inspect),
+                        message = stringResource(R.string.empty_list_search_msg),
+                        description = stringResource(
+                            R.string.empty_list_search_desc, uiState.searchQuery)
                     )
                 } else if (uiState.filters != FilterData()) {
-                    EmptyList()
+                    EmptyList(
+                        message = stringResource(R.string.empty_list_filter_msg),
+                        description = stringResource(R.string.empty_list_filter_desc)
+                    )
                 } else if (viewModel.collectionId != null) {
                     EmptyList(
                         painter = painterResource(R.drawable.rounded_label),
                         message = stringResource(R.string.empty_list_collection_msg),
                         description = stringResource(R.string.empty_list_collection_desc),
-                        iconModifier = Modifier.offset(x = 2.dp)
+                        iconModifier = Modifier.offset(x = 2.dp),
+                        collectionEmoji = viewModel.getCollectionEmoji(),
+                        collectionColor = viewModel.getCollectionColor()
                     )
                 } else {
                     EmptyList(

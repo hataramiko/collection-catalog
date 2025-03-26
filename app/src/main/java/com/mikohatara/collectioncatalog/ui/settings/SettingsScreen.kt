@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.settings
 
+import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -47,11 +48,13 @@ fun SettingsScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     uiState?.let {
         SettingsScreen(
-            uiState = it,
             viewModel = viewModel,
+            uiState = it,
+            context = context,
             onBack = onBack
         )
     } ?: run {
@@ -62,11 +65,11 @@ fun SettingsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsScreen(
-    uiState: SettingsUiState,
     viewModel: SettingsViewModel,
+    uiState: SettingsUiState,
+    context: Context,
     onBack: () -> Unit
 ) {
-    val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showCountryDialog by rememberSaveable { mutableStateOf(false) }
     var showRedirectDialog by rememberSaveable { mutableStateOf(false) }

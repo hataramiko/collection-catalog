@@ -118,14 +118,13 @@
     <string name="user_country_info">The selection affects number formatting and default measurement units.</string>
     <string name="empty_list_default_msg">Nothing to display</string>
     <string name="empty_list_default_desc">Check active filters for any mistakes.</string>
-    <string name="empty_list_plates_msg">Nothing here yet</string>
+    <string name="empty_list_plates_msg">Nothing to show yet</string>
     <string name="empty_list_plates_desc">Start by adding a new plate.</string>
     <string name="empty_list_collection_msg">This collection is empty</string>
-    <string name="empty_list_collection_desc">Add plates by selecting the collection while editing a plate.</string>
+    <string name="empty_list_collection_desc">You can add plates by selecting the collection while editing a plate.</string>
     <string name="empty_list_archive_msg">Archive is empty</string>
-    <string name="empty_list_archive_desc">You can archive existing plates by copying and pasting.</string>
+    <string name="empty_list_archive_desc">Keep track of plates no longer in your possession. You can archive existing plates, or add new entries manually.</string>
     <string name="empty_list_wishlist_msg">Wishlist is empty</string>
-    <string name="empty_list_wishlist_desc" translatable="false">MISSING TRANSLATION</string>
     <string name="sort_by_country_and_age_asc">Country &amp; Age, ascending</string>
     <string name="sort_by_country_and_age_desc">Country &amp; Type, descending</string>
     <string name="transfer_from_wishlist_dialog_title">Mark as complete?</string>
@@ -160,4 +159,9 @@
     <string name="collection_color_green">Green</string>
     <string name="collection_color_blue">Blue</string>
     <string name="collection_color_violet">Violet</string>
+    <string name="empty_list_wishlist_desc">Keep track of plates you\'re looking for by adding them to the wishlist. You can later create a new plate based on the wishlist entry.</string>
+    <string name="empty_list_search_msg">No search results</string>
+    <string name="empty_list_search_desc">No matches were found for \"<xliff:g name="search_query" example="ABC123">%s</xliff:g>\". Try changing your search query.</string>
+    <string name="empty_list_filter_msg">No results</string>
+    <string name="empty_list_filter_desc">Check active filters for any mistakes.</string>
 </resources>

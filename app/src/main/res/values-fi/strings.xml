@@ -115,11 +115,11 @@
     <string name="empty_list_archive_msg">Arkisto on tyhjä</string>
     <string name="empty_list_wishlist_msg">Toivelista on tyhjä</string>
     <string name="empty_list_collection_msg">Tämä kokoelma on tyhjä</string>
-    <string name="empty_list_plates_msg">Ei vielä nähtävää</string>
-    <string name="empty_list_collection_desc">Lisää kilpiä kokoelmaan tekemällä valinta kilpeä muokattaessa.</string>
+    <string name="empty_list_plates_msg">Ei vielä näytettävää</string>
+    <string name="empty_list_collection_desc">Lisää kilpiä valitsemalla tämä kokoelma kilpeä muokattaessa.</string>
     <string name="empty_list_plates_desc">Aloita lisäämällä uusi kilpi.</string>
     <string name="empty_list_default_desc">Tarkista käytössä olevat rajausehdot virheiden varalta.</string>
-    <string name="empty_list_archive_desc">Kilpiä voidaan arkistoida kopioimalla olemassa oleva kilpi.</string>
+    <string name="empty_list_archive_desc">Pidä kirjaa entisistä kilvistäsi. Arkistoon voi lisätä kilpiä manuaalisesti tai arkistoimalla jo olemassa olevan kilven.</string>
     <string name="sort_by_country_and_age_asc">Valtio ja ikä, nouseva</string>
     <string name="sort_by_country_and_age_desc">Valtio ja ikä, laskeva</string>
     <string name="transfer_from_wishlist_dialog_text">Tämän pohjalta luodaan uusi kilpi, ja tämä puolestaan poistetaan toivelistalta.</string>
@@ -154,4 +154,9 @@
     <string name="collection_color_green">Vihreä</string>
     <string name="collection_color_blue">Sininen</string>
     <string name="collection_color_violet">Violetti</string>
+    <string name="empty_list_wishlist_desc">Pidä kirjaa haluamistasi kilvistä toivelistan avulla. Halutun kilven löydyttyä, listauksen pohjalta voidaan luoda uusi kilpi.</string>
+    <string name="empty_list_search_msg">Ei hakutuloksia</string>
+    <string name="empty_list_search_desc">Hakua \"<xliff:g name="search_query" example="ABC123">%s</xliff:g>\" vastaavia tuloksia ei löytynyt. Yritä hakulausekkeen muokkaamista.</string>
+    <string name="empty_list_filter_msg">Ei tuloksia</string>
+    <string name="empty_list_filter_desc">Tarkista käytössä olevat rajausehdot virheiden varalta.</string>
 </resources>

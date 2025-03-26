@@ -135,7 +135,7 @@ fun SettingsDialog(
                             onClick = { showInfo.value = false },
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(end = 4.dp)
+                                .padding(end = 8.dp, bottom = 4.dp)
                         ) {
                             Text(stringResource(R.string.ok_text))
                         }

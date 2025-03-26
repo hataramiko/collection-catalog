@@ -188,11 +188,16 @@ private fun ArchiveScreenContent(
             item {
                 if (uiState.searchQuery != "") {
                     EmptyList(
-                        message = "Nothing found",
-                        description = "Try changing your search query"
+                        painter = painterResource(R.drawable.rounded_frame_inspect),
+                        message = stringResource(R.string.empty_list_search_msg),
+                        description = stringResource(
+                            R.string.empty_list_search_desc, uiState.searchQuery)
                     )
                 } else if (uiState.filters != FilterData()) {
-                    EmptyList()
+                    EmptyList(
+                        message = stringResource(R.string.empty_list_filter_msg),
+                        description = stringResource(R.string.empty_list_filter_desc)
+                    )
                 } else {
                     EmptyList(
                         painter = painterResource(R.drawable.rounded_archive),

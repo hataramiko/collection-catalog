@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
@@ -204,6 +205,14 @@ class HomeViewModel @Inject constructor(
 
     fun getCollectionName(): String? {
         return _collection.value?.name
+    }
+
+    fun getCollectionEmoji(): String? {
+        return _collection.value?.emoji
+    }
+
+    fun getCollectionColor(): CollectionColor {
+        return _collection.value?.color ?: CollectionColor.DEFAULT
     }
 
     fun getSortByOptions(): List<SortBy> {
