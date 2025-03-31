@@ -70,8 +70,7 @@ import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.TransferDialog
 import com.mikohatara.collectioncatalog.util.toCurrencyString
-import com.mikohatara.collectioncatalog.util.toLengthString
-import com.mikohatara.collectioncatalog.util.toWeightString
+import com.mikohatara.collectioncatalog.util.toMeasurementString
 import kotlinx.coroutines.launch
 
 @Composable
@@ -547,7 +546,7 @@ private fun PhysicalAttributesCard(
                 ) {
                     DataFieldContent(
                         label = stringResource(R.string.width),
-                        value = it.toLengthString(),
+                        value = it.toMeasurementString("mm"),
                         isSingleLine = itemDetails.height == null
                     )
                 }
@@ -561,7 +560,7 @@ private fun PhysicalAttributesCard(
                 ) {
                     DataFieldContent(
                         label = stringResource(R.string.height),
-                        value = it.toLengthString(),
+                        value = it.toMeasurementString("mm"),
                         isSingleLine = itemDetails.width == null
                     )
                 }
@@ -571,7 +570,7 @@ private fun PhysicalAttributesCard(
             DataFieldBackground {
                 DataFieldContent(
                     label = stringResource(R.string.weight),
-                    value = it.toWeightString()
+                    value = it.toMeasurementString("g")
                 )
             }
         }

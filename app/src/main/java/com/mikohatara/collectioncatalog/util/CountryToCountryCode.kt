@@ -1,6 +1,5 @@
 package com.mikohatara.collectioncatalog.util
 
-import androidx.compose.ui.res.stringResource
 import java.util.Locale
 
 fun String.toCountryCode(): String {

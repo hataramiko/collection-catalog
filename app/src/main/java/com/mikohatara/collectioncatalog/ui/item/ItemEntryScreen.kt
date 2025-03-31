@@ -1,6 +1,8 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
+import android.icu.text.NumberFormat
+import android.icu.util.Currency
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -72,7 +74,9 @@ import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
 import com.mikohatara.collectioncatalog.util.rememberCurrencyVisualTransformation
+import com.mikohatara.collectioncatalog.util.rememberMeasurementVisualTransformation
 import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun ItemEntryScreen(
@@ -353,6 +357,7 @@ private fun ItemEntryScreenContent(
                         EntryFieldBackground(modifier = Modifier.weight(1f)) {
                             EntryField(
                                 label = stringResource(R.string.cost),
+                                placeholder = { Text(getCurrencySymbol(localeCode)) },
                                 value = uiState.itemDetails.cost?.toString() ?: "",
                                 onValueChange = { onValueChange(
                                     uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
@@ -366,6 +371,7 @@ private fun ItemEntryScreenContent(
                         EntryFieldBackground(modifier = Modifier.weight(1f)) {
                             EntryField(
                                 label = stringResource(R.string.value),
+                                placeholder = { Text(getCurrencySymbol(localeCode)) },
                                 value = uiState.itemDetails.value?.toString() ?: "",
                                 onValueChange = { newValue ->
                                     onValueChange(uiState.itemDetails.copy(
@@ -400,6 +406,7 @@ private fun ItemEntryScreenContent(
                 EntryFieldBackground(modifier = Modifier.weight(1f)) {
                     EntryField(
                         label = stringResource(R.string.width),
+                        placeholder = { Text("mm") },
                         value = uiState.itemDetails.width?.toString() ?: "",
                         onValueChange = { newValue ->
                             onValueChange(uiState.itemDetails.copy(
@@ -407,13 +414,16 @@ private fun ItemEntryScreenContent(
                                 else newValue.toIntOrNull())
                             )
                         },
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Number,
+                        isMeasurement = true,
+                        measurementUnit = "mm"
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 EntryFieldBackground(modifier = Modifier.weight(1f)) {
                     EntryField(
                         label = stringResource(R.string.height),
+                        placeholder = { Text("mm") },
                         value = uiState.itemDetails.height?.toString() ?: "",
                         onValueChange = { newValue ->
                             onValueChange(uiState.itemDetails.copy(
@@ -421,13 +431,16 @@ private fun ItemEntryScreenContent(
                                 else newValue.toIntOrNull())
                             )
                         },
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Number,
+                        isMeasurement = true,
+                        measurementUnit = "mm"
                     )
                 }
             }
             EntryFieldBackground {
                 EntryField(
                     label = stringResource(R.string.weight),
+                    placeholder = { Text("g") },
                     value = uiState.itemDetails.weight?.toString() ?: "",
                     onValueChange = { newValue ->
                         onValueChange(uiState.itemDetails.copy(
@@ -435,7 +448,9 @@ private fun ItemEntryScreenContent(
                             else newValue.toIntOrNull())
                         )
                     },
-                    keyboardType = KeyboardType.Number
+                    keyboardType = KeyboardType.Number,
+                    isMeasurement = true,
+                    measurementUnit = "g"
                 )
             }
             EntryFieldBackground {
@@ -499,6 +514,7 @@ private fun ItemEntryScreenContent(
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.archival_date),
+                        placeholder = { Text(getDatePlaceholder()) },
                         value = uiState.itemDetails.archivalDate ?: "",
                         onValueChange = {
                             onValueChange(uiState.itemDetails.copy(archivalDate = it))
@@ -516,6 +532,7 @@ private fun ItemEntryScreenContent(
                     )
                     EntryField(
                         label = stringResource(R.string.sold_price),
+                        placeholder = { Text(getCurrencySymbol(localeCode)) },
                         value = uiState.itemDetails.price?.toString() ?: "",
                         onValueChange = { newValue ->
                             onValueChange(uiState.itemDetails.copy(
@@ -741,12 +758,17 @@ private fun EntryField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
     isCurrency: Boolean = false,
-    localeCode: String = ""
+    localeCode: String = "",
+    isMeasurement: Boolean = false,
+    measurementUnit: String = ""
 ) {
-    val currentValue = remember(value, isCurrency, localeCode) {
+    val currentValue = remember(value, isCurrency, localeCode, isMeasurement, measurementUnit) {
         if (isCurrency && value.isNotBlank()) {
             val longValue: Long = value.toLongOrNull() ?: 0L
             longValue.toString()
+        } else if (isMeasurement && value.isNotBlank()) {
+            val intValue: Int = value.toIntOrNull() ?: 0
+            intValue.toString()
         } else {
             value
         }
@@ -755,13 +777,15 @@ private fun EntryField(
     val isFocused by interactionSource.collectIsFocusedAsState()
     val visualTransformation = if (isCurrency) {
         rememberCurrencyVisualTransformation(localeCode)
+    } else if (isMeasurement) {
+        rememberMeasurementVisualTransformation(measurementUnit)
     } else VisualTransformation.None
 
     Row(modifier = modifier.padding(vertical = 4.dp)) {
         OutlinedTextField(
             value = currentValue,
             onValueChange = { newValue ->
-                if (isCurrency) {
+                if (isCurrency || isMeasurement) {
                     val rawValue = newValue.replace(Regex("\\D"), "")
                     onValueChange(rawValue)
                 } else {
@@ -802,7 +826,7 @@ private enum class EntrySectionType {
     COMMON_DETAILS,
     UNIQUE_DETAILS,
     COLLECTIONS,
-    GENERAL,
+    GENERAL
 }
 
 private fun getDatePlaceholder(): String {
@@ -812,4 +836,11 @@ private fun getDatePlaceholder(): String {
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
     return "$year-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
+}
+
+private fun getCurrencySymbol(countryCode: String): String {
+    val locale = Locale(countryCode, countryCode)
+    val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
+
+    return currency.symbol
 }

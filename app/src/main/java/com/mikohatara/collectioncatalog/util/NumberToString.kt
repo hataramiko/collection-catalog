@@ -33,10 +33,6 @@ fun Float.toPercentage(countryCode: String): String {
     return format.format(this)
 }
 
-fun Int.toLengthString(): String {
-    return "$this mm"
-}
-
-fun Int.toWeightString(): String {
-    return "$this g"
+fun Int.toMeasurementString(unit: String): String {
+    return "$this $unit"
 }
