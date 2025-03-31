@@ -54,6 +54,15 @@ class StatsViewModel @Inject constructor(
             .toSet()
     }
 
+    fun getTypes(): Set<String> {
+        return uiState.value.plates.map { it.commonDetails.type }
+            .sortedWith(compareByDescending<String> { type ->
+                uiState.value.plates.count { it.commonDetails.type == type }}
+                .thenBy { it }
+            )
+            .toSet()
+    }
+
     private fun getPlates() {
         plateRepository.getAllPlatesStream().onEach { items ->
             _uiState.value = _uiState.value.copy(plates = items)

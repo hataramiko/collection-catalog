@@ -126,11 +126,25 @@ private fun StatsScreenContent(
         item {
             ExpandableCard(
                 label = stringResource(R.string.country),
+                modifier = Modifier.padding(bottom = 20.dp)
             ) {
                 Table(
                     userPreferences = userPreferences,
                     columns = viewModel.getCountries(),
-                    items = uiState.plates
+                    items = uiState.plates,
+                    propertyExtractor = { it.commonDetails.country }
+                )
+            }
+        }
+        item {
+            ExpandableCard(
+                label = stringResource(R.string.type)
+            ) {
+                Table(
+                    userPreferences = userPreferences,
+                    columns = viewModel.getTypes(),
+                    items = uiState.plates,
+                    propertyExtractor = { it.commonDetails.type }
                 )
             }
         }
@@ -190,7 +204,8 @@ private fun StatsHeaderCard(
 private fun Table(
     userPreferences: UserPreferences,
     columns: Set<String>,
-    items: List<Plate>
+    items: List<Plate>,
+    propertyExtractor: (Plate) -> String
 ) {
     val allItems = items.size
 
@@ -198,7 +213,7 @@ private fun Table(
         modifier = Modifier.padding(horizontal = 4.dp)
     ) {
         columns.forEach { column ->
-            val filteredItems = items.filter { it.commonDetails.country == column }
+            val filteredItems = items.filter { propertyExtractor(it) == column }
             val quantity = filteredItems.size.toFormattedString(userPreferences.userCountry)
             val percentage = (quantity.toFloat() / allItems.toFloat())
                 .toPercentage(userPreferences.userCountry)
