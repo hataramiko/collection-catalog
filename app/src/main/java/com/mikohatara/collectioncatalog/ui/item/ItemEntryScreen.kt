@@ -28,7 +28,6 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -55,12 +54,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
@@ -72,6 +71,8 @@ import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
+import com.mikohatara.collectioncatalog.util.rememberCurrencyVisualTransformation
+import java.util.Calendar
 
 @Composable
 fun ItemEntryScreen(
@@ -180,7 +181,7 @@ private fun ItemEntryScreenContent(
     onSave: () -> Unit
 ) {
     val collections = viewModel.getCollections()
-    val localeCode = userPreferences.userCountry //TODO implement units based on preferences
+    val localeCode = userPreferences.userCountry
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
@@ -289,15 +290,6 @@ private fun ItemEntryScreenContent(
                 type = EntrySectionType.COLLECTIONS,
             ) {
                 collections.forEach { collection ->
-                    val chipColors = if (collection.color != CollectionColor.DEFAULT) {
-                        FilterChipDefaults.filterChipColors(
-                            //containerColor = collection.color.color.copy(alpha = 0.1f),
-                            //disabledContainerColor = collection.color.color.copy(alpha = 0.1f),
-                            //selectedContainerColor = collection.color.color.copy(alpha = 0.33f),
-                            //disabledSelectedContainerColor = collection.color.color.copy(alpha = 0.1f)
-                        )
-                    } else FilterChipDefaults.filterChipColors()
-
                     FilterChip(
                         selected = uiState.selectedCollections.any { it == collection },
                         onClick = { viewModel.toggleCollectionSelection(collection) },
@@ -319,8 +311,7 @@ private fun ItemEntryScreenContent(
                                     color = collection.color.color
                                 )
                             }
-                        },
-                        //colors = chipColors
+                        }
                     )
                 }
             }
@@ -352,7 +343,7 @@ private fun ItemEntryScreenContent(
                     EntryFieldBackground {
                         EntryField(
                             label = stringResource(R.string.date),
-                            //placeholder = "1922-05-18",
+                            placeholder = { Text(getDatePlaceholder()) },
                             value = uiState.itemDetails.date ?: "",
                             onValueChange = { onValueChange(uiState.itemDetails.copy(date = it)) },
                             keyboardType = KeyboardType.Number,
@@ -363,10 +354,12 @@ private fun ItemEntryScreenContent(
                             EntryField(
                                 label = stringResource(R.string.cost),
                                 value = uiState.itemDetails.cost?.toString() ?: "",
-                                onValueChange = { onValueChange( // TODO improve input logic
+                                onValueChange = { onValueChange(
                                     uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
                                 },
-                                keyboardType = KeyboardType.Number
+                                keyboardType = KeyboardType.Number,
+                                isCurrency = true,
+                                localeCode = localeCode
                             )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
@@ -380,7 +373,9 @@ private fun ItemEntryScreenContent(
                                         else newValue.toLongOrNull())
                                     )
                                 },
-                                keyboardType = KeyboardType.Number
+                                keyboardType = KeyboardType.Number,
+                                isCurrency = true,
+                                localeCode = localeCode
                             )
                         }
                     }
@@ -529,6 +524,8 @@ private fun ItemEntryScreenContent(
                             )
                         },
                         keyboardType = KeyboardType.Number,
+                        isCurrency = true,
+                        localeCode = localeCode
                     )
                 }
                 EntryFieldBackground {
@@ -737,20 +734,40 @@ private fun EntryField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    placeholder: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
     singleLine: Boolean = true,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
     keyboardType: KeyboardType = KeyboardType.Text,
-    imeAction: ImeAction = ImeAction.Next
+    imeAction: ImeAction = ImeAction.Next,
+    isCurrency: Boolean = false,
+    localeCode: String = ""
 ) {
-    val currentValue = remember(value) { value }
+    val currentValue = remember(value, isCurrency, localeCode) {
+        if (isCurrency && value.isNotBlank()) {
+            val longValue: Long = value.toLongOrNull() ?: 0L
+            longValue.toString()
+        } else {
+            value
+        }
+    }
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
+    val visualTransformation = if (isCurrency) {
+        rememberCurrencyVisualTransformation(localeCode)
+    } else VisualTransformation.None
 
     Row(modifier = modifier.padding(vertical = 4.dp)) {
         OutlinedTextField(
             value = currentValue,
-            onValueChange = onValueChange,
+            onValueChange = { newValue ->
+                if (isCurrency) {
+                    val rawValue = newValue.replace(Regex("\\D"), "")
+                    onValueChange(rawValue)
+                } else {
+                    onValueChange(newValue)
+                }
+            },
             keyboardOptions = KeyboardOptions(
                 capitalization = capitalization,
                 keyboardType = keyboardType,
@@ -763,6 +780,7 @@ private fun EntryField(
                     overflow = TextOverflow.Ellipsis
                 )
             },
+            placeholder = placeholder,
             trailingIcon = { if (isFocused && currentValue.isNotEmpty()) {
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
@@ -774,7 +792,8 @@ private fun EntryField(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = singleLine,
-            interactionSource = interactionSource
+            interactionSource = interactionSource,
+            visualTransformation = visualTransformation
         )
     }
 }
@@ -784,4 +803,13 @@ private enum class EntrySectionType {
     UNIQUE_DETAILS,
     COLLECTIONS,
     GENERAL,
+}
+
+private fun getDatePlaceholder(): String {
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH) + 1
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    return "$year-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
 }
