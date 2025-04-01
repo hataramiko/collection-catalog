@@ -2,7 +2,10 @@ package com.mikohatara.collectioncatalog.ui.home
 
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -300,6 +303,13 @@ class HomeViewModel @Inject constructor(
 
     fun clearImportResult() {
         _uiState.update { it.copy(importResult = null) }
+    }
+
+    fun showToast(context: Context, message: String) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun getPlates() {

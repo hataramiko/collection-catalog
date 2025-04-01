@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -21,6 +22,8 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
@@ -29,7 +32,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -59,11 +65,13 @@ fun HomeScreen(
     onOpenDrawer: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     HomeScreen(
         itemList = uiState.items,
         uiState = uiState,
         viewModel = viewModel,
+        context = context,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
         onOpenDrawer = onOpenDrawer
@@ -76,17 +84,16 @@ private fun HomeScreen(
     itemList: List<Plate>,
     uiState: HomeUiState,
     viewModel: HomeViewModel,
+    context: Context,
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
     onOpenDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
     val topBarTitle = viewModel.getCollectionName() ?: stringResource(R.string.all_plates)
     val onBackBehavior = { if (uiState.isSearchActive) viewModel.toggleSearch() }
-    //" (${itemList.size})"
     val pickCsv = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
         onResult = { uri: Uri? ->
@@ -95,6 +102,13 @@ private fun HomeScreen(
             }
         }
     )
+    // "*/*" included for compatibility with the emulator.
+    // Physical devices don't need this, further testing required
+    val onImport = if (viewModel.collectionId == null) { { pickCsv
+        .launch(arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*")) }
+    } else { null }
+    /*var showImportDialog by rememberSaveable { mutableStateOf(false) }
+    var showExportDialog by rememberSaveable { mutableStateOf(false) }*/
 
     BackHandler {
         onBackBehavior()
@@ -113,9 +127,7 @@ private fun HomeScreen(
                 title = topBarTitle,
                 onOpenDrawer = onOpenDrawer,
                 onToggleSearch = { viewModel.toggleSearch() },
-                onImport = { pickCsv.launch(
-                    arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*")
-                ) },
+                onImport = onImport,
                 onExport = { viewModel.exportItems(context) },
                 isSearchActive = uiState.isSearchActive,
                 searchQuery = uiState.searchQuery,
@@ -123,7 +135,8 @@ private fun HomeScreen(
                 scrollBehavior = scrollBehavior
             )
         },
-        floatingActionButton = {
+        // Replace if clause with "onFabClick = onAddItem || viewModel.showToast()"?
+        floatingActionButton = { if (viewModel.collectionId == null) {
             AnimatedVisibility(
                 visible = !isFabHidden,
                 enter = slideInVertically(initialOffsetY = { it * 2 }),
@@ -136,7 +149,7 @@ private fun HomeScreen(
                     )
                 }
             }
-        },
+        } },
         content = { innerPadding ->
             HomeScreenContent(
                 uiState = uiState,
@@ -175,6 +188,12 @@ private fun HomeScreen(
             }
         }
     )
+    /*if (showImportDialog) {
+
+    }
+    if (showExportDialog) {
+
+    }*/
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
