@@ -54,6 +54,7 @@ fun HomeTopAppBar(
     onToggleSearch: (() -> Unit)? = null,
     onImport: (() -> Unit)? = null,
     onExport: (() -> Unit)? = null,
+    itemListSize: Int = 0,
     isSearchActive: Boolean = false,
     searchQuery: String = "",
     onSearchQueryChange: (String) -> Unit = {},
@@ -168,9 +169,9 @@ fun HomeTopAppBar(
                                 onExport?.let { it() }
                                 isMenuExpanded = false
                             },
-                            painterResource = painterResource(R.drawable.rounded_upload_24),
+                            painterResource = painterResource(R.drawable.rounded_file_export_24),
                             text = stringResource(R.string.export_text),
-                            enabled = onExport != null
+                            enabled = onExport != null && itemListSize > 0
                         )
                     }
                 }

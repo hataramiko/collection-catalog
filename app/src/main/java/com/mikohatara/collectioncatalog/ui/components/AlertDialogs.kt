@@ -1,10 +1,15 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -109,6 +114,91 @@ fun RedirectDialog(
     AlertDialog(
         onDismissRequest = { onCancel() },
         text = { Text(text = message) },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm() }) {
+                Text(stringResource(R.string.continue_button))
+            }
+        }
+    )
+}
+
+//TODO
+@Composable
+fun ImportDialog(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+    onHelp: () -> Unit
+) {
+    val importFirstRowTemplate = "reg_no,country,region_1st,region_2nd,region_3rd," +
+        "type,period_start,period_end,year,notes,vehicle,date,cost,value,status," +
+        "width,height,weight,color_main,color_secondary," +
+        "source_name,source_alias,source_type,source_country,source_details"
+    val importFormatExample = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\ntype\n" +
+        "period_start\nperiod_end\nyear\nnotes\nvehicle\ndate\ncost\nvalue\nstatus\n" +
+        "width\nheight\nweight\ncolor_main\ncolor_secondary\nsource_name\nsource_alias\n" +
+        "source_type\nsource_country\nsource_details"
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = {
+            Row {
+                Text("KÄÄNNÄ; Import from CSV?")
+                IconButton(onClick = onHelp) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_help),
+                        contentDescription = null
+                    )
+                }
+            }
+        },
+        text = {
+            Column {
+                Text(
+                    "KÄÄNNÄ; Import plates from a CSV file? " +
+                            "The first row of the file should follow a specific format. " +
+                            "The values should be written as follows, in the same exact order\n"// + importFormatExample
+                )
+                TextButton(
+                    onClick = onHelp,
+                    modifier = Modifier.offset(x = (-14).dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_help),
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(text = "Help")
+                }
+            }
+
+        },
+        dismissButton = {
+            TextButton(onClick = { onCancel() }) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm() }) {
+                Text(stringResource(R.string.continue_button))
+            }
+        }
+    )
+}
+//TODO
+
+@Composable
+fun ExportDialog(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onCancel() },
+        title = { Text(stringResource(R.string.export_text)) },
+        text = { Text(stringResource(R.string.export_dialog_text)) },
         dismissButton = {
             TextButton(onClick = { onCancel() }) {
                 Text(stringResource(R.string.cancel))

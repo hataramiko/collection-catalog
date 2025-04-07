@@ -164,4 +164,8 @@
     <string name="empty_list_search_desc">No matches were found for \"<xliff:g name="search_query" example="ABC123">%s</xliff:g>\". Try changing your search query.</string>
     <string name="empty_list_filter_msg">No results</string>
     <string name="empty_list_filter_desc">Check active filters for any mistakes.</string>
+    <string name="export_dialog_text">Export the plates currently being displayed by saving them into a CSV file (.csv).</string>
+    <string name="export_msg_success">Export completed</string>
+    <string name="export_msg_failure">Export failed</string>
+    <string name="export_dialog_title">Export</string>
 </resources>

@@ -2,15 +2,13 @@ package com.mikohatara.collectioncatalog.ui.home
 
 import android.content.Context
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.CollectionRepository
@@ -28,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.OutputStreamWriter
 import javax.inject.Inject
 
 data class HomeUiState(
@@ -243,29 +242,27 @@ class HomeViewModel @Inject constructor(
             .toSet()
     }
 
-    fun exportItems(context: Context) {
+    fun exportItems(context: Context, uri: Uri) {
         _uiState.update { it.copy(isExporting = true, exportResult = null) }
-
-        val timestamp = System.currentTimeMillis()
-        val fileName = "CollectionCatalog_Export_$timestamp.csv"
 
         viewModelScope.launch {
             try {
                 val items = _uiState.value.items
-                exportPlatesToCsv(context, items, fileName)
+                val contentResolver = context.contentResolver
+                contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    OutputStreamWriter(outputStream).use { writer ->
+                        exportPlatesToCsv(writer, items)
+                    }
+                }
                 _uiState.update { it.copy(
                     isExporting = false,
-                    exportResult = ExportResult.Success(
-                        message = context.getExternalFilesDir(
-                            android.os.Environment.DIRECTORY_DOCUMENTS
-                        )?.absolutePath + "/$fileName"
-                    )
+                    exportResult = ExportResult.Success(getExportMessage(true, context))
                 ) }
             } catch (e: Exception) {
                 Log.e("HomeViewModel, export", "Export failed", e)
                 _uiState.update { it.copy(
                     isExporting = false,
-                    exportResult = ExportResult.Failure("Exporting failed: ${e.message}")
+                    exportResult = ExportResult.Failure(getExportMessage(false, context))
                 ) }
             }
         }
@@ -303,13 +300,6 @@ class HomeViewModel @Inject constructor(
 
     fun clearImportResult() {
         _uiState.update { it.copy(importResult = null) }
-    }
-
-    fun showToast(context: Context, message: String) {
-        val handler = Handler(Looper.getMainLooper())
-        handler.post {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun getPlates() {
@@ -358,6 +348,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.saveDefaultSortOrderMain(sortBy)
         }
+    }
+
+    private fun getExportMessage(isSuccess: Boolean, context: Context): String {
+        val stringResId = if (isSuccess) {
+            R.string.export_msg_success
+        } else R.string.export_msg_failure
+        return context.getString(stringResId)
     }
 
     private fun <T> toggleFilter(filters: Set<T>, item: T): Set<T> =

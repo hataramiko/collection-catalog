@@ -156,4 +156,8 @@
     <string name="empty_list_search_desc">｢<xliff:g name="search_query" example="ABC123">%s</xliff:g>｣ に一致する結果は見つかりませんでした。別の検索語句をお試しください。</string>
     <string name="empty_list_filter_msg">結果はありません</string>
     <string name="empty_list_filter_desc">適用している絞り込み条件を確認してください。</string>
+    <string name="export_dialog_text">現在に表示されているプレートをCSVファイル（.csv）に保存してエクスポートします。</string>
+    <string name="export_msg_success">エクスポートが完成しました</string>
+    <string name="export_msg_failure">エクスポートが失敗しました</string>
+    <string name="export_dialog_title">エクスポート</string>
 </resources>

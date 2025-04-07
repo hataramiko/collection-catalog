@@ -2,7 +2,6 @@ package com.mikohatara.collectioncatalog.util
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
 import android.util.Log
 import com.mikohatara.collectioncatalog.data.Color
 import com.mikohatara.collectioncatalog.data.CommonDetails
@@ -12,20 +11,21 @@ import com.mikohatara.collectioncatalog.data.Source
 import com.mikohatara.collectioncatalog.data.UniqueDetails
 import com.opencsv.CSVReaderBuilder
 import com.opencsv.CSVWriter
+import com.opencsv.bean.ColumnPositionMappingStrategy
 import com.opencsv.bean.CsvBindByName
 import com.opencsv.bean.StatefulBeanToCsvBuilder
 import java.io.BufferedReader
-import java.io.File
-import java.io.FileWriter
 import java.io.IOException
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.util.Calendar
 
-fun exportPlatesToCsv(context: Context, plates: List<Plate>, fileName: String) {
+fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) {
     val csvPlateList = plates.map { plate ->
         CsvPlate(
-            //id = plate.id ?: 0, // ID shouldn't be exported?
+            //id = plate.id ?: 0,
             regNo = plate.uniqueDetails.regNo ?: "",
-            // CommonDetails
+                // CommonDetails
             country = plate.commonDetails.country ?: "",
             region1st = plate.commonDetails.region1st,
             region2nd = plate.commonDetails.region2nd,
@@ -34,7 +34,7 @@ fun exportPlatesToCsv(context: Context, plates: List<Plate>, fileName: String) {
             periodStart = plate.commonDetails.periodStart,
             periodEnd = plate.commonDetails.periodEnd,
             year = plate.commonDetails.year,
-            // UniqueDetails
+                // UniqueDetails
             //regNo = plate.uniqueDetails.regNo ?: "",
             //imagePath = plate.uniqueDetails.imagePath,
             notes = plate.uniqueDetails.notes,
@@ -43,14 +43,14 @@ fun exportPlatesToCsv(context: Context, plates: List<Plate>, fileName: String) {
             cost = plate.uniqueDetails.cost,
             value = plate.uniqueDetails.value,
             status = plate.uniqueDetails.status,
-            // Size
+                // Size
             width = plate.size.width,
             height = plate.size.height,
             weight = plate.size.weight,
-            // Color
+                // Color
             colorMain = plate.color.main,
             colorSecondary = plate.color.secondary,
-            // Source
+                // Source
             sourceName = plate.source.name,
             sourceAlias = plate.source.alias,
             sourceType = plate.source.type,
@@ -58,29 +58,30 @@ fun exportPlatesToCsv(context: Context, plates: List<Plate>, fileName: String) {
             sourceDetails = plate.source.details
         )
     }
-    val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+
     try {
-        val writer = FileWriter(file)
-        /*val mappingStrategy = HeaderColumnNameMappingStrategy<CsvPlate>()
+        val mappingStrategy = ColumnPositionMappingStrategy<CsvPlate>()
         mappingStrategy.type = CsvPlate::class.java
+
         val columnOrder = arrayOf(
-            "id", "reg_no", "country", "region_1st", "region_2nd", "region_3rd",
-            "type", "period_start", "period_end", "year",
+            "regNo", "country", "region1st", "region2nd", "region3rd",
+            "type", "periodStart", "periodEnd", "year",
             "notes", "vehicle", "date", "cost", "value", "status",
-            "width", "height", "weight", "color_main", "color_secondary",
-            "source_name", "source_alias", "source_type", "source_country", "source_details",
-            "image_path"
+            "width", "height", "weight", "colorMain", "colorSecondary",
+            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails"
         )
-        mappingStrategy.setColumnOrderOnWrite(java.util.Comparator.comparingInt { header ->
-            columnOrder.indexOf(header)
-        })*/
-        val beanToCsv = StatefulBeanToCsvBuilder<CsvPlate>(writer)
-            .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
-            //.withMappingStrategy(mappingStrategy)
-            .build()
-        beanToCsv.write(csvPlateList)
-        writer.close()
-        Log.d("CSV export", "File saved to : ${file.absolutePath}")
+
+        mappingStrategy.setColumnMapping(*columnOrder)
+        val headerRow = columnOrder.map { it.toSnakeCase() }.toTypedArray()
+
+        CSVWriter(writer).use { csvWriter ->
+            csvWriter.writeNext(headerRow, true)
+            val beanToCsv = StatefulBeanToCsvBuilder<CsvPlate>(writer)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withMappingStrategy(mappingStrategy)
+                .build()
+            beanToCsv.write(csvPlateList)
+        }
     } catch (e: IOException) {
         Log.e("CSV export", "Error writing to file", e)
     }
@@ -186,10 +187,27 @@ fun mapRowToCsvPlate(row: Array<String>, headerRow: List<String>): CsvPlate {
     )
 }
 
+fun getFileNameForExport(title: String): String {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = System.currentTimeMillis()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH) + 1
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    val minute = calendar.get(Calendar.MINUTE)
+    val second = calendar.get(Calendar.SECOND)
+    val timestamp = "%04d-%02d-%02d_%02d%02d%02d".format(year, month, day, hour, minute, second)
+
+    return "CollectionCatalog_${title}_${timestamp}.csv"
+}
+
+// This might not work with digits not preceded by a lowercase letter
+private fun String.toSnakeCase(): String = replace(Regex("([a-z])([A-Z0-9])"), "$1_$2").lowercase()
+
 data class CsvPlate(
     //@CsvBindByName(column = "id") val id: Int = 0,
     @CsvBindByName(column = "reg_no") val regNo: String = "",
-    // CommonDetails
+        // CommonDetails
     @CsvBindByName(column = "country") val country: String = "",
     @CsvBindByName(column = "region_1st") val region1st: String? = null,
     @CsvBindByName(column = "region_2nd") val region2nd: String? = null,
@@ -198,7 +216,7 @@ data class CsvPlate(
     @CsvBindByName(column = "period_start") val periodStart: Int? = null,
     @CsvBindByName(column = "period_end") val periodEnd: Int? = null,
     @CsvBindByName(column = "year") val year: Int? = null,
-    // UniqueDetails
+        // UniqueDetails
     //@CsvBindByName(column = "reg_no") val regNo: String = "",
     //@CsvBindByName(column = "image_path") val imagePath: String? = null,
     @CsvBindByName(column = "notes") val notes: String? = null,
@@ -207,20 +225,20 @@ data class CsvPlate(
     @CsvBindByName(column = "cost") val cost: Long? = null,
     @CsvBindByName(column = "value") val value: Long? = null,
     @CsvBindByName(column = "status") val status: String? = null,
-    // Size
+        // Size
     @CsvBindByName(column = "width") val width: Int? = null,
     @CsvBindByName(column = "height") val height: Int? = null,
     @CsvBindByName(column = "weight") val weight: Int? = null,
-    // Color
+        // Color
     @CsvBindByName(column = "color_main") val colorMain: String? = null,
     @CsvBindByName(column = "color_secondary") val colorSecondary: String? = null,
-    // Source
+        // Source
     @CsvBindByName(column = "source_name") val sourceName: String? = null,
     @CsvBindByName(column = "source_alias") val sourceAlias: String? = null,
     @CsvBindByName(column = "source_type") val sourceType: String? = null,
     @CsvBindByName(column = "source_country") val sourceCountry: String? = null,
     @CsvBindByName(column = "source_details") val sourceDetails: String? = null,
-    // ArchivalDetails
+        // ArchivalDetails
     /*@CsvBindByName(column = "archival_date") val archivalDate: String? = null,
     @CsvBindByName(column = "recipient_name") val recipientName: String? = null,
     @CsvBindByName(column = "recipient_alias") val recipientAlias: String? = null,

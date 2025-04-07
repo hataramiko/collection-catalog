@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.home
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,8 +23,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
@@ -50,12 +49,15 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
+import com.mikohatara.collectioncatalog.ui.components.ExportDialog
 import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
+import com.mikohatara.collectioncatalog.ui.components.ImportDialog
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.TopRow
+import com.mikohatara.collectioncatalog.util.getFileNameForExport
 
 @Composable
 fun HomeScreen(
@@ -94,7 +96,7 @@ private fun HomeScreen(
     val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
     val topBarTitle = viewModel.getCollectionName() ?: stringResource(R.string.all_plates)
     val onBackBehavior = { if (uiState.isSearchActive) viewModel.toggleSearch() }
-    val pickCsv = rememberLauncherForActivityResult(
+    val pickCsvForImport = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
         onResult = { uri: Uri? ->
             uri?.let {
@@ -102,13 +104,17 @@ private fun HomeScreen(
             }
         }
     )
-    // "*/*" included for compatibility with the emulator.
-    // Physical devices don't need this, further testing required
-    val onImport = if (viewModel.collectionId == null) { { pickCsv
-        .launch(arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*")) }
-    } else { null }
-    /*var showImportDialog by rememberSaveable { mutableStateOf(false) }
-    var showExportDialog by rememberSaveable { mutableStateOf(false) }*/
+    val createCsvForExport = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/csv"),
+        onResult = { uri: Uri? ->
+            uri?.let {
+                viewModel.exportItems(context, it)
+            }
+        }
+    )
+    var showImportDialog by rememberSaveable { mutableStateOf(false) }
+    var showExportDialog by rememberSaveable { mutableStateOf(false) }
+    val onImport = if (viewModel.collectionId == null) { {showImportDialog = true} } else { null }
 
     BackHandler {
         onBackBehavior()
@@ -120,6 +126,20 @@ private fun HomeScreen(
         }
     }
 
+    LaunchedEffect(key1 = uiState.exportResult) {
+        uiState.exportResult?.let { result ->
+            when (result) {
+                is ExportResult.Success -> {
+                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                }
+                is ExportResult.Failure -> {
+                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                }
+            }
+            viewModel.clearExportResult()
+        }
+    }
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -128,7 +148,8 @@ private fun HomeScreen(
                 onOpenDrawer = onOpenDrawer,
                 onToggleSearch = { viewModel.toggleSearch() },
                 onImport = onImport,
-                onExport = { viewModel.exportItems(context) },
+                onExport = { showExportDialog = true },
+                itemListSize = itemList.size,
                 isSearchActive = uiState.isSearchActive,
                 searchQuery = uiState.searchQuery,
                 onSearchQueryChange = { viewModel.updateSearchQuery(it) },
@@ -188,12 +209,27 @@ private fun HomeScreen(
             }
         }
     )
-    /*if (showImportDialog) {
-
-    }
+    if (showImportDialog) { //TODO
+        ImportDialog(
+            onConfirm = {
+                showImportDialog = false
+                pickCsvForImport //TODO remove "*/*" - this is for testing with emulator
+                    .launch(arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*"))
+            },
+            onCancel = { showImportDialog = false },
+            onHelp = {  }
+        )
+    } //TODO
     if (showExportDialog) {
-
-    }*/
+        ExportDialog(
+            onConfirm = {
+                showExportDialog = false
+                val fileName = getFileNameForExport(topBarTitle)
+                createCsvForExport.launch(fileName)
+            },
+            onCancel = { showExportDialog = false }
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
