@@ -163,4 +163,6 @@
     <string name="export_msg_success">Vienti onnistui</string>
     <string name="export_msg_failure">Vienti epäonnistui</string>
     <string name="export_dialog_title">Vienti</string>
+    <string name="import_dialog_title">Tuonti</string>
+    <string name="import_dialog_text">Lisää kilpiä tuomalla CSV-tiedosto (.csv).</string>
 </resources>

@@ -37,7 +37,7 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
-import com.mikohatara.collectioncatalog.ui.components.SettingsDialog
+import com.mikohatara.collectioncatalog.ui.components.SettingsBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
 import com.mikohatara.collectioncatalog.util.toDisplayCountry
 import java.util.Locale
@@ -93,8 +93,21 @@ private fun SettingsScreen(
         }
     )
     if (showCountryDialog) {
-        SettingsDialog(
+        /*SettingsDialog(
             label = stringResource(R.string.user_country),
+            options = Locale.getAvailableLocales()
+                .map { it.displayCountry }
+                .distinct()
+                .filter { it.isNotEmpty() }
+                .sorted(),
+            selectedOption = uiState.userCountry.toDisplayCountry(),
+            onToggleSelection = { viewModel.setUserCountry(it) },
+            onDismiss = { showCountryDialog = false },
+            infoText = stringResource(R.string.user_country_info)
+        )*/
+        SettingsBottomSheet(
+            label = stringResource(R.string.user_country),
+            context = context,
             options = Locale.getAvailableLocales()
                 .map { it.displayCountry }
                 .distinct()

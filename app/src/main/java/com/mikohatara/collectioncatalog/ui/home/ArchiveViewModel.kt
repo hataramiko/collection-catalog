@@ -87,7 +87,7 @@ class ArchiveViewModel @Inject constructor(
             SortBy.START_DATE_NEWEST -> items
             SortBy.START_DATE_OLDEST -> items
             SortBy.END_DATE_NEWEST -> items.sortedWith(
-                compareByDescending<FormerPlate, String?>(nullsFirst()) {
+                compareByDescending<FormerPlate, String?>(nullsLast()) {
                     it.archivalDetails.archivalDate
                 }
                     .thenByDescending { it.id }

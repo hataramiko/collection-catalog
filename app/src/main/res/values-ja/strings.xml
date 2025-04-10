@@ -160,4 +160,6 @@
     <string name="export_msg_success">エクスポートが完成しました</string>
     <string name="export_msg_failure">エクスポートが失敗しました</string>
     <string name="export_dialog_title">エクスポート</string>
+    <string name="import_dialog_title">インポート</string>
+    <string name="import_dialog_text">CSVファイル（.csv）をインポートして、プレートを追加します。</string>
 </resources>

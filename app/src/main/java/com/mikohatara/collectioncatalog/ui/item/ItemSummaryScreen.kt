@@ -404,9 +404,12 @@ private fun CommonDetailsCard(
                 it.region3rd?.let { value -> Text(text = value, color = secondaryColor) }
             }
             Spacer(modifier = Modifier.height(20.dp))
-            Row {
+            Row { //TODO predetermined text val, see WishlistCard for reference
                 itemDetails.type?.let { Text(text = it) }
-                period?.let { Text(text = "・$it") }
+                if (itemDetails.type?.isNotBlank() == true && period?.isNotBlank() == true) {
+                    Text("・")
+                }
+                period?.let { Text(it) }
             }
             itemDetails.year?.let { Text(text = it.toString(), color = secondaryColor) }
         }

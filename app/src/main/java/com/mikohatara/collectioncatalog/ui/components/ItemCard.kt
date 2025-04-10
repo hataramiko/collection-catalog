@@ -183,14 +183,17 @@ private fun WishlistCard(
     val onClick = remember { Modifier.clickable { onCardClick() } }
 
     val regions = listOfNotNull(region1st, region2nd, region3rd).filterNot { it.isBlank() }
-    val mainText = listOf(country).plus(regions).joinToString(", ")
+    val primaryText = listOf(country).plus(regions).joinToString(", ")
     val period = if (periodStart.isNullOrBlank() && periodEnd.isNullOrBlank()) {
         null
     } else {
         "${periodStart ?: ""} – ${periodEnd ?: ""}"
     }
 
-    val subText = listOfNotNull(type, period, year)
+    val secondaryText = listOfNotNull(type, period, year)
+        .filterNot { it.isBlank() }
+        .joinToString("・")
+    val tertiaryText = listOfNotNull(regNo, notes)
         .filterNot { it.isBlank() }
         .joinToString("・")
 
@@ -311,25 +314,25 @@ private fun WishlistCard(
         Column(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            if (mainText.isNotBlank()) {
+            if (primaryText.isNotBlank()) {
                 Text(
-                    text = mainText,
+                    text = primaryText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            if (subText.isNotBlank()) {
+            if (secondaryText.isNotBlank()) {
                 Text(
-                    text = subText,
+                    text = secondaryText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            if (tertiaryText.isNotBlank()) {
+                Text(
+                    text = tertiaryText,
                     color = MaterialTheme.colorScheme.outline,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            notes?.let {
-                Text(
-                    text = it,
-                    color = MaterialTheme.colorScheme.outlineVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

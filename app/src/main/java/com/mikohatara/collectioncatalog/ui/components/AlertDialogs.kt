@@ -1,19 +1,22 @@
 package com.mikohatara.collectioncatalog.ui.components
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -127,7 +130,6 @@ fun RedirectDialog(
     )
 }
 
-//TODO
 @Composable
 fun ImportDialog(
     onConfirm: () -> Unit,
@@ -141,41 +143,28 @@ fun ImportDialog(
     val importFormatExample = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\ntype\n" +
         "period_start\nperiod_end\nyear\nnotes\nvehicle\ndate\ncost\nvalue\nstatus\n" +
         "width\nheight\nweight\ncolor_main\ncolor_secondary\nsource_name\nsource_alias\n" +
-        "source_type\nsource_country\nsource_details"
+        "source_type\nsource_country\nsource_details" //TODO move to HELP when the time comes
+
     AlertDialog(
         onDismissRequest = { onCancel() },
         title = {
-            Row {
-                Text("KÄÄNNÄ; Import from CSV?")
-                IconButton(onClick = onHelp) {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_help),
-                        contentDescription = null
-                    )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.import_dialog_title))
+                Spacer(modifier = Modifier.width(4.dp))
+                Box(modifier = Modifier.size(32.dp).offset(y = (-2).dp)) {
+                    IconButton(onClick = { onHelp }) {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_help),
+                            contentDescription = null,
+                            tint = colorScheme.secondary
+                        )
+                    }
                 }
             }
         },
-        text = {
-            Column {
-                Text(
-                    "KÄÄNNÄ; Import plates from a CSV file? " +
-                            "The first row of the file should follow a specific format. " +
-                            "The values should be written as follows, in the same exact order\n"// + importFormatExample
-                )
-                TextButton(
-                    onClick = onHelp,
-                    modifier = Modifier.offset(x = (-14).dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_help),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text(text = "Help")
-                }
-            }
-
-        },
+        text = { Text(stringResource(R.string.import_dialog_text)) },
         dismissButton = {
             TextButton(onClick = { onCancel() }) {
                 Text(stringResource(R.string.cancel))
@@ -188,7 +177,6 @@ fun ImportDialog(
         }
     )
 }
-//TODO
 
 @Composable
 fun ExportDialog(

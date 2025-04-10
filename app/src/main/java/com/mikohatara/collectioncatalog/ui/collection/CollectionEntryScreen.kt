@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -47,7 +45,7 @@ import com.mikohatara.collectioncatalog.ui.components.CollectionListTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionColor
-import com.mikohatara.collectioncatalog.ui.components.SettingsDialog
+import com.mikohatara.collectioncatalog.ui.components.SettingsBottomSheet
 import com.mikohatara.collectioncatalog.util.getCollectionColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -126,8 +124,9 @@ private fun CollectionEntryScreen(
         }
     )
     if (showColorDialog) {
-        SettingsDialog(
+        SettingsBottomSheet(
             label = stringResource(R.string.collection_color),
+            context = context,
             options = CollectionColor.entries.map { getCollectionColor(it, context) },
             selectedOption = getCollectionColor(uiState.collectionDetails.color, context),
             onToggleSelection = { viewModel.updateCollectionColor(it, context) },

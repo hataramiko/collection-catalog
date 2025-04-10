@@ -89,6 +89,7 @@ class ItemEntryViewModel @Inject constructor(
 
     fun updateUiState(itemDetails: ItemDetails) {
         val item = uiState.value.item
+        val temporaryImageUri = uiState.value.temporaryImageUri
         val selectedCollections = uiState.value.selectedCollections
         val isValidEntry = itemType == ItemType.WANTED_PLATE ||
                 !(uiState.value.itemDetails.regNo.isNullOrBlank() ||
@@ -108,6 +109,7 @@ class ItemEntryViewModel @Inject constructor(
                 item = item,
                 itemType = itemType,
                 itemDetails = itemDetails,
+                temporaryImageUri = temporaryImageUri,
                 selectedCollections = selectedCollections,
                 isValidEntry = isValidEntry,
                 isNew = isNew,
@@ -118,6 +120,7 @@ class ItemEntryViewModel @Inject constructor(
                 item = item,
                 itemType = itemType,
                 itemDetails = itemDetails,
+                temporaryImageUri = temporaryImageUri,
                 selectedCollections = selectedCollections,
                 isValidEntry = isValidEntry,
                 isNew = isNew
