@@ -158,7 +158,7 @@ fun ImportDialog(
                         Icon(
                             painter = painterResource(R.drawable.rounded_help),
                             contentDescription = null,
-                            tint = colorScheme.secondary
+                            tint = colorScheme.outline
                         )
                     }
                 }

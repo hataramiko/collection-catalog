@@ -162,4 +162,9 @@
     <string name="export_dialog_title">エクスポート</string>
     <string name="import_dialog_title">インポート</string>
     <string name="import_dialog_text">CSVファイル（.csv）をインポートして、プレートを追加します。</string>
+    <string name="import_msg_failure">インポートが失敗しました</string>
+    <string name="import_msg_success">インポートが完成しました</string>
+    <plurals name="import_msg_success_size">
+        <item quantity="other">%d枚のプレートをインポートしました</item>
+    </plurals>
 </resources>

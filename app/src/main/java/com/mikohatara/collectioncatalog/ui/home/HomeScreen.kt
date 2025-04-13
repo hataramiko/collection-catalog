@@ -121,7 +121,15 @@ private fun HomeScreen(
     }
 
     LaunchedEffect(key1 = uiState.importResult) {
-        if (uiState.importResult != null) {
+        uiState.importResult?.let { result ->
+            when (result) {
+                is ImportResult.Success -> {
+                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                }
+                is ImportResult.Failure -> {
+                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                }
+            }
             viewModel.clearImportResult()
         }
     }
@@ -209,7 +217,7 @@ private fun HomeScreen(
             }
         }
     )
-    if (showImportDialog) { //TODO
+    if (showImportDialog) {
         ImportDialog(
             onConfirm = {
                 showImportDialog = false
@@ -217,9 +225,9 @@ private fun HomeScreen(
                     .launch(arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*"))
             },
             onCancel = { showImportDialog = false },
-            onHelp = {  }
+            onHelp = { /*TODO*/ }
         )
-    } //TODO
+    }
     if (showExportDialog) {
         ExportDialog(
             onConfirm = {

@@ -37,6 +37,7 @@ data class HomeUiState(
     val searchQuery: String = "",
     val isLoading: Boolean = false,
     val isExporting: Boolean = false,
+    val isImporting: Boolean = false,
     val exportResult: ExportResult? = null,
     val importResult: ImportResult? = null
 )
@@ -273,33 +274,39 @@ class HomeViewModel @Inject constructor(
     }
 
     fun importItems(context: Context, uri: Uri) {
-        _uiState.update { it.copy(importResult = null) }
+        _uiState.update { it.copy(isImporting = true, importResult = null) }
+
         viewModelScope.launch {
             try {
                 val plates = importPlatesFromCsv(context, uri)
-                if (plates != null) {
-                    plates.forEach {
+                if (plates != null && plates.isNotEmpty()) { // Size check might be unnecessary
+                    /*plates.forEach {
                         plateRepository.addPlate(it)
-                    }
-                    //plateRepository.addPlates(plates)
-                    Log.d("HomeViewModel, import", "Importing ${plates.size} plates")
+                    }*/
+                    plateRepository.addPlates(plates)
                     _uiState.update { it.copy(
-                        importResult = ImportResult.Success("Imported ${plates.size} plates")
+                        isImporting = false,
+                        importResult = ImportResult.Success(getImportMessage(context, plates.size))
                     ) }
                 } else {
                     Log.e("HomeViewModel, import", "Importing failed, plates list empty")
+                    _uiState.update { it.copy(
+                        isImporting = false,
+                        importResult = ImportResult.Failure(getImportMessage(context))
+                    ) }
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel, import", "Importing failed", e)
                 _uiState.update { it.copy(
-                    importResult = ImportResult.Failure("Importing failed: ${e.message}")
+                    isImporting = false,
+                    importResult = ImportResult.Failure(getImportMessage(context))
                 ) }
             }
         }
     }
 
     fun clearImportResult() {
-        _uiState.update { it.copy(importResult = null) }
+        _uiState.update { it.copy(isImporting = false, importResult = null) }
     }
 
     private fun getPlates() {
@@ -355,6 +362,12 @@ class HomeViewModel @Inject constructor(
             R.string.export_msg_success
         } else R.string.export_msg_failure
         return context.getString(stringResId)
+    }
+
+    private fun getImportMessage(context: Context, size: Int = 0): String {
+        return if (size > 0) {
+            context.resources.getQuantityString(R.plurals.import_msg_success_size, size, size)
+        } else context.getString(R.string.import_msg_failure)
     }
 
     private fun <T> toggleFilter(filters: Set<T>, item: T): Set<T> =

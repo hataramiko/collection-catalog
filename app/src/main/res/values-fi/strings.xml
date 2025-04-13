@@ -165,4 +165,10 @@
     <string name="export_dialog_title">Vienti</string>
     <string name="import_dialog_title">Tuonti</string>
     <string name="import_dialog_text">Lisää kilpiä tuomalla CSV-tiedosto (.csv).</string>
+    <string name="import_msg_failure">Tuonti epäonnistui</string>
+    <string name="import_msg_success">Tuonti onnistui</string>
+    <plurals name="import_msg_success_size">
+        <item quantity="one">Tuotu %d kilpi</item>
+        <item quantity="other">Tuotu %d kilpeä</item>
+    </plurals>
 </resources>

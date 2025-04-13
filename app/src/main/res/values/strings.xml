@@ -170,4 +170,10 @@
     <string name="export_dialog_title">Export</string>
     <string name="import_dialog_title">Import</string>
     <string name="import_dialog_text">Add plates by importing a CSV file (.csv).</string>
+    <string name="import_msg_failure">Import failed</string>
+    <string name="import_msg_success">Import completed</string>
+    <plurals name="import_msg_success_size">
+        <item quantity="one">Imported %d plate</item>
+        <item quantity="other">Imported %d plates</item>
+    </plurals>
 </resources>

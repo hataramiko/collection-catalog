@@ -130,7 +130,8 @@ private fun CollectionEntryScreen(
             options = CollectionColor.entries.map { getCollectionColor(it, context) },
             selectedOption = getCollectionColor(uiState.collectionDetails.color, context),
             onToggleSelection = { viewModel.updateCollectionColor(it, context) },
-            onDismiss = { showColorDialog = false }
+            onDismiss = { showColorDialog = false },
+            skipPartiallyExpanded = true
         )
     }
     if (showDiscardDialog) {

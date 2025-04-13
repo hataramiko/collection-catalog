@@ -235,9 +235,10 @@ fun SettingsBottomSheet(
     selectedOption: String,
     onToggleSelection: (String) -> Unit,
     onDismiss: () -> Unit,
+    skipPartiallyExpanded: Boolean = false,
     infoText: String? = null
 ) {
-    val skipPartiallyExpanded = options.size < 12
+    //val skipPartiallyExpanded = options.size < 12
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
 
     ModalBottomSheet(
