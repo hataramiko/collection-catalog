@@ -21,18 +21,23 @@ import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.collection.CollectionEntryScreen
 import com.mikohatara.collectioncatalog.ui.collection.CollectionListScreen
 import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
+import com.mikohatara.collectioncatalog.ui.help.HelpPage
+import com.mikohatara.collectioncatalog.ui.help.HelpScreen
 import com.mikohatara.collectioncatalog.ui.home.ArchiveScreen
 import com.mikohatara.collectioncatalog.ui.home.HomeScreen
 import com.mikohatara.collectioncatalog.ui.home.WishlistScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemSummaryScreen
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.HELP_PAGE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_ENTRY_ADD_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_ENTRY_EDIT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_LIST_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HELP_DEFAULT_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HELP_PAGE_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_COLLECTION_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_DEFAULT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ITEM_ENTRY_ADD_ROUTE
@@ -97,7 +102,8 @@ fun CollectionCatalogNavGraph(
                     onItemClick = {
                         navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
                     },
-                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
                 )
             }
         }
@@ -122,7 +128,8 @@ fun CollectionCatalogNavGraph(
                     onItemClick = {
                         navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
                     },
-                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
                 )
             }
         }
@@ -193,6 +200,23 @@ fun CollectionCatalogNavGraph(
             route = SETTINGS_ROUTE
         ) {
             SettingsScreen(
+                onBack = { onBack() }
+            )
+        }
+        composable(
+            route = HELP_DEFAULT_ROUTE
+        ) {
+            HelpScreen(
+                navActions = navActions,
+                onBack = { onBack() }
+            )
+        }
+        composable(
+            route = HELP_PAGE_ROUTE,
+            arguments = listOf(navArgument(HELP_PAGE) { type = NavType.StringType })
+        ) {
+            HelpScreen(
+                navActions = navActions,
                 onBack = { onBack() }
             )
         }

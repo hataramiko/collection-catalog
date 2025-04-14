@@ -1,16 +1,14 @@
 package com.mikohatara.collectioncatalog.ui.components
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -20,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
@@ -152,19 +152,42 @@ fun ImportDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(stringResource(R.string.import_dialog_title))
-                Spacer(modifier = Modifier.width(4.dp))
+                /*Spacer(modifier = Modifier.width(4.dp))
                 Box(modifier = Modifier.size(32.dp).offset(y = (-2).dp)) {
-                    IconButton(onClick = { onHelp }) {
+                    IconButton(onClick = { onHelp() }) {
                         Icon(
                             painter = painterResource(R.drawable.rounded_help),
                             contentDescription = null,
                             tint = colorScheme.outline
                         )
                     }
-                }
+                }*/
             }
         },
-        text = { Text(stringResource(R.string.import_dialog_text)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.import_dialog_text))
+                Row(
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .clickable { onHelp() }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_help),
+                        contentDescription = null,
+                        tint = colorScheme.primary,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.import_details),
+                        color = colorScheme.primary,
+                        fontWeight = FontWeight.Medium,
+                        textDecoration = TextDecoration.Underline
+                    )
+                }
+            }
+
+        },
         dismissButton = {
             TextButton(onClick = { onCancel() }) {
                 Text(stringResource(R.string.cancel))

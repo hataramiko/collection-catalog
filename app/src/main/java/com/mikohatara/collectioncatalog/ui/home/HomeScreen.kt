@@ -64,7 +64,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
-    onOpenDrawer: () -> Unit
+    onOpenDrawer: () -> Unit,
+    onImportHelp: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -76,7 +77,8 @@ fun HomeScreen(
         context = context,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
-        onOpenDrawer = onOpenDrawer
+        onOpenDrawer = onOpenDrawer,
+        onImportHelp = onImportHelp
     )
 }
 
@@ -90,6 +92,7 @@ private fun HomeScreen(
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
     onOpenDrawer: () -> Unit,
+    onImportHelp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -225,7 +228,10 @@ private fun HomeScreen(
                     .launch(arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*"))
             },
             onCancel = { showImportDialog = false },
-            onHelp = { /*TODO*/ }
+            onHelp = {
+                onImportHelp()
+                showImportDialog = false
+            }
         )
     }
     if (showExportDialog) {

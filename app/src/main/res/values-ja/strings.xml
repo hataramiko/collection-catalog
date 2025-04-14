@@ -167,4 +167,6 @@
     <plurals name="import_msg_success_size">
         <item quantity="other">%d枚のプレートをインポートしました</item>
     </plurals>
+    <string name="help">ヘルプ</string>
+    <string name="import_details">インポートの詳細</string>
 </resources>

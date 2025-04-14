@@ -33,7 +33,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -366,7 +365,6 @@ private fun ItemCardContentLoading(
             Text(
                 text = "$title...",
                 color = MaterialTheme.colorScheme.outlineVariant,
-                fontWeight = FontWeight.Medium,
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center
@@ -395,7 +393,6 @@ private fun ItemCardContentNoImage(
         Column {
             Text(
                 text = title,
-                fontWeight = FontWeight.Medium
             )
             Text(
                 text = stringResource(R.string.no_image),
@@ -430,7 +427,6 @@ private fun ItemCardContentError(
             Column {
                 Text(
                     text = title,
-                    fontWeight = FontWeight.Medium,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
                 )

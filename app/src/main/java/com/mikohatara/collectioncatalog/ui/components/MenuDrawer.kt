@@ -16,7 +16,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -33,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
-import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_COLLECTION_ROUTE
@@ -226,11 +224,6 @@ private fun MenuDrawerContent(
                         },
                         modifier = modifier
                     )
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp, vertical = 8.dp)
-                    )
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.statistics)) },
                         icon = {
@@ -246,6 +239,11 @@ private fun MenuDrawerContent(
                         },
                         modifier = modifier
                     )
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp, vertical = 8.dp)
+                    )
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.settings)) },
                         icon = {
@@ -255,7 +253,18 @@ private fun MenuDrawerContent(
                             )
                         },
                         selected = false,
-                        onClick = { navActions.navigateToSettingsScreen() },
+                        onClick = { navActions.navigateToSettingsScreen() }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.help)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_help),
+                                contentDescription = null
+                            )
+                        },
+                        selected = false,
+                        onClick = { navActions.navigateToHelpScreen() },
                         modifier = modifier.padding(bottom = 8.dp)
                     )
                 }

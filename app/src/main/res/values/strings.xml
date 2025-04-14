@@ -176,4 +176,6 @@
         <item quantity="one">Imported %d plate</item>
         <item quantity="other">Imported %d plates</item>
     </plurals>
+    <string name="help">Help</string>
+    <string name="import_details">Learn more about importing</string>
 </resources>

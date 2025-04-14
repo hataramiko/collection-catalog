@@ -171,4 +171,6 @@
         <item quantity="one">Tuotu %d kilpi</item>
         <item quantity="other">Tuotu %d kilpeä</item>
     </plurals>
+    <string name="help">Ohjeet</string>
+    <string name="import_details">Lue lisää tuonnista</string>
 </resources>
