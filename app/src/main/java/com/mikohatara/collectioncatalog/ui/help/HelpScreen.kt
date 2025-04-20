@@ -109,7 +109,7 @@ private fun LandingPage(
 ) {
     Spacer(modifier = Modifier.height(16.dp))
     HelpPageButton(
-        text = stringResource(R.string.import_text),
+        text = stringResource(R.string.import_dialog_title),
         painter = painterResource(R.drawable.rounded_download_24),
         onClick = { navActions.navigateToHelpScreen(HelpPage.IMPORT) },
         modifier = modifier
@@ -118,7 +118,7 @@ private fun LandingPage(
 
 @Composable
 private fun ImportPage() {
-    ArticleHeader(stringResource(R.string.import_text))
+    ArticleHeader(stringResource(R.string.import_dialog_title))
 }
 
 @Composable

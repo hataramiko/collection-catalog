@@ -3,7 +3,6 @@ package com.mikohatara.collectioncatalog.ui.components
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,47 +25,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ExpandableCard( // TODO combine with the similar one from ItemSummaryScreen
+fun ExpandableCard(
     label: String,
     modifier: Modifier = Modifier,
-    data: List<Any?> = emptyList(),
     content: @Composable () -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     val onClick = remember { Modifier.clickable { isExpanded = !isExpanded } }
 
-    //if (data.any { it != null }) {
-        Card(
-            shape = RoundedCornerShape(20.dp),
-            modifier = modifier.animateContentSize()
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        modifier = modifier.animateContentSize()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(onClick)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .then(onClick)
-            ) {
-                Text(
-                    text = label,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Icon(
-                    imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
-                    else Icons.Rounded.KeyboardArrowDown,
-                    contentDescription = null,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-            if (isExpanded) {
-                Column(modifier = Modifier.padding(horizontal = 12.dp)) {
-                    content()
-                }
-                Spacer(modifier = Modifier.height(6.dp))
-            }
+            Text(
+                text = label,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Icon(
+                imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
+                else Icons.Rounded.KeyboardArrowDown,
+                contentDescription = null,
+                modifier = Modifier.padding(16.dp)
+            )
         }
         if (isExpanded) {
-            Spacer(modifier = Modifier.height(8.dp))
+            content()
+            Spacer(modifier = Modifier.height(4.dp))
         }
-   // }
+    }
+    if (isExpanded) { // Extra space after the card if it's expanded
+        Spacer(modifier = Modifier.height(8.dp))
+    }
 }

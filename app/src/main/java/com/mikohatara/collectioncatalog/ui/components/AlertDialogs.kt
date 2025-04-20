@@ -175,12 +175,12 @@ fun ImportDialog(
                     Icon(
                         painter = painterResource(R.drawable.rounded_help),
                         contentDescription = null,
-                        tint = colorScheme.primary,
+                        tint = colorScheme.secondary,
                         modifier = Modifier.padding(end = 4.dp)
                     )
                     Text(
                         text = stringResource(R.string.import_details),
-                        color = colorScheme.primary,
+                        color = colorScheme.secondary,
                         fontWeight = FontWeight.Medium,
                         textDecoration = TextDecoration.Underline
                     )
@@ -208,7 +208,7 @@ fun ExportDialog(
 ) {
     AlertDialog(
         onDismissRequest = { onCancel() },
-        title = { Text(stringResource(R.string.export_text)) },
+        title = { Text(stringResource(R.string.export_dialog_title)) },
         text = { Text(stringResource(R.string.export_dialog_text)) },
         dismissButton = {
             TextButton(onClick = { onCancel() }) {

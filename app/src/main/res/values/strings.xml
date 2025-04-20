@@ -178,4 +178,6 @@
     </plurals>
     <string name="help">Help</string>
     <string name="import_details">Learn more about importing</string>
+    <string name="countries">Countries</string>
+    <string name="types">Types</string>
 </resources>

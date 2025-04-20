@@ -12,7 +12,7 @@
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
     <string name="delete">削除</string>
-    <string name="deletion_dialog">アイテムを削除すると、元に戻せません。</string>
+    <string name="deletion_dialog">削除すると、元に戻せません。</string>
     <string name="source">供給源</string>
     <string name="period">期間</string>
     <string name="year">暦年</string>
@@ -169,4 +169,6 @@
     </plurals>
     <string name="help">ヘルプ</string>
     <string name="import_details">インポートの詳細</string>
+    <string name="countries">国家</string>
+    <string name="types">種類</string>
 </resources>

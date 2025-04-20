@@ -173,4 +173,6 @@
     </plurals>
     <string name="help">Ohjeet</string>
     <string name="import_details">Lue lisää tuonnista</string>
+    <string name="countries">Valtiot</string>
+    <string name="types">Tyypit</string>
 </resources>
