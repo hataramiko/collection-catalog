@@ -175,4 +175,6 @@
     <string name="import_details">Lue lisää tuonnista</string>
     <string name="countries">Valtiot</string>
     <string name="types">Tyypit</string>
+    <string name="select_collection">Valitse kokoelma</string>
+    <string name="percentage_of_plates"><xliff:g name="percentage" example="100 %">%s</xliff:g> kaikista kilvistä</string>
 </resources>

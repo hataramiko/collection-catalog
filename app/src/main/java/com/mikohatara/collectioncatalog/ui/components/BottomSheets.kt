@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Badge
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.ui.home.FilterData
 import com.mikohatara.collectioncatalog.ui.home.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
@@ -281,6 +283,67 @@ fun SettingsBottomSheet(
                         softWrap = false,
                         modifier = Modifier.padding(end = 24.dp)
                     )
+                }
+            }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectCollectionBottomSheet(
+    collections: List<Collection>,
+    selectedCollection: String,
+    onSelect: (Collection) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        onDismissRequest = { onDismiss() },
+        sheetState = sheetState
+    ) {
+        BottomSheetHeader(stringResource(R.string.select_collection))
+        LazyColumn {
+            item { Spacer(modifier = Modifier.height(8.dp)) }
+            items(collections) { collection ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = (collection.name == selectedCollection),
+                            onClick = { onSelect(collection) },
+                            role = Role.RadioButton
+                        )
+                ) {
+                    if (collection.emoji != null) {
+                        Text(
+                            text = collection.emoji,
+                            modifier = Modifier.padding(start = 30.dp, end = 16.dp)
+                        )
+                    } else {
+                        IconCollectionLabel(
+                            color = collection.color.color,
+                            modifier = Modifier.padding(start = 30.dp, end = 16.dp)
+                        )
+                    }
+                    Text(
+                        text = collection.name,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = false,
+                        modifier = Modifier.padding(end = 16.dp, top = 8.dp, bottom = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (collection.name == selectedCollection) {
+                        Icon(
+                            imageVector = Icons.Rounded.Check,
+                            tint = colorScheme.primary,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 30.dp)
+                        )
+                    }
                 }
             }
             item { Spacer(modifier = Modifier.height(16.dp)) }

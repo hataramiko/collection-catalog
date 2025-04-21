@@ -171,4 +171,6 @@
     <string name="import_details">インポートの詳細</string>
     <string name="countries">国家</string>
     <string name="types">種類</string>
+    <string name="select_collection">コレクションを選択</string>
+    <string name="percentage_of_plates">すべてのプレートの<xliff:g name="percentage" example="100 %">%s</xliff:g></string>
 </resources>
