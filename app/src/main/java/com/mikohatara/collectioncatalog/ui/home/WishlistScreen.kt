@@ -108,7 +108,7 @@ private fun WishlistScreen(
                 itemList = itemList,
                 onItemClick = onItemClick,
                 onSortByClick = { viewModel.showSortByBottomSheet.value = true },
-                onFilterClick = { viewModel.showFilterBottomSheet.value = true },
+                onFilterClick = { viewModel.openFilterBottomSheet() },
                 modifier = Modifier.padding(innerPadding)
             )
             if (viewModel.showSortByBottomSheet.value) {
@@ -131,7 +131,12 @@ private fun WishlistScreen(
                     countries = viewModel.getCountries(),
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),
-                    toggleType = { viewModel.toggleTypeFilter(it) }
+                    toggleType = { viewModel.toggleTypeFilter(it) },
+                    yearSliderRange = viewModel.getYearSliderRange(),
+                    yearSliderPosition = uiState.yearSliderPosition,
+                    onYearSliderChange = { newPosition ->
+                        viewModel.updateYearSliderPosition(newPosition)
+                    },
                 )
             }
         }

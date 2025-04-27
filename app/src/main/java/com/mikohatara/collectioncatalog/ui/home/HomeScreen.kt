@@ -191,7 +191,7 @@ private fun HomeScreen(
                 modifier = modifier.padding(innerPadding),
                 onItemClick = onItemClick,
                 onSortByClick = { viewModel.showSortByBottomSheet.value = true },
-                onFilterClick = { viewModel.showFilterBottomSheet.value = true }
+                onFilterClick = { viewModel.openFilterBottomSheet() }
             )
             if (viewModel.showSortByBottomSheet.value) {
                 SortByBottomSheet(
@@ -214,6 +214,11 @@ private fun HomeScreen(
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),
                     toggleType = { viewModel.toggleTypeFilter(it) },
+                    yearSliderRange = viewModel.getYearSliderRange(),
+                    yearSliderPosition = uiState.yearSliderPosition,
+                    onYearSliderChange = { newPosition ->
+                        viewModel.updateYearSliderPosition(newPosition)
+                    },
                     locations = viewModel.getLocations(),
                     toggleLocation = { viewModel.toggleLocationFilter(it) }
                 )

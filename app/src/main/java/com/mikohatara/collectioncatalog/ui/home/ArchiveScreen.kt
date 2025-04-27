@@ -118,7 +118,7 @@ private fun ArchiveScreen(
                 itemList = itemList,
                 onItemClick = onItemClick,
                 onSortByClick = { viewModel.showSortByBottomSheet.value = true },
-                onFilterClick = { viewModel.showFilterBottomSheet.value = true },
+                onFilterClick = { viewModel.openFilterBottomSheet() },
                 modifier = modifier.padding(innerPadding)
             )
             if (viewModel.showSortByBottomSheet.value) {
@@ -141,7 +141,12 @@ private fun ArchiveScreen(
                     countries = viewModel.getCountries(),
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),
-                    toggleType = { viewModel.toggleTypeFilter(it) }
+                    toggleType = { viewModel.toggleTypeFilter(it) },
+                    yearSliderRange = viewModel.getYearSliderRange(),
+                    yearSliderPosition = uiState.yearSliderPosition,
+                    onYearSliderChange = { newPosition ->
+                        viewModel.updateYearSliderPosition(newPosition)
+                    },
                 )
             }
         }

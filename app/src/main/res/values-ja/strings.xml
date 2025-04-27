@@ -173,4 +173,6 @@
     <string name="types">種類</string>
     <string name="select_collection">コレクションを選択</string>
     <string name="percentage_of_plates">すべてのプレートの<xliff:g name="percentage" example="100 %">%s</xliff:g></string>
+    <string name="total">合計</string>
+    <string name="total_with_punctuation">合計：</string>
 </resources>

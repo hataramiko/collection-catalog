@@ -182,4 +182,6 @@
     <string name="types">Types</string>
     <string name="select_collection">Select collection</string>
     <string name="percentage_of_plates"><xliff:g name="percentage" example="100 %">%s</xliff:g> of all plates</string>
+    <string name="total">Total</string>
+    <string name="total_with_punctuation">Total:</string>
 </resources>

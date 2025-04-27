@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.stats
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -315,7 +316,7 @@ private fun CollectionCard(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.offset(x = (-4).dp)
+                    modifier = Modifier.offset(x = (-2).dp)
                 ) {
                     if (collection != null) {
                         if (collection.emoji != null) {
@@ -389,14 +390,14 @@ private fun Table(
         modifier = modifier
     ) {
         Column {
-            Row(modifier = Modifier.padding(start = 16.dp, bottom = 12.dp, end = 16.dp)) {
+            Row(modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, end = 16.dp)) {
                 Text(
-                    text = "Σ = ",
-                    color = MaterialTheme.colorScheme.outline
+                    text = stringResource(R.string.total_with_punctuation),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = "$rowCount",
-                    fontWeight = FontWeight.Bold
+                    //fontWeight = FontWeight.Bold
                 )
             }
             if (rows.isNotEmpty()) {
@@ -409,7 +410,7 @@ private fun Table(
         Column(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(0.dp))
             rows.forEach { row ->
                 val filteredItems = items.filter { propertyExtractor(it) == row }
                 val quantity = filteredItems.size.toFormattedString(userPreferences.userCountry)

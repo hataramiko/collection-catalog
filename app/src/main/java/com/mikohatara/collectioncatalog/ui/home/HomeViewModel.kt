@@ -17,6 +17,7 @@ import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.util.exportPlatesToCsv
+import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.importPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,11 +29,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.OutputStreamWriter
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 data class HomeUiState(
     val items: List<Plate> = emptyList(),
     val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
     val filters: FilterData = FilterData(),
+    val yearSliderPosition: ClosedRange<Float>? = null,
     val isSearchActive: Boolean = false,
     val searchQuery: String = "",
     val isLoading: Boolean = false,
@@ -165,10 +168,25 @@ class HomeViewModel @Inject constructor(
         updateDefaultSortBy(sortBy)
     }
 
+    fun openFilterBottomSheet() {
+        setFilterSliderStartPosition()
+        showFilterBottomSheet.value = true
+    }
+
     fun setFilter() {
+        setYearFilter()
         val filters = _uiState.value.filters
 
         val filteredItems = _allItems.filter { item ->
+            val isWithinYearRange = filters.years?.let { range ->
+                val year = item.commonDetails.year
+
+                when {
+                    year != null -> year in range
+                    else -> false
+                }
+            } != false
+
             when {
                 filters.country.isNotEmpty() && filters.country.none {
                     it == item.commonDetails.country
@@ -179,6 +197,7 @@ class HomeViewModel @Inject constructor(
                 filters.location.isNotEmpty() && filters.location.none {
                     it == item.uniqueDetails.status
                 } -> false
+                !isWithinYearRange -> false
                 else -> true
             }
         }
@@ -201,8 +220,15 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(filters = it.filters.copy(location = newFilter)) }
     }
 
+    fun updateYearSliderPosition(yearSliderPosition: ClosedRange<Float>) {
+        _uiState.update { it.copy(yearSliderPosition = yearSliderPosition) }
+    }
+
     fun resetFilter() {
-        _uiState.update { it.copy(filters = FilterData()) }
+        _uiState.update { it.copy(
+            filters = FilterData(),
+            yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()
+        ) }
         setFilter()
     }
 
@@ -241,6 +267,10 @@ class HomeViewModel @Inject constructor(
         return _allItems.mapNotNull { it.uniqueDetails.status }
             .sortedWith(compareBy { it })
             .toSet()
+    }
+
+    fun getYearSliderRange(): ClosedRange<Float> {
+        return getMinYear().toFloat()..getMaxYear().toFloat()
     }
 
     fun exportItems(context: Context, uri: Uri) {
@@ -357,6 +387,58 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun setFilterSliderStartPosition() {
+        if (uiState.value.yearSliderPosition == null) {
+            _uiState.update { it.copy(
+                yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
+        }
+    }
+
+    private fun setYearFilter() {
+        val yearRange = uiState.value.yearSliderPosition ?: return
+        val rangeStart = yearRange.start.roundToInt()
+        val rangeEnd = yearRange.endInclusive.roundToInt()
+        if (rangeStart == getMinYear() && rangeEnd == getMaxYear()) {
+            _uiState.update { it.copy(filters = it.filters.copy(years = null)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(years = rangeStart..rangeEnd)) }
+        }
+    }
+
+    private fun getMinYear(): Int {
+        val maxYear = getMaxYear()
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return 1900
+        val allYears = listOfNotNull(
+            items.mapNotNull { it.commonDetails.periodStart }.takeIf { it.isNotEmpty() },
+            items.mapNotNull { it.commonDetails.periodEnd }.takeIf { it.isNotEmpty() },
+            items.mapNotNull { it.commonDetails.year }.takeIf { it.isNotEmpty() }
+        ).flatten()
+
+        val minYear = if (allYears.isNotEmpty()) {
+            allYears.minOf { it }
+        } else {
+            1900
+        }
+        return if (minYear < maxYear) minYear else maxYear - 1
+    }
+
+    private fun getMaxYear(): Int {
+        val currentYear = getCurrentYear()
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return currentYear
+        val allYears = listOfNotNull(
+            items.mapNotNull { it.commonDetails.periodStart }.takeIf { it.isNotEmpty() },
+            items.mapNotNull { it.commonDetails.periodEnd }.takeIf { it.isNotEmpty() },
+            items.mapNotNull { it.commonDetails.year }.takeIf { it.isNotEmpty() }
+        ).flatten()
+
+        val maxYear = if (allYears.isNotEmpty()) {
+            allYears.maxOf { it }
+        } else {
+            currentYear
+        }
+        return listOf(currentYear, maxYear).maxOf { it }
+    }
+
     private fun getExportMessage(isSuccess: Boolean, context: Context): String {
         val stringResId = if (isSuccess) {
             R.string.export_msg_success
@@ -390,5 +472,6 @@ enum class SortBy {
 data class FilterData(
     val country: Set<String> = emptySet(),
     val type: Set<String> = emptySet(),
+    val years: ClosedRange<Int>? = null,
     val location: Set<String> = emptySet()
 )

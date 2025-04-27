@@ -37,6 +37,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -66,23 +67,7 @@ import com.mikohatara.collectioncatalog.ui.home.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
 import com.mikohatara.collectioncatalog.util.isCollectionColor
 import com.mikohatara.collectioncatalog.util.toColor
-
-//TODO maybe combine SortByBottomSheet and FilterBottomSheet into one BottomSheet?
-enum class BottomSheetType {
-    SORT_BY,
-    FILTER
-}
-
-@Composable
-fun BottomSheet(
-    type: BottomSheetType,
-    onDismiss: () -> Unit
-) {
-    /*when (type) {
-        BottomSheetType.SORT_BY -> SortByBottomSheet(onDismiss)
-        BottomSheetType.FILTER -> FilterBottomSheet(onDismiss)
-    }*/
-}
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,6 +125,9 @@ fun FilterBottomSheet(
     toggleCountry: (String) -> Unit,
     types: Set<String>,
     toggleType: (String) -> Unit,
+    yearSliderRange: ClosedRange<Float>? = null,
+    yearSliderPosition: ClosedRange<Float>? = null,
+    onYearSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     locations: Set<String>? = null,
     toggleLocation: ((String) -> Unit)? = null
 ) {
@@ -148,6 +136,7 @@ fun FilterBottomSheet(
 
     var isCountriesExpanded by remember { mutableStateOf(false) }
     var isTypesExpanded by remember { mutableStateOf(false) }
+    var isYearExpanded by remember { mutableStateOf(false) }
     var isLocationsExpanded by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
@@ -169,7 +158,7 @@ fun FilterBottomSheet(
                     )
                 }
                 item {
-                    FilterListContent(
+                    FilterListCheckboxes(
                         filterOptions = countries,
                         activeFilters = filters.country,
                         isExpanded = isCountriesExpanded,
@@ -185,12 +174,38 @@ fun FilterBottomSheet(
                     )
                 }
                 item {
-                    FilterListContent(
+                    FilterListCheckboxes(
                         filterOptions = types,
                         activeFilters = filters.type,
                         isExpanded = isTypesExpanded,
                         onToggleFilter = { toggleType(it) }
                     )
+                }
+                if (yearSliderRange != null && yearSliderPosition != null &&
+                    onYearSliderChange != null) {
+                    stickyHeader {
+                        val minValue = yearSliderPosition.start.roundToInt()
+                        val maxValue = yearSliderPosition.endInclusive.roundToInt()
+
+                        FilterListLabel(
+                            label = stringResource(R.string.year),
+                            activeFilters = emptySet(),
+                            isExpanded = isYearExpanded,
+                            onExpand = { isYearExpanded = !isYearExpanded },
+                            value = "$minValue – $maxValue",
+                            isSliderActive = yearSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
+                        )
+                    }
+                    item {
+                        FilterListSlider(
+                            sliderRange = yearSliderRange,
+                            sliderPosition = yearSliderPosition,
+                            isExpanded = isYearExpanded,
+                            onSliderChange = { newSliderPosition ->
+                                onYearSliderChange(newSliderPosition)
+                            }
+                        )
+                    }
                 }
                 if (locations != null && toggleLocation != null) {
                     stickyHeader {
@@ -202,7 +217,7 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
-                        FilterListContent(
+                        FilterListCheckboxes(
                             filterOptions = locations,
                             activeFilters = filters.location,
                             isExpanded = isLocationsExpanded,
@@ -218,7 +233,10 @@ fun FilterBottomSheet(
         FilterFooter(
             sheetState = sheetState,
             sheetHeight = sheetHeight,
-            filterCount = filters.country.size + filters.type.size + filters.location.size,
+            filterCount = filters.country.size + filters.type.size + filters.location.size +
+                if (yearSliderRange != null && yearSliderPosition != null &&
+                    yearSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
+                ) 1 else 0,
             onReset = { onReset() },
             onApply = {
                 onApply()
@@ -394,7 +412,9 @@ private fun FilterListLabel(
     label: String,
     activeFilters: Set<String>,
     isExpanded: Boolean,
-    onExpand: () -> Unit
+    onExpand: () -> Unit,
+    value: String? = null,
+    isSliderActive: Boolean = false
 ) {
     val onClick = remember { Modifier.clickable { onExpand() } }
     val backgroundColor = colorScheme.surfaceContainerLow.copy(alpha = 0.95f)
@@ -418,8 +438,27 @@ private fun FilterListLabel(
                     Text(activeFilters.size.toString())
                 }
             }
+            if (isSliderActive) {
+                Badge(
+                    modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+                ) {
+                    Text("1")
+                    /*if (value != null) {
+                        Text(value)
+                    } else {
+                        Text("1")
+                    }*/
+                }
+            }
         }
         Spacer(modifier = Modifier.weight(1f))
+        value?.let {
+            Text(
+                text = it,
+                color = colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(end = 16.dp)
+            )
+        }
         Icon(
             imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
             else Icons.Rounded.KeyboardArrowDown,
@@ -431,7 +470,7 @@ private fun FilterListLabel(
 }
 
 @Composable
-private fun FilterListContent(
+private fun FilterListCheckboxes(
     filterOptions: Set<String>,
     activeFilters: Set<String>,
     isExpanded: Boolean,
@@ -456,10 +495,49 @@ private fun FilterListContent(
                         modifier = Modifier
                             .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
                     )
-                    Text(option)
+                    Text(
+                        text = option,
+                        overflow = TextOverflow.Ellipsis,
+                        softWrap = false,
+                        modifier = Modifier.padding(end = 32.dp)
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+    FilterHorizontalDivider()
+}
+
+@Composable
+private fun FilterListSlider(
+    sliderRange: ClosedRange<Float>,
+    sliderPosition: ClosedRange<Float>,
+    onSliderChange: (ClosedRange<Float>) -> Unit,
+    isExpanded: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .animateContentSize()
+            .padding(horizontal = 32.dp)
+    ) {
+        if (isExpanded) {
+            /*Text(
+                text = "$minFilter – $maxFilter",
+                color = colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )*/
+            Spacer(modifier = Modifier.height(8.dp))
+            RangeSlider(
+                value = sliderPosition as ClosedFloatingPointRange<Float>,
+                valueRange = sliderRange as ClosedFloatingPointRange<Float>,
+                onValueChange = { newSliderPosition ->
+                    onSliderChange(newSliderPosition)
+                },
+                onValueChangeFinished = { onSliderChange(sliderPosition) },
+                modifier = Modifier.height(32.dp)
+            )
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
     FilterHorizontalDivider()
