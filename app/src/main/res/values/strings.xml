@@ -109,13 +109,13 @@
     <string name="lang_ja" translatable="false">日本語</string>
     <string name="ok_text" translatable="false">OK</string>
     <string name="continue_button">Continue</string>
-    <string name="language_redirect_text">In order to change the app language, you will be redirected to the device\'s system settings.</string>
+    <string name="language_redirect_text">In order to change the app language, you will be redirected to the device\'s language settings.</string>
     <string name="missing_translation" translatable="false">MISSING TRANSLATION</string>
     <string name="user_country">App region</string>
     <string name="default_setting">Default</string>
     <string name="currency">Currency</string>
     <string name="currency_unit">Currency unit</string>
-    <string name="user_country_info">The selection affects number formatting and default measurement units.</string>
+    <string name="user_country_info">The selection affects regional preferences, such as number formatting and the currency.</string>
     <string name="empty_list_default_msg">Nothing to display</string>
     <string name="empty_list_default_desc">Check active filters for any mistakes.</string>
     <string name="empty_list_plates_msg">Nothing to show yet</string>

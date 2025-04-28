@@ -514,7 +514,8 @@ private fun FilterListSlider(
     sliderRange: ClosedRange<Float>,
     sliderPosition: ClosedRange<Float>,
     onSliderChange: (ClosedRange<Float>) -> Unit,
-    isExpanded: Boolean
+    isExpanded: Boolean,
+    independentLabel: String? = null
 ) {
     Column(
         modifier = Modifier
@@ -522,11 +523,17 @@ private fun FilterListSlider(
             .padding(horizontal = 32.dp)
     ) {
         if (isExpanded) {
-            /*Text(
-                text = "$minFilter – $maxFilter",
-                color = colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )*/
+            if (independentLabel != null) {
+                Column(modifier = Modifier.padding(bottom = 8.dp, top = 0.dp)) {
+                    Text(text = independentLabel)
+                    Text(
+                        text = "${sliderPosition.start.roundToInt()} – " +
+                                "${sliderPosition.endInclusive.roundToInt()}",
+                        color = colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             RangeSlider(
                 value = sliderPosition as ClosedFloatingPointRange<Float>,
