@@ -246,7 +246,7 @@ private fun DrawerHeader() {
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Collection Catalog",
+            text = stringResource(R.string.app_name),
             modifier = Modifier.padding(horizontal = 32.dp, vertical = 24.dp)
         )
         // The DrawerDivider has 8.dp vertical padding, hence the Spacer and vertical = 24.dp above

@@ -200,24 +200,24 @@ private fun ItemEntryScreenContent(
                     value = uiState.itemDetails.regNo ?: "",
                     onValueChange = { onValueChange(uiState.itemDetails.copy(regNo = it)) },
                     modifier = Modifier.weight(1f),
-                    capitalization = KeyboardCapitalization.Characters
+                    capitalization = KeyboardCapitalization.Characters,
                 )
-                Spacer(modifier = Modifier.width(10.dp))
-                EntryField(
+                Spacer(modifier = Modifier.weight(0.33f))//.width(10.dp))
+                /*EntryField(
                     label = "id debug",
                     value = uiState.itemDetails.id.toString(),
                     onValueChange = { /*NULL*/ },
                     modifier = Modifier.weight(0.5f),
                     enabled = false
-                )
+                )*/
             }
-            EntryField(
+            /*EntryField(
                 label = "imagePath debug",
                 value = uiState.itemDetails.imagePath.toString(),
                 onValueChange = { /*NULL*/ },
                 enabled = false,
                 singleLine = false
-            )
+            )*/
             ItemEntryVerticalSpacer()
 
             EntryField(

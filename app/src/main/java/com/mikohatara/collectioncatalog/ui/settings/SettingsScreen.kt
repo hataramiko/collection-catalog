@@ -214,14 +214,14 @@ private fun Version() {
     val packageManager = LocalContext.current.packageManager
     val packageName = LocalContext.current.packageName
     val versionName = packageManager.getPackageInfo(packageName, 0).versionName
-    val versionCode = getLongVersionCode(packageManager.getPackageInfo(packageName, 0))
+    //val versionCode = getLongVersionCode(packageManager.getPackageInfo(packageName, 0))
 
     SettingsDivider()
     SettingsButton(
         label = stringResource(R.string.version),
         onClick = {},
         enabled = false,
-        text = "$versionName ($versionCode)"
+        text = "$versionName"// ($versionCode)"
     )
 }
 
