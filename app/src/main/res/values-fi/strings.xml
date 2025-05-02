@@ -178,4 +178,8 @@
     <string name="percentage_of_plates"><xliff:g name="percentage" example="100 %">%s</xliff:g> kaikista kilvistä</string>
     <string name="total">Yhteensä</string>
     <string name="total_with_punctuation">"Yhteensä: "</string>
+    <string name="sort_by_age_asc">Aikaväli ja vuosi, nouseva</string>
+    <string name="sort_by_age_desc">Aikaväli ja vuosi, laskeva</string>
+    <string name="sort_by_archival_oldest">Vanhin arkistointi</string>
+    <string name="sort_by_archival_newest">Uusin arkistointi</string>
 </resources>

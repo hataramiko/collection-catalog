@@ -81,12 +81,42 @@ class ArchiveViewModel @Inject constructor(
     fun setSortBy(sortBy: SortBy) {
         val items = _uiState.value.items
         val sortedItems = when (sortBy) {
-            SortBy.COUNTRY_ASC -> items.sortedBy { it.commonDetails.country }
-            SortBy.COUNTRY_DESC -> items.sortedByDescending { it.commonDetails.country }
-            SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedBy { it.commonDetails.type }
-            SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedByDescending { it.commonDetails.type }
-            SortBy.COUNTRY_AND_AGE_ASC -> items.sortedBy { it.commonDetails.year }
-            SortBy.COUNTRY_AND_AGE_DESC -> items.sortedByDescending { it.commonDetails.year }
+            SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedWith(
+                compareBy<FormerPlate> { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
+                    .thenBy { it.commonDetails.type }
+                    .thenBy(nullsFirst()) {
+                        it.commonDetails.year ?: it.commonDetails.periodStart
+                    }
+                    .thenBy { it.uniqueDetails.regNo }
+            )
+            SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedWith(
+                compareByDescending<FormerPlate> { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
+                    .thenByDescending { it.commonDetails.type }
+                    .thenByDescending(nullsFirst()) {
+                        it.commonDetails.year ?: it.commonDetails.periodStart
+                    }
+                    .thenByDescending { it.uniqueDetails.regNo }
+            )
+            SortBy.AGE_ASC -> items.sortedWith(
+                compareBy<FormerPlate, Int?>(nullsLast()) {
+                    it.commonDetails.year ?: it.commonDetails.periodStart
+                }
+                    .thenBy { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
+                    .thenBy { it.commonDetails.type }
+                    .thenBy { it.uniqueDetails.regNo }
+            )
+            SortBy.AGE_DESC -> items.sortedWith(
+                compareByDescending<FormerPlate, Int?>(nullsLast()) {
+                    it.commonDetails.year ?: it.commonDetails.periodStart
+                }
+                    .thenByDescending { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
+                    .thenByDescending { it.commonDetails.type }
+                    .thenByDescending { it.uniqueDetails.regNo }
+            )
             SortBy.START_DATE_NEWEST -> items
             SortBy.START_DATE_OLDEST -> items
             SortBy.END_DATE_NEWEST -> items.sortedWith(

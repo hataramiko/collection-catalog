@@ -122,7 +122,6 @@ fun CollectionCatalogNavGraph(
             ) {
                 HomeScreen(
                     onAddItem = {
-                        // TODO snackBar to add plates via "All plates"
                         /*navActions.navigateToItemEntryScreen(ItemType.PLATE, null)*/
                     },
                     onItemClick = {

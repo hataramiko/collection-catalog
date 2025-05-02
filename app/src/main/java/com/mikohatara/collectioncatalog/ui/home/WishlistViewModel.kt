@@ -68,14 +68,28 @@ class WishlistViewModel @Inject constructor(
     fun setSortBy(sortBy: SortBy) {
         val items = _uiState.value.items
         val sortedItems = when (sortBy) {
-            SortBy.COUNTRY_ASC -> items.sortedBy { it.commonDetails.country }
-            SortBy.COUNTRY_DESC -> items.sortedByDescending { it.commonDetails.country }
-            SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedBy { it.commonDetails.type }
-            SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedByDescending { it.commonDetails.type }
-            SortBy.COUNTRY_AND_AGE_ASC -> items.sortedBy { it.commonDetails.year }
-            SortBy.COUNTRY_AND_AGE_DESC -> items.sortedByDescending { it.commonDetails.year }
-            SortBy.START_DATE_NEWEST -> items.sortedByDescending { it.commonDetails.country }
-            SortBy.START_DATE_OLDEST -> items.sortedBy { it.commonDetails.country }
+            SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedWith(
+                compareBy<WantedPlate, String?>(nullsLast()) { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
+                    .thenBy(nullsLast()) { it.commonDetails.type }
+                    .thenBy(nullsFirst()) {
+                        it.commonDetails.year ?: it.commonDetails.periodStart
+                    }
+                    .thenBy { it.id }
+            )
+            SortBy.COUNTRY_AND_TYPE_DESC -> items.sortedWith(
+                compareByDescending<WantedPlate, String?>(nullsLast()) { it.commonDetails.country }
+                    .thenBy(nullsFirst()) { it.commonDetails.region1st }
+                    .thenByDescending(nullsLast()) { it.commonDetails.type }
+                    .thenByDescending(nullsFirst()) {
+                        it.commonDetails.year ?: it.commonDetails.periodStart
+                    }
+                    .thenByDescending { it.id }
+            )
+            SortBy.AGE_ASC -> items
+            SortBy.AGE_DESC -> items
+            SortBy.START_DATE_NEWEST -> items
+            SortBy.START_DATE_OLDEST -> items
             SortBy.END_DATE_NEWEST -> items
             SortBy.END_DATE_OLDEST -> items
         }
@@ -85,7 +99,7 @@ class WishlistViewModel @Inject constructor(
 
     fun getSortByOptions(): List<SortBy> {
         val sortByOptions = SortBy.entries.filter {
-            it != SortBy.COUNTRY_AND_AGE_ASC && it != SortBy.COUNTRY_AND_AGE_DESC &&
+            it != SortBy.AGE_ASC && it != SortBy.AGE_DESC &&
             it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST &&
             it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
         }

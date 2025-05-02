@@ -32,10 +32,10 @@
     <string name="subdivision">行政区画</string>
     <string name="sort_by_date_newest">日付が最も新しい</string>
     <string name="sort_by_date_oldest">日付が最も古い</string>
-    <string name="sort_by_country_asc">国家も地域も昇順</string>
-    <string name="sort_by_country_desc">国家も地域も降順</string>
-    <string name="sort_by_country_and_type_asc">国家も種類も昇順</string>
-    <string name="sort_by_country_and_type_desc">国家も種類も降順</string>
+    <string name="sort_by_country_asc">国家や地域の昇順</string>
+    <string name="sort_by_country_desc">国家や地域の降順</string>
+    <string name="sort_by_country_and_type_asc">国家や種類の昇順</string>
+    <string name="sort_by_country_and_type_desc">国家や種類の降順</string>
     <string name="reset">リセット</string>
     <string name="filter_apply">適用する</string>
     <string name="statistics">統計</string>
@@ -118,8 +118,8 @@
     <string name="empty_list_plates_desc">最初に新しいプレートを作成しましょう。</string>
     <string name="empty_list_default_desc">絞り込み条件を確認してください。</string>
     <string name="empty_list_archive_desc">プレートをアーカイブして、過去に持っていた物を管理できます。</string>
-    <string name="sort_by_country_and_age_asc">国家も期間も昇順</string>
-    <string name="sort_by_country_and_age_desc">国家も期間も降順</string>
+    <string name="sort_by_country_and_age_asc">国家や期間の昇順</string>
+    <string name="sort_by_country_and_age_desc">国家や期間の降順</string>
     <string name="transfer_from_wishlist_dialog_text">この欲しい物に基づいて新規プレートを作成して、欲しい物が削除されます。</string>
     <string name="transfer_from_plates_dialog_title">｢<xliff:g name="reg_no" example="ABC-123">%s</xliff:g>｣ をアーカイブしますか？</string>
     <string name="transfer_from_plates_dialog_text">アーカイブにコピーを作成して、プレートが削除されます。</string>
@@ -174,4 +174,8 @@
     <string name="percentage_of_plates">すべてのプレートの<xliff:g name="percentage" example="100 %">%s</xliff:g></string>
     <string name="total">合計</string>
     <string name="total_with_punctuation">合計：</string>
+    <string name="sort_by_age_asc">期間や暦年の昇順</string>
+    <string name="sort_by_age_desc">期間や暦年の降順</string>
+    <string name="sort_by_archival_oldest">アーカイブが最古</string>
+    <string name="sort_by_archival_newest">最新のアーカイブ</string>
 </resources>

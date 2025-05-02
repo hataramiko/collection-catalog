@@ -48,7 +48,7 @@ data class CommonDetails(
     @ColumnInfo(name = "year") val year: Int?
 )
 
-data class UniqueDetails( // TODO include "condition" and/or "grade"???
+data class UniqueDetails(
     @ColumnInfo(name = "reg_no") val regNo: String,
     @ColumnInfo(name = "image_path") val imagePath: String?,
     @ColumnInfo(name = "notes") val notes: String?,

@@ -107,20 +107,6 @@ class HomeViewModel @Inject constructor(
     fun setSortBy(sortBy: SortBy) {
         val items = _uiState.value.items
         val sortedItems = when (sortBy) {
-            SortBy.COUNTRY_ASC -> items.sortedWith(
-                compareBy<Plate> { it.commonDetails.country }
-                    .thenBy(nullsLast()) { it.commonDetails.region1st }
-                    .thenBy(nullsLast()) { it.commonDetails.region2nd }
-                    .thenBy(nullsLast()) { it.commonDetails.region3rd }
-                    .thenBy { it.uniqueDetails.regNo }
-            )
-            SortBy.COUNTRY_DESC -> items.sortedWith(
-                compareByDescending<Plate> { it.commonDetails.country }
-                    .thenBy(nullsLast()) { it.commonDetails.region1st }
-                    .thenBy(nullsLast()) { it.commonDetails.region2nd }
-                    .thenBy(nullsLast()) { it.commonDetails.region3rd }
-                    .thenByDescending { it.uniqueDetails.regNo }
-            )
             SortBy.COUNTRY_AND_TYPE_ASC -> items.sortedWith(
                 compareBy<Plate> { it.commonDetails.country }
                     .thenBy(nullsFirst()) { it.commonDetails.region1st }
@@ -139,19 +125,23 @@ class HomeViewModel @Inject constructor(
                     }
                     .thenByDescending { it.uniqueDetails.regNo }
             )
-            SortBy.COUNTRY_AND_AGE_ASC -> items.sortedWith(
-                compareBy<Plate> { it.commonDetails.country }
+            SortBy.AGE_ASC -> items.sortedWith(
+                compareBy<Plate, Int?>(nullsLast()) {
+                    it.commonDetails.year ?: it.commonDetails.periodStart
+                }
+                    .thenBy { it.commonDetails.country }
                     .thenBy(nullsFirst()) { it.commonDetails.region1st }
-                    .thenBy(nullsFirst()) {
-                        it.commonDetails.year ?: it.commonDetails.periodStart
-                    }
+                    .thenBy { it.commonDetails.type }
+                    .thenBy { it.uniqueDetails.regNo }
             )
-            SortBy.COUNTRY_AND_AGE_DESC -> items.sortedWith(
-                compareByDescending<Plate> { it.commonDetails.country }
+            SortBy.AGE_DESC -> items.sortedWith(
+                compareByDescending<Plate, Int?>(nullsLast()) {
+                    it.commonDetails.year ?: it.commonDetails.periodStart
+                }
+                    .thenByDescending { it.commonDetails.country }
                     .thenBy(nullsFirst()) { it.commonDetails.region1st }
-                    .thenByDescending(nullsFirst()) {
-                        it.commonDetails.year ?: it.commonDetails.periodStart
-                    }
+                    .thenByDescending { it.commonDetails.type }
+                    .thenByDescending { it.uniqueDetails.regNo }
             )
             SortBy.START_DATE_NEWEST -> items.sortedWith(
                 compareByDescending<Plate, String?>(nullsLast()) { it.uniqueDetails.date }
@@ -457,12 +447,10 @@ class HomeViewModel @Inject constructor(
 }
 
 enum class SortBy {
-    COUNTRY_ASC,
-    COUNTRY_DESC,
     COUNTRY_AND_TYPE_ASC,
     COUNTRY_AND_TYPE_DESC,
-    COUNTRY_AND_AGE_ASC,
-    COUNTRY_AND_AGE_DESC,
+    AGE_ASC,
+    AGE_DESC,
     START_DATE_NEWEST,
     START_DATE_OLDEST,
     END_DATE_NEWEST,
