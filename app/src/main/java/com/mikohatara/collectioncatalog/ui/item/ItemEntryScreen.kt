@@ -1,7 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
-import android.icu.text.NumberFormat
 import android.icu.util.Currency
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -71,6 +70,7 @@ import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
+import com.mikohatara.collectioncatalog.util.getDateExample
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
 import com.mikohatara.collectioncatalog.util.rememberCurrencyVisualTransformation
@@ -347,7 +347,7 @@ private fun ItemEntryScreenContent(
                     EntryFieldBackground {
                         EntryField(
                             label = stringResource(R.string.date),
-                            placeholder = { Text(getDatePlaceholder()) },
+                            placeholder = { Text(getDateExample()) },
                             value = uiState.itemDetails.date ?: "",
                             onValueChange = { onValueChange(uiState.itemDetails.copy(date = it)) },
                             keyboardType = KeyboardType.Number,
@@ -514,7 +514,7 @@ private fun ItemEntryScreenContent(
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.archival_date),
-                        placeholder = { Text(getDatePlaceholder()) },
+                        placeholder = { Text(getDateExample()) },
                         value = uiState.itemDetails.archivalDate ?: "",
                         onValueChange = {
                             onValueChange(uiState.itemDetails.copy(archivalDate = it))
@@ -827,15 +827,6 @@ private enum class EntrySectionType {
     UNIQUE_DETAILS,
     COLLECTIONS,
     GENERAL
-}
-
-private fun getDatePlaceholder(): String {
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH) + 1
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-    return "$year-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
 }
 
 private fun getCurrencySymbol(countryCode: String): String {

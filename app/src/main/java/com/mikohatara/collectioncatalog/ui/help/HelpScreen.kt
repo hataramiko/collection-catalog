@@ -3,7 +3,6 @@ package com.mikohatara.collectioncatalog.ui.help
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,11 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -23,18 +25,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.HelpTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
+import com.mikohatara.collectioncatalog.util.getDateExample
 
 @Composable
 fun HelpScreen(
@@ -94,10 +101,10 @@ private fun HelpScreenContent(
     navActions: CollectionCatalogNavigationActions,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    LazyColumn(modifier = modifier) {
         when (uiState.helpPage) {
-            HelpPage.DEFAULT -> LandingPage(navActions = navActions)
-            HelpPage.IMPORT -> ImportPage()
+            HelpPage.DEFAULT -> item { LandingPage(navActions = navActions) }
+            HelpPage.IMPORT -> item { ImportPage() }
         }
     }
 }
@@ -108,7 +115,7 @@ private fun LandingPage(
     modifier: Modifier = Modifier
 ) {
     Spacer(modifier = Modifier.height(16.dp))
-    HelpPageButton(
+    LandingPageButton(
         text = stringResource(R.string.import_dialog_title),
         painter = painterResource(R.drawable.rounded_download_24),
         onClick = { navActions.navigateToHelpScreen(HelpPage.IMPORT) },
@@ -118,11 +125,45 @@ private fun LandingPage(
 
 @Composable
 private fun ImportPage() {
-    ArticleHeader(stringResource(R.string.import_dialog_title))
+    HelpPageTitle(stringResource(R.string.import_dialog_title))
+    HelpPageNotTranslated()
+    HelpPageParagraph(stringResource(R.string.help_import_p1))
+    HelpPageParagraph(stringResource(R.string.help_import_p2))
+    HelpPageParagraph(stringResource(R.string.help_import_p3))
+    HelpPageTextButton(
+        text = stringResource(R.string.import_show_first_row),
+        onClick = { /*TODO*/ },
+        hasSpacer = false
+    )
+    HelpPageTextButton(
+        text = stringResource(R.string.import_copy_first_row),
+        onClick = { /*TODO*/ }
+    )
+    HelpPageParagraph(stringResource(R.string.help_import_p4))
+    HelpPageParagraph(stringResource(R.string.help_import_p5))
+    HelpPageTextButton(
+        text = stringResource(R.string.import_copy_empty_row),
+        onClick = { /*TODO*/ }
+    )
+    HelpPageParagraph(stringResource(R.string.help_import_p6))
+    HelpPageTextButton(
+        text = stringResource(R.string.import_download_template),
+        onClick = { /*TODO*/ }
+    )
+    HelpPageParagraph(stringResource(R.string.help_import_p7))
+    HelpPageHeader(stringResource(R.string.attention))
+    HelpPageParagraph(stringResource(R.string.info_date_format, getDateExample()))
+    Spacer(modifier = Modifier.height(20.dp))
+    HelpPageParagraph(stringResource(R.string.help_import_currency))
+    HelpPageParagraph(stringResource(R.string.help_import_currency_with_decimal))
+    HelpPageParagraph(stringResource(R.string.help_import_currency_non_decimal))
+    Spacer(modifier = Modifier.height(20.dp))
+    HelpPageParagraph(stringResource(R.string.help_import_other_numerals))
+    EndOfList()
 }
 
 @Composable
-private fun ArticleHeader(text: String) {
+private fun HelpPageTitle(text: String) {
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = text,
@@ -132,7 +173,76 @@ private fun ArticleHeader(text: String) {
 }
 
 @Composable
-private fun HelpPageButton(
+private fun HelpPageHeader(text: String) {
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleLarge,
+        //color = colorScheme.secondary,
+        modifier = Modifier.padding(16.dp)
+    )
+}
+
+@Composable
+private fun HelpPageParagraph(text: String) {//, color: Color = LocalContentColor.current) {
+    Text(
+        text = text,
+        //color = color,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+    )
+}
+
+@Composable
+private fun HelpPageTextButton(
+    text: String,
+    onClick: () -> Unit,
+    hasSpacer: Boolean = true
+) {
+    Box(
+        modifier = Modifier
+            .padding(4.dp)
+            .clip(RoundedCornerShape(64.dp))
+            .clickable { onClick() }
+    ) {
+        Text(
+            text = text,
+            color = colorScheme.primary,
+            fontWeight = FontWeight.Medium,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(12.dp)
+        )
+    }
+    if (hasSpacer) Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun HelpPageNotTranslated() {
+    val language = LocalContext.current.resources.configuration.locales[0].language
+
+    if (language != "en") {
+        val color = colorScheme.secondary
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.rounded_error_24),
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.padding(end = 12.dp)
+            )
+            Text(
+                text = stringResource(R.string.help_page_not_translated),
+                color = color
+            )
+        }
+    }
+}
+
+@Composable
+private fun LandingPageButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -146,7 +256,7 @@ private fun HelpPageButton(
             .padding(horizontal = 24.dp, vertical = 8.dp)
     ) {
         Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
+            colors = CardDefaults.cardColors(colorScheme.secondaryContainer),
             modifier = Modifier.size(40.dp)
         ) {
             Box(
@@ -156,10 +266,9 @@ private fun HelpPageButton(
                 Icon(
                     painter = painter,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    tint = colorScheme.onSecondaryContainer
                 )
             }
-
         }
         Text(
             text = text,
