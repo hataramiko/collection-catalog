@@ -187,6 +187,37 @@ fun mapRowToCsvPlate(row: Array<String>, headerRow: List<String>): CsvPlate {
     )
 }
 
+fun exportImportTemplateToCsv(writer: OutputStreamWriter) {
+    val emptyCsvPlate = CsvPlate()
+
+    try {
+        val mappingStrategy = ColumnPositionMappingStrategy<CsvPlate>()
+        mappingStrategy.type = CsvPlate::class.java
+
+        val columnOrder = arrayOf(
+            "regNo", "country", "region1st", "region2nd", "region3rd",
+            "type", "periodStart", "periodEnd", "year",
+            "notes", "vehicle", "date", "cost", "value", "status",
+            "width", "height", "weight", "colorMain", "colorSecondary",
+            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails"
+        )
+
+        mappingStrategy.setColumnMapping(*columnOrder)
+        val headerRow = columnOrder.map { it.toSnakeCase() }.toTypedArray()
+
+        CSVWriter(writer).use { csvWriter ->
+            csvWriter.writeNext(headerRow, true)
+            val beanToCsv = StatefulBeanToCsvBuilder<CsvPlate>(writer)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withMappingStrategy(mappingStrategy)
+                .build()
+            beanToCsv.write(emptyCsvPlate)
+        }
+    } catch (e: IOException) {
+        Log.e("CSV export", "Error writing to file", e)
+    }
+}
+
 fun getFileNameForExport(title: String): String {
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = System.currentTimeMillis()
@@ -198,7 +229,7 @@ fun getFileNameForExport(title: String): String {
     val second = calendar.get(Calendar.SECOND)
     val timestamp = "%04d-%02d-%02d_%02d%02d%02d".format(year, month, day, hour, minute, second)
 
-    return "CollectionCatalog_${title}_${timestamp}.csv"
+    return "Rekkary_${title}_${timestamp}.csv"
 }
 
 // This might not work with digits not preceded by a lowercase letter

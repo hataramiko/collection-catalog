@@ -136,15 +136,6 @@ fun ImportDialog(
     onCancel: () -> Unit,
     onHelp: () -> Unit
 ) {
-    val importFirstRowTemplate = "reg_no,country,region_1st,region_2nd,region_3rd," +
-        "type,period_start,period_end,year,notes,vehicle,date,cost,value,status," +
-        "width,height,weight,color_main,color_secondary," +
-        "source_name,source_alias,source_type,source_country,source_details"
-    val importFormatExample = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\ntype\n" +
-        "period_start\nperiod_end\nyear\nnotes\nvehicle\ndate\ncost\nvalue\nstatus\n" +
-        "width\nheight\nweight\ncolor_main\ncolor_secondary\nsource_name\nsource_alias\n" +
-        "source_type\nsource_country\nsource_details" //TODO move to HELP when the time comes
-
     AlertDialog(
         onDismissRequest = { onCancel() },
         title = {

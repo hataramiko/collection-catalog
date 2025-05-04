@@ -207,4 +207,10 @@
     <string name="help_import_currency_with_decimal" translatable="false">USD, with cents as a subunit\n$1.00 as 100\n$1,400.99 as 140099</string>
     <string name="help_import_currency_non_decimal" translatable="false">JPY, without a subunit\n¥1 as 1\n¥12,500 as 12500</string>
     <string name="help_import_other_numerals" translatable="false">Other numeral values – such as measurements like width – should also be entered as integers only, without any decimals or punctuation.</string>
+    <string name="help_import_first_row" translatable="false">First row</string>
+    <string name="help_import_next_rows" translatable="false">Subsequent rows</string>
+    <string name="help_import_use_template" translatable="false">Use a template</string>
+    <string name="help_import_use_spreadsheet" translatable="false">Utilize a spreadsheet</string>
+    <string name="download_msg_success">Download completed</string>
+    <string name="download_msg_failure">Download failed</string>
 </resources>
