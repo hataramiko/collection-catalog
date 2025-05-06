@@ -191,9 +191,9 @@
     <string name="help_page_not_translated">" "</string>
     <string name="help_import_p1" translatable="false">You can add multiple plates at once by importing a CSV file.</string>
     <string name="help_import_p2" translatable="false">In order for the import to succeed, the file needs to follow a specific format and guidelines.</string>
-    <string name="help_import_p3" translatable="false">The first row of the file should contain the following values in the same exact order, separated by commas.</string>
+    <string name="help_import_p3" translatable="false">The first row of the file should contain the following values in the same exact order. Some of the values might slightly differ from their equivalent namesake.</string>
     <string name="help_import_p4" translatable="false">All subsequent rows should be equal in length to the first row, whether or not all the fields are filled with data or not.</string>
-    <string name="help_import_p5" translatable="false">An empty row with no data would therefore be represented as 24 commas, i.e. ,,,,,,,,,,,,,,,,,,,,,,,,</string>
+    <string name="help_import_p5" translatable="false">A single row for import should consist of 26 values separated by 24 commas. You can choose whether or not to use quotes to enclose the values (\"example\").</string>
     <string name="help_import_p6" translatable="false">You can download a template CSV file to help you get started with importing. The template consists of the first row and a single empty row.</string>
     <string name="help_import_p7" translatable="false">You can also prepare a CSV file for import by utilizing any spreadsheet software that allows saving tables as CSV files. Just make sure the first row contains all the values as specified above, and fill in your data on the subsequent rows.</string>
     <string name="import_copy_first_row" translatable="false">Copy the first row</string>

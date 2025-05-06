@@ -21,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
@@ -32,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -167,11 +169,13 @@ private fun ImportPage(
     HelpPageNotTranslated()
     HelpPageParagraph(stringResource(R.string.help_import_p1))
     HelpPageParagraph(stringResource(R.string.help_import_p2))
+    HelpPageParagraph(stringResource(R.string.help_import_p5))
     HelpPageHeader(stringResource(R.string.help_import_first_row))
     HelpPageParagraph(stringResource(R.string.help_import_p3))
-    HelpPageTextButton(
-        text = stringResource(R.string.import_show_first_row),
-        onClick = { /*TODO*/ }
+    HelpPageParagraph(
+        text = viewModel.getImportFirstRowExample(),
+        color = colorScheme.secondary,
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
     )
     HelpPageTextButton(
         text = stringResource(R.string.import_copy_first_row),
@@ -179,7 +183,6 @@ private fun ImportPage(
     )
     HelpPageHeader(stringResource(R.string.help_import_next_rows))
     HelpPageParagraph(stringResource(R.string.help_import_p4))
-    HelpPageParagraph(stringResource(R.string.help_import_p5))
     HelpPageTextButton(
         text = stringResource(R.string.import_copy_empty_row),
         onClick = { viewModel.copyImportEmptyRowToClipboard(context) }
@@ -227,11 +230,15 @@ private fun HelpPageHeader(text: String) {
 }
 
 @Composable
-private fun HelpPageParagraph(text: String) {//, color: Color = LocalContentColor.current) {
+private fun HelpPageParagraph(
+    text: String,
+    color: Color = LocalContentColor.current,
+    modifier: Modifier = Modifier
+) {
     Text(
         text = text,
-        //color = color,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        color = color,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
 }
 

@@ -45,11 +45,14 @@ class HelpViewModel @Inject constructor(
         "type\nperiod_start\nperiod_end\nyear\nnotes\nvehicle\ndate\ncost\nvalue\nstatus\n" +
         "width\nheight\nweight\ncolor_main\ncolor_secondary\n" +
         "source_name\nsource_alias\nsource_type\nsource_country\nsource_details"
-    private val importFirstRowString = "reg_no,country,region_1st,region_2nd,region_3rd," +
-        "type,period_start,period_end,year,notes,vehicle,date,cost,value,status," +
-        "width,height,weight,color_main,color_secondary," +
-        "source_name,source_alias,source_type,source_country,source_details"
-    private val importEmptyRowString = ",,,,,,,,,,,,,,,,,,,,,,,,"
+    private val importFirstRowString = "\"reg_no\",\"country\",\"region_1st\",\"region_2nd\"," +
+        "\"region_3rd\",\"type\",\"period_start\",\"period_end\",\"year\"," +
+        "\"notes\",\"vehicle\",\"date\",\"cost\",\"value\",\"status\"," +
+        "\"width\",\"height\",\"weight\"," +
+        "\"color_main\",\"color_secondary\"," +
+        "\"source_name\",\"source_alias\",\"source_type\",\"source_country\",\"source_details\""
+    private val importEmptyRowString = "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"," +
+        "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\""
 
     init {
         viewModelScope.launch {
@@ -99,6 +102,10 @@ class HelpViewModel @Inject constructor(
 
     fun clearDownloadResult() {
         _uiState.update { it?.copy(isDownloading = false, downloadResult = null) }
+    }
+
+    fun getImportFirstRowExample(): String {
+        return importFirstRowExample
     }
 
     private fun getDownloadMessage(isSuccess: Boolean, context: Context): String {

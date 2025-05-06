@@ -229,8 +229,8 @@ private fun HomeScreen(
         ImportDialog(
             onConfirm = {
                 showImportDialog = false
-                pickCsvForImport // add ", */*" for testing with emulator
-                    .launch(arrayOf("text/csv", "application/csv", "application/vnd.ms-excel"))
+                pickCsvForImport.launch( //TODO improve
+                    arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*"))
             },
             onCancel = { showImportDialog = false },
             onHelp = {

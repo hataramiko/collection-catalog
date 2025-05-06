@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -115,7 +116,7 @@ private fun MenuDrawerContent(
                 ) {
                     Text(
                         text = stringResource(R.string.collections),
-                        //color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 28.dp)
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -244,12 +245,21 @@ private fun MenuDrawerContent(
 @Composable
 private fun DrawerHeader() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(modifier = Modifier.padding(horizontal = 28.dp, vertical = 16.dp)) {
+            Image(
+                painter = painterResource(R.drawable.rekkary_logo_1080_white),
+                contentDescription = null,
+                colorFilter = androidx.compose.ui.graphics
+                    .ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.weight(1.5f))
+        }
+        /*Text(
             text = stringResource(R.string.app_name),
             modifier = Modifier.padding(horizontal = 32.dp, vertical = 24.dp)
-        )
-        // The DrawerDivider has 8.dp vertical padding, hence the Spacer and vertical = 24.dp above
+        )*/
     }
 }
 

@@ -159,6 +159,7 @@ fun ImportDialog(
             Column {
                 Text(stringResource(R.string.import_dialog_text))
                 Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .padding(top = 20.dp)
                         .clickable { onHelp() }
