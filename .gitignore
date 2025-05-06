@@ -19,6 +19,7 @@ captures/
 .cxx
 .cxx/
 *.apk
+*.aab
 output.json
 
 # Some Android Studio auto-generated thing
