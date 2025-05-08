@@ -248,7 +248,7 @@ private fun DrawerHeader() {
         Spacer(modifier = Modifier.height(10.dp))
         Row(modifier = Modifier.padding(horizontal = 28.dp, vertical = 16.dp)) {
             Image(
-                painter = painterResource(R.drawable.rekkary_logo_1080_white),
+                painter = painterResource(R.drawable.rekkary_logo_512_slim),
                 contentDescription = null,
                 colorFilter = androidx.compose.ui.graphics
                     .ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),

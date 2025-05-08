@@ -22,6 +22,10 @@ captures/
 *.aab
 output.json
 
+# Build output
+debug/
+release/
+
 # Some Android Studio auto-generated thing
 .DS_Store
 
