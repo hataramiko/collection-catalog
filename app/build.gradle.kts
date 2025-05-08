@@ -15,18 +15,14 @@ android {
         applicationId = "com.mikohatara.collectioncatalog"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.0.0"
+        versionCode = 2
+        versionName = "0.0.1"
 
         resourceConfigurations += setOf("en", "fi", "ja")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
-        }
-
-        ksp {
-            arg("room.schemaLocation", "${projectDir}/schemas")
         }
     }
 
@@ -61,6 +57,9 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    ksp {
+        arg("room.schemaLocation", "${projectDir}/schemas")
     }
 }
 
