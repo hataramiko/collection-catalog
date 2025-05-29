@@ -228,8 +228,9 @@ class ItemEntryViewModel @Inject constructor(
                 )
             ItemType.WANTED_PLATE -> plateRepository
                 .updateWantedPlate(uiState.value.itemDetails.toWantedPlate())
-            ItemType.FORMER_PLATE -> plateRepository // Use the copy to make sure status is null
-                .updateFormerPlate(uiState.value.itemDetails.copy(status = null).toFormerPlate())
+            ItemType.FORMER_PLATE -> plateRepository
+                .updateFormerPlate(uiState.value.itemDetails // Use .copy to nullify some values
+                    .copy(value = null, status = null).toFormerPlate())
         }
     }
 

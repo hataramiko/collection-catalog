@@ -368,21 +368,25 @@ private fun ItemEntryScreenContent(
                             )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
-                        EntryFieldBackground(modifier = Modifier.weight(1f)) {
-                            EntryField(
-                                label = stringResource(R.string.value),
-                                placeholder = { Text(getCurrencySymbol(localeCode)) },
-                                value = uiState.itemDetails.value?.toString() ?: "",
-                                onValueChange = { newValue ->
-                                    onValueChange(uiState.itemDetails.copy(
-                                        value = if (newValue.isBlankOrZero()) null
-                                        else newValue.toLongOrNull())
-                                    )
-                                },
-                                keyboardType = KeyboardType.Number,
-                                isCurrency = true,
-                                localeCode = localeCode
-                            )
+                        if (uiState.itemType == ItemType.FORMER_PLATE) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        } else {
+                            EntryFieldBackground(modifier = Modifier.weight(1f)) {
+                                EntryField(
+                                    label = stringResource(R.string.value),
+                                    placeholder = { Text(getCurrencySymbol(localeCode)) },
+                                    value = uiState.itemDetails.value?.toString() ?: "",
+                                    onValueChange = { newValue ->
+                                        onValueChange(uiState.itemDetails.copy(
+                                            value = if (newValue.isBlankOrZero()) null
+                                            else newValue.toLongOrNull())
+                                        )
+                                    },
+                                    keyboardType = KeyboardType.Number,
+                                    isCurrency = true,
+                                    localeCode = localeCode
+                                )
+                            }
                         }
                     }
                     if (uiState.itemType == ItemType.PLATE) {
