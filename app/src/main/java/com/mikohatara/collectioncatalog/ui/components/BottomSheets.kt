@@ -125,6 +125,9 @@ fun FilterBottomSheet(
     toggleCountry: (String) -> Unit,
     types: Set<String>,
     toggleType: (String) -> Unit,
+    periodSliderPosition: ClosedRange<Float>? = null,
+    onPeriodSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
+    // yearSliderRange is shared between Period and Year
     yearSliderRange: ClosedRange<Float>? = null,
     yearSliderPosition: ClosedRange<Float>? = null,
     onYearSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
@@ -136,6 +139,7 @@ fun FilterBottomSheet(
 
     var isCountriesExpanded by remember { mutableStateOf(false) }
     var isTypesExpanded by remember { mutableStateOf(false) }
+    var isPeriodExpanded by remember { mutableStateOf(false) }
     var isYearExpanded by remember { mutableStateOf(false) }
     var isLocationsExpanded by remember { mutableStateOf(false) }
 
@@ -180,6 +184,32 @@ fun FilterBottomSheet(
                         isExpanded = isTypesExpanded,
                         onToggleFilter = { toggleType(it) }
                     )
+                }
+                if (yearSliderRange != null && periodSliderPosition != null &&
+                    onPeriodSliderChange != null) {
+                    stickyHeader {
+                        val minValue = periodSliderPosition.start.roundToInt()
+                        val maxValue = periodSliderPosition.endInclusive.roundToInt()
+
+                        FilterListLabel(
+                            label = stringResource(R.string.period),
+                            activeFilters = emptySet(),
+                            isExpanded = isPeriodExpanded,
+                            onExpand = { isPeriodExpanded = !isPeriodExpanded },
+                            value = "$minValue – $maxValue",
+                            isSliderActive = periodSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
+                        )
+                    }
+                    item {
+                        FilterListSlider(
+                            sliderRange = yearSliderRange,
+                            sliderPosition = periodSliderPosition,
+                            isExpanded = isPeriodExpanded,
+                            onSliderChange = { newSliderPosition ->
+                                onPeriodSliderChange(newSliderPosition)
+                            }
+                        )
+                    }
                 }
                 if (yearSliderRange != null && yearSliderPosition != null &&
                     onYearSliderChange != null) {
@@ -234,6 +264,9 @@ fun FilterBottomSheet(
             sheetState = sheetState,
             sheetHeight = sheetHeight,
             filterCount = filters.country.size + filters.type.size + filters.location.size +
+                if (yearSliderRange != null && periodSliderPosition != null &&
+                    periodSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
+                ) 1 else 0 +
                 if (yearSliderRange != null && yearSliderPosition != null &&
                     yearSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
                 ) 1 else 0,

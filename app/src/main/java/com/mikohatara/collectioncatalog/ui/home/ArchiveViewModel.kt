@@ -22,6 +22,7 @@ data class ArchiveUiState(
     val items: List<FormerPlate> = emptyList(),
     val sortBy: SortBy = SortBy.START_DATE_NEWEST,
     val filters: FilterData = FilterData(),
+    val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
     val isSearchActive: Boolean = false,
     val searchQuery: String = "",
@@ -142,16 +143,34 @@ class ArchiveViewModel @Inject constructor(
     }
 
     fun openFilterBottomSheet() {
-        setFilterSliderStartPosition()
+        setFilterSliderStartPositions()
         showFilterBottomSheet.value = true
     }
 
     fun setFilter() {
+        setPeriodFilter()
         setYearFilter()
         val filters = _uiState.value.filters
 
         val filteredItems = _allItems.filter { item ->
-            val isWithinYearRange = filters.years?.let { range ->
+            val isWithinPeriodRange = filters.periodRange?.let { range ->
+                val periodStart = item.commonDetails.periodStart
+                val periodEnd = item.commonDetails.periodEnd
+
+                when {
+                    periodStart != null && periodEnd != null -> {
+                        periodStart >= range.start && periodEnd <= range.endInclusive
+                    }
+                    periodStart != null && range.endInclusive == getMaxYear() -> {
+                        periodStart >= range.start && periodStart <= range.endInclusive
+                    }
+                    range.start == getMinYear() && periodEnd != null -> {
+                        periodEnd >= range.start && periodEnd <= range.endInclusive
+                    }
+                    else -> false
+                }
+            } != false
+            val isWithinYearRange = filters.yearRange?.let { range ->
                 val year = item.commonDetails.year
 
                 when {
@@ -167,6 +186,7 @@ class ArchiveViewModel @Inject constructor(
                 filters.type.isNotEmpty() && filters.type.none {
                     it == item.commonDetails.type
                 } -> false
+                !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
                 else -> true
             }
@@ -185,6 +205,10 @@ class ArchiveViewModel @Inject constructor(
         _uiState.update { it.copy(filters = it.filters.copy(type = newFilter)) }
     }
 
+    fun updatePeriodSliderPosition(periodSliderPosition: ClosedRange<Float>) {
+        _uiState.update { it.copy(periodSliderPosition = periodSliderPosition) }
+    }
+
     fun updateYearSliderPosition(yearSliderPosition: ClosedRange<Float>) {
         _uiState.update { it.copy(yearSliderPosition = yearSliderPosition) }
     }
@@ -192,6 +216,7 @@ class ArchiveViewModel @Inject constructor(
     fun resetFilter() {
         _uiState.update { it.copy(
             filters = FilterData(),
+            periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
             yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()
         ) }
         setFilter()
@@ -235,10 +260,25 @@ class ArchiveViewModel @Inject constructor(
         }
     }
 
-    private fun setFilterSliderStartPosition() {
+    private fun setFilterSliderStartPositions() {
+        if (uiState.value.periodSliderPosition == null) {
+            _uiState.update { it.copy(
+                periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
+        }
         if (uiState.value.yearSliderPosition == null) {
             _uiState.update { it.copy(
                 yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
+        }
+    }
+
+    private fun setPeriodFilter() {
+        val periodRange = uiState.value.periodSliderPosition ?: return
+        val rangeStart = periodRange.start.roundToInt()
+        val rangeEnd = periodRange.endInclusive.roundToInt()
+        if (rangeStart == getMinYear() && rangeEnd == getMaxYear()) {
+            _uiState.update { it.copy(filters = it.filters.copy(periodRange = null)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(periodRange = rangeStart..rangeEnd)) }
         }
     }
 
@@ -247,9 +287,9 @@ class ArchiveViewModel @Inject constructor(
         val rangeStart = yearRange.start.roundToInt()
         val rangeEnd = yearRange.endInclusive.roundToInt()
         if (rangeStart == getMinYear() && rangeEnd == getMaxYear()) {
-            _uiState.update { it.copy(filters = it.filters.copy(years = null)) }
+            _uiState.update { it.copy(filters = it.filters.copy(yearRange = null)) }
         } else {
-            _uiState.update { it.copy(filters = it.filters.copy(years = rangeStart..rangeEnd)) }
+            _uiState.update { it.copy(filters = it.filters.copy(yearRange = rangeStart..rangeEnd)) }
         }
     }
 

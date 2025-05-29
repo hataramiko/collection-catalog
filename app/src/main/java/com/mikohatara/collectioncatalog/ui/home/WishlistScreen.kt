@@ -132,6 +132,10 @@ private fun WishlistScreen(
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),
                     toggleType = { viewModel.toggleTypeFilter(it) },
+                    periodSliderPosition = uiState.periodSliderPosition,
+                    onPeriodSliderChange = { newPosition ->
+                        viewModel.updatePeriodSliderPosition(newPosition)
+                    },
                     yearSliderRange = viewModel.getYearSliderRange(),
                     yearSliderPosition = uiState.yearSliderPosition,
                     onYearSliderChange = { newPosition ->
