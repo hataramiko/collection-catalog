@@ -2,7 +2,6 @@ package com.mikohatara.collectioncatalog.ui.stats
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -190,8 +189,16 @@ private fun StatsScreenContent(
                 label = stringResource(R.string.types),
                 rows = viewModel.getTypes(),
                 items = viewModel.getActiveItems(),
-                propertyExtractor = viewModel.getPropertyExtractor("type")
+                propertyExtractor = viewModel.getPropertyExtractor("type"),
+                modifier = Modifier.padding(bottom = 20.dp)
             )
+        }
+        item {
+            ExpandableCard(
+                label = stringResource(R.string.cost)
+            ) {
+                CostCardContent(viewModel, userPreferences)
+            }
         }
         item {
             EndOfList()
@@ -370,6 +377,42 @@ private fun CollectionCard(
         }
 
     }
+}
+
+@Composable
+private fun CostCardContent(viewModel: StatsViewModel, userPreferences: UserPreferences) {
+    Spacer(modifier = Modifier.height(4.dp))
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Text(stringResource(R.string.cost_gross), modifier = Modifier.padding(bottom = 16.dp))
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(stringResource(R.string.total_with_punctuation))
+            Text(viewModel.getCombinedCost(userPreferences.userCountry))
+        }
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(stringResource(R.string.cost_per_plate))
+            Text(viewModel.getCombinedCost(userPreferences.userCountry, isPerPlate =  true))
+        }
+        Text(stringResource(R.string.cost_net), modifier = Modifier.padding(vertical = 16.dp))
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(stringResource(R.string.total_with_punctuation))
+            Text(viewModel.getCombinedCost(userPreferences.userCountry, isNet = true))
+        }
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(stringResource(R.string.cost_per_plate))
+            Text(viewModel.getCombinedCost(
+                userPreferences.userCountry, isNet = true, isPerPlate = true))
+        }
+        Text(stringResource(R.string.current_selection), modifier = Modifier.padding(vertical = 16.dp))
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(stringResource(R.string.total_with_punctuation))
+            Text(viewModel.getSelectionCost(userPreferences.userCountry))
+        }
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(stringResource(R.string.cost_per_plate))
+            Text(viewModel.getSelectionCost(userPreferences.userCountry, isPerPlate = true))
+        }
+    }
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable

@@ -188,4 +188,9 @@
     <string name="info_width">Kilven koko kataloginäkymässä määräytyy vertaamalla leveyttä muihin kilpiin.</string>
     <string name="download_msg_success">Lataus onnistui</string>
     <string name="download_msg_failure">Lataus epäonnistui</string>
+    <string name="cost_gross">Brutto</string>
+    <string name="cost_net">Netto</string>
+    <string name="selected_collection">Valittu kokoelma</string>
+    <string name="current_selection">Nykyinen valinta</string>
+    <string name="cost_per_plate">"Per kilpi: "</string>
 </resources>

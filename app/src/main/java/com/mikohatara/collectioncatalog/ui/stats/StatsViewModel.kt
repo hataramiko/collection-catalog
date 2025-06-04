@@ -13,6 +13,7 @@ import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.data.WantedPlate
+import com.mikohatara.collectioncatalog.util.toCurrencyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -140,6 +141,62 @@ class StatsViewModel @Inject constructor(
                 else ""
             }
         }
+    }
+
+    fun getCombinedCost(
+        countryCode: String,
+        isNet: Boolean = false,
+        isPerPlate: Boolean = false
+    ): String {
+        val platesCost = _uiState.value.allPlates.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
+        val archiveCost = _uiState.value.archive.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
+        val archivePrice = _uiState.value.archive.sumOf { it.archivalDetails.price?.toLong() ?: 0 }
+        val combinedCost = if (isNet) {
+            platesCost + archiveCost - archivePrice
+        } else platesCost + archiveCost
+
+        if (isPerPlate) {
+            val platesSize = _uiState.value.allPlates.size
+            val archiveSize = _uiState.value.archive.size
+            val combinedSize = platesSize + archiveSize
+
+            val costPerPlate = combinedCost / combinedSize
+            return costPerPlate.toCurrencyString(countryCode)
+        } else return combinedCost.toCurrencyString(countryCode)
+    }
+
+    fun getSelectionCost(countryCode: String, isPerPlate: Boolean = false): String {
+        val itemType = _uiState.value.activeItemType
+
+        if (itemType == ItemType.FORMER_PLATE) {
+            val cost = _uiState.value.archive.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
+
+            if (isPerPlate) {
+                val size = _uiState.value.archive.size
+                val costPerPlate = cost / size
+                return costPerPlate.toCurrencyString(countryCode)
+            } else return cost.toCurrencyString(countryCode)
+
+        } else if (itemType == ItemType.PLATE && _uiState.value.collectionPlates.isNotEmpty()) {
+            val cost = _uiState.value.collectionPlates
+                .sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
+
+            if (isPerPlate) {
+                val size = _uiState.value.collectionPlates.size
+                val costPerPlate = cost / size
+                return costPerPlate.toCurrencyString(countryCode)
+            } else return cost.toCurrencyString(countryCode)
+
+        } else if (itemType == ItemType.PLATE) {
+            val cost = _uiState.value.allPlates.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
+
+            if (isPerPlate) {
+                val size = _uiState.value.allPlates.size
+                val costPerPlate = cost / size
+                return costPerPlate.toCurrencyString(countryCode)
+            } else return cost.toCurrencyString(countryCode)
+        }
+        return "–" // Effectively "if (itemType == ItemType.WANTED_PLATE)"
     }
 
     fun getCollections(): List<Collection> {

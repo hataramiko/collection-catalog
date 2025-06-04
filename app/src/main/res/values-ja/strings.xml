@@ -184,4 +184,9 @@
     <string name="info_width">プレートの表示サイズは、他のプレートの横幅との比較で決定されます。</string>
     <string name="download_msg_success">ダウンロードが完成しました</string>
     <string name="download_msg_failure">ダウンロードが失敗しました</string>
+    <string name="cost_net">正味</string>
+    <string name="selected_collection">選択のコレクション</string>
+    <string name="cost_gross">総額</string>
+    <string name="current_selection">現在の選択</string>
+    <string name="cost_per_plate">一枚あたり：</string>
 </resources>
