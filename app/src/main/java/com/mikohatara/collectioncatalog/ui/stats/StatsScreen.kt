@@ -174,30 +174,44 @@ private fun StatsScreenContent(
             }
         }
         item {
-            Table(
-                userPreferences = userPreferences,
+            ExpandableCard(
                 label = stringResource(R.string.countries),
-                rows = viewModel.getCountries(),
-                items = viewModel.getActiveItems(),
-                propertyExtractor = viewModel.getPropertyExtractor("country"),
                 modifier = Modifier.padding(bottom = 20.dp)
-            )
-        }
-        item {
-            Table(
-                userPreferences = userPreferences,
-                label = stringResource(R.string.types),
-                rows = viewModel.getTypes(),
-                items = viewModel.getActiveItems(),
-                propertyExtractor = viewModel.getPropertyExtractor("type"),
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
+            ) {
+                SumRow(viewModel.getCountries().size)
+                Table(
+                    userPreferences = userPreferences,
+                    rows = viewModel.getCountries(),
+                    items = viewModel.getActiveItems(),
+                    propertyExtractor = viewModel.getPropertyExtractor("country")
+                )
+            }
         }
         item {
             ExpandableCard(
-                label = stringResource(R.string.cost)
+                label = stringResource(R.string.types),
+                modifier = Modifier.padding(bottom = 20.dp)
             ) {
+                SumRow(viewModel.getTypes().size)
+                Table(
+                    userPreferences = userPreferences,
+                    rows = viewModel.getTypes(),
+                    items = viewModel.getActiveItems(),
+                    propertyExtractor = viewModel.getPropertyExtractor("type")
+                )
+            }
+        }
+        item {
+            ExpandableCard(label = stringResource(R.string.cost)) {
                 CostCardContent(viewModel, userPreferences)
+            }
+        }
+        if (uiState.activeItemType == ItemType.FORMER_PLATE) {
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                ExpandableCard(label = stringResource(R.string.archive)) {
+                    ArchiveCardContent(viewModel, userPreferences)
+                }
             }
         }
         item {
@@ -386,29 +400,35 @@ private fun CostCardContent(viewModel: StatsViewModel, userPreferences: UserPref
         Text(stringResource(R.string.cost_gross), modifier = Modifier.padding(bottom = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.total_with_punctuation))
+            Spacer(modifier = Modifier.weight(1f))
             Text(viewModel.getCombinedCost(userPreferences.userCountry))
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.cost_per_plate))
+            Spacer(modifier = Modifier.weight(1f))
             Text(viewModel.getCombinedCost(userPreferences.userCountry, isPerPlate =  true))
         }
         Text(stringResource(R.string.cost_net), modifier = Modifier.padding(vertical = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.total_with_punctuation))
+            Spacer(modifier = Modifier.weight(1f))
             Text(viewModel.getCombinedCost(userPreferences.userCountry, isNet = true))
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.cost_per_plate))
+            Spacer(modifier = Modifier.weight(1f))
             Text(viewModel.getCombinedCost(
                 userPreferences.userCountry, isNet = true, isPerPlate = true))
         }
         Text(stringResource(R.string.current_selection), modifier = Modifier.padding(vertical = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.total_with_punctuation))
+            Spacer(modifier = Modifier.weight(1f))
             Text(viewModel.getSelectionCost(userPreferences.userCountry))
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.cost_per_plate))
+            Spacer(modifier = Modifier.weight(1f))
             Text(viewModel.getSelectionCost(userPreferences.userCountry, isPerPlate = true))
         }
     }
@@ -416,78 +436,109 @@ private fun CostCardContent(viewModel: StatsViewModel, userPreferences: UserPref
 }
 
 @Composable
+private fun ArchiveCardContent(viewModel: StatsViewModel, userPreferences: UserPreferences) {
+    Text(
+        text = stringResource(R.string.archival_reason),
+        modifier = Modifier.padding(horizontal = 16.dp)
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Table(
+        userPreferences = userPreferences,
+        rows = viewModel.getArchivalReasons(),
+        items = viewModel.getActiveItems(),
+        propertyExtractor = viewModel.getPropertyExtractor("archivalReason"),
+        modifier = Modifier.padding(bottom = 20.dp)
+    )
+    Row(modifier = Modifier.padding(16.dp)) {
+        Text(stringResource(R.string.sold_price))
+        Spacer(modifier = Modifier.weight(1f))
+        Text(viewModel.getArchivePriceSum(userPreferences.userCountry))
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        text = stringResource(R.string.recipient_country),
+        modifier = Modifier.padding(16.dp)
+    )
+    Table(
+        userPreferences = userPreferences,
+        rows = viewModel.getRecipientCountries(),
+        items = viewModel.getActiveItems(),
+        propertyExtractor = viewModel.getPropertyExtractor("recipientCountry"),
+        modifier = Modifier.padding(bottom = 20.dp)
+    )
+}
+
+@Composable
 private fun Table(
     userPreferences: UserPreferences,
-    label: String,
-    rows: Set<String>,
+    rows: Set<String?>,
     items: List<Item>,
-    propertyExtractor: (Item) -> String,
+    propertyExtractor: (Item) -> String?,
     modifier: Modifier = Modifier
 ) {
     val rowCount = rows.size
     val allItems = items.size
     val dividerColor = MaterialTheme.colorScheme.surface
 
-    ExpandableCard(
-        label = label,
-        modifier = modifier
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        Column {
-            Row(modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, end = 16.dp)) {
+        Spacer(modifier = Modifier.height(0.dp))
+        rows/*.filterNotNull()*/.forEach { row ->
+            val filteredItems = items.filter { propertyExtractor(it) == row }
+            val quantity = filteredItems.size.toFormattedString(userPreferences.userCountry)
+            val percentage = (quantity.toFloat() / allItems.toFloat())
+                .toPercentage(userPreferences.userCountry)
+
+            Row(modifier = Modifier.padding(/*horizontal = */4.dp)) {
                 Text(
-                    text = stringResource(R.string.total_with_punctuation),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    row ?: "",
+                    modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = "$rowCount",
-                    //fontWeight = FontWeight.Bold
+                    quantity,
+                    modifier = Modifier
+                        .align(alignment = Alignment.CenterVertically)
+                        .weight(0.3f)
+                )
+                Text(
+                    percentage,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .align(alignment = Alignment.CenterVertically)
+                        .weight(0.4f)
                 )
             }
-            if (rows.isNotEmpty()) {
+            if (row != rows.last()) {
                 HorizontalDivider(
                     color = dividerColor,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
-            } else Spacer(modifier = Modifier.height(8.dp))
-        }
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Spacer(modifier = Modifier.height(0.dp))
-            rows.forEach { row ->
-                val filteredItems = items.filter { propertyExtractor(it) == row }
-                val quantity = filteredItems.size.toFormattedString(userPreferences.userCountry)
-                val percentage = (quantity.toFloat() / allItems.toFloat())
-                    .toPercentage(userPreferences.userCountry)
-
-                Row(modifier = Modifier.padding(/*horizontal = */4.dp)) {
-                    Text(
-                        row,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        quantity,
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .weight(0.3f)
-                    )
-                    Text(
-                        percentage,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .weight(0.4f)
-                    )
-                }
-                if (row != rows.last()) {
-                    HorizontalDivider(
-                        color = dividerColor,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                } else {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+            } else {
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
+    }
+}
+
+@Composable
+private fun SumRow(sum: Int) {
+    Column {
+        Row(modifier = Modifier.padding(start = 16.dp, bottom = 16.dp, end = 16.dp)) {
+            Text(
+                text = stringResource(R.string.total_with_punctuation),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = "$sum",
+                //fontWeight = FontWeight.Bold
+            )
+        }/*
+        if (rows.isNotEmpty()) {
+            HorizontalDivider(
+                color = dividerColor,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        } else Spacer(modifier = Modifier.height(8.dp))*/
     }
 }

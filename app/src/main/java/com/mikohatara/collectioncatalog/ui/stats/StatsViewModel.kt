@@ -120,7 +120,47 @@ class StatsViewModel @Inject constructor(
         }.thenBy { it }).toSet()
     }
 
-    fun getPropertyExtractor(property: String): (Item) -> String {
+    fun getArchivalReasons(): Set<String?> {
+        if (_uiState.value.activeItemType != ItemType.FORMER_PLATE) return emptySet()
+        val activeItems = getActiveItems()
+
+        return activeItems.map { item ->
+            when (item) {
+                is Item.FormerPlateItem -> item.formerPlate.archivalDetails.archivalReason
+                else -> null
+            }
+        }.sortedWith(compareByDescending<String?> { archivalReason ->
+            activeItems.count { item ->
+                when (item) {
+                    is Item.FormerPlateItem -> item
+                        .formerPlate.archivalDetails.archivalReason == archivalReason
+                    else -> false
+                }
+            }
+        }.thenBy { it }).toSet()
+    }
+
+    fun getRecipientCountries(): Set<String?> {
+        if (_uiState.value.activeItemType != ItemType.FORMER_PLATE) return emptySet()
+        val activeItems = getActiveItems()
+
+        return activeItems.map { item ->
+            when (item) {
+                is Item.FormerPlateItem -> item.formerPlate.archivalDetails.recipientCountry
+                else -> null
+            }
+        }.sortedWith(compareByDescending<String?> { recipientCountry ->
+            activeItems.count { item ->
+                when (item) {
+                    is Item.FormerPlateItem -> item
+                        .formerPlate.archivalDetails.recipientCountry == recipientCountry
+                    else -> false
+                }
+            }
+        }.thenBy { it }).toSet()
+    }
+
+    fun getPropertyExtractor(property: String): (Item) -> String? {
         return when (uiState.value.activeItemType) {
             ItemType.PLATE -> { item ->
                 val plate = (item as Item.PlateItem).plate
@@ -138,6 +178,8 @@ class StatsViewModel @Inject constructor(
                 val formerPlate = (item as Item.FormerPlateItem).formerPlate
                 if (property == "country") formerPlate.commonDetails.country
                 else if (property == "type") formerPlate.commonDetails.type
+                else if (property == "archivalReason") formerPlate.archivalDetails.archivalReason
+                else if (property == "recipientCountry") formerPlate.archivalDetails.recipientCountry
                 else ""
             }
         }
@@ -197,6 +239,16 @@ class StatsViewModel @Inject constructor(
             } else return cost.toCurrencyString(countryCode)
         }
         return "–" // Effectively "if (itemType == ItemType.WANTED_PLATE)"
+    }
+
+    fun getArchivePriceSum(countryCode: String): String {
+        val itemType = _uiState.value.activeItemType
+
+        if (itemType == ItemType.FORMER_PLATE) {
+            val sum = _uiState.value.archive.sumOf { it.archivalDetails.price?.toLong() ?: 0 }
+            return sum.toCurrencyString(countryCode)
+        }
+        return "–"
     }
 
     fun getCollections(): List<Collection> {
