@@ -122,16 +122,31 @@ private fun StatsScreenContent(
     onShowCollectionBottomSheet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val propertyExtractorCountry = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("country") }
+    val propertyExtractorType = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("type") }
+    val propertyExtractorSourceType = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("sourceType") }
+    val propertyExtractorSourceCountry = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("sourceCountry") }
+    val propertyExtractorArchivalReason = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("archivalReason") }
+    val propertyExtractorRecipientCountry = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("recipientCountry") }
+
     LazyColumn(
-        modifier = modifier.padding(horizontal = 16.dp)
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .animateContentSize()
     ) {
         item {
-            Spacer(modifier = Modifier.height(20.dp))
             StatsHeaderCard(
                 isSelected = uiState.activeItemType == ItemType.PLATE && uiState.collection == null,
                 message = stringResource(R.string.all_plates),
                 amount = uiState.allPlates.size.toFormattedString(userPreferences.userCountry),
                 painter = painterResource(R.drawable.rounded_newsstand),
+                modifier = Modifier.padding(top = 20.dp),
                 fontSize = 18.sp,
                 onClick = {
                     viewModel.setActiveItemType(ItemType.PLATE)
@@ -140,11 +155,8 @@ private fun StatsScreenContent(
             )
             CollectionCard(
                 collection = uiState.collection,
-                collectionSize = uiState.collectionPlates.size,
-                allPlatesSize = uiState.allPlates.size,
-                userCountry = userPreferences.userCountry,
-                /*amount = uiState.collectionPlates.size
-                    .toFormattedString(userPreferences.userCountry),*/
+                collectionSize = uiState
+                    .collectionPlates.size.toFormattedString(userPreferences.userCountry),
                 onClick = { onShowCollectionBottomSheet() }
             )
             Row(modifier = Modifier.padding(bottom = 32.dp)) {
@@ -178,12 +190,12 @@ private fun StatsScreenContent(
                 label = stringResource(R.string.countries),
                 modifier = Modifier.padding(bottom = 20.dp)
             ) {
-                SumRow(viewModel.getCountries().size)
+                SumRow(uiState.countries.size)
                 Table(
                     userPreferences = userPreferences,
-                    rows = viewModel.getCountries(),
-                    items = viewModel.getActiveItems(),
-                    propertyExtractor = viewModel.getPropertyExtractor("country")
+                    rows = uiState.countries,
+                    items = uiState.activeItems,
+                    propertyExtractor = propertyExtractorCountry
                 )
             }
         }
@@ -192,25 +204,50 @@ private fun StatsScreenContent(
                 label = stringResource(R.string.types),
                 modifier = Modifier.padding(bottom = 20.dp)
             ) {
-                SumRow(viewModel.getTypes().size)
+                SumRow(uiState.types.size)
                 Table(
                     userPreferences = userPreferences,
-                    rows = viewModel.getTypes(),
-                    items = viewModel.getActiveItems(),
-                    propertyExtractor = viewModel.getPropertyExtractor("type")
+                    rows = uiState.types,
+                    items = uiState.activeItems,
+                    propertyExtractor = propertyExtractorType
                 )
             }
         }
-        item {
-            ExpandableCard(label = stringResource(R.string.cost)) {
-                CostCardContent(viewModel, userPreferences)
+        if (uiState.activeItemType != ItemType.WANTED_PLATE) {
+            item {
+                ExpandableCard(
+                    label = stringResource(R.string.cost),
+                    modifier = Modifier.padding(bottom = 20.dp)
+                ) {
+                    CostCardContent(uiState)
+                }
+            }
+            item {
+                ExpandableCard(
+                    label = stringResource(R.string.source),
+                    modifier = Modifier.padding(bottom = 20.dp)
+                ) {
+                    SourceCardContent(
+                        uiState,
+                        userPreferences,
+                        propertyExtractorSourceType,
+                        propertyExtractorSourceCountry
+                    )
+                }
             }
         }
         if (uiState.activeItemType == ItemType.FORMER_PLATE) {
             item {
-                Spacer(modifier = Modifier.height(20.dp))
-                ExpandableCard(label = stringResource(R.string.archive)) {
-                    ArchiveCardContent(viewModel, userPreferences)
+                ExpandableCard(
+                    label = stringResource(R.string.archive),
+                    modifier = Modifier.padding(bottom = 20.dp)
+                ) {
+                    ArchiveCardContent(
+                        uiState,
+                        userPreferences,
+                        propertyExtractorArchivalReason,
+                        propertyExtractorRecipientCountry
+                    )
                 }
             }
         }
@@ -295,9 +332,7 @@ private fun StatsHeaderCard(
 @Composable
 private fun CollectionCard(
     collection: Collection? = null,
-    collectionSize: Int,
-    allPlatesSize: Int,
-    userCountry: String,
+    collectionSize: String,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 16.sp,
     onClick: () -> Unit
@@ -369,23 +404,12 @@ private fun CollectionCard(
                 }
                 if (collection != null) {
                     Text(
-                        text = collectionSize.toFormattedString(userCountry),
+                        text = collectionSize,
                         color = textColor,
                         fontSize = fontSize * 1.5,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 10.dp)
                     )
-                    /*if (collectionSize > 0) {
-                        val percentage = (collectionSize.toFloat() / allPlatesSize.toFloat())
-                        val percentageString = percentage.toPercentage(userCountry)
-
-                        Text(
-                            text = stringResource(R.string.percentage_of_plates, percentageString),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = fontSize * 0.75,
-                            modifier = Modifier.padding(top = 10.dp)
-                        )
-                    }*/
                 }
             }
         }
@@ -394,49 +418,85 @@ private fun CollectionCard(
 }
 
 @Composable
-private fun CostCardContent(viewModel: StatsViewModel, userPreferences: UserPreferences) {
+private fun CostCardContent(uiState: StatsUiState) {
     Spacer(modifier = Modifier.height(4.dp))
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(stringResource(R.string.cost_gross), modifier = Modifier.padding(bottom = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.total_with_punctuation))
             Spacer(modifier = Modifier.weight(1f))
-            Text(viewModel.getCombinedCost(userPreferences.userCountry))
+            Text(uiState.combinedCostGross)
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.cost_per_plate))
             Spacer(modifier = Modifier.weight(1f))
-            Text(viewModel.getCombinedCost(userPreferences.userCountry, isPerPlate =  true))
+            Text(uiState.combinedCostGrossPerPlate)
         }
         Text(stringResource(R.string.cost_net), modifier = Modifier.padding(vertical = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.total_with_punctuation))
             Spacer(modifier = Modifier.weight(1f))
-            Text(viewModel.getCombinedCost(userPreferences.userCountry, isNet = true))
+            Text(uiState.combinedCostNet)
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.cost_per_plate))
             Spacer(modifier = Modifier.weight(1f))
-            Text(viewModel.getCombinedCost(
-                userPreferences.userCountry, isNet = true, isPerPlate = true))
+            Text(uiState.combinedCostNetPerPlate)
         }
         Text(stringResource(R.string.current_selection), modifier = Modifier.padding(vertical = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.total_with_punctuation))
             Spacer(modifier = Modifier.weight(1f))
-            Text(viewModel.getSelectionCost(userPreferences.userCountry))
+            Text(uiState.selectionCost)
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.cost_per_plate))
             Spacer(modifier = Modifier.weight(1f))
-            Text(viewModel.getSelectionCost(userPreferences.userCountry, isPerPlate = true))
+            Text(uiState.selectionCostPerPlate)
         }
     }
     Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
-private fun ArchiveCardContent(viewModel: StatsViewModel, userPreferences: UserPreferences) {
+private fun SourceCardContent(
+    uiState: StatsUiState,
+    userPreferences: UserPreferences,
+    propertyExtractorSourceType: (Item) -> String?,
+    propertyExtractorSourceCountry: (Item) -> String?
+) {
+    Text(
+        text = stringResource(R.string.source_type),
+        modifier = Modifier.padding(horizontal = 16.dp)
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Table(
+        userPreferences = userPreferences,
+        rows = uiState.sourceTypes,
+        items = uiState.activeItems,
+        propertyExtractor = propertyExtractorSourceType,
+        modifier = Modifier.padding(bottom = 20.dp)
+    )
+    //Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        text = stringResource(R.string.source_country),
+        modifier = Modifier.padding(16.dp)
+    )
+    Table(
+        userPreferences = userPreferences,
+        rows = uiState.sourceCountries,
+        items = uiState.activeItems,
+        propertyExtractor = propertyExtractorSourceCountry
+    )
+}
+
+@Composable
+private fun ArchiveCardContent(
+    uiState: StatsUiState,
+    userPreferences: UserPreferences,
+    propertyExtractorArchivalReason: (Item) -> String?,
+    propertyExtractorRecipientCountry: (Item) -> String?
+) {
     Text(
         text = stringResource(R.string.archival_reason),
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -444,15 +504,14 @@ private fun ArchiveCardContent(viewModel: StatsViewModel, userPreferences: UserP
     Spacer(modifier = Modifier.height(16.dp))
     Table(
         userPreferences = userPreferences,
-        rows = viewModel.getArchivalReasons(),
-        items = viewModel.getActiveItems(),
-        propertyExtractor = viewModel.getPropertyExtractor("archivalReason"),
-        modifier = Modifier.padding(bottom = 20.dp)
+        rows = uiState.archivalReasons,
+        items = uiState.activeItems,
+        propertyExtractor = propertyExtractorArchivalReason
     )
     Row(modifier = Modifier.padding(16.dp)) {
         Text(stringResource(R.string.sold_price))
         Spacer(modifier = Modifier.weight(1f))
-        Text(viewModel.getArchivePriceSum(userPreferences.userCountry))
+        Text(uiState.archivePriceSum)
     }
     Spacer(modifier = Modifier.height(16.dp))
     Text(
@@ -461,10 +520,9 @@ private fun ArchiveCardContent(viewModel: StatsViewModel, userPreferences: UserP
     )
     Table(
         userPreferences = userPreferences,
-        rows = viewModel.getRecipientCountries(),
-        items = viewModel.getActiveItems(),
-        propertyExtractor = viewModel.getPropertyExtractor("recipientCountry"),
-        modifier = Modifier.padding(bottom = 20.dp)
+        rows = uiState.recipientCountries,
+        items = uiState.activeItems,
+        propertyExtractor = propertyExtractorRecipientCountry
     )
 }
 
@@ -476,12 +534,11 @@ private fun Table(
     propertyExtractor: (Item) -> String?,
     modifier: Modifier = Modifier
 ) {
-    val rowCount = rows.size
     val allItems = items.size
     val dividerColor = MaterialTheme.colorScheme.surface
 
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = modifier.padding(horizontal = 16.dp)
     ) {
         Spacer(modifier = Modifier.height(0.dp))
         rows/*.filterNotNull()*/.forEach { row ->

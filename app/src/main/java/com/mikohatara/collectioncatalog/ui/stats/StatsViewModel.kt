@@ -31,8 +31,25 @@ data class StatsUiState(
     val wishlist: List<WantedPlate> = emptyList(),
     val archive: List<FormerPlate> = emptyList(),
     val activeItemType: ItemType = ItemType.PLATE,
+    val activeItems: List<Item> = emptyList(),
     val collection: Collection? = null,
     val collectionPlates: List<Plate> = emptyList(),
+    val userCountry: String = "FI",
+    // Sets for tables
+    val countries: Set<String> = emptySet(),
+    val types: Set<String> = emptySet(),
+    val sourceTypes: Set<String?> = emptySet(),
+    val sourceCountries: Set<String?> = emptySet(),
+    val archivalReasons: Set<String?> = emptySet(),
+    val recipientCountries: Set<String?> = emptySet(),
+    // Display values for currency fields
+    val combinedCostGross: String = "–",
+    val combinedCostGrossPerPlate: String = "–",
+    val combinedCostNet: String = "–",
+    val combinedCostNetPerPlate: String = "–",
+    val selectionCost: String = "–",
+    val selectionCostPerPlate: String = "–",
+    val archivePriceSum: String = "–"
 )
 
 @HiltViewModel
@@ -64,6 +81,48 @@ class StatsViewModel @Inject constructor(
                 _allCollections.addAll(it)
             }
         }
+
+        userPreferencesRepository.userPreferences.onEach { preferences ->
+            _uiState.update {
+                it.copy(userCountry = preferences.userCountry)
+            }
+        }.launchIn(viewModelScope)
+
+        _uiState.onEach { state ->
+            val newActiveItems = getActiveItems()
+            val newCountries = getCountries(newActiveItems)
+            val newTypes = getTypes(newActiveItems)
+            val newSourceTypes = getSourceTypes(newActiveItems)
+            val newSourceCountries = getSourceCountries(newActiveItems)
+            val newArchivalReasons = getArchivalReasons(newActiveItems)
+            val newRecipientCountries = getRecipientCountries(newActiveItems)
+            val newCombinedCostGross = getCombinedCost()
+            val newCombinedCostGrossPerPlate = getCombinedCost(isPerPlate =  true)
+            val newCombinedCostNet = getCombinedCost(isNet = true)
+            val newCombinedCostNetPerPlate = getCombinedCost(isNet = true, isPerPlate = true)
+            val newSelectionCost = getSelectionCost()
+            val newSelectionCostPerPlate = getSelectionCost(isPerPlate = true)
+            val newArchivePriceSum = getArchivePriceSum()
+
+            _uiState.update {
+                it.copy(
+                    activeItems = newActiveItems,
+                    countries = newCountries,
+                    types = newTypes,
+                    sourceTypes = newSourceTypes,
+                    sourceCountries = newSourceCountries,
+                    archivalReasons = newArchivalReasons,
+                    recipientCountries = newRecipientCountries,
+                    combinedCostGross = newCombinedCostGross,
+                    combinedCostGrossPerPlate = newCombinedCostGrossPerPlate,
+                    combinedCostNet = newCombinedCostNet,
+                    combinedCostNetPerPlate = newCombinedCostNetPerPlate,
+                    selectionCost = newSelectionCost,
+                    selectionCostPerPlate = newSelectionCostPerPlate,
+                    archivePriceSum = newArchivePriceSum
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun setActiveItemType(itemType: ItemType) {
@@ -80,9 +139,7 @@ class StatsViewModel @Inject constructor(
         }
     }
 
-    fun getCountries(): Set<String> {
-        val activeItems = getActiveItems()
-
+    fun getCountries(activeItems: List<Item>): Set<String> {
         return activeItems.map { item ->
             when (item) {
                 is Item.PlateItem -> item.plate.commonDetails.country
@@ -100,9 +157,7 @@ class StatsViewModel @Inject constructor(
             }.thenBy { it }).toSet()
     }
 
-    fun getTypes(): Set<String> {
-        val activeItems = getActiveItems()
-
+    fun getTypes(activeItems: List<Item>): Set<String> {
         return activeItems.map { item ->
             when (item) {
                 is Item.PlateItem -> item.plate.commonDetails.type
@@ -120,9 +175,48 @@ class StatsViewModel @Inject constructor(
         }.thenBy { it }).toSet()
     }
 
-    fun getArchivalReasons(): Set<String?> {
+    fun getSourceTypes(activeItems: List<Item>): Set<String?> {
+        if (_uiState.value.activeItemType == ItemType.WANTED_PLATE) return emptySet()
+
+        return activeItems.map { item ->
+            when (item) {
+                is Item.PlateItem -> item.plate.source.type
+                is Item.FormerPlateItem -> item.formerPlate.source.type
+                else -> null
+            }
+        }.sortedWith(compareByDescending<String?> { sourceType ->
+            activeItems.count { item ->
+                when (item) {
+                    is Item.PlateItem -> item.plate.source.type == sourceType
+                    is Item.FormerPlateItem -> item.formerPlate.source.type == sourceType
+                    else -> false
+                }
+            }
+        }.thenBy { it }).toSet()
+    }
+
+    fun getSourceCountries(activeItems: List<Item>): Set<String?> {
+        if (_uiState.value.activeItemType == ItemType.WANTED_PLATE) return emptySet()
+
+        return activeItems.map { item ->
+            when (item) {
+                is Item.PlateItem -> item.plate.source.country
+                is Item.FormerPlateItem -> item.formerPlate.source.country
+                else -> null
+            }
+        }.sortedWith(compareByDescending<String?> { sourceCountry ->
+            activeItems.count { item ->
+                when (item) {
+                    is Item.PlateItem -> item.plate.source.country == sourceCountry
+                    is Item.FormerPlateItem -> item.formerPlate.source.country == sourceCountry
+                    else -> false
+                }
+            }
+        }.thenBy { it }).toSet()
+    }
+
+    fun getArchivalReasons(activeItems: List<Item>): Set<String?> {
         if (_uiState.value.activeItemType != ItemType.FORMER_PLATE) return emptySet()
-        val activeItems = getActiveItems()
 
         return activeItems.map { item ->
             when (item) {
@@ -140,9 +234,8 @@ class StatsViewModel @Inject constructor(
         }.thenBy { it }).toSet()
     }
 
-    fun getRecipientCountries(): Set<String?> {
+    fun getRecipientCountries(activeItems: List<Item>): Set<String?> {
         if (_uiState.value.activeItemType != ItemType.FORMER_PLATE) return emptySet()
-        val activeItems = getActiveItems()
 
         return activeItems.map { item ->
             when (item) {
@@ -166,6 +259,8 @@ class StatsViewModel @Inject constructor(
                 val plate = (item as Item.PlateItem).plate
                 if (property == "country") plate.commonDetails.country
                 else if (property == "type") plate.commonDetails.type
+                else if (property == "sourceType") plate.source.type
+                else if (property == "sourceCountry") plate.source.country
                 else ""
             }
             ItemType.WANTED_PLATE -> { item ->
@@ -178,6 +273,8 @@ class StatsViewModel @Inject constructor(
                 val formerPlate = (item as Item.FormerPlateItem).formerPlate
                 if (property == "country") formerPlate.commonDetails.country
                 else if (property == "type") formerPlate.commonDetails.type
+                else if (property == "sourceType") formerPlate.source.type
+                else if (property == "sourceCountry") formerPlate.source.country
                 else if (property == "archivalReason") formerPlate.archivalDetails.archivalReason
                 else if (property == "recipientCountry") formerPlate.archivalDetails.recipientCountry
                 else ""
@@ -185,11 +282,8 @@ class StatsViewModel @Inject constructor(
         }
     }
 
-    fun getCombinedCost(
-        countryCode: String,
-        isNet: Boolean = false,
-        isPerPlate: Boolean = false
-    ): String {
+    fun getCombinedCost(isNet: Boolean = false, isPerPlate: Boolean = false): String {
+        val countryCode = _uiState.value.userCountry
         val platesCost = _uiState.value.allPlates.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
         val archiveCost = _uiState.value.archive.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
         val archivePrice = _uiState.value.archive.sumOf { it.archivalDetails.price?.toLong() ?: 0 }
@@ -202,12 +296,17 @@ class StatsViewModel @Inject constructor(
             val archiveSize = _uiState.value.archive.size
             val combinedSize = platesSize + archiveSize
 
-            val costPerPlate = combinedCost / combinedSize
-            return costPerPlate.toCurrencyString(countryCode)
+            if (combinedSize == 0 || combinedCost == 0L) {
+                return "–"
+            } else {
+                val costPerPlate = combinedCost / combinedSize
+                return costPerPlate.toCurrencyString(countryCode)
+            }
         } else return combinedCost.toCurrencyString(countryCode)
     }
 
-    fun getSelectionCost(countryCode: String, isPerPlate: Boolean = false): String {
+    fun getSelectionCost(isPerPlate: Boolean = false): String {
+        val countryCode = _uiState.value.userCountry
         val itemType = _uiState.value.activeItemType
 
         if (itemType == ItemType.FORMER_PLATE) {
@@ -215,8 +314,13 @@ class StatsViewModel @Inject constructor(
 
             if (isPerPlate) {
                 val size = _uiState.value.archive.size
-                val costPerPlate = cost / size
-                return costPerPlate.toCurrencyString(countryCode)
+
+                if (size == 0) {
+                    return "–"
+                } else {
+                    val costPerPlate = cost / size
+                    return costPerPlate.toCurrencyString(countryCode)
+                }
             } else return cost.toCurrencyString(countryCode)
 
         } else if (itemType == ItemType.PLATE && _uiState.value.collectionPlates.isNotEmpty()) {
@@ -225,8 +329,13 @@ class StatsViewModel @Inject constructor(
 
             if (isPerPlate) {
                 val size = _uiState.value.collectionPlates.size
-                val costPerPlate = cost / size
-                return costPerPlate.toCurrencyString(countryCode)
+
+                if (size == 0) {
+                    return "–"
+                } else {
+                    val costPerPlate = cost / size
+                    return costPerPlate.toCurrencyString(countryCode)
+                }
             } else return cost.toCurrencyString(countryCode)
 
         } else if (itemType == ItemType.PLATE) {
@@ -234,14 +343,20 @@ class StatsViewModel @Inject constructor(
 
             if (isPerPlate) {
                 val size = _uiState.value.allPlates.size
-                val costPerPlate = cost / size
-                return costPerPlate.toCurrencyString(countryCode)
+
+                if (size == 0) {
+                    return "–"
+                } else {
+                    val costPerPlate = cost / size
+                    return costPerPlate.toCurrencyString(countryCode)
+                }
             } else return cost.toCurrencyString(countryCode)
         }
         return "–" // Effectively "if (itemType == ItemType.WANTED_PLATE)"
     }
 
-    fun getArchivePriceSum(countryCode: String): String {
+    fun getArchivePriceSum(): String {
+        val countryCode = _uiState.value.userCountry
         val itemType = _uiState.value.activeItemType
 
         if (itemType == ItemType.FORMER_PLATE) {
