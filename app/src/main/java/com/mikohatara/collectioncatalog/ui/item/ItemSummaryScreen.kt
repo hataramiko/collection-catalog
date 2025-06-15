@@ -70,6 +70,7 @@ import com.mikohatara.collectioncatalog.ui.components.ItemImage
 import com.mikohatara.collectioncatalog.ui.components.ItemSummaryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.TransferDialog
 import com.mikohatara.collectioncatalog.util.toCurrencyString
+import com.mikohatara.collectioncatalog.util.toFormattedDate
 import com.mikohatara.collectioncatalog.util.toMeasurementString
 import kotlinx.coroutines.launch
 
@@ -465,7 +466,7 @@ private fun UniqueDetailsCard(
                         DataFieldBackground {
                             DataFieldContent(
                                 label = stringResource(R.string.date),
-                                value = it
+                                value = it.toFormattedDate(localeCode)
                             )
                         }
                     }
@@ -675,7 +676,7 @@ private fun ArchivalInfoCard(
             DataFieldBackground {
                 DataFieldContent(
                     label = stringResource(R.string.archival_date),
-                    value = it
+                    value = it.toFormattedDate(localeCode)
                 )
             }
         }

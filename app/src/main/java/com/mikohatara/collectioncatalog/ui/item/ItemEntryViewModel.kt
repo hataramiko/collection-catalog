@@ -94,9 +94,9 @@ class ItemEntryViewModel @Inject constructor(
         val temporaryImageUri = uiState.value.temporaryImageUri
         val selectedCollections = uiState.value.selectedCollections
         val isValidEntry = itemType == ItemType.WANTED_PLATE ||
-                !(uiState.value.itemDetails.regNo.isNullOrBlank() ||
-                uiState.value.itemDetails.country.isNullOrBlank() ||
-                uiState.value.itemDetails.type.isNullOrBlank())
+                !(itemDetails.regNo.isNullOrBlank() ||
+                itemDetails.country.isNullOrBlank() ||
+                itemDetails.type.isNullOrBlank())
         val isNew = uiState.value.isNew
         val hasUnsavedChanges = uiState.value.hasUnsavedChanges
         val initialDetails = if (isNew) ItemDetails() else when (item) {

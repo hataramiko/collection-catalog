@@ -970,5 +970,5 @@ private fun getCurrencySymbol(countryCode: String): String {
     val locale = Locale(countryCode, countryCode)
     val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
 
-    return currency.symbol
+    return currency.getSymbol(locale)
 }
