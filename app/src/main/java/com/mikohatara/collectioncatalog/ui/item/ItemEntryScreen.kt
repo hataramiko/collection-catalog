@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +28,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,7 +39,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,10 +52,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -70,12 +78,14 @@ import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
-import com.mikohatara.collectioncatalog.util.getDateExample
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
 import com.mikohatara.collectioncatalog.util.rememberCurrencyVisualTransformation
 import com.mikohatara.collectioncatalog.util.rememberMeasurementVisualTransformation
+import com.mikohatara.collectioncatalog.util.toFormattedDate
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -332,7 +342,7 @@ private fun ItemEntryScreenContent(
                         value = uiState.itemDetails.notes ?: "",
                         onValueChange = { onValueChange(uiState.itemDetails.copy(notes = it)) },
                         singleLine = false,
-                        imeAction = ImeAction.None
+                        //imeAction = ImeAction.None //TODO add a separate dialog window for notes
                     )
                     if (uiState.itemType != ItemType.WANTED_PLATE) {
                         EntryField(
@@ -344,13 +354,21 @@ private fun ItemEntryScreenContent(
                     }
                 }
                 if (uiState.itemType != ItemType.WANTED_PLATE) {
-                    EntryFieldBackground {
+                    /*EntryFieldBackground { //TODO clear this when dialog is fully functional
                         EntryField(
                             label = stringResource(R.string.date),
                             placeholder = { Text(getDateExample()) },
                             value = uiState.itemDetails.date ?: "",
                             onValueChange = { onValueChange(uiState.itemDetails.copy(date = it)) },
                             keyboardType = KeyboardType.Number,
+                        )
+                    }*/
+                    EntryFieldBackground {
+                        DatePickerField(
+                            label = stringResource(R.string.date),
+                            dateValue = uiState.itemDetails.date ?: "",
+                            onDateSelected = { onValueChange(uiState.itemDetails.copy(date = it)) },
+                            localeCode = localeCode
                         )
                     }
                     Row {
@@ -466,7 +484,9 @@ private fun ItemEntryScreenContent(
                 EntryField(
                     label = stringResource(R.string.color_secondary),
                     value = uiState.itemDetails.colorSecondary ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(colorSecondary = it)) }
+                    onValueChange = { onValueChange(uiState.itemDetails.copy(colorSecondary = it)) },
+                    imeAction = if (uiState.itemType == ItemType.WANTED_PLATE) ImeAction.Done
+                    else ImeAction.Next
                 )
             }
         }
@@ -516,7 +536,7 @@ private fun ItemEntryScreenContent(
                 label = stringResource(R.string.archival)
             ) {
                 EntryFieldBackground {
-                    EntryField(
+                    /*EntryField( //TODO clear this when dialog is fully functional
                         label = stringResource(R.string.archival_date),
                         placeholder = { Text(getDateExample()) },
                         value = uiState.itemDetails.archivalDate ?: "",
@@ -524,6 +544,14 @@ private fun ItemEntryScreenContent(
                             onValueChange(uiState.itemDetails.copy(archivalDate = it))
                         },
                         keyboardType = KeyboardType.Number
+                    )*/
+                    DatePickerField(
+                        label = stringResource(R.string.archival_date),
+                        dateValue = uiState.itemDetails.archivalDate ?: "",
+                        onDateSelected = {
+                            onValueChange(uiState.itemDetails.copy(archivalDate = it))
+                        },
+                        localeCode = localeCode
                     )
                 }
                 EntryFieldBackground {
@@ -823,6 +851,111 @@ private fun EntryField(
             interactionSource = interactionSource,
             visualTransformation = visualTransformation
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerField(
+    label: String,
+    dateValue: String,
+    onDateSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    localeCode: String = "FI" //TODO apply locale by referring to user preferences
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+    val focusManager = LocalFocusManager.current
+
+    val displayValue = dateValue.toFormattedDate(localeCode)
+    val locale = Locale.getDefault() //TODO Locale(localeCode)
+    val inputFormat = remember(locale) { SimpleDateFormat("yyyy-MM-dd", locale) }
+    //val outputFormat = DateFormat.getDateInstance(DateFormat.LONG, locale)
+
+    val initialSelectedDateMillis = remember(dateValue) {
+        if (dateValue.isNotBlank()) {
+            try {
+                inputFormat.parse(dateValue)?.time
+            } catch (e: Exception) {
+                Calendar.getInstance().timeInMillis
+            }
+        } else {
+            Calendar.getInstance().timeInMillis
+        }
+    }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = initialSelectedDateMillis
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.padding(vertical = 4.dp)
+    ) {
+        OutlinedTextField(
+            value = displayValue,
+            onValueChange = { showDatePicker = true },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            label = { Text(label) },
+            trailingIcon = { if (isFocused && displayValue.isNotEmpty()) {
+                IconButton(onClick = { onDateSelected("") }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Clear,
+                        contentDescription = null
+                    )
+                } }
+            },
+            interactionSource = interactionSource,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
+        if (isFocused) {
+            FilledTonalIconButton(
+                onClick = { showDatePicker = !showDatePicker  },
+                modifier = Modifier.padding(start = 10.dp, top = 8.dp, end = 2.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_event),
+                    contentDescription = null
+                )
+            }
+        }
+    }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker = false
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val date = Date(millis)
+                            onDateSelected(inputFormat.format(date))
+                        }
+                        focusManager.moveFocus(FocusDirection.Next)
+                    }
+                ) {
+                    Text(stringResource(R.string.ok_text))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+                //dateFormatter = datePickerFormatter,
+                showModeToggle = false
+            )
+        }
     }
 }
 

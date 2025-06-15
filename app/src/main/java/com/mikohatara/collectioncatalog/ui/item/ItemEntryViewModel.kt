@@ -78,7 +78,9 @@ class ItemEntryViewModel @Inject constructor(
             if (itemId != null) {
                 loadItem(itemType, itemId)
             } else {
-                _uiState.update { it.copy(itemType = itemType, isNew = true) }
+                _uiState.update { it.copy(
+                    itemType = itemType, isValidEntry = false, isNew = true
+                ) }
             }
             collectionRepository.getAllCollectionsStream().collect {
                 _allCollections.clear()

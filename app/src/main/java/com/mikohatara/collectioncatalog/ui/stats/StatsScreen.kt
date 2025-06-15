@@ -135,11 +135,7 @@ private fun StatsScreenContent(
     val propertyExtractorRecipientCountry = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("recipientCountry") }
 
-    LazyColumn(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-            .animateContentSize()
-    ) {
+    LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
         item {
             StatsHeaderCard(
                 isSelected = uiState.activeItemType == ItemType.PLATE && uiState.collection == null,
