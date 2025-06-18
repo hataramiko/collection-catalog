@@ -419,34 +419,47 @@ private fun CostCardContent(uiState: StatsUiState) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(stringResource(R.string.cost_gross), modifier = Modifier.padding(bottom = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.total_with_punctuation))
+            Text(stringResource(R.string.total) + stringResource(R.string.punctuation_colon))
             Spacer(modifier = Modifier.weight(1f))
             Text(uiState.combinedCostGross)
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.cost_per_plate))
+            Text(
+                stringResource(R.string.cost_per_plate) +
+                stringResource(R.string.punctuation_colon)
+            )
             Spacer(modifier = Modifier.weight(1f))
             Text(uiState.combinedCostGrossPerPlate)
         }
         Text(stringResource(R.string.cost_net), modifier = Modifier.padding(vertical = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.total_with_punctuation))
+            Text(stringResource(R.string.total) + stringResource(R.string.punctuation_colon))
             Spacer(modifier = Modifier.weight(1f))
             Text(uiState.combinedCostNet)
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.cost_per_plate))
+            Text(
+                stringResource(R.string.cost_per_plate) +
+                stringResource(R.string.punctuation_colon)
+            )
             Spacer(modifier = Modifier.weight(1f))
             Text(uiState.combinedCostNetPerPlate)
         }
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surface,
+            modifier = Modifier.padding(top = 20.dp)
+        )
         Text(stringResource(R.string.current_selection), modifier = Modifier.padding(vertical = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.total_with_punctuation))
+            Text(stringResource(R.string.total) + stringResource(R.string.punctuation_colon))
             Spacer(modifier = Modifier.weight(1f))
             Text(uiState.selectionCost)
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.cost_per_plate))
+            Text(
+                stringResource(R.string.cost_per_plate) +
+                stringResource(R.string.punctuation_colon)
+            )
             Spacer(modifier = Modifier.weight(1f))
             Text(uiState.selectionCostPerPlate)
         }
@@ -505,7 +518,7 @@ private fun ArchiveCardContent(
         propertyExtractor = propertyExtractorArchivalReason
     )
     Row(modifier = Modifier.padding(16.dp)) {
-        Text(stringResource(R.string.sold_price))
+        Text(stringResource(R.string.sold_price) + stringResource(R.string.punctuation_colon))
         Spacer(modifier = Modifier.weight(1f))
         Text(uiState.archivePriceSum)
     }
@@ -545,7 +558,7 @@ private fun Table(
 
             Row(modifier = Modifier.padding(/*horizontal = */4.dp)) {
                 Text(
-                    row ?: "",
+                    row.takeIf { !it.isNullOrEmpty() } ?: stringResource(R.string.not_applicable),
                     modifier = Modifier.weight(1f)
                 )
                 Text(
@@ -579,8 +592,8 @@ private fun SumRow(sum: Int) {
     Column {
         Row(modifier = Modifier.padding(start = 16.dp, bottom = 16.dp, end = 16.dp)) {
             Text(
-                text = stringResource(R.string.total_with_punctuation),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = stringResource(R.string.total) + stringResource(R.string.punctuation_colon),
+                //color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = "$sum",

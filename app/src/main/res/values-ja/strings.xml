@@ -173,7 +173,6 @@
     <string name="select_collection">コレクションを選択</string>
     <string name="percentage_of_plates">すべてのプレートの<xliff:g name="percentage" example="100 %">%s</xliff:g></string>
     <string name="total">合計</string>
-    <string name="total_with_punctuation">合計：</string>
     <string name="sort_by_age_asc">期間や暦年の昇順</string>
     <string name="sort_by_age_desc">期間や暦年の降順</string>
     <string name="sort_by_archival_oldest">アーカイブが最古</string>
@@ -188,7 +187,7 @@
     <string name="selected_collection">選択のコレクション</string>
     <string name="cost_gross">総額</string>
     <string name="current_selection">現在の選択</string>
-    <string name="cost_per_plate">一枚あたり：</string>
+    <string name="cost_per_plate">一枚あたり</string>
     <string name="clear">クリア</string>
     <string name="punctuation_colon">：</string>
 </resources>

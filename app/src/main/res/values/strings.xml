@@ -183,7 +183,6 @@
     <string name="select_collection">Select collection</string>
     <string name="percentage_of_plates"><xliff:g name="percentage" example="100 %">%s</xliff:g> of all plates</string>
     <string name="total">Total</string>
-    <string name="total_with_punctuation">"Total: "</string>
     <string name="sort_by_age_asc">Period &amp; Year, ascending</string>
     <string name="sort_by_age_desc">Period &amp; Year, descending</string>
     <string name="sort_by_archival_oldest">Earliest archival</string>
@@ -217,7 +216,8 @@
     <string name="cost_net">Net</string>
     <string name="selected_collection">Selected collection</string>
     <string name="current_selection">Current selection</string>
-    <string name="cost_per_plate">"Per plate: "</string>
+    <string name="cost_per_plate">Per plate</string>
     <string name="clear">Clear</string>
     <string name="punctuation_colon">": "</string>
+    <string name="not_applicable" translatable="false">N/A</string>
 </resources>

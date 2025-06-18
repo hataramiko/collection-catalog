@@ -177,7 +177,6 @@
     <string name="select_collection">Valitse kokoelma</string>
     <string name="percentage_of_plates"><xliff:g name="percentage" example="100 %">%s</xliff:g> kaikista kilvistä</string>
     <string name="total">Yhteensä</string>
-    <string name="total_with_punctuation">"Yhteensä: "</string>
     <string name="sort_by_age_asc">Aikaväli ja vuosi, nouseva</string>
     <string name="sort_by_age_desc">Aikaväli ja vuosi, laskeva</string>
     <string name="sort_by_archival_oldest">Vanhin arkistointi</string>
@@ -192,7 +191,7 @@
     <string name="cost_net">Netto</string>
     <string name="selected_collection">Valittu kokoelma</string>
     <string name="current_selection">Nykyinen valinta</string>
-    <string name="cost_per_plate">"Per kilpi: "</string>
+    <string name="cost_per_plate">Per kilpi</string>
     <string name="clear">Tyhjennä</string>
     <string name="punctuation_colon">": "</string>
 </resources>
