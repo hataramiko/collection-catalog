@@ -189,4 +189,6 @@
     <string name="cost_gross">総額</string>
     <string name="current_selection">現在の選択</string>
     <string name="cost_per_plate">一枚あたり：</string>
+    <string name="clear">クリア</string>
+    <string name="punctuation_colon">：</string>
 </resources>

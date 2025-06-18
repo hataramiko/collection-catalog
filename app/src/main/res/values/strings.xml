@@ -218,4 +218,6 @@
     <string name="selected_collection">Selected collection</string>
     <string name="current_selection">Current selection</string>
     <string name="cost_per_plate">"Per plate: "</string>
+    <string name="clear">Clear</string>
+    <string name="punctuation_colon">": "</string>
 </resources>

@@ -73,6 +73,7 @@ import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
+import com.mikohatara.collectioncatalog.ui.components.EntryDialog
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
@@ -342,7 +343,7 @@ private fun ItemEntryScreenContent(
                         value = uiState.itemDetails.notes ?: "",
                         onValueChange = { onValueChange(uiState.itemDetails.copy(notes = it)) },
                         singleLine = false,
-                        //imeAction = ImeAction.None //TODO add a separate dialog window for notes
+                        hasEntryDialog = true
                     )
                     if (uiState.itemType != ItemType.WANTED_PLATE) {
                         EntryField(
@@ -354,15 +355,6 @@ private fun ItemEntryScreenContent(
                     }
                 }
                 if (uiState.itemType != ItemType.WANTED_PLATE) {
-                    /*EntryFieldBackground { //TODO clear this when dialog is fully functional
-                        EntryField(
-                            label = stringResource(R.string.date),
-                            placeholder = { Text(getDateExample()) },
-                            value = uiState.itemDetails.date ?: "",
-                            onValueChange = { onValueChange(uiState.itemDetails.copy(date = it)) },
-                            keyboardType = KeyboardType.Number,
-                        )
-                    }*/
                     EntryFieldBackground {
                         DatePickerField(
                             label = stringResource(R.string.date),
@@ -536,15 +528,6 @@ private fun ItemEntryScreenContent(
                 label = stringResource(R.string.archival)
             ) {
                 EntryFieldBackground {
-                    /*EntryField( //TODO clear this when dialog is fully functional
-                        label = stringResource(R.string.archival_date),
-                        placeholder = { Text(getDateExample()) },
-                        value = uiState.itemDetails.archivalDate ?: "",
-                        onValueChange = {
-                            onValueChange(uiState.itemDetails.copy(archivalDate = it))
-                        },
-                        keyboardType = KeyboardType.Number
-                    )*/
                     DatePickerField(
                         label = stringResource(R.string.archival_date),
                         dateValue = uiState.itemDetails.archivalDate ?: "",
@@ -789,11 +772,17 @@ private fun EntryField(
     capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
+    hasEntryDialog: Boolean = false,
     isCurrency: Boolean = false,
     localeCode: String = "",
     isMeasurement: Boolean = false,
     measurementUnit: String = ""
 ) {
+    var showEntryDialog by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+    val focusManager = LocalFocusManager.current
+
     val currentValue = remember(value, isCurrency, localeCode, isMeasurement, measurementUnit) {
         if (isCurrency && value.isNotBlank()) {
             val longValue: Long = value.toLongOrNull() ?: 0L
@@ -805,15 +794,17 @@ private fun EntryField(
             value
         }
     }
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
     val visualTransformation = if (isCurrency) {
         rememberCurrencyVisualTransformation(localeCode)
     } else if (isMeasurement) {
         rememberMeasurementVisualTransformation(measurementUnit)
     } else VisualTransformation.None
 
-    Row(modifier = modifier.padding(vertical = 4.dp)) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.padding(vertical = 4.dp)
+    ) {
         OutlinedTextField(
             value = currentValue,
             onValueChange = { newValue ->
@@ -845,11 +836,36 @@ private fun EntryField(
                     )
                 }
             }},
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().weight(1f),
             enabled = enabled,
             singleLine = singleLine,
             interactionSource = interactionSource,
             visualTransformation = visualTransformation
+        )
+        if (hasEntryDialog && isFocused) {
+            FilledTonalIconButton(
+                onClick = { showEntryDialog = !showEntryDialog  },
+                modifier = Modifier.padding(start = 10.dp, top = 8.dp, end = 2.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.rounded_edit_square),
+                    contentDescription = null
+                )
+            }
+        }
+    }
+
+    if (showEntryDialog) {
+        EntryDialog(
+            value = currentValue,
+            onValueChange = { onValueChange(it) },
+            label = label,
+            onDismiss = { showEntryDialog = false },
+            onConfirm = {
+                showEntryDialog = false
+
+                focusManager.moveFocus(FocusDirection.Next)
+            }
         )
     }
 }
@@ -910,9 +926,7 @@ fun DatePickerField(
                 } }
             },
             interactionSource = interactionSource,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+            modifier = Modifier.fillMaxWidth().weight(1f)
         )
         if (isFocused) {
             FilledTonalIconButton(
@@ -939,7 +953,8 @@ fun DatePickerField(
                             onDateSelected(inputFormat.format(date))
                         }
                         focusManager.moveFocus(FocusDirection.Next)
-                    }
+                    },
+                    modifier = Modifier.padding(end = 4.dp)
                 ) {
                     Text(stringResource(R.string.ok_text))
                 }

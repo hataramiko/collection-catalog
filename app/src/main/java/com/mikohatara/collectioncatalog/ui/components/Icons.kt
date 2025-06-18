@@ -65,14 +65,14 @@ fun IconCollectionColor(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    val defaultTint = LocalContentColor.current
-    val tint = if (color != CollectionColor.DEFAULT.color) color else defaultTint
+    // This should be the same as the color set in "val tint" of CollectionEntryScreenContent
+    val isDefaultColor = color == MaterialTheme.colorScheme.primary
 
-    if (tint == defaultTint) {
+    if (isDefaultColor) {
         Icon(
             painter = painterResource(R.drawable.rounded_format_color_reset_24),
             contentDescription = null,
-            tint = tint,
+            tint = color,
             modifier = modifier
         )
     } else {
@@ -80,13 +80,13 @@ fun IconCollectionColor(
             Icon(
                 painter = painterResource(R.drawable.rounded_invert_colors_24),
                 contentDescription = null,
-                tint = tint,
+                tint = color,
                 modifier = modifier
             )
             Icon(
                 painter = painterResource(R.drawable.rounded_invert_colors_24),
                 contentDescription = null,
-                tint = tint,
+                tint = color,
                 modifier = modifier.scale(scaleX = -0.9f, scaleY = 0.9f).offset(x = (-0.3).dp)
             )
         }
