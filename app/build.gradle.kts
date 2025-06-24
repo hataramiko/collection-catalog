@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.jetbrainsKotlinKapt)
     alias(libs.plugins.jetbrainsKotlinSerialization)
+    alias(libs.plugins.jetbrainsKotlinComposeCompiler)
     alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.devtoolsKsp)
 }
