@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.mikohatara.collectioncatalog"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mikohatara.collectioncatalog"
