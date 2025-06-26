@@ -275,8 +275,11 @@ private fun HomeScreenContent(
     }
     val itemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
     val topBarCollapsedFraction = remember { derivedStateOf { topBarState.collapsedFraction } }
+    val isTopRowHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
     // Use itemIndex and topBarCollapsedFraction to update TopRow visibility in viewModel
-    viewModel.updateTopRowVisibility(itemIndex.value, topBarCollapsedFraction.value)
+    LaunchedEffect(itemIndex.value, topBarCollapsedFraction.value) {
+        viewModel.updateTopRowVisibility(itemIndex.value, topBarCollapsedFraction.value)
+    }
 
     LazyColumn(
         state = listState,
@@ -286,7 +289,7 @@ private fun HomeScreenContent(
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
-            TopRow(viewModel.isTopRowHidden.value, isAtTop.value, onSortByClick, onFilterClick)
+            TopRow(isTopRowHidden, isAtTop.value, onSortByClick, onFilterClick)
         }
         if (uiState.isLoading) {
             item {

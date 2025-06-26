@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -177,7 +178,11 @@ private fun ArchiveScreenContent(
     }
     val itemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
     val topBarCollapsedFraction = remember { derivedStateOf { topBarState.collapsedFraction } }
-    viewModel.updateTopRowVisibility(itemIndex.value, topBarCollapsedFraction.value)
+    val isTopRowHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
+    // Use itemIndex and topBarCollapsedFraction to update TopRow visibility in viewModel
+    LaunchedEffect(itemIndex.value, topBarCollapsedFraction.value) {
+        viewModel.updateTopRowVisibility(itemIndex.value, topBarCollapsedFraction.value)
+    }
 
     LazyColumn(
         state = listState,
@@ -187,7 +192,7 @@ private fun ArchiveScreenContent(
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
-            TopRow(viewModel.isTopRowHidden.value, isAtTop.value, onSortByClick, onFilterClick)
+            TopRow(isTopRowHidden, isAtTop.value, onSortByClick, onFilterClick)
         }
         if (uiState.isLoading) {
             item {
