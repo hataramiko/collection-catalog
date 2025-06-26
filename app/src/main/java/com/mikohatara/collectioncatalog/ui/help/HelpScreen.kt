@@ -52,6 +52,7 @@ import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
 import com.mikohatara.collectioncatalog.util.getDateExample
 import com.mikohatara.collectioncatalog.util.getFileNameForExport
+import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun HelpScreen(
@@ -266,7 +267,7 @@ private fun HelpPageTextButton(
 
 @Composable
 private fun HelpPageNotTranslated() {
-    val language = LocalContext.current.resources.configuration.locales[0].language
+    val language = LocalConfiguration.current.locales[0].language
 
     if (language != "en") {
         val color = colorScheme.secondary

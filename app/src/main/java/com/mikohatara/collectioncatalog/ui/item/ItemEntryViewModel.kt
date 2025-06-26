@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -152,6 +151,7 @@ class ItemEntryViewModel @Inject constructor(
     fun clearImagePath() {
         val newItemDetails = uiState.value.itemDetails.copy(imagePath = null)
         updateUiState(newItemDetails)
+        _uiState.update { it.copy(temporaryImageUri = null) }
     }
 
     fun deleteUnusedImages(context: Context) {

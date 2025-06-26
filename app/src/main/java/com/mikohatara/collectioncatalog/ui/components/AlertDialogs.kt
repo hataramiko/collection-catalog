@@ -30,7 +30,7 @@ fun DeletionDialog(
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
-    val highlightColor = MaterialTheme.colorScheme.error
+    val highlightColor = colorScheme.error
 
     AlertDialog(
         onDismissRequest = { onCancel() },
