@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,60 +50,66 @@ fun TopRow(
     *   of the TopAppBar.
     * */
 
-    AnimatedVisibility(
-        visible = !isHidden,
-        enter = slideInVertically(initialOffsetY = { -it * 2 }),
-        exit = slideOutVertically(targetOffsetY = { -it * 2 })
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = backgroundColor),
-            shape = RoundedCornerShape(
-                topStart = 0.dp,
-                topEnd = 0.dp,
-                bottomStart = 26.dp,
-                bottomEnd = 26.dp
-            ),
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .requiredWidth(screenWidth.dp)
-            //.offset { IntOffset(0, offset) }
+    /*  Wrapping the AnimatedVisibility block inside a Box seems to prevent crashes when
+    *   rapidly scrolling to the very top.
+    *   If issues persist, consider adding...
+    *       if (isHidden) Spacer(modifier = Modifier.height(1.dp))
+    *   ...within the Box scope, for further enforcement.
+    * */
+    Box {
+        AnimatedVisibility(
+            visible = !isHidden,
+            enter = slideInVertically(initialOffsetY = { -it * 2 }),
+            exit = slideOutVertically(targetOffsetY = { -it * 2 })
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
+            Card(
+                colors = CardDefaults.cardColors(containerColor = backgroundColor),
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 26.dp,
+                    bottomEnd = 26.dp
+                ),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .padding(bottom = 8.dp)
+                    .requiredWidth(screenWidth.dp)
             ) {
-                OutlinedButton(
-                    onClick = { onSortByClick() },
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_swap_vert),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                    Text(
-                        stringResource(R.string.sort_by),
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                OutlinedButton(
-                    onClick = { onFilterClick() },
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_filter),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 6.dp)
-                    )
-                    Text(
-                        stringResource(R.string.filter),
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
+                    OutlinedButton(
+                        onClick = { onSortByClick() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_swap_vert),
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                        Text(
+                            stringResource(R.string.sort_by),
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    OutlinedButton(
+                        onClick = { onFilterClick() },
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_filter),
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 6.dp)
+                        )
+                        Text(
+                            stringResource(R.string.filter),
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
                 }
             }
         }

@@ -194,4 +194,5 @@
     <string name="cost_per_plate">Per kilpi</string>
     <string name="clear">Tyhjennä</string>
     <string name="punctuation_colon">": "</string>
+    <string name="add_plate_redirect_msg">Lisätäksesi kilpiä, mene \"Kaikki kilvet\" -näkymään</string>
 </resources>

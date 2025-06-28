@@ -22,7 +22,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
@@ -151,6 +153,22 @@ private fun HomeScreen(
         }
     }
 
+    val redirectMessage = stringResource(R.string.add_plate_redirect_msg)
+    val onFabClick = {
+        if (viewModel.collectionId == null) {
+            onAddItem()
+        } else {
+            Toast.makeText(context, redirectMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
+    val (fabContainerColor, fabContentColor) = if (viewModel.collectionId == null) {
+        FloatingActionButtonDefaults.containerColor to
+            LocalContentColor.current
+    } else {
+        FloatingActionButtonDefaults.containerColor.copy(alpha = 0.1f) to
+            LocalContentColor.current.copy(alpha = 0.38f)
+    }
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -167,21 +185,24 @@ private fun HomeScreen(
                 scrollBehavior = scrollBehavior
             )
         },
-        // Replace if clause with "onFabClick = onAddItem || viewModel.showToast()"?
-        floatingActionButton = { if (viewModel.collectionId == null) {
+        floatingActionButton = {
             AnimatedVisibility(
                 visible = !isFabHidden,
                 enter = slideInVertically(initialOffsetY = { it * 2 }),
                 exit = slideOutVertically(targetOffsetY = { it * 3 })
             ) {
-                FloatingActionButton(onClick = onAddItem) {
+                FloatingActionButton(
+                    onClick = onFabClick,
+                    containerColor = fabContainerColor,
+                    contentColor = fabContentColor
+                ) {
                     Icon(
                         imageVector = Icons.Rounded.Add,
                         contentDescription = null
                     )
                 }
             }
-        } },
+        },
         content = { innerPadding ->
             HomeScreenContent(
                 uiState = uiState,
