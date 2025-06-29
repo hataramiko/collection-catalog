@@ -57,11 +57,11 @@ interface PlateDao {
     fun getAllPlates(): Flow<List<Plate>>
 
     @Query("SELECT * from plates WHERE id = :id")
-    fun getPlate(id: Int): Flow<Plate>
+    fun getPlate(id: Int): Flow<Plate?>
 
     @Transaction
     @Query("SELECT * from plates WHERE id = :id")
-    fun getPlateWithCollections(id: Int): Flow<PlateWithCollections>
+    fun getPlateWithCollections(id: Int): Flow<PlateWithCollections?>
 
     //
 
@@ -78,7 +78,7 @@ interface PlateDao {
     fun getAllWantedPlates(): Flow<List<WantedPlate>>
 
     @Query("SELECT * from wishlist WHERE id = :id")
-    fun getWantedPlate(id: Int): Flow<WantedPlate>
+    fun getWantedPlate(id: Int): Flow<WantedPlate?>
 
     //
 
@@ -95,5 +95,5 @@ interface PlateDao {
     fun getAllFormerPlates(): Flow<List<FormerPlate>>
 
     @Query("SELECT * from archive WHERE id = :id")
-    fun getFormerPlate(id: Int): Flow<FormerPlate>
+    fun getFormerPlate(id: Int): Flow<FormerPlate?>
 }
