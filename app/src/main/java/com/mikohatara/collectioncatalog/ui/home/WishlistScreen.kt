@@ -15,7 +15,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
@@ -78,6 +80,9 @@ private fun WishlistScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
 
+    val (fabContainerColor, fabContentColor) = FloatingActionButtonDefaults.containerColor to
+            MaterialTheme.colorScheme.onPrimaryContainer
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -93,7 +98,11 @@ private fun WishlistScreen(
                 enter = slideInVertically(initialOffsetY = { it * 2 }),
                 exit = slideOutVertically(targetOffsetY = { it * 3 })
             ) {
-                FloatingActionButton(onClick = onAddItem) {
+                FloatingActionButton(
+                    onClick = onAddItem,
+                    containerColor = fabContainerColor,
+                    contentColor = fabContentColor
+                ) {
                     Icon(
                         imageVector = Icons.Rounded.Add,
                         contentDescription = null

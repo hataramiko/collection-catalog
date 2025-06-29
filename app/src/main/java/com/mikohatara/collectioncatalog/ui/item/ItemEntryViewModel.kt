@@ -193,11 +193,11 @@ class ItemEntryViewModel @Inject constructor(
             if (clipText != null) {
                 try {
                     val copiedItemDetails = Json.decodeFromString<ItemDetails>(clipText.toString())
-                    _uiState.update {
-                        it.copy(
-                            itemDetails = it.itemDetails.pasteItemDetails(copiedItemDetails)
-                        )
-                    }
+                    /*_uiState.update {
+                        it.copy(itemDetails = it.itemDetails.pasteItemDetails(copiedItemDetails))
+                    }*/
+                    val newItemDetails = _uiState.value.itemDetails.pasteItemDetails(copiedItemDetails)
+                    updateUiState(newItemDetails)
                 } catch (e: Exception) {
                     // TODO something
                     // Handle invalid JSON

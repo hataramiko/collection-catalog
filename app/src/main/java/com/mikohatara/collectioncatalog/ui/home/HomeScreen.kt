@@ -24,7 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
@@ -163,10 +163,10 @@ private fun HomeScreen(
     }
     val (fabContainerColor, fabContentColor) = if (viewModel.collectionId == null) {
         FloatingActionButtonDefaults.containerColor to
-            LocalContentColor.current
+                MaterialTheme.colorScheme.onPrimaryContainer
     } else {
         FloatingActionButtonDefaults.containerColor.copy(alpha = 0.1f) to
-            LocalContentColor.current.copy(alpha = 0.38f)
+                MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.38f)
     }
 
     Scaffold(

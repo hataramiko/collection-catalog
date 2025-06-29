@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.stats
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,8 +21,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -51,6 +55,7 @@ import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.ExpandableCard
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
+import com.mikohatara.collectioncatalog.ui.components.InfoDialog
 import com.mikohatara.collectioncatalog.ui.components.SelectCollectionBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.StatsTopAppBar
 import com.mikohatara.collectioncatalog.util.toFormattedString
@@ -415,9 +420,26 @@ private fun CollectionCard(
 
 @Composable
 private fun CostCardContent(uiState: StatsUiState) {
+    val showInfo = rememberSaveable { mutableStateOf(false) }
+
     Spacer(modifier = Modifier.height(4.dp))
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Text(stringResource(R.string.cost_gross), modifier = Modifier.padding(bottom = 16.dp))
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.cost_gross), modifier = Modifier.padding(bottom = 16.dp))
+            Box(modifier = Modifier.size(32.dp).offset(x = 4.dp, y = (-6).dp)) {
+                IconButton(onClick = { showInfo.value = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_info),
+                        contentDescription = null,
+                        tint = colorScheme.outline,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+        }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(stringResource(R.string.total) + stringResource(R.string.punctuation_colon))
             Spacer(modifier = Modifier.weight(1f))
@@ -465,6 +487,13 @@ private fun CostCardContent(uiState: StatsUiState) {
         }
     }
     Spacer(modifier = Modifier.height(20.dp))
+
+    if (showInfo.value) {
+        InfoDialog(
+            onDismissRequest = { showInfo.value = false },
+            text = stringResource(R.string.info_stats_cost)
+        )
+    }
 }
 
 @Composable

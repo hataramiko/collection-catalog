@@ -195,4 +195,5 @@
     <string name="clear">Tyhjennä</string>
     <string name="punctuation_colon">": "</string>
     <string name="add_plate_redirect_msg">Lisätäksesi kilpiä, mene \"Kaikki kilvet\" -näkymään</string>
+    <string name="info_stats_cost">Brutto =\nkaikkien kilpien + arkiston menot\n\nNetto =\nbrutto - arkiston hinnat</string>
 </resources>

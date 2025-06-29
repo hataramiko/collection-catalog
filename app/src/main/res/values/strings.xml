@@ -221,4 +221,5 @@
     <string name="punctuation_colon">": "</string>
     <string name="not_applicable" translatable="false">N/A</string>
     <string name="add_plate_redirect_msg">To add plates, go to \"All plates\"</string>
+    <string name="info_stats_cost">Gross =\ncosts of \"All plates\" + \"Archive\"\n\nNet =\ngross - prices of \"Archive\"</string>
 </resources>
