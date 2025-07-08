@@ -1,12 +1,18 @@
 package com.mikohatara.collectioncatalog.ui.home
 
+import android.content.Context
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.data.WantedPlate
+import com.mikohatara.collectioncatalog.util.exportWantedPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
+import com.mikohatara.collectioncatalog.util.importWantedPlatesFromCsv
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.OutputStreamWriter
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -23,7 +30,11 @@ data class WishlistUiState(
     val filters: FilterData = FilterData(),
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isExporting: Boolean = false,
+    val isImporting: Boolean = false,
+    val exportResult: ExportResult? = null,
+    val importResult: ImportResult? = null
 )
 
 @HiltViewModel
@@ -205,6 +216,69 @@ class WishlistViewModel @Inject constructor(
         return getMinYear().toFloat()..getMaxYear().toFloat()
     }
 
+    fun exportItems(context: Context, uri: Uri) {
+        _uiState.update { it.copy(isExporting = true, exportResult = null) }
+
+        viewModelScope.launch {
+            try {
+                val items = uiState.value.items
+                val contentResolver = context.contentResolver
+                contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    OutputStreamWriter(outputStream).use { writer ->
+                        exportWantedPlatesToCsv(writer, items)
+                    }
+                }
+                _uiState.update { it.copy(
+                    isExporting = false,
+                    exportResult = ExportResult.Success(getExportMessage(true, context))
+                ) }
+            } catch (e: Exception) {
+                Log.e("WishlistViewModel, export", "Export failed", e)
+                _uiState.update { it.copy(
+                    isExporting = false,
+                    exportResult = ExportResult.Failure(getExportMessage(false, context))
+                ) }
+            }
+        }
+    }
+
+    fun clearExportResult() {
+        _uiState.update { it.copy(isExporting = false, exportResult = null) }
+    }
+
+    fun importItems(context: Context, uri: Uri) {
+        _uiState.update { it.copy(isImporting = true, importResult = null) }
+
+        viewModelScope.launch {
+            try {
+                val wantedPlates = importWantedPlatesFromCsv(context, uri)
+                if (wantedPlates != null && wantedPlates.isNotEmpty()) {
+                    plateRepository.addWantedPlates(wantedPlates)
+                    _uiState.update { it.copy(
+                        isImporting = false,
+                        importResult = ImportResult.Success(getImportMessage(context, wantedPlates.size))
+                    ) }
+                } else {
+                    Log.e("WishlistViewModel, import", "Import failed, list empty")
+                    _uiState.update { it.copy(
+                        isImporting = false,
+                        importResult = ImportResult.Failure(getImportMessage(context))
+                    ) }
+                }
+            } catch (e: Exception) {
+                Log.e("WishlistViewModel, import", "Import failed", e)
+                _uiState.update { it.copy(
+                    isImporting = false,
+                    importResult = ImportResult.Failure(getImportMessage(context))
+                ) }
+            }
+        }
+    }
+
+    fun clearImportResult() {
+        _uiState.update { it.copy(isImporting = false, importResult = null) }
+    }
+
     private fun updateDefaultSortBy(sortBy: SortBy) {
         viewModelScope.launch {
             userPreferencesRepository.saveDefaultSortOrderWishlist(sortBy)
@@ -276,6 +350,19 @@ class WishlistViewModel @Inject constructor(
             currentYear
         }
         return listOf(currentYear, maxYear).maxOf { it }
+    }
+
+    private fun getExportMessage(isSuccess: Boolean, context: Context): String {
+        val stringResId = if (isSuccess) {
+            R.string.export_msg_success
+        } else R.string.export_msg_failure
+        return context.getString(stringResId)
+    }
+
+    private fun getImportMessage(context: Context, size: Int = 0): String {
+        return if (size > 0) {
+            context.resources.getQuantityString(R.plurals.import_msg_success_size, size, size)
+        } else context.getString(R.string.import_msg_failure)
     }
 
     private fun <T> toggleFilter(filters: Set<T>, item: T): Set<T> =

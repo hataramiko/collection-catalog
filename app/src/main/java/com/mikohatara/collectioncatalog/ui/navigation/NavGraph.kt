@@ -151,7 +151,8 @@ fun CollectionCatalogNavGraph(
                     onItemClick = {
                         navActions.navigateToItemSummaryScreen(ItemType.WANTED_PLATE, it.id)
                     },
-                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
                 )
             }
         }
@@ -174,7 +175,8 @@ fun CollectionCatalogNavGraph(
                     onItemClick = {
                         navActions.navigateToItemSummaryScreen(ItemType.FORMER_PLATE, it.id)
                     },
-                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } }
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
                 )
             }
         }

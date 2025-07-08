@@ -7,7 +7,6 @@ import javax.inject.Inject
 interface PlateRepository {
     suspend fun addPlate(plate: Plate): Long
     suspend fun addPlateWithCollections(plate: Plate, collectionIds: List<Int>)
-
     suspend fun addPlates(plates: List<Plate>)
 
     suspend fun updatePlate(plate: Plate)
@@ -24,6 +23,7 @@ interface PlateRepository {
     //
 
     suspend fun addWantedPlate(plate: WantedPlate)
+    suspend fun addWantedPlates(plates: List<WantedPlate>)
 
     suspend fun updateWantedPlate(plate: WantedPlate)
 
@@ -36,6 +36,7 @@ interface PlateRepository {
     //
 
     suspend fun addFormerPlate(plate: FormerPlate)
+    suspend fun addFormerPlates(plates: List<FormerPlate>)
 
     suspend fun updateFormerPlate(plate: FormerPlate)
 
@@ -52,7 +53,6 @@ class OfflinePlateRepository @Inject constructor(
     override suspend fun addPlate(plate: Plate) = plateDao.insertPlate(plate)
     override suspend fun addPlateWithCollections(plate: Plate, collectionIds: List<Int>) =
         plateDao.insertPlateWithCollections(plate, collectionIds)
-
     override suspend fun addPlates(plates: List<Plate>) = plateDao.insertPlates(plates)
 
     override suspend fun updatePlate(plate: Plate) = plateDao.updatePlate(plate)
@@ -75,6 +75,7 @@ class OfflinePlateRepository @Inject constructor(
     //
 
     override suspend fun addWantedPlate(plate: WantedPlate) = plateDao.insertWantedPlate(plate)
+    override suspend fun addWantedPlates(plates: List<WantedPlate>) = plateDao.insertWantedPlates(plates)
 
     override suspend fun updateWantedPlate(plate: WantedPlate) = plateDao.updateWantedPlate(plate)
 
@@ -89,6 +90,7 @@ class OfflinePlateRepository @Inject constructor(
     //
 
     override suspend fun addFormerPlate(plate: FormerPlate) = plateDao.insertFormerPlate(plate)
+    override suspend fun addFormerPlates(plates: List<FormerPlate>) = plateDao.insertFormerPlates(plates)
 
     override suspend fun updateFormerPlate(plate: FormerPlate) = plateDao.updateFormerPlate(plate)
 

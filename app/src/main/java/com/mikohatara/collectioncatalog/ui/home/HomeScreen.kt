@@ -67,7 +67,7 @@ fun HomeScreen(
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
     onOpenDrawer: () -> Unit,
-    onImportHelp: () -> Unit,
+    onImportHelp: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -119,7 +119,7 @@ private fun HomeScreen(
     )
     var showImportDialog by rememberSaveable { mutableStateOf(false) }
     var showExportDialog by rememberSaveable { mutableStateOf(false) }
-    val onImport = if (viewModel.collectionId == null) { {showImportDialog = true} } else { null }
+    val onImport = if (viewModel.collectionId == null) { { showImportDialog = true } } else { null }
 
     BackHandler {
         onBackBehavior()

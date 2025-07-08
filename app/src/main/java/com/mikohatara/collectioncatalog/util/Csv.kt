@@ -3,12 +3,15 @@ package com.mikohatara.collectioncatalog.util
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.mikohatara.collectioncatalog.data.ArchivalDetails
 import com.mikohatara.collectioncatalog.data.Color
 import com.mikohatara.collectioncatalog.data.CommonDetails
+import com.mikohatara.collectioncatalog.data.FormerPlate
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.Size
 import com.mikohatara.collectioncatalog.data.Source
 import com.mikohatara.collectioncatalog.data.UniqueDetails
+import com.mikohatara.collectioncatalog.data.WantedPlate
 import com.opencsv.CSVReaderBuilder
 import com.opencsv.CSVWriter
 import com.opencsv.bean.ColumnPositionMappingStrategy
@@ -24,7 +27,7 @@ fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) {
     val csvPlateList = plates.map { plate ->
         CsvPlate(
             //id = plate.id ?: 0,
-            regNo = plate.uniqueDetails.regNo ?: "",
+            regNo = plate.uniqueDetails.regNo ?: "", // this is part of UniqueDetails
                 // CommonDetails
             country = plate.commonDetails.country ?: "",
             region1st = plate.commonDetails.region1st,
@@ -35,7 +38,6 @@ fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) {
             periodEnd = plate.commonDetails.periodEnd,
             year = plate.commonDetails.year,
                 // UniqueDetails
-            //regNo = plate.uniqueDetails.regNo ?: "",
             //imagePath = plate.uniqueDetails.imagePath,
             notes = plate.uniqueDetails.notes,
             vehicle = plate.uniqueDetails.vehicle,
@@ -55,7 +57,15 @@ fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) {
             sourceAlias = plate.source.alias,
             sourceType = plate.source.type,
             sourceCountry = plate.source.country,
-            sourceDetails = plate.source.details
+            sourceDetails = plate.source.details,
+                // ArchivalDetails
+            archivalDate = null,
+            archivalType = null,
+            price = null,
+            recipientName = null,
+            recipientAlias = null,
+            recipientCountry = null,
+            archivalDetails = null
         )
     }
 
@@ -68,7 +78,161 @@ fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) {
             "type", "periodStart", "periodEnd", "year",
             "notes", "vehicle", "date", "cost", "value", "status",
             "width", "height", "weight", "colorMain", "colorSecondary",
-            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails"
+            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails",
+            "archivalDate", "archivalType", "price",
+            "recipientName","recipientAlias", "recipientCountry", "archivalDetails"
+        )
+
+        mappingStrategy.setColumnMapping(*columnOrder)
+        val headerRow = columnOrder.map { it.toSnakeCase() }.toTypedArray()
+
+        CSVWriter(writer).use { csvWriter ->
+            csvWriter.writeNext(headerRow, true)
+            val beanToCsv = StatefulBeanToCsvBuilder<CsvPlate>(writer)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withMappingStrategy(mappingStrategy)
+                .build()
+            beanToCsv.write(csvPlateList)
+        }
+    } catch (e: IOException) {
+        Log.e("CSV export", "Error writing to file", e)
+    }
+}
+
+fun exportWantedPlatesToCsv(writer: OutputStreamWriter, wantedPlates: List<WantedPlate>) {
+    val csvPlateList = wantedPlates.map { wantedPlate ->
+        CsvPlate(
+            //id = wantedPlate.id ?: 0,
+            regNo = wantedPlate.regNo ?: "", // this is part of UniqueDetails
+            // CommonDetails
+            country = wantedPlate.commonDetails.country ?: "",
+            region1st = wantedPlate.commonDetails.region1st,
+            region2nd = wantedPlate.commonDetails.region2nd,
+            region3rd = wantedPlate.commonDetails.region3rd,
+            type = wantedPlate.commonDetails.type ?: "",
+            periodStart = wantedPlate.commonDetails.periodStart,
+            periodEnd = wantedPlate.commonDetails.periodEnd,
+            year = wantedPlate.commonDetails.year,
+            // UniqueDetails
+            //imagePath = wantedPlate.uniqueDetails.imagePath,
+            notes = wantedPlate.notes,
+            vehicle = null,
+            date = null,
+            cost = null,
+            value = null,
+            status = null,
+            // Size
+            width = wantedPlate.size.width,
+            height = wantedPlate.size.height,
+            weight = wantedPlate.size.weight,
+            // Color
+            colorMain = wantedPlate.color.main,
+            colorSecondary = wantedPlate.color.secondary,
+            // Source
+            sourceName = null,
+            sourceAlias = null,
+            sourceType = null,
+            sourceCountry = null,
+            sourceDetails = null,
+            // ArchivalDetails
+            archivalDate = null,
+            archivalType = null,
+            price = null,
+            recipientName = null,
+            recipientAlias = null,
+            recipientCountry = null,
+            archivalDetails = null
+        )
+    }
+
+    try {
+        val mappingStrategy = ColumnPositionMappingStrategy<CsvPlate>()
+        mappingStrategy.type = CsvPlate::class.java
+
+        val columnOrder = arrayOf(
+            "regNo", "country", "region1st", "region2nd", "region3rd",
+            "type", "periodStart", "periodEnd", "year",
+            "notes", "vehicle", "date", "cost", "value", "status",
+            "width", "height", "weight", "colorMain", "colorSecondary",
+            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails",
+            "archivalDate", "archivalType", "price",
+            "recipientName","recipientAlias", "recipientCountry", "archivalDetails"
+        )
+
+        mappingStrategy.setColumnMapping(*columnOrder)
+        val headerRow = columnOrder.map { it.toSnakeCase() }.toTypedArray()
+
+        CSVWriter(writer).use { csvWriter ->
+            csvWriter.writeNext(headerRow, true)
+            val beanToCsv = StatefulBeanToCsvBuilder<CsvPlate>(writer)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withMappingStrategy(mappingStrategy)
+                .build()
+            beanToCsv.write(csvPlateList)
+        }
+    } catch (e: IOException) {
+        Log.e("CSV export", "Error writing to file", e)
+    }
+}
+
+fun exportFormerPlatesToCsv(writer: OutputStreamWriter, formerPlates: List<FormerPlate>) {
+    val csvPlateList = formerPlates.map { formerPlate ->
+        CsvPlate(
+            //id = formerPlate.id ?: 0,
+            regNo = formerPlate.uniqueDetails.regNo ?: "", // this is part of UniqueDetails
+            // CommonDetails
+            country = formerPlate.commonDetails.country ?: "",
+            region1st = formerPlate.commonDetails.region1st,
+            region2nd = formerPlate.commonDetails.region2nd,
+            region3rd = formerPlate.commonDetails.region3rd,
+            type = formerPlate.commonDetails.type ?: "",
+            periodStart = formerPlate.commonDetails.periodStart,
+            periodEnd = formerPlate.commonDetails.periodEnd,
+            year = formerPlate.commonDetails.year,
+            // UniqueDetails
+            //imagePath = formerPlate.uniqueDetails.imagePath,
+            notes = formerPlate.uniqueDetails.notes,
+            vehicle = formerPlate.uniqueDetails.vehicle,
+            date = formerPlate.uniqueDetails.date,
+            cost = formerPlate.uniqueDetails.cost,
+            value = formerPlate.uniqueDetails.value,
+            status = formerPlate.uniqueDetails.status,
+            // Size
+            width = formerPlate.size.width,
+            height = formerPlate.size.height,
+            weight = formerPlate.size.weight,
+            // Color
+            colorMain = formerPlate.color.main,
+            colorSecondary = formerPlate.color.secondary,
+            // Source
+            sourceName = formerPlate.source.name,
+            sourceAlias = formerPlate.source.alias,
+            sourceType = formerPlate.source.type,
+            sourceCountry = formerPlate.source.country,
+            sourceDetails = formerPlate.source.details,
+            // ArchivalDetails
+            archivalDate = formerPlate.archivalDetails.archivalDate,
+            archivalType = formerPlate.archivalDetails.archivalReason,
+            price = formerPlate.archivalDetails.price,
+            recipientName = formerPlate.archivalDetails.recipientName,
+            recipientAlias = formerPlate.archivalDetails.recipientAlias,
+            recipientCountry = formerPlate.archivalDetails.recipientCountry,
+            archivalDetails = formerPlate.archivalDetails.archivalDetails
+        )
+    }
+
+    try {
+        val mappingStrategy = ColumnPositionMappingStrategy<CsvPlate>()
+        mappingStrategy.type = CsvPlate::class.java
+
+        val columnOrder = arrayOf(
+            "regNo", "country", "region1st", "region2nd", "region3rd",
+            "type", "periodStart", "periodEnd", "year",
+            "notes", "vehicle", "date", "cost", "value", "status",
+            "width", "height", "weight", "colorMain", "colorSecondary",
+            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails",
+            "archivalDate", "archivalType", "price",
+            "recipientName","recipientAlias", "recipientCountry", "archivalDetails"
         )
 
         mappingStrategy.setColumnMapping(*columnOrder)
@@ -96,57 +260,184 @@ fun importPlatesFromCsv(context: Context, uri: Uri): List<Plate>? {
         val csvData = csvReader.readAll()
         Log.d("CSV import", "CSV data: ${csvData.size}")
         val headerRow = listOf(
-            /*"id", */"reg_no", "country", "region_1st", "region_2nd", "region_3rd", "type",
-            "period_start", "period_end", "year", /*"reg_no", "image_path", */"notes", "vehicle",
-            "date", "cost", "value", "status", "width", "height", "weight", "color_main",
-            "color_secondary", "source_name", "source_alias", "source_type", "source_country",
-            "source_details"
+            "reg_no", "country", "region_1st", "region_2nd", "region_3rd",
+            "type", "period_start", "period_end", "year",
+            "notes", "vehicle", "date", "cost", "value", "status",
+            "width", "height", "weight", "color_main", "color_secondary",
+            "source_name", "source_alias", "source_type", "source_country", "source_details",
+            "archival_date", "archival_type", "price",
+            "recipient_name","recipient_alias", "recipient_country", "archival_details"
         )
         val plates = csvData.mapNotNull { row ->
             val csvPlate = mapRowToCsvPlate(row, headerRow)
-            if (csvPlate != null) {
-                Plate(
-                    id = 0,
-                    commonDetails = CommonDetails(
-                        country = csvPlate.country,
-                        region1st = csvPlate.region1st?.takeIf { it.isNotBlank() },
-                        region2nd = csvPlate.region2nd?.takeIf { it.isNotBlank() },
-                        region3rd = csvPlate.region3rd?.takeIf { it.isNotBlank() },
-                        type = csvPlate.type,
-                        periodStart = csvPlate.periodStart?.takeIf { it.isValidYear() },
-                        periodEnd = csvPlate.periodEnd?.takeIf { it.isValidYear() },
-                        year = csvPlate.year?.takeIf { it.isValidYear() }
-                    ),
-                    uniqueDetails = UniqueDetails(
-                        regNo = csvPlate.regNo,
-                        imagePath = null,
-                        notes = csvPlate.notes?.takeIf { it.isNotBlank() },
-                        vehicle = csvPlate.vehicle?.takeIf { it.isNotBlank() },
-                        date = csvPlate.date?.takeIf { it.isNotBlank() },
-                        cost = csvPlate.cost,
-                        value = csvPlate.value,
-                        status = csvPlate.status?.takeIf { it.isNotBlank() }
-                    ),
-                    size = Size(
-                        width = csvPlate.width,
-                        height = csvPlate.height,
-                        weight = csvPlate.weight
-                    ),
-                    color = Color(
-                        main = csvPlate.colorMain?.takeIf { it.isNotBlank() },
-                        secondary = csvPlate.colorSecondary?.takeIf { it.isNotBlank() }
-                    ),
-                    source = Source(
-                        name = csvPlate.sourceName?.takeIf { it.isNotBlank() },
-                        alias = csvPlate.sourceAlias?.takeIf { it.isNotBlank() },
-                        type = csvPlate.sourceType?.takeIf { it.isNotBlank() },
-                        details = csvPlate.sourceDetails?.takeIf { it.isNotBlank() },
-                        country = csvPlate.sourceCountry?.takeIf { it.isNotBlank() }
-                    )
+            Plate(
+                id = 0,
+                commonDetails = CommonDetails(
+                    country = csvPlate.country,
+                    region1st = csvPlate.region1st?.takeIf { it.isNotBlank() },
+                    region2nd = csvPlate.region2nd?.takeIf { it.isNotBlank() },
+                    region3rd = csvPlate.region3rd?.takeIf { it.isNotBlank() },
+                    type = csvPlate.type,
+                    periodStart = csvPlate.periodStart?.takeIf { it.isValidYear() },
+                    periodEnd = csvPlate.periodEnd?.takeIf { it.isValidYear() },
+                    year = csvPlate.year?.takeIf { it.isValidYear() }
+                ),
+                uniqueDetails = UniqueDetails(
+                    regNo = csvPlate.regNo,
+                    imagePath = null,
+                    notes = csvPlate.notes?.takeIf { it.isNotBlank() },
+                    vehicle = csvPlate.vehicle?.takeIf { it.isNotBlank() },
+                    date = csvPlate.date?.takeIf { it.isNotBlank() },
+                    cost = csvPlate.cost,
+                    value = csvPlate.value,
+                    status = csvPlate.status?.takeIf { it.isNotBlank() }
+                ),
+                size = Size(
+                    width = csvPlate.width,
+                    height = csvPlate.height,
+                    weight = csvPlate.weight
+                ),
+                color = Color(
+                    main = csvPlate.colorMain?.takeIf { it.isNotBlank() },
+                    secondary = csvPlate.colorSecondary?.takeIf { it.isNotBlank() }
+                ),
+                source = Source(
+                    name = csvPlate.sourceName?.takeIf { it.isNotBlank() },
+                    alias = csvPlate.sourceAlias?.takeIf { it.isNotBlank() },
+                    type = csvPlate.sourceType?.takeIf { it.isNotBlank() },
+                    details = csvPlate.sourceDetails?.takeIf { it.isNotBlank() },
+                    country = csvPlate.sourceCountry?.takeIf { it.isNotBlank() }
                 )
-            } else null
+            )
         }
         return plates
+    } catch (e: IOException) {
+        Log.e("CSV import", "Error reading from file", e)
+        return null
+    }
+}
+
+fun importWantedPlatesFromCsv(context: Context, uri: Uri): List<WantedPlate>? {
+    try {
+        val inputStream = context.contentResolver.openInputStream(uri) ?:
+        throw IOException("Failed to open input stream for URI: $uri")
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val csvReader = CSVReaderBuilder(reader).withSkipLines(1).build()
+        val csvData = csvReader.readAll()
+        Log.d("CSV import", "CSV data: ${csvData.size}")
+        val headerRow = listOf(
+            "reg_no", "country", "region_1st", "region_2nd", "region_3rd",
+            "type", "period_start", "period_end", "year",
+            "notes", "vehicle", "date", "cost", "value", "status",
+            "width", "height", "weight", "color_main", "color_secondary",
+            "source_name", "source_alias", "source_type", "source_country", "source_details",
+            "archival_date", "archival_type", "price",
+            "recipient_name","recipient_alias", "recipient_country", "archival_details"
+        )
+        val wantedPlates = csvData.mapNotNull { row ->
+            val csvPlate = mapRowToCsvPlate(row, headerRow)
+            WantedPlate(
+                id = 0,
+                regNo = csvPlate.regNo.takeIf { it.isNotBlank() },
+                imagePath = null,
+                notes = csvPlate.notes?.takeIf { it.isNotBlank() },
+                commonDetails = CommonDetails(
+                    country = csvPlate.country.takeIf { it.isNotBlank() } ?: "",
+                    region1st = csvPlate.region1st?.takeIf { it.isNotBlank() },
+                    region2nd = csvPlate.region2nd?.takeIf { it.isNotBlank() },
+                    region3rd = csvPlate.region3rd?.takeIf { it.isNotBlank() },
+                    type = csvPlate.type.takeIf { it.isNotBlank() } ?: "",
+                    periodStart = csvPlate.periodStart?.takeIf { it.isValidYear() },
+                    periodEnd = csvPlate.periodEnd?.takeIf { it.isValidYear() },
+                    year = csvPlate.year?.takeIf { it.isValidYear() }
+                ),
+                size = Size(
+                    width = csvPlate.width,
+                    height = csvPlate.height,
+                    weight = csvPlate.weight
+                ),
+                color = Color(
+                    main = csvPlate.colorMain?.takeIf { it.isNotBlank() },
+                    secondary = csvPlate.colorSecondary?.takeIf { it.isNotBlank() }
+                )
+            )
+        }
+        return wantedPlates
+    } catch (e: IOException) {
+        Log.e("CSV import", "Error reading from file", e)
+        return null
+    }
+}
+
+fun importFormerPlatesFromCsv(context: Context, uri: Uri): List<FormerPlate>? {
+    try {
+        val inputStream = context.contentResolver.openInputStream(uri) ?:
+        throw IOException("Failed to open input stream for URI: $uri")
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val csvReader = CSVReaderBuilder(reader).withSkipLines(1).build()
+        val csvData = csvReader.readAll()
+        Log.d("CSV import", "CSV data: ${csvData.size}")
+        val headerRow = listOf(
+            "reg_no", "country", "region_1st", "region_2nd", "region_3rd",
+            "type", "period_start", "period_end", "year",
+            "notes", "vehicle", "date", "cost", "value", "status",
+            "width", "height", "weight", "color_main", "color_secondary",
+            "source_name", "source_alias", "source_type", "source_country", "source_details",
+            "archival_date", "archival_type", "price",
+            "recipient_name","recipient_alias", "recipient_country", "archival_details"
+        )
+        val formerPlates = csvData.mapNotNull { row ->
+            val csvPlate = mapRowToCsvPlate(row, headerRow)
+            FormerPlate(
+                id = 0,
+                commonDetails = CommonDetails(
+                    country = csvPlate.country,
+                    region1st = csvPlate.region1st?.takeIf { it.isNotBlank() },
+                    region2nd = csvPlate.region2nd?.takeIf { it.isNotBlank() },
+                    region3rd = csvPlate.region3rd?.takeIf { it.isNotBlank() },
+                    type = csvPlate.type,
+                    periodStart = csvPlate.periodStart?.takeIf { it.isValidYear() },
+                    periodEnd = csvPlate.periodEnd?.takeIf { it.isValidYear() },
+                    year = csvPlate.year?.takeIf { it.isValidYear() }
+                ),
+                uniqueDetails = UniqueDetails(
+                    regNo = csvPlate.regNo,
+                    imagePath = null,
+                    notes = csvPlate.notes?.takeIf { it.isNotBlank() },
+                    vehicle = csvPlate.vehicle?.takeIf { it.isNotBlank() },
+                    date = csvPlate.date?.takeIf { it.isNotBlank() },
+                    cost = csvPlate.cost,
+                    value = null,
+                    status = null
+                ),
+                size = Size(
+                    width = csvPlate.width,
+                    height = csvPlate.height,
+                    weight = csvPlate.weight
+                ),
+                color = Color(
+                    main = csvPlate.colorMain?.takeIf { it.isNotBlank() },
+                    secondary = csvPlate.colorSecondary?.takeIf { it.isNotBlank() }
+                ),
+                source = Source(
+                    name = csvPlate.sourceName?.takeIf { it.isNotBlank() },
+                    alias = csvPlate.sourceAlias?.takeIf { it.isNotBlank() },
+                    type = csvPlate.sourceType?.takeIf { it.isNotBlank() },
+                    details = csvPlate.sourceDetails?.takeIf { it.isNotBlank() },
+                    country = csvPlate.sourceCountry?.takeIf { it.isNotBlank() }
+                ),
+                archivalDetails = ArchivalDetails(
+                    archivalDate = csvPlate.archivalDate?.takeIf { it.isNotBlank() },
+                    recipientName = csvPlate.recipientName?.takeIf { it.isNotBlank() },
+                    recipientAlias = csvPlate.recipientAlias?.takeIf { it.isNotBlank() },
+                    archivalReason = csvPlate.archivalType?.takeIf { it.isNotBlank() },
+                    archivalDetails = csvPlate.archivalDetails?.takeIf { it.isNotBlank() },
+                    price = csvPlate.price,
+                    recipientCountry = csvPlate.recipientCountry?.takeIf { it.isNotBlank() }
+                )
+            )
+        }
+        return formerPlates
     } catch (e: IOException) {
         Log.e("CSV import", "Error reading from file", e)
         return null
@@ -166,7 +457,6 @@ fun mapRowToCsvPlate(row: Array<String>, headerRow: List<String>): CsvPlate {
         periodStart = data.getOrNull(headerRow.indexOf("period_start"))?.toIntOrNull(),
         periodEnd = data.getOrNull(headerRow.indexOf("period_end"))?.toIntOrNull(),
         year = data.getOrNull(headerRow.indexOf("year"))?.toIntOrNull(),
-        //regNo = data.getOrNull(headerRow.indexOf("reg_no")) ?: "",
         //imagePath = data.getOrNull(headerRow.indexOf("image_path")),
         notes = data.getOrNull(headerRow.indexOf("notes")),
         vehicle = data.getOrNull(headerRow.indexOf("vehicle")),
@@ -184,6 +474,13 @@ fun mapRowToCsvPlate(row: Array<String>, headerRow: List<String>): CsvPlate {
         sourceType = data.getOrNull(headerRow.indexOf("source_type")),
         sourceCountry = data.getOrNull(headerRow.indexOf("source_country")),
         sourceDetails = data.getOrNull(headerRow.indexOf("source_details")),
+        archivalDate = data.getOrNull(headerRow.indexOf("archival_date")),
+        archivalType = data.getOrNull(headerRow.indexOf("archival_type")),
+        price = data.getOrNull(headerRow.indexOf("price"))?.toLongOrNull(),
+        recipientName = data.getOrNull(headerRow.indexOf("recipient_name")),
+        recipientAlias = data.getOrNull(headerRow.indexOf("recipient_alias")),
+        recipientCountry = data.getOrNull(headerRow.indexOf("recipient_country")),
+        archivalDetails = data.getOrNull(headerRow.indexOf("archival_details"))
     )
 }
 
@@ -199,7 +496,9 @@ fun exportImportTemplateToCsv(writer: OutputStreamWriter) {
             "type", "periodStart", "periodEnd", "year",
             "notes", "vehicle", "date", "cost", "value", "status",
             "width", "height", "weight", "colorMain", "colorSecondary",
-            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails"
+            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails",
+            "archivalDate", "archivalType", "price",
+            "recipientName","recipientAlias", "recipientCountry", "archivalDetails"
         )
 
         mappingStrategy.setColumnMapping(*columnOrder)
@@ -237,7 +536,7 @@ private fun String.toSnakeCase(): String = replace(Regex("([a-z])([A-Z0-9])"), "
 
 data class CsvPlate(
     //@CsvBindByName(column = "id") val id: Int = 0,
-    @CsvBindByName(column = "reg_no") val regNo: String = "",
+    @CsvBindByName(column = "reg_no") val regNo: String = "", // this is part of UniqueDetails
         // CommonDetails
     @CsvBindByName(column = "country") val country: String = "",
     @CsvBindByName(column = "region_1st") val region1st: String? = null,
@@ -248,7 +547,6 @@ data class CsvPlate(
     @CsvBindByName(column = "period_end") val periodEnd: Int? = null,
     @CsvBindByName(column = "year") val year: Int? = null,
         // UniqueDetails
-    //@CsvBindByName(column = "reg_no") val regNo: String = "",
     //@CsvBindByName(column = "image_path") val imagePath: String? = null,
     @CsvBindByName(column = "notes") val notes: String? = null,
     @CsvBindByName(column = "vehicle") val vehicle: String? = null,
@@ -270,11 +568,11 @@ data class CsvPlate(
     @CsvBindByName(column = "source_country") val sourceCountry: String? = null,
     @CsvBindByName(column = "source_details") val sourceDetails: String? = null,
         // ArchivalDetails
-    /*@CsvBindByName(column = "archival_date") val archivalDate: String? = null,
+    @CsvBindByName(column = "archival_date") val archivalDate: String? = null,
+    @CsvBindByName(column = "archival_reason") val archivalType: String? = null,
+    @CsvBindByName(column = "price") val price: Long? = null,
     @CsvBindByName(column = "recipient_name") val recipientName: String? = null,
     @CsvBindByName(column = "recipient_alias") val recipientAlias: String? = null,
-    @CsvBindByName(column = "archival_reason") val archivalType: String? = null,
-    @CsvBindByName(column = "archival_details") val archivalDetails: String? = null,
-    @CsvBindByName(column = "price") val price: Long? = null,
-    @CsvBindByName(column = "recipient_country") val recipientCountry: String? = null*/
+    @CsvBindByName(column = "recipient_country") val recipientCountry: String? = null,
+    @CsvBindByName(column = "archival_details") val archivalDetails: String? = null
 )

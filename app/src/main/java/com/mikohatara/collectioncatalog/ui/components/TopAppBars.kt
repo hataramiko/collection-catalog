@@ -154,17 +154,25 @@ fun HomeTopAppBar(
                         onDismissRequest = { isMenuExpanded = false },
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        onImport?.let {
+                        /*onImport?.let {
                             ModifiedDropdownMenuItem(
                                 onClick = {
                                     it()
                                     isMenuExpanded = false
                                 },
                                 painterResource = painterResource(R.drawable.rounded_download_24),
-                                text = stringResource(R.string.import_text),
-                                //enabled = onImport != null // Use this instead of "?.let"?
+                                text = stringResource(R.string.import_text)
                             )
-                        }
+                        }*/
+                        ModifiedDropdownMenuItem(
+                            onClick = {
+                                onImport?.let { it() }
+                                isMenuExpanded = false
+                            },
+                            painterResource = painterResource(R.drawable.rounded_download_24),
+                            text = stringResource(R.string.import_text),
+                            enabled = onImport != null
+                        )
                         ModifiedDropdownMenuItem(
                             onClick = {
                                 onExport?.let { it() }

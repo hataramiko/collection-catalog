@@ -68,6 +68,9 @@ interface PlateDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWantedPlate(wantedPlate: WantedPlate)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertWantedPlates(wantedPlates: List<WantedPlate>)
+
     @Update
     suspend fun updateWantedPlate(wantedPlate: WantedPlate)
 
@@ -84,6 +87,9 @@ interface PlateDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFormerPlate(formerPlate: FormerPlate)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertFormerPlates(formerPlates: List<FormerPlate>)
 
     @Update
     suspend fun updateFormerPlate(formerPlate: FormerPlate)
