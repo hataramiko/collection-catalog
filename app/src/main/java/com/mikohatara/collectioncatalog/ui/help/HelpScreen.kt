@@ -5,8 +5,11 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,12 +36,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,7 +63,6 @@ import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
 import com.mikohatara.collectioncatalog.util.getDateExample
 import com.mikohatara.collectioncatalog.util.getFileNameForExport
-import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun HelpScreen(
@@ -168,16 +178,13 @@ private fun ImportPage(
 
     HelpPageTitle(stringResource(R.string.import_dialog_title))
     HelpPageNotTranslated()
-    HelpPageParagraph(stringResource(R.string.help_import_p1))
-    HelpPageParagraph(stringResource(R.string.help_import_p2))
-    HelpPageParagraph(stringResource(R.string.help_import_p5))
+    HelpPageParagraph(stringResource(R.string.help_import_a_p1))
+    HelpPageParagraph(stringResource(R.string.help_import_a_p2))
+    HelpPageParagraph(stringResource(R.string.help_import_a_p3))
+    HelpPageParagraph(stringResource(R.string.help_import_a_p4))
     HelpPageHeader(stringResource(R.string.help_import_first_row))
-    HelpPageParagraph(stringResource(R.string.help_import_p3))
-    HelpPageParagraph(
-        text = viewModel.getImportFirstRowExample(),
-        color = colorScheme.secondary,
-        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-    )
+    HelpPageParagraph(stringResource(R.string.help_import_first_row_p1))
+    HelpPageValueList(viewModel.getImportFirstRowExample())
     HelpPageTextButton(
         text = stringResource(R.string.import_copy_first_row),
         onClick = { viewModel.copyImportFirstRowToClipboard(context) }
@@ -187,6 +194,27 @@ private fun ImportPage(
     HelpPageTextButton(
         text = stringResource(R.string.import_copy_empty_row),
         onClick = { viewModel.copyImportEmptyRowToClipboard(context) }
+    )
+    HelpPageHeader(stringResource(R.string.help_import_unused_values))
+    HelpPageParagraph(stringResource(R.string.help_import_unused_values_p1))
+    HelpPageParagraph(stringResource(R.string.help_import_unused_values_p2))
+    HelpPageParagraph(stringResource(R.string.help_import_unused_values_p4))
+    HelpPageValueList(
+        values = viewModel.getAllPlatesUnusedValues(),
+        buttonTextShow = stringResource(R.string.show_values_all_plates),
+        buttonTextHide = stringResource(R.string.hide_values_all_plates)
+    )
+    HelpPageValueList(
+        values = viewModel.getArchiveUnusedValues(),
+        buttonTextShow = stringResource(R.string.show_values_archive),
+        buttonTextHide = stringResource(R.string.hide_values_archive)
+    )
+    Spacer(modifier = Modifier.height(4.dp))
+    HelpPageParagraph(stringResource(R.string.help_import_unused_values_p6))
+    HelpPageValueList(
+        values = viewModel.getWishlistUsedValues(),
+        buttonTextShow = stringResource(R.string.show_values_wishlist),
+        buttonTextHide = stringResource(R.string.hide_values_wishlist)
     )
     HelpPageHeader(stringResource(R.string.help_import_use_template))
     HelpPageParagraph(stringResource(R.string.help_import_p6))
@@ -199,13 +227,14 @@ private fun ImportPage(
     )
     HelpPageHeader(stringResource(R.string.help_import_use_spreadsheet))
     HelpPageParagraph(stringResource(R.string.help_import_p7))
-    HelpPageHeader(stringResource(R.string.attention))
+    HelpPageHeader("Pay attention")//stringResource(R.string.attention))
+    HelpPageSubheader(/*stringResource(R.string.date)*/"Dates", 8)
     HelpPageParagraph(stringResource(R.string.info_date_format, getDateExample()))
-    HelpPageHorizontalDivider()
+    HelpPageSubheader("Numeral values")
+    //HelpPageHorizontalDivider()
     HelpPageParagraph(stringResource(R.string.help_import_currency))
     HelpPageParagraph(stringResource(R.string.help_import_currency_with_decimal))
     HelpPageParagraph(stringResource(R.string.help_import_currency_non_decimal))
-    HelpPageHorizontalDivider()
     HelpPageParagraph(stringResource(R.string.help_import_other_numerals))
     EndOfList()
 }
@@ -227,6 +256,16 @@ private fun HelpPageHeader(text: String) {
         text = text,
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(16.dp)
+    )
+}
+
+@Composable
+private fun HelpPageSubheader(text: String, spacerSize: Int = 16) {
+    Spacer(modifier = Modifier.height(spacerSize.dp))
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
 }
 
@@ -262,6 +301,49 @@ private fun HelpPageTextButton(
             modifier = Modifier
                 .padding(12.dp)
         )
+    }
+}
+
+@Composable
+private fun HelpPageValueList(
+    values: String,
+    buttonTextShow: String = stringResource(R.string.show_values),
+    buttonTextHide: String = stringResource(R.string.hide_values)
+) {
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
+    val buttonText = if (!isExpanded) buttonTextShow else buttonTextHide
+    val onClick = remember { Modifier.clickable { isExpanded = !isExpanded } }
+
+    Column(modifier = Modifier.animateContentSize()) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(onClick)
+        ) {
+            Text(
+                text = buttonText,
+                color = colorScheme.primary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(16.dp)
+            )
+            Icon(
+                imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
+                    else Icons.Rounded.KeyboardArrowDown,
+                contentDescription = null,
+                tint = colorScheme.primary,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        if (isExpanded) {
+            HelpPageParagraph(
+                text = values,
+                color = colorScheme.secondary,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
     }
 }
 

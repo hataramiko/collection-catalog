@@ -179,7 +179,6 @@
     <string name="sort_by_archival_newest">アーカイブが最新</string>
     <string name="help_page_not_translated">このヘルプページはまだ日本語ではありません。</string>
     <string name="attention">注意</string>
-    <string name="info_date_format">おすすめの日付表現は「YYYY-MM-DD」。例えば、<xliff:g name="date_example" example="1917-12-06">%s</xliff:g></string>
     <string name="info_width">プレートの表示サイズは、他のプレートの横幅との比較で決定されます。</string>
     <string name="download_msg_success">ダウンロードが完成しました</string>
     <string name="download_msg_failure">ダウンロードが失敗しました</string>

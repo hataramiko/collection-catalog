@@ -188,21 +188,21 @@
     <string name="sort_by_archival_oldest">Earliest archival</string>
     <string name="sort_by_archival_newest">Most recent archival</string>
     <string name="help_page_not_translated">" "</string>
-    <string name="help_import_p1" translatable="false">You can add multiple plates at once by importing a CSV file.</string>
-    <string name="help_import_p2" translatable="false">In order for the import to succeed, the file needs to follow a specific format and guidelines.</string>
-    <string name="help_import_p3" translatable="false">The first row of the file should contain the following values in the same exact order. Some of the values might slightly differ from their equivalent namesake.</string>
-    <string name="help_import_p4" translatable="false">All subsequent rows should be equal in length to the first row, whether or not all the fields are filled with data or not.</string>
-    <string name="help_import_p5" translatable="false">A single row for import should consist of 26 values separated by 24 commas. You can choose whether or not to use quotes to enclose the values (\"example\").</string>
-    <string name="help_import_p6" translatable="false">You can download a template CSV file to help you get started with importing. The template consists of the first row and a single empty row.</string>
+    <string name="help_import_a_p1" translatable="false">You can add multiple plates at once by importing a CSV file.</string>
+    <string name="help_import_a_p2" translatable="false">In order for the import to succeed, the file needs to follow a specific format and guidelines.</string>
+    <string name="help_import_first_row_p1" translatable="false">The first row of the file should contain the following values in the same exact order. Some of the values might slightly differ from their equivalent namesake.</string>
+    <string name="help_import_p4" translatable="false">All subsequent rows should be equal in length to the first row, whether or not all the values are filled with data or not.</string>
+    <string name="help_import_a_p3" translatable="false">A single row for import should always consist of 32 values – as specified further below – separated by 31 commas.</string>
+    <string name="help_import_p6" translatable="false">You can download a template CSV file to help you get started with importing. The template consists of the first row, and a single empty row.</string>
     <string name="help_import_p7" translatable="false">You can also prepare a CSV file for import by utilizing any spreadsheet software that allows saving tables as CSV files. Just make sure the first row contains all the values as specified above, and fill in your data on the subsequent rows.</string>
     <string name="import_copy_first_row" translatable="false">Copy the first row</string>
     <string name="import_copy_empty_row" translatable="false">Copy an empty row</string>
     <string name="import_download_template" translatable="false">Download template</string>
     <string name="import_show_first_row" translatable="false">Show values</string>
     <string name="attention">Pay attention</string>
-    <string name="info_date_format">The recommended date format is \"YYYY-MM-DD\", e.g. <xliff:g name="date_example" example="1917-12-06">%s</xliff:g></string>
+    <string name="info_date_format" translatable="false">Dates have to be entered in the \"YYYY-MM-DD\" format, e.g. <xliff:g name="date_example" example="1917-12-06">%s</xliff:g></string>
     <string name="info_width">The display size of the plate is determined by comparing the width to other plates.</string>
-    <string name="help_import_currency" translatable="false">Currency values should be entered in their smallest respective unit, without decimal or thousands separators, e.g.</string>
+    <string name="help_import_currency" translatable="false">Currency values should be entered in their smallest respective unit, without any decimal or thousands separators, e.g.</string>
     <string name="help_import_currency_with_decimal" translatable="false">USD, with cents as a subunit\n$1.00 as 100\n$1,400.99 as 140099</string>
     <string name="help_import_currency_non_decimal" translatable="false">JPY, without a subunit\n¥1 as 1\n¥12,500 as 12500</string>
     <string name="help_import_other_numerals" translatable="false">Other numeral values – such as measurements like width – should also be entered as integers only, without any decimals or punctuation.</string>
@@ -222,4 +222,20 @@
     <string name="not_applicable" translatable="false">N/A</string>
     <string name="add_plate_redirect_msg">To add plates, go to \"All plates\"</string>
     <string name="info_stats_cost">Gross =\ncosts of \"All plates\" + \"Archive\"\n\nNet =\ngross - prices of \"Archive\"</string>
+    <string name="help_import_unused_values" translatable="false">Unused values</string>
+    <string name="help_import_unused_values_p1" translatable="false">The same row structure always applies, whether you\'re importing in \"All plates\", \"Wishlist\", or \"Archive\".</string>
+    <string name="help_import_unused_values_p2" translatable="false">However, depending on the type – \"All plates\", \"Wishlist\", or \"Archive\" – there are always some values that will remain unused, and therefore have no effect on the import.</string>
+    <string name="help_import_unused_values_p3" translatable="false">Both \"All plates\" and \"Archive\" use most values, but some will still remain unused.</string>
+    <string name="help_import_unused_values_p4" translatable="false">\"All plates\" and \"Archive\" do use most values, but there are still some that will remain unused – as specified below.</string>
+    <string name="help_import_unused_values_p5" translatable="false">\"Archive\" does not use the following 2 values.</string>
+    <string name="help_import_unused_values_p6" translatable="false">\"Wishlist\" has the most unused values – only the following values are used.</string>
+    <string name="help_import_a_p4" translatable="false">You can choose whether to enclose values within quotes (\"example\") or not.</string>
+    <string name="show_values" translatable="false">Show values</string>
+    <string name="hide_values" translatable="false">Hide values</string>
+    <string name="show_values_all_plates" translatable="false">Show  \"All plates\" unused values</string>
+    <string name="show_values_archive" translatable="false">Show \"Archive\" unused values</string>
+    <string name="show_values_wishlist" translatable="false">Show \"Wishlist\" used values</string>
+    <string name="hide_values_all_plates" translatable="false">Hide \"All plates\" unused values</string>
+    <string name="hide_values_archive" translatable="false">Hide \"Archive\" unused values</string>
+    <string name="hide_values_wishlist" translatable="false">Hide \"Wishlist\" used values</string>
 </resources>

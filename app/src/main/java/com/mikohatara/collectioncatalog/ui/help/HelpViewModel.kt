@@ -44,15 +44,20 @@ class HelpViewModel @Inject constructor(
     private val importFirstRowExample = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\n" +
         "type\nperiod_start\nperiod_end\nyear\nnotes\nvehicle\ndate\ncost\nvalue\nstatus\n" +
         "width\nheight\nweight\ncolor_main\ncolor_secondary\n" +
-        "source_name\nsource_alias\nsource_type\nsource_country\nsource_details"
+        "source_name\nsource_alias\nsource_type\nsource_country\nsource_details\n" +
+        "archival_date\narchival_reason\nprice\n" +
+        "recipient_name\nrecipient_alias\nrecipient_country\narchival_details"
     private val importFirstRowString = "\"reg_no\",\"country\",\"region_1st\",\"region_2nd\"," +
         "\"region_3rd\",\"type\",\"period_start\",\"period_end\",\"year\"," +
         "\"notes\",\"vehicle\",\"date\",\"cost\",\"value\",\"status\"," +
         "\"width\",\"height\",\"weight\"," +
         "\"color_main\",\"color_secondary\"," +
-        "\"source_name\",\"source_alias\",\"source_type\",\"source_country\",\"source_details\""
+        "\"source_name\",\"source_alias\",\"source_type\",\"source_country\",\"source_details\"," +
+        "\"archival_date\",\"archival_reason\",\"price\"," +
+        "\"recipient_name\",\"recipient_alias\",\"recipient_country\",\"archival_details\""
     private val importEmptyRowString = "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"," +
-        "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\""
+        "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"," +
+        "\"\",\"\",\"\",\"\",\"\",\"\",\"\""
 
     init {
         viewModelScope.launch {
@@ -106,6 +111,24 @@ class HelpViewModel @Inject constructor(
 
     fun getImportFirstRowExample(): String {
         return importFirstRowExample
+    }
+
+    fun getAllPlatesUnusedValues(): String {
+        val values = "archival_date\narchival_reason\nprice\n" +
+            "recipient_name\nrecipient_alias\nrecipient_country\narchival_details"
+        return values
+    }
+
+    fun getArchiveUnusedValues(): String {
+        val values = "value\nstatus"
+        return values
+    }
+
+    fun getWishlistUsedValues(): String {
+        val values = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\n" +
+            "type\nperiod_start\nperiod_end\nyear\nnotes\n" +
+            "width\nheight\nweight\ncolor_main\ncolor_secondary"
+        return values
     }
 
     private fun getDownloadMessage(isSuccess: Boolean, context: Context): String {

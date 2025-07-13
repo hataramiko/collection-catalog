@@ -183,7 +183,6 @@
     <string name="sort_by_archival_newest">Uusin arkistointi</string>
     <string name="help_page_not_translated">Tämä ohje ei ole vielä saatavilla suomeksi.</string>
     <string name="attention">Huomioi</string>
-    <string name="info_date_format">Päiväyksiin suositellaan käytettävän muotoa \"VVVV-KK-PP\", esim. <xliff:g name="date_example" example="1917-12-06">%s</xliff:g></string>
     <string name="info_width">Kilven koko kataloginäkymässä määräytyy vertaamalla leveyttä muihin kilpiin.</string>
     <string name="download_msg_success">Lataus onnistui</string>
     <string name="download_msg_failure">Lataus epäonnistui</string>
