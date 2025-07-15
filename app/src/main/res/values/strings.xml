@@ -226,9 +226,9 @@
     <string name="help_import_unused_values_p1" translatable="false">The same row structure always applies, whether you\'re importing in \"All plates\", \"Wishlist\", or \"Archive\".</string>
     <string name="help_import_unused_values_p2" translatable="false">However, depending on the type – \"All plates\", \"Wishlist\", or \"Archive\" – there are always some values that will remain unused, and therefore have no effect on the import.</string>
     <string name="help_import_unused_values_p3" translatable="false">Both \"All plates\" and \"Archive\" use most values, but some will still remain unused.</string>
-    <string name="help_import_unused_values_p4" translatable="false">\"All plates\" and \"Archive\" do use most values, but there are still some that will remain unused – as specified below.</string>
+    <string name="help_import_unused_values_p4" translatable="false">\"All plates\" and \"Archive\" do use most values, but there are still some that will remain unused, as specified below.</string>
     <string name="help_import_unused_values_p5" translatable="false">\"Archive\" does not use the following 2 values.</string>
-    <string name="help_import_unused_values_p6" translatable="false">\"Wishlist\" has the most unused values – only the following values are used.</string>
+    <string name="help_import_unused_values_p6" translatable="false">\"Wishlist\" has the most unused values – only the following values are being used.</string>
     <string name="help_import_a_p4" translatable="false">You can choose whether to enclose values within quotes (\"example\") or not.</string>
     <string name="show_values" translatable="false">Show values</string>
     <string name="hide_values" translatable="false">Hide values</string>

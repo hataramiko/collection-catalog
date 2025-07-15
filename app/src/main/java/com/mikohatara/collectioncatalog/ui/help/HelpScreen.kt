@@ -228,7 +228,7 @@ private fun ImportPage(
     HelpPageHeader(stringResource(R.string.help_import_use_spreadsheet))
     HelpPageParagraph(stringResource(R.string.help_import_p7))
     HelpPageHeader("Pay attention")//stringResource(R.string.attention))
-    HelpPageSubheader(/*stringResource(R.string.date)*/"Dates", 8)
+    HelpPageSubheader(/*stringResource(R.string.date)*/"Dates")
     HelpPageParagraph(stringResource(R.string.info_date_format, getDateExample()))
     HelpPageSubheader("Numeral values")
     //HelpPageHorizontalDivider()
@@ -260,8 +260,8 @@ private fun HelpPageHeader(text: String) {
 }
 
 @Composable
-private fun HelpPageSubheader(text: String, spacerSize: Int = 16) {
-    Spacer(modifier = Modifier.height(spacerSize.dp))
+private fun HelpPageSubheader(text: String) {
+    Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
@@ -313,6 +313,8 @@ private fun HelpPageValueList(
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     val buttonText = if (!isExpanded) buttonTextShow else buttonTextHide
     val onClick = remember { Modifier.clickable { isExpanded = !isExpanded } }
+    val buttonColor = colorScheme.primary
+    val valuesColor = colorScheme.onSurfaceVariant
 
     Column(modifier = Modifier.animateContentSize()) {
         Row(
@@ -324,7 +326,7 @@ private fun HelpPageValueList(
         ) {
             Text(
                 text = buttonText,
-                color = colorScheme.primary,
+                color = buttonColor,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(16.dp)
             )
@@ -332,14 +334,14 @@ private fun HelpPageValueList(
                 imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
                     else Icons.Rounded.KeyboardArrowDown,
                 contentDescription = null,
-                tint = colorScheme.primary,
+                tint = buttonColor,
                 modifier = Modifier.padding(16.dp)
             )
         }
         if (isExpanded) {
             HelpPageParagraph(
                 text = values,
-                color = colorScheme.secondary,
+                color = valuesColor,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))

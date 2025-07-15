@@ -349,12 +349,12 @@ private fun DataFieldContent(
             Text(
                 text = label,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(end = 8.dp).weight(0.9f)
+                modifier = Modifier.padding(end = 8.dp)
             )
             Text(
                 text = value,
                 textAlign = TextAlign.End,
-                modifier = Modifier.padding(horizontal = 8.dp).weight(1f)
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
     } else {

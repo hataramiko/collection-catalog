@@ -585,23 +585,23 @@ private fun Table(
             val percentage = (quantity.toFloat() / allItems.toFloat())
                 .toPercentage(userPreferences.userCountry)
 
-            Row(modifier = Modifier.padding(/*horizontal = */4.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(4.dp)
+            ) {
                 Text(
                     row.takeIf { !it.isNullOrEmpty() } ?: stringResource(R.string.not_applicable),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f).padding(end = 8.dp)
                 )
                 Text(
                     quantity,
-                    modifier = Modifier
-                        .align(alignment = Alignment.CenterVertically)
-                        .weight(0.3f)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(0.3f).padding(end = 8.dp)
                 )
                 Text(
                     percentage,
                     textAlign = TextAlign.End,
-                    modifier = Modifier
-                        .align(alignment = Alignment.CenterVertically)
-                        .weight(0.4f)
+                    modifier = Modifier.weight(0.5f)
                 )
             }
             if (row != rows.last()) {
