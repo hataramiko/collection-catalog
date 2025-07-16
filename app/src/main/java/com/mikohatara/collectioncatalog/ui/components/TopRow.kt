@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -36,7 +39,8 @@ fun TopRow(
     isHidden: Boolean,
     isAtTop: Boolean,
     onSortByClick: () -> Unit,
-    onFilterClick: () -> Unit
+    onFilterClick: () -> Unit,
+    filterCount: Int
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val backgroundColor by animateColorAsState(
@@ -95,20 +99,37 @@ fun TopRow(
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    OutlinedButton(
-                        onClick = { onFilterClick() },
-                        modifier = Modifier
-                            .weight(1f)
+                    BadgedBox(
+                        modifier = Modifier.weight(1f),
+                        badge = {
+                            if (filterCount > 0) {
+                                Box(
+                                    contentAlignment = Alignment.TopEnd,
+                                    modifier = Modifier.fillMaxWidth().padding(end = 16.dp)
+                                ) {
+                                    Badge {
+                                        Text(filterCount.toString())
+                                    }
+                                }
+                            }
+                        }
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.rounded_filter),
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 6.dp)
-                        )
-                        Text(
-                            stringResource(R.string.filter),
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
+                        OutlinedButton(
+                            onClick = { onFilterClick() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                            //.weight(1f)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.rounded_filter),
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 6.dp)
+                            )
+                            Text(
+                                stringResource(R.string.filter),
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                        }
                     }
                 }
             }

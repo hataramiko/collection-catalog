@@ -205,6 +205,7 @@ private fun WishlistScreen(
                 FilterBottomSheet(
                     onDismiss = { viewModel.showFilterBottomSheet.value = false },
                     filters = uiState.filters,
+                    filterCount = viewModel.getFilterCount(),
                     onApply = { viewModel.setFilter() },
                     onReset = { viewModel.resetFilter() },
                     countries = viewModel.getCountries(),
@@ -283,7 +284,13 @@ private fun WishlistScreenContent(
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
-            TopRow(isTopRowHidden, isAtTop.value, onSortByClick, onFilterClick)
+            TopRow(
+                isTopRowHidden,
+                isAtTop.value,
+                onSortByClick,
+                onFilterClick,
+                uiState.activeFilterCount
+            )
         }
         if (uiState.isLoading) {
             item {

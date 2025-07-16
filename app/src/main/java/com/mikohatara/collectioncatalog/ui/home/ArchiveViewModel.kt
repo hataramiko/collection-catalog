@@ -29,6 +29,7 @@ data class ArchiveUiState(
     val items: List<FormerPlate> = emptyList(),
     val sortBy: SortBy = SortBy.START_DATE_NEWEST,
     val filters: FilterData = FilterData(),
+    val activeFilterCount: Int = 0,
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
     val isSearchActive: Boolean = false,
@@ -153,6 +154,23 @@ class ArchiveViewModel @Inject constructor(
         return sortByOptions
     }
 
+    fun getFilterCount(): Int {
+        val filters = _uiState.value.filters
+        val countrySize = filters.country.size
+        val typeSize = filters.type.size
+        val locationSize = filters.location.size
+
+        val yearSliderRange = getYearSliderRange()
+        val periodSize = if (
+            isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
+        ) 1 else 0
+        val yearSize = if (
+            isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
+        ) 1 else 0
+
+        return countrySize + typeSize + locationSize + periodSize + yearSize
+    }
+
     fun openFilterBottomSheet() {
         setFilterSliderStartPositions()
         showFilterBottomSheet.value = true
@@ -202,7 +220,7 @@ class ArchiveViewModel @Inject constructor(
                 else -> true
             }
         }
-        _uiState.update { it.copy(items = filteredItems) }
+        _uiState.update { it.copy(items = filteredItems, activeFilterCount = getFilterCount()) }
         setSortBy(uiState.value.sortBy)
     }
 
@@ -343,6 +361,13 @@ class ArchiveViewModel @Inject constructor(
             _uiState.update { it.copy(
                 yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
         }
+    }
+
+    private fun isSliderActive(
+        sliderPosition: ClosedRange<Float>?,
+        defaultRange: ClosedRange<Float>
+    ): Boolean {
+        return sliderPosition != null && sliderPosition != defaultRange
     }
 
     private fun setPeriodFilter() {

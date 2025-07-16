@@ -119,6 +119,7 @@ fun SortByBottomSheet(
 fun FilterBottomSheet(
     onDismiss: () -> Unit,
     filters: FilterData,
+    filterCount: Int,
     onApply: () -> Unit,
     onReset: () -> Unit,
     countries: Set<String>,
@@ -263,13 +264,7 @@ fun FilterBottomSheet(
         FilterFooter(
             sheetState = sheetState,
             sheetHeight = sheetHeight,
-            filterCount = filters.country.size + filters.type.size + filters.location.size +
-                if (yearSliderRange != null && periodSliderPosition != null &&
-                    periodSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
-                ) 1 else 0 +
-                if (yearSliderRange != null && yearSliderPosition != null &&
-                    yearSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
-                ) 1 else 0,
+            filterCount = filterCount,
             onReset = { onReset() },
             onApply = {
                 onApply()
@@ -637,8 +632,13 @@ private fun FilterFooter(
                     modifier = Modifier.weight(1f),
                     badge = {
                         if (filterCount > 0) {
-                            Badge {
-                                Text(filterCount.toString())
+                            Box(
+                                contentAlignment = Alignment.TopEnd,
+                                modifier = Modifier.fillMaxWidth().padding(end = 16.dp)
+                            ) {
+                                Badge {
+                                    Text(filterCount.toString())
+                                }
                             }
                         }
                     }
