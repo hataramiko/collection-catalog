@@ -379,14 +379,14 @@ class HomeViewModel @Inject constructor(
                                 it.copy(items = collection.plates, isLoading = false)
                             }
                         }
-                        setSortBy(uiState.value.sortBy)
+                        setFilter()
                     }
             } else {
                 plateRepository.getAllPlatesStream().collect { items ->
                     _allItems.clear()
                     _allItems.addAll(items)
                     _uiState.update { it.copy(items = items, isLoading = false) }
-                    setSortBy(uiState.value.sortBy)
+                    setFilter()
                 }
             }
         }

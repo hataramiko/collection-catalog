@@ -71,7 +71,7 @@ class ArchiveViewModel @Inject constructor(
                 _allItems.clear()
                 _allItems.addAll(items)
                 _uiState.update { it.copy(items = items, isLoading = false) }
-                setSortBy(uiState.value.sortBy)
+                setFilter()
             }
         }
     }

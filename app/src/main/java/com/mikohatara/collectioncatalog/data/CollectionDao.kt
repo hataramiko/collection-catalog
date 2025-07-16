@@ -33,9 +33,9 @@ interface CollectionDao {
     fun getAllCollections(): Flow<List<Collection>>
 
     @Query("SELECT * from collections WHERE id = :id")
-    fun getCollection(id: Int): Flow<Collection>
+    fun getCollection(id: Int): Flow<Collection?>
 
     @Transaction
     @Query("SELECT * from collections WHERE id = :id")
-    fun getCollectionWithPlates(id: Int): Flow<CollectionWithPlates>
+    fun getCollectionWithPlates(id: Int): Flow<CollectionWithPlates?>
 }
