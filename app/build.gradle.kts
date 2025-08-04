@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId = "com.mikohatara.collectioncatalog"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 8
         versionName = "0.4.0"
 
