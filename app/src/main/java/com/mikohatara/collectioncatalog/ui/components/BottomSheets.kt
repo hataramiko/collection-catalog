@@ -365,30 +365,37 @@ fun SelectCollectionBottomSheet(
                         )
                 ) {
                     if (collection.emoji != null) {
-                        Text(
-                            text = collection.emoji,
-                            modifier = Modifier.padding(start = 30.dp, end = 16.dp)
-                        )
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .padding(start = 30.dp)
+                                .size(24.dp)
+                        ) {
+                            Text(text = collection.emoji)
+                        }
                     } else {
                         IconCollectionLabel(
                             color = collection.color.color,
-                            modifier = Modifier.padding(start = 30.dp, end = 16.dp)
+                            modifier = Modifier.padding(start = 30.dp)
                         )
                     }
                     Text(
                         text = collection.name,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = false,
-                        modifier = Modifier.padding(end = 16.dp, top = 8.dp, bottom = 8.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                            .weight(1f)
                     )
-                    Spacer(modifier = Modifier.weight(1f))
                     if (collection.name == selectedCollection) {
                         Icon(
                             imageVector = Icons.Rounded.Check,
                             tint = colorScheme.primary,
                             contentDescription = null,
-                            modifier = Modifier.padding(end = 30.dp)
+                            modifier = Modifier.padding(start = 4.dp, end = 30.dp)
                         )
+                    } else {
+                        Spacer(modifier = Modifier.width(16.dp))
                     }
                 }
             }

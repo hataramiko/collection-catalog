@@ -23,7 +23,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -49,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
@@ -158,6 +158,7 @@ private fun StatsScreenContent(
                 collection = uiState.collection,
                 collectionSize = uiState
                     .collectionPlates.size.toFormattedString(userPreferences.userCountry),
+                percentageOfAllPlates = uiState.collectionPercentage.toPercentage(userPreferences.userCountry),
                 onClick = { onShowCollectionBottomSheet() }
             )
             Row(modifier = Modifier.padding(bottom = 32.dp)) {
@@ -270,19 +271,19 @@ private fun StatsHeaderCard(
 ) {
     val onClick = remember { Modifier.clickable { onClick() } }
     val cardColor = if (isSelected) {
-        MaterialTheme.colorScheme.surfaceContainerHighest
+        colorScheme.surfaceContainerHighest
     } else {
-        MaterialTheme.colorScheme.surfaceContainer
+        colorScheme.surfaceContainer
     }
     val iconColor = if (isSelected) {
-        MaterialTheme.colorScheme.primary
+        colorScheme.primary
     } else {
-        MaterialTheme.colorScheme.outline
+        colorScheme.outline
     }
     val textColor = if (isSelected) {
         LocalContentColor.current
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        colorScheme.onSurfaceVariant
     }
 
     Card(
@@ -302,7 +303,7 @@ private fun StatsHeaderCard(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.offset(x = (-2).dp)
+                    modifier = Modifier.offset(x = (-2).dp).padding(horizontal = 8.dp)
                 ) {
                     Icon(
                         painter = painter,
@@ -334,25 +335,26 @@ private fun StatsHeaderCard(
 private fun CollectionCard(
     collection: Collection? = null,
     collectionSize: String,
+    percentageOfAllPlates: String,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 16.sp,
     onClick: () -> Unit
 ) {
     val onClick = remember { Modifier.clickable { onClick() } }
     val cardColor = if (collection != null) {
-        MaterialTheme.colorScheme.surfaceContainerHighest
+        colorScheme.surfaceContainerHighest
     } else {
-        MaterialTheme.colorScheme.surfaceContainerLowest
+        colorScheme.surfaceContainerLowest
     }
     val iconColor = if (collection != null) {
-        MaterialTheme.colorScheme.primary
+        colorScheme.primary
     } else {
-        MaterialTheme.colorScheme.outline
+        colorScheme.outline
     }
     val textColor = if (collection != null) {
         LocalContentColor.current
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        colorScheme.onSurfaceVariant
     }
 
     Card(
@@ -373,7 +375,7 @@ private fun CollectionCard(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.offset(x = (-2).dp)
+                    modifier = Modifier.offset(x = (-2).dp).padding(horizontal = 8.dp)
                 ) {
                     if (collection != null) {
                         if (collection.emoji != null) {
@@ -383,10 +385,23 @@ private fun CollectionCard(
                                 modifier = Modifier.padding(end = 8.dp)
                             )
                         } else {
-                            IconCollectionLabel(
-                                color = collection.color.color,
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
+                            val collectionColor = collection.color.color
+                            if (collectionColor != CollectionColor.DEFAULT.color) {
+                                IconCollectionLabel(
+                                    color = collectionColor,
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                            } else {
+                                // As iconColor will not equal CollectionColor.DEFAULT.color,
+                                // this is a workaround to avoid the hue in the middle.
+                                // TODO improve either this or the IconCollectionLabel
+                                Icon(
+                                    painter = painterResource(R.drawable.rounded_label),
+                                    contentDescription = null,
+                                    tint = iconColor,
+                                    modifier = Modifier.offset(x = 1.dp).padding(end = 8.dp)
+                                )
+                            }
                         }
                     } else {
                         Icon(
@@ -410,6 +425,16 @@ private fun CollectionCard(
                         fontSize = fontSize * 1.5,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 10.dp)
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.percentage_of_plates,
+                            percentageOfAllPlates,
+                            percentageOfAllPlates
+                        ),
+                        color = colorScheme.outlineVariant,
+                        fontSize = fontSize * 0.8,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
             }
@@ -468,7 +493,7 @@ private fun CostCardContent(uiState: StatsUiState) {
             Text(uiState.combinedCostNetPerPlate)
         }
         HorizontalDivider(
-            color = MaterialTheme.colorScheme.surface,
+            color = colorScheme.surface,
             modifier = Modifier.padding(top = 20.dp)
         )
         Text(stringResource(R.string.current_selection), modifier = Modifier.padding(vertical = 16.dp))
@@ -573,7 +598,7 @@ private fun Table(
     modifier: Modifier = Modifier
 ) {
     val allItems = items.size
-    val dividerColor = MaterialTheme.colorScheme.surface
+    val dividerColor = colorScheme.surface
 
     Column(
         modifier = modifier.padding(horizontal = 16.dp)

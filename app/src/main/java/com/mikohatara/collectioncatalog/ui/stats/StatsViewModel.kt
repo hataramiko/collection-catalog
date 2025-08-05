@@ -34,6 +34,7 @@ data class StatsUiState(
     val activeItems: List<Item> = emptyList(),
     val collection: Collection? = null,
     val collectionPlates: List<Plate> = emptyList(),
+    val collectionPercentage: Float = 0f,
     val userCountry: String = "FI",
     // Sets for tables
     val countries: Set<String> = emptySet(),
@@ -376,15 +377,22 @@ class StatsViewModel @Inject constructor(
         viewModelScope.launch {
             collectionRepository.getCollectionWithPlatesStream(collection.id).collect {
                 val collectionPlates = it?.plates ?: emptyList()
+                val collectionSize = collectionPlates.size.toFloat()
                 _uiState.update {
-                    it.copy(collection = collection, collectionPlates = collectionPlates)
+                    it.copy(
+                        collection = collection,
+                        collectionPlates = collectionPlates,
+                        collectionPercentage = getPercentageOfAllPlates(collectionSize)
+                    )
                 }
             }
         }
     }
 
     fun clearCollection() {
-        _uiState.update { it.copy(collection = null, collectionPlates = emptyList()) }
+        _uiState.update {
+            it.copy(collection = null, collectionPlates = emptyList(), collectionPercentage = 0f)
+        }
     }
 
     private fun getPlates() {
@@ -403,5 +411,9 @@ class StatsViewModel @Inject constructor(
         plateRepository.getAllFormerPlatesStream().onEach { items ->
             _uiState.value = _uiState.value.copy(archive = items)
         }.launchIn(viewModelScope)
+    }
+
+    private fun getPercentageOfAllPlates(comparisonSize: Float): Float {
+        return comparisonSize / uiState.value.allPlates.size.toFloat()
     }
 }
