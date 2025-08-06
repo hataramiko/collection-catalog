@@ -191,4 +191,6 @@
     <string name="punctuation_colon">：</string>
     <string name="add_plate_redirect_msg">プレートを追加には、「すべてのプレート」へ移動してください</string>
     <string name="info_stats_cost">総額 =\n「すべてのプレート」+「アーカイブ」の費用\n\n正味 =\n「総額」–「アーカイブ」の価格</string>
+    <string name="deletion_message_wishlist">欲しい物は削除されました</string>
+    <string name="deletion_message_plate">｢<xliff:g name="reg_no" example="ABC-123">%s</xliff:g>｣ が削除されました</string>
 </resources>

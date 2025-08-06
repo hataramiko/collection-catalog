@@ -89,6 +89,11 @@ private fun CollectionEntryScreen(
     } else {
         stringResource(R.string.create_collection)
     }
+    val deletionToast = stringResource(
+        R.string.deletion_message_plate,
+        uiState.collection?.name ?: ""
+    )
+
     BackHandler(enabled = true) {
         onBackBehavior()
     }
@@ -149,6 +154,7 @@ private fun CollectionEntryScreen(
                 showDeletionDialog = false
                 coroutineScope.launch {
                     viewModel.deleteCollection()
+                    viewModel.showToast(context, deletionToast)
                     onBack()
                 }
             },

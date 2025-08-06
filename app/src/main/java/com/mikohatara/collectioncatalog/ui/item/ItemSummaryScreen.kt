@@ -136,6 +136,9 @@ private fun ItemSummaryScreen(
         ) to stringResource(R.string.transfer_from_plates_dialog_text)
         else -> "" to ""
     }
+    val deletionToast = if (uiState.item is Item.WantedPlateItem) {
+        stringResource(R.string.deletion_message_wishlist)
+    } else stringResource(R.string.deletion_message_plate, uiState.itemDetails.regNo ?: "")
     val transferToast = when (uiState.item) {
         is Item.WantedPlateItem -> stringResource(R.string.transferred_from_wishlist_message)
         is Item.PlateItem -> stringResource(
@@ -193,6 +196,7 @@ private fun ItemSummaryScreen(
                 showDeletionDialog = false
                 coroutineScope.launch {
                     viewModel.deleteItem()
+                    viewModel.showToast(context, deletionToast)
                     onBack()
                 }
             },

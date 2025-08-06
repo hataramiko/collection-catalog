@@ -1,6 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.collection
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -85,6 +88,13 @@ class CollectionEntryViewModel @Inject constructor(
         } ?: CollectionColor.DEFAULT
         _uiState.update {
             it.copy(collectionDetails = it.collectionDetails.copy(color = newColor))
+        }
+    }
+
+    fun showToast(context: Context, message: String) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
 
