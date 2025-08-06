@@ -303,7 +303,7 @@ private fun StatsHeaderCard(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.offset(x = (-2).dp).padding(horizontal = 8.dp)
+                    modifier = Modifier.offset(x = (-2).dp)//.padding(horizontal = 8.dp)
                 ) {
                     Icon(
                         painter = painter,
@@ -432,7 +432,7 @@ private fun CollectionCard(
                             percentageOfAllPlates,
                             percentageOfAllPlates
                         ),
-                        color = colorScheme.outlineVariant,
+                        color = colorScheme.onSurfaceVariant,
                         fontSize = fontSize * 0.8,
                         modifier = Modifier.padding(top = 8.dp)
                     )
