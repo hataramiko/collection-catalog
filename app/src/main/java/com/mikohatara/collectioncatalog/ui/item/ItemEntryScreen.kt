@@ -45,6 +45,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -138,6 +139,9 @@ private fun ItemEntryScreen(
     } else {
         stringResource(R.string.add_item_title)
     }
+    val copyToast = stringResource(R.string.copied)
+    val pasteToast = stringResource(R.string.pasted)
+    val isPasteEnabled = viewModel.canPasteFromInternalClipboard.collectAsState()
     BackHandler(enabled = true) {
         onBackBehavior()
     }
@@ -156,8 +160,25 @@ private fun ItemEntryScreen(
                 onSave = onSaveBehavior,
                 saveIcon = saveButtonIcon,
                 isSaveEnabled = uiState.isValidEntry,
-                onCopy = { viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails) },
-                onPaste = { viewModel.pasteItemDetailsFromClipboard(context) }
+                onCopy = {
+                    viewModel.copyItemDetails()
+                    viewModel.showToast(context, copyToast)
+                    /*
+                    viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails)
+                    // From API 33 (TIRAMISU) onwards an automatic standard confirmation is shown.
+                    // Show a manual toast for older versions.
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        viewModel.showToast(context, copyToast)
+                    }*/
+                },
+                onPaste = {
+                    viewModel.pasteItemDetails()
+                    viewModel.showToast(context, pasteToast)
+                    /*
+                    viewModel.pasteItemDetailsFromClipboard(context)
+                    viewModel.showToast(context, pasteToast)*/
+                },
+                isPasteEnabled = isPasteEnabled.value
             )
         },
         content = { innerPadding ->

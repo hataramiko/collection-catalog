@@ -18,6 +18,7 @@ import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.InternalClipboardManager
 import com.mikohatara.collectioncatalog.util.toFormerPlate
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toPlate
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -43,7 +43,8 @@ data class ItemSummaryUiState(
 class ItemSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     userPreferencesRepository: UserPreferencesRepository,
-    private val plateRepository: PlateRepository
+    private val plateRepository: PlateRepository,
+    private val internalClipboardManager: InternalClipboardManager
 ) : ViewModel() {
     private val itemType: ItemType =
         savedStateHandle.get<String>(ITEM_TYPE)?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
@@ -119,6 +120,11 @@ class ItemSummaryViewModel @Inject constructor(
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("ItemDetails", jsonString)
         clipboard.setPrimaryClip(clip)
+    }
+
+    fun copyItemDetails() {
+        val itemDetails = _uiState.value.itemDetails
+        internalClipboardManager.copyItemDetails(itemDetails)
     }
 
     fun showToast(context: Context, message: String) {

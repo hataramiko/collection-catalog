@@ -287,7 +287,8 @@ fun ItemEntryTopAppBar(
     saveIcon: Painter,
     isSaveEnabled: Boolean = true,
     onCopy: (() -> Unit)? = null,
-    onPaste: (() -> Unit)? = null
+    onPaste: (() -> Unit)? = null,
+    isPasteEnabled: Boolean = false
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -344,7 +345,7 @@ fun ItemEntryTopAppBar(
                     },
                     painterResource = painterResource(R.drawable.rounded_content_paste),
                     text = stringResource(R.string.paste),
-                    enabled = onPaste != null
+                    enabled = onPaste != null && isPasteEnabled
                 )
             }
         },

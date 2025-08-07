@@ -4,7 +4,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -19,6 +22,7 @@ import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.InternalClipboardManager
 import com.mikohatara.collectioncatalog.util.filePathFromUri
 import com.mikohatara.collectioncatalog.util.pasteItemDetails
 import com.mikohatara.collectioncatalog.util.toFormerPlate
@@ -31,6 +35,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,7 +59,8 @@ class ItemEntryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     userPreferencesRepository: UserPreferencesRepository,
     private val plateRepository: PlateRepository,
-    private val collectionRepository: CollectionRepository
+    private val collectionRepository: CollectionRepository,
+    private val internalClipboardManager: InternalClipboardManager
 ) : ViewModel() {
     private val itemType: ItemType =
         savedStateHandle.get<String>(ITEM_TYPE)?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
@@ -65,6 +71,13 @@ class ItemEntryViewModel @Inject constructor(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
             UserPreferences()
+        )
+    val canPasteFromInternalClipboard: StateFlow<Boolean> = internalClipboardManager.copiedItemDetails
+        .map { it != null }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = internalClipboardManager.canPasteItemDetails()
         )
 
     private val _allCollections = mutableStateListOf<Collection>()
@@ -185,6 +198,21 @@ class ItemEntryViewModel @Inject constructor(
         clipboard.setPrimaryClip(clip)
     }
 
+    fun copyItemDetails() {
+        val itemDetails = _uiState.value.itemDetails
+        internalClipboardManager.copyItemDetails(itemDetails)
+    }
+
+    fun pasteItemDetails() {
+        internalClipboardManager.pasteItemDetails()?.let {
+            val currentItemDetails = _uiState.value.itemDetails
+            val newItemDetails = currentItemDetails.pasteItemDetails(it)
+            updateUiState(newItemDetails)
+        } ?: run {
+            //TODO nothing to paste, internal clipboard was empty
+        }
+    }
+
     fun pasteItemDetailsFromClipboard(context: Context) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = clipboard.primaryClip
@@ -204,6 +232,13 @@ class ItemEntryViewModel @Inject constructor(
                     Log.e("ItemEntryViewModel", "Error pasting ItemDetails", e)
                 }
             }
+        }
+    }
+
+    fun showToast(context: Context, message: String) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
 

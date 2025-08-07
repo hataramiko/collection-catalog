@@ -136,6 +136,7 @@ private fun ItemSummaryScreen(
         ) to stringResource(R.string.transfer_from_plates_dialog_text)
         else -> "" to ""
     }
+    val copyToast = stringResource(R.string.copied)
     val deletionToast = if (uiState.item is Item.WantedPlateItem) {
         stringResource(R.string.deletion_message_wishlist)
     } else stringResource(R.string.deletion_message_plate, uiState.itemDetails.regNo ?: "")
@@ -166,8 +167,15 @@ private fun ItemSummaryScreen(
                 onEdit = onEdit,
                 onDelete = { showDeletionDialog = true },
                 onCopy = {
+                    viewModel.copyItemDetails()
+                    viewModel.showToast(context, copyToast)
+                    /*
                     viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails)
-                    //showCopyDialog = true
+                    // From API 33 (TIRAMISU) onwards an automatic standard confirmation is shown.
+                    // Show a manual toast for older versions.
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        viewModel.showToast(context, copyToast)
+                    }*/
                 },
                 onTransfer = onTransferLambda,
                 transferButtonText = transferButtonText,
