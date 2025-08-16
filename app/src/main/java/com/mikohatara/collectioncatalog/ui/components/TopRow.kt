@@ -75,7 +75,7 @@ fun TopRow(
                     bottomEnd = 26.dp
                 ),
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = 4.dp)
                     .requiredWidth(screenWidth.dp)
             ) {
                 Row(

@@ -126,21 +126,25 @@ private fun ItemEntryScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
-    val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
-    val onSaveBehavior = { viewModel.saveEntry(context); onBack() }
     val (saveButtonText, saveButtonIcon) = when (uiState.isNew) {
         true -> stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "") to
                 painterResource(R.drawable.rounded_save)
         false -> stringResource(R.string.save_edited_item, uiState.itemDetails.regNo ?: "") to
                 painterResource(R.drawable.rounded_save_as)
     }
-    val topBarTitle: String = if (!uiState.isNew) {
-        stringResource(R.string.edit_item_title, uiState.itemDetails.regNo ?: "")
+    val (topBarTitle, saveToast) = if (!uiState.isNew) {
+        stringResource(R.string.edit_item_title, uiState.itemDetails.regNo ?: "") to
+        stringResource(R.string.saved_old_item, uiState.itemDetails.regNo ?: "")
     } else {
-        stringResource(R.string.add_item_title)
+        stringResource(R.string.add_item_title) to
+        stringResource(R.string.saved_new_item, uiState.itemDetails.regNo ?: "")
     }
     val copyToast = stringResource(R.string.copied)
     val pasteToast = stringResource(R.string.pasted)
+    val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
+    val onSaveBehavior = {
+        viewModel.saveEntry(context); viewModel.showToast(context, saveToast); onBack()
+    }
     val isPasteEnabled = viewModel.canPasteFromInternalClipboard.collectAsState()
     BackHandler(enabled = true) {
         onBackBehavior()
@@ -163,20 +167,10 @@ private fun ItemEntryScreen(
                 onCopy = {
                     viewModel.copyItemDetails()
                     viewModel.showToast(context, copyToast)
-                    /*
-                    viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails)
-                    // From API 33 (TIRAMISU) onwards an automatic standard confirmation is shown.
-                    // Show a manual toast for older versions.
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                        viewModel.showToast(context, copyToast)
-                    }*/
                 },
                 onPaste = {
                     viewModel.pasteItemDetails()
                     viewModel.showToast(context, pasteToast)
-                    /*
-                    viewModel.pasteItemDetailsFromClipboard(context)
-                    viewModel.showToast(context, pasteToast)*/
                 },
                 isPasteEnabled = isPasteEnabled.value
             )

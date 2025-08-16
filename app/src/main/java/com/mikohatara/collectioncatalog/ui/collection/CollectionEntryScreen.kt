@@ -84,10 +84,12 @@ private fun CollectionEntryScreen(
     val topAppBarColors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     )
-    val topBarTitle: String = if (!uiState.isNew) { // Could be .collectionDetails.name below
-        stringResource(R.string.edit_item_title, uiState.collection?.name ?: "")
+    val (topBarTitle, saveToast) = if (!uiState.isNew) { // Could be .collectionDetails.name below
+        stringResource(R.string.edit_item_title, uiState.collection?.name ?: "") to
+        stringResource(R.string.saved_old_item, uiState.collectionDetails.name ?: "")
     } else {
-        stringResource(R.string.create_collection)
+        stringResource(R.string.create_collection) to
+        stringResource(R.string.saved_new_collection, uiState.collectionDetails.name ?: "")
     }
     val deletionToast = stringResource(
         R.string.deletion_message_plate,
@@ -123,6 +125,7 @@ private fun CollectionEntryScreen(
                 onPickColor = { showColorDialog = true },
                 onSave = {
                     viewModel.saveEntry()
+                    viewModel.showToast(context, saveToast)
                     onBack()
                 }
             )
@@ -173,7 +176,7 @@ private fun CollectionEntryScreenContent(
 ) {
     val (saveButtonIcon, saveButtonText) = when (uiState.isNew) {
         true -> painterResource(R.drawable.rounded_save) to stringResource(
-            R.string.save_added_item, uiState.collectionDetails.name ?: ""
+            R.string.save_new_collection, uiState.collectionDetails.name ?: ""
         )
         false -> painterResource(R.drawable.rounded_save_as) to stringResource(
             R.string.save_edited_item, uiState.collectionDetails.name ?: ""

@@ -245,4 +245,8 @@
     <string name="paste_failure">Pasting failed</string>
     <string name="copied">Copied</string>
     <string name="pasted">Pasted</string>
+    <string name="saved_new_item">Added <xliff:g name="reg_no" example="ABC-123">%s</xliff:g></string>
+    <string name="saved_old_item">Saved <xliff:g name="reg_no" example="ABC-123">%s</xliff:g></string>
+    <string name="saved_new_collection"><xliff:g name="collection_name" example="Collection">%s</xliff:g> has been created</string>
+    <string name="save_new_collection">Create <xliff:g name="collection_name" example="Collection">%s</xliff:g></string>
 </resources>

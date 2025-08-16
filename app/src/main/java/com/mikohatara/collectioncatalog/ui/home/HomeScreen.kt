@@ -12,7 +12,9 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -355,9 +357,9 @@ private fun HomeScreenContent(
                 }
             }
         } else {
-            /*item {
-                Spacer(modifier = Modifier.height(4.dp))
-            }*/
+            item { // an effectively empty item for improved TopRow manipulation
+                Spacer(modifier = Modifier.height(0.dp))
+            }
             items(items = itemList, key = { it.id }) { item ->
                 ItemCard(
                     title = item.uniqueDetails.regNo,
