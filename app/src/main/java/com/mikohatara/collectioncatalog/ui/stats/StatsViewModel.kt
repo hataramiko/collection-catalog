@@ -15,18 +15,24 @@ import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.data.WantedPlate
 import com.mikohatara.collectioncatalog.util.toCurrencyString
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class StatsUiState(
+    val isLoading: Boolean = true,
     val allPlates: List<Plate> = emptyList(),
     val wishlist: List<WantedPlate> = emptyList(),
     val archive: List<FormerPlate> = emptyList(),
@@ -72,15 +78,35 @@ class StatsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(StatsUiState())
     val uiState: StateFlow<StatsUiState> = _uiState.asStateFlow()
 
+    private var currentJob: Job? = null
+
     init {
         viewModelScope.launch {
-            getPlates()
-            getWishlist()
-            getArchive()
-            collectionRepository.getAllCollectionsStream().collect {
-                _allCollections.clear()
-                _allCollections.addAll(it)
+            val platesJob = launch {
+                val plates = plateRepository.getAllPlatesStream().first()
+                _uiState.update { it.copy(allPlates = plates) }
             }
+            val wishlistJob = launch {
+                val wishlist = plateRepository.getAllWantedPlatesStream().first()
+                _uiState.update { it.copy(wishlist = wishlist) }
+            }
+            val archiveJob = launch {
+                val archive = plateRepository.getAllFormerPlatesStream().first()
+                _uiState.update { it.copy(archive = archive) }
+            }
+            val collectionsJob = launch {
+                collectionRepository.getAllCollectionsStream().first {
+                    _allCollections.clear()
+                    _allCollections.addAll(it)
+                }
+            }
+
+            platesJob.join()
+            wishlistJob.join()
+            archiveJob.join()
+            collectionsJob.join()
+
+            if (_uiState.value.isLoading) _uiState.update { it.copy(isLoading = false) }
         }
 
         userPreferencesRepository.userPreferences.onEach { preferences ->
@@ -90,48 +116,63 @@ class StatsViewModel @Inject constructor(
         }.launchIn(viewModelScope)
 
         _uiState.onEach { state ->
-            val newActiveItems = getActiveItems()
-            val newCountries = getCountries(newActiveItems)
-            val newTypes = getTypes(newActiveItems)
-            val newSourceTypes = getSourceTypes(newActiveItems)
-            val newSourceCountries = getSourceCountries(newActiveItems)
-            val newArchivalReasons = getArchivalReasons(newActiveItems)
-            val newRecipientCountries = getRecipientCountries(newActiveItems)
-            val newCombinedCostGross = getCombinedCost()
-            val newCombinedCostGrossPerPlate = getCombinedCost(isPerPlate =  true)
-            val newCombinedCostNet = getCombinedCost(isNet = true)
-            val newCombinedCostNetPerPlate = getCombinedCost(isNet = true, isPerPlate = true)
-            val newSelectionCost = getSelectionCost()
-            val newSelectionCostPerPlate = getSelectionCost(isPerPlate = true)
-            val newArchivePriceSum = getArchivePriceSum()
+            currentJob?.cancel()
 
-            _uiState.update {
-                it.copy(
-                    activeItems = newActiveItems,
-                    countries = newCountries,
-                    types = newTypes,
-                    sourceTypes = newSourceTypes,
-                    sourceCountries = newSourceCountries,
-                    archivalReasons = newArchivalReasons,
-                    recipientCountries = newRecipientCountries,
-                    combinedCostGross = newCombinedCostGross,
-                    combinedCostGrossPerPlate = newCombinedCostGrossPerPlate,
-                    combinedCostNet = newCombinedCostNet,
-                    combinedCostNetPerPlate = newCombinedCostNetPerPlate,
-                    selectionCost = newSelectionCost,
-                    selectionCostPerPlate = newSelectionCostPerPlate,
-                    archivePriceSum = newArchivePriceSum
-                )
-            }
+            if (!state.isLoading) {
+                currentJob = viewModelScope.launch(Dispatchers.Default) {
+                    val newActiveItems = getActiveItems(state)
+                    ensureActive()
+                    val newCountries = getCountries(newActiveItems)
+                    val newTypes = getTypes(newActiveItems)
+                    ensureActive()
+                    val newSourceTypes = getSourceTypes(newActiveItems)
+                    val newSourceCountries = getSourceCountries(newActiveItems)
+                    ensureActive()
+                    val newArchivalReasons = getArchivalReasons(newActiveItems)
+                    val newRecipientCountries = getRecipientCountries(newActiveItems)
+                    ensureActive()
+                    val newCombinedCostGross = getCombinedCost()
+                    val newCombinedCostGrossPerPlate = getCombinedCost(isPerPlate =  true)
+                    val newCombinedCostNet = getCombinedCost(isNet = true)
+                    val newCombinedCostNetPerPlate = getCombinedCost(isNet = true, isPerPlate = true)
+                    val newSelectionCost = getSelectionCost()
+                    val newSelectionCostPerPlate = getSelectionCost(isPerPlate = true)
+                    val newArchivePriceSum = getArchivePriceSum()
+                    ensureActive()
+
+                    if (isActive && _uiState.value.activeItemType == state.activeItemType) {
+                        val newState = state.copy(
+                            activeItems = newActiveItems,
+                            countries = newCountries,
+                            types = newTypes,
+                            sourceTypes = newSourceTypes,
+                            sourceCountries = newSourceCountries,
+                            archivalReasons = newArchivalReasons,
+                            recipientCountries = newRecipientCountries,
+                            combinedCostGross = newCombinedCostGross,
+                            combinedCostGrossPerPlate = newCombinedCostGrossPerPlate,
+                            combinedCostNet = newCombinedCostNet,
+                            combinedCostNetPerPlate = newCombinedCostNetPerPlate,
+                            selectionCost = newSelectionCost,
+                            selectionCostPerPlate = newSelectionCostPerPlate,
+                            archivePriceSum = newArchivePriceSum
+                        )
+                        _uiState.update { newState }
+                    }
+                }
+            } else currentJob?.cancel()
         }.launchIn(viewModelScope)
     }
 
     fun setActiveItemType(itemType: ItemType) {
-        _uiState.update { it.copy(activeItemType = itemType) }
+        viewModelScope.launch {
+            clearActiveItems()
+            _uiState.update { it.copy(activeItemType = itemType) }
+        }
     }
 
-    fun getActiveItems(): List<Item> {
-        return when (uiState.value.activeItemType) {
+    fun getActiveItems(state: StatsUiState): List<Item> {
+        return when (state.activeItemType) {
             ItemType.PLATE -> if (uiState.value.collection != null) {
                 uiState.value.collectionPlates.map { Item.PlateItem(it) }
             } else uiState.value.allPlates.map { Item.PlateItem(it) }
@@ -255,30 +296,43 @@ class StatsViewModel @Inject constructor(
     }
 
     fun getPropertyExtractor(property: String): (Item) -> String? {
-        return when (uiState.value.activeItemType) {
-            ItemType.PLATE -> { item ->
-                val plate = (item as Item.PlateItem).plate
-                if (property == "country") plate.commonDetails.country
-                else if (property == "type") plate.commonDetails.type
-                else if (property == "sourceType") plate.source.type
-                else if (property == "sourceCountry") plate.source.country
-                else ""
-            }
-            ItemType.WANTED_PLATE -> { item ->
-                val wantedPlate = (item as Item.WantedPlateItem).wantedPlate
-                if (property == "country") wantedPlate.commonDetails.country
-                else if (property == "type") wantedPlate.commonDetails.type
-                else ""
-            }
-            ItemType.FORMER_PLATE -> { item ->
-                val formerPlate = (item as Item.FormerPlateItem).formerPlate
-                if (property == "country") formerPlate.commonDetails.country
-                else if (property == "type") formerPlate.commonDetails.type
-                else if (property == "sourceType") formerPlate.source.type
-                else if (property == "sourceCountry") formerPlate.source.country
-                else if (property == "archivalReason") formerPlate.archivalDetails.archivalReason
-                else if (property == "recipientCountry") formerPlate.archivalDetails.recipientCountry
-                else ""
+        val itemType = _uiState.value.activeItemType
+
+        return { item ->
+            when (itemType) {
+                ItemType.PLATE -> {
+                    if (item is Item.PlateItem) {
+                        when (property) {
+                            "country" -> item.plate.commonDetails.country
+                            "type" -> item.plate.commonDetails.type
+                            "sourceType" -> item.plate.source.type
+                            "sourceCountry" -> item.plate.source.country
+                            else -> ""
+                        }
+                    } else ""
+                }
+                ItemType.WANTED_PLATE -> {
+                    if (item is Item.WantedPlateItem) {
+                        when (property) {
+                            "country" -> item.wantedPlate.commonDetails.country
+                            "type" -> item.wantedPlate.commonDetails.type
+                            else -> ""
+                        }
+                    } else ""
+                }
+                ItemType.FORMER_PLATE -> {
+                    if (item is Item.FormerPlateItem) {
+                        when (property) {
+                            "country" -> item.formerPlate.commonDetails.country
+                            "type" -> item.formerPlate.commonDetails.type
+                            "sourceType" -> item.formerPlate.source.type
+                            "sourceCountry" -> item.formerPlate.source.country
+                            "archivalReason" -> item.formerPlate.archivalDetails.archivalReason
+                            "recipientCountry" -> item.formerPlate.archivalDetails.recipientCountry
+                            else -> ""
+                        }
+                    } else ""
+                }
             }
         }
     }
@@ -395,25 +449,21 @@ class StatsViewModel @Inject constructor(
         }
     }
 
-    private fun getPlates() {
-        plateRepository.getAllPlatesStream().onEach { items ->
-            _uiState.value = _uiState.value.copy(allPlates = items)
-        }.launchIn(viewModelScope)
-    }
-
-    private fun getWishlist() {
-        plateRepository.getAllWantedPlatesStream().onEach { items ->
-            _uiState.value = _uiState.value.copy(wishlist = items)
-        }.launchIn(viewModelScope)
-    }
-
-    private fun getArchive() {
-        plateRepository.getAllFormerPlatesStream().onEach { items ->
-            _uiState.value = _uiState.value.copy(archive = items)
-        }.launchIn(viewModelScope)
-    }
-
     private fun getPercentageOfAllPlates(comparisonSize: Float): Float {
         return comparisonSize / uiState.value.allPlates.size.toFloat()
+    }
+
+    private fun clearActiveItems() {
+        _uiState.update {
+            it.copy(
+                activeItems = emptyList(),
+                countries = emptySet(),
+                types = emptySet(),
+                sourceTypes = emptySet(),
+                sourceCountries = emptySet(),
+                archivalReasons = emptySet(),
+                recipientCountries = emptySet()
+            )
+        }
     }
 }

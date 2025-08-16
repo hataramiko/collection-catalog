@@ -30,7 +30,11 @@ fun Float.toPercentage(countryCode: String): String {
         minimumFractionDigits = 2
     }
 
-    return format.format(this)
+    return if (this < 0f || this.isNaN() || this.isInfinite()) {
+        format.format(0f)
+    } else {
+        format.format(this)
+    }
 }
 
 fun Int.toMeasurementString(unit: String): String {

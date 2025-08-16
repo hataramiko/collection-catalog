@@ -56,6 +56,7 @@ import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.ExpandableCard
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.InfoDialog
+import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.SelectCollectionBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.StatsTopAppBar
 import com.mikohatara.collectioncatalog.util.toFormattedString
@@ -140,121 +141,129 @@ private fun StatsScreenContent(
     val propertyExtractorRecipientCountry = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("recipientCountry") }
 
-    LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
-        item {
-            StatsHeaderCard(
-                isSelected = uiState.activeItemType == ItemType.PLATE && uiState.collection == null,
-                message = stringResource(R.string.all_plates),
-                amount = uiState.allPlates.size.toFormattedString(userPreferences.userCountry),
-                painter = painterResource(R.drawable.rounded_newsstand),
-                modifier = Modifier.padding(top = 20.dp),
-                fontSize = 18.sp,
-                onClick = {
-                    viewModel.setActiveItemType(ItemType.PLATE)
-                    viewModel.clearCollection()
-                }
-            )
-            CollectionCard(
-                collection = uiState.collection,
-                collectionSize = uiState
-                    .collectionPlates.size.toFormattedString(userPreferences.userCountry),
-                percentageOfAllPlates = uiState.collectionPercentage.toPercentage(userPreferences.userCountry),
-                onClick = { onShowCollectionBottomSheet() }
-            )
-            Row(modifier = Modifier.padding(bottom = 32.dp)) {
+    if (uiState.isLoading) {
+        Loading()
+    } else {
+        LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
+            item {
                 StatsHeaderCard(
-                    isSelected = uiState.activeItemType == ItemType.WANTED_PLATE,
-                    message = stringResource(R.string.wishlist),
-                    amount = uiState.wishlist.size.toFormattedString(userPreferences.userCountry),
-                    painter = painterResource(R.drawable.rounded_heart),
-                    modifier = Modifier.weight(1f),
+                    isSelected = uiState.activeItemType == ItemType.PLATE && uiState.collection == null,
+                    message = stringResource(R.string.all_plates),
+                    amount = uiState.allPlates.size
+                        .toFormattedString(userPreferences.userCountry),
+                    painter = painterResource(R.drawable.rounded_newsstand),
+                    modifier = Modifier.padding(top = 20.dp),
+                    fontSize = 18.sp,
                     onClick = {
-                        viewModel.setActiveItemType(ItemType.WANTED_PLATE)
+                        viewModel.setActiveItemType(ItemType.PLATE)
                         viewModel.clearCollection()
                     }
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                StatsHeaderCard(
-                    isSelected = uiState.activeItemType == ItemType.FORMER_PLATE,
-                    message = stringResource(R.string.archive),
-                    amount = uiState.archive.size.toFormattedString(userPreferences.userCountry),
-                    painter = painterResource(R.drawable.rounded_archive),
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        viewModel.setActiveItemType(ItemType.FORMER_PLATE)
-                        viewModel.clearCollection()
+                CollectionCard(
+                    collection = uiState.collection,
+                    collectionSize = uiState.collectionPlates.size
+                        .toFormattedString(userPreferences.userCountry),
+                    percentageOfAllPlates = uiState.collectionPercentage
+                        .toPercentage(userPreferences.userCountry),
+                    onClick = { onShowCollectionBottomSheet() }
+                )
+                Row(modifier = Modifier.padding(bottom = 32.dp)) {
+                    StatsHeaderCard(
+                        isSelected = uiState.activeItemType == ItemType.WANTED_PLATE,
+                        message = stringResource(R.string.wishlist),
+                        amount = uiState.wishlist.size
+                            .toFormattedString(userPreferences.userCountry),
+                        painter = painterResource(R.drawable.rounded_heart),
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.setActiveItemType(ItemType.WANTED_PLATE)
+                            viewModel.clearCollection()
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    StatsHeaderCard(
+                        isSelected = uiState.activeItemType == ItemType.FORMER_PLATE,
+                        message = stringResource(R.string.archive),
+                        amount = uiState.archive.size
+                            .toFormattedString(userPreferences.userCountry),
+                        painter = painterResource(R.drawable.rounded_archive),
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.setActiveItemType(ItemType.FORMER_PLATE)
+                            viewModel.clearCollection()
+                        }
+                    )
+                }
+            }
+            item {
+                ExpandableCard(
+                    label = stringResource(R.string.countries),
+                    modifier = Modifier.padding(bottom = 20.dp)
+                ) {
+                    SumRow(uiState.countries.size)
+                    Table(
+                        userPreferences = userPreferences,
+                        rows = uiState.countries,
+                        items = uiState.activeItems,
+                        propertyExtractor = propertyExtractorCountry
+                    )
+                }
+            }
+            item {
+                ExpandableCard(
+                    label = stringResource(R.string.types),
+                    modifier = Modifier.padding(bottom = 20.dp)
+                ) {
+                    SumRow(uiState.types.size)
+                    Table(
+                        userPreferences = userPreferences,
+                        rows = uiState.types,
+                        items = uiState.activeItems,
+                        propertyExtractor = propertyExtractorType
+                    )
+                }
+            }
+            if (uiState.activeItemType != ItemType.WANTED_PLATE) {
+                item {
+                    ExpandableCard(
+                        label = stringResource(R.string.cost),
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    ) {
+                        CostCardContent(uiState)
                     }
-                )
+                }
+                item {
+                    ExpandableCard(
+                        label = stringResource(R.string.source),
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    ) {
+                        SourceCardContent(
+                            uiState,
+                            userPreferences,
+                            propertyExtractorSourceType,
+                            propertyExtractorSourceCountry
+                        )
+                    }
+                }
             }
-        }
-        item {
-            ExpandableCard(
-                label = stringResource(R.string.countries),
-                modifier = Modifier.padding(bottom = 20.dp)
-            ) {
-                SumRow(uiState.countries.size)
-                Table(
-                    userPreferences = userPreferences,
-                    rows = uiState.countries,
-                    items = uiState.activeItems,
-                    propertyExtractor = propertyExtractorCountry
-                )
-            }
-        }
-        item {
-            ExpandableCard(
-                label = stringResource(R.string.types),
-                modifier = Modifier.padding(bottom = 20.dp)
-            ) {
-                SumRow(uiState.types.size)
-                Table(
-                    userPreferences = userPreferences,
-                    rows = uiState.types,
-                    items = uiState.activeItems,
-                    propertyExtractor = propertyExtractorType
-                )
-            }
-        }
-        if (uiState.activeItemType != ItemType.WANTED_PLATE) {
-            item {
-                ExpandableCard(
-                    label = stringResource(R.string.cost),
-                    modifier = Modifier.padding(bottom = 20.dp)
-                ) {
-                    CostCardContent(uiState)
+            if (uiState.activeItemType == ItemType.FORMER_PLATE) {
+                item {
+                    ExpandableCard(
+                        label = stringResource(R.string.archive),
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    ) {
+                        ArchiveCardContent(
+                            uiState,
+                            userPreferences,
+                            propertyExtractorArchivalReason,
+                            propertyExtractorRecipientCountry
+                        )
+                    }
                 }
             }
             item {
-                ExpandableCard(
-                    label = stringResource(R.string.source),
-                    modifier = Modifier.padding(bottom = 20.dp)
-                ) {
-                    SourceCardContent(
-                        uiState,
-                        userPreferences,
-                        propertyExtractorSourceType,
-                        propertyExtractorSourceCountry
-                    )
-                }
+                EndOfList()
             }
-        }
-        if (uiState.activeItemType == ItemType.FORMER_PLATE) {
-            item {
-                ExpandableCard(
-                    label = stringResource(R.string.archive),
-                    modifier = Modifier.padding(bottom = 20.dp)
-                ) {
-                    ArchiveCardContent(
-                        uiState,
-                        userPreferences,
-                        propertyExtractorArchivalReason,
-                        propertyExtractorRecipientCountry
-                    )
-                }
-            }
-        }
-        item {
-            EndOfList()
         }
     }
 }
@@ -604,9 +613,10 @@ private fun Table(
         modifier = modifier.padding(horizontal = 16.dp)
     ) {
         Spacer(modifier = Modifier.height(0.dp))
-        rows/*.filterNotNull()*/.forEach { row ->
+        rows.forEach { row ->
             val filteredItems = items.filter { propertyExtractor(it) == row }
-            val quantity = filteredItems.size.toFormattedString(userPreferences.userCountry)
+            val quantity = filteredItems.size
+                .toFormattedString(userPreferences.userCountry)
             val percentage = (quantity.toFloat() / allItems.toFloat())
                 .toPercentage(userPreferences.userCountry)
 
@@ -653,12 +663,6 @@ private fun SumRow(sum: Int) {
                 text = "$sum",
                 //fontWeight = FontWeight.Bold
             )
-        }/*
-        if (rows.isNotEmpty()) {
-            HorizontalDivider(
-                color = dividerColor,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-        } else Spacer(modifier = Modifier.height(8.dp))*/
+        }
     }
 }

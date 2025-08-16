@@ -294,7 +294,7 @@ private fun WishlistScreenContent(
         }
         if (uiState.isLoading) {
             item {
-                Loading()
+                Loading(modifier = Modifier.padding(top = 256.dp))
             }
         } else if (itemList.isEmpty()) {
             item {

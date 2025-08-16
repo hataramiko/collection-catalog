@@ -2,8 +2,7 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,14 +21,11 @@ import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
 
 @Composable
-fun Loading() {
+fun Loading(modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(IntrinsicSize.Max)
-            .padding(top = 256.dp)
+        modifier = modifier.fillMaxSize()
     ) {
         var textWidth by remember { mutableIntStateOf(0) }
 

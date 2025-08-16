@@ -321,7 +321,7 @@ private fun HomeScreenContent(
         }
         if (uiState.isLoading) {
             item {
-                Loading()
+                Loading(modifier = Modifier.padding(top = 256.dp))
             }
         } else if (itemList.isEmpty()) {
             item {
@@ -355,6 +355,9 @@ private fun HomeScreenContent(
                 }
             }
         } else {
+            /*item {
+                Spacer(modifier = Modifier.height(4.dp))
+            }*/
             items(items = itemList, key = { it.id }) { item ->
                 ItemCard(
                     title = item.uniqueDetails.regNo,
