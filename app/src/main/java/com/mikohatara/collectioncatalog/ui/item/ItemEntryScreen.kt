@@ -132,12 +132,17 @@ private fun ItemEntryScreen(
         false -> stringResource(R.string.save_edited_item, uiState.itemDetails.regNo ?: "") to
                 painterResource(R.drawable.rounded_save_as)
     }
-    val (topBarTitle, saveToast) = if (!uiState.isNew) {
-        stringResource(R.string.edit_item_title, uiState.itemDetails.regNo ?: "") to
-        stringResource(R.string.saved_old_item, uiState.itemDetails.regNo ?: "")
+    val topBarTitle = if (!uiState.isNew) {
+        stringResource(R.string.edit_item_title, uiState.itemDetails.regNo ?: "")
     } else {
-        stringResource(R.string.add_item_title) to
-        stringResource(R.string.saved_new_item, uiState.itemDetails.regNo ?: "")
+        stringResource(R.string.add_item_title)
+    }
+    val saveToast = if (uiState.itemType == ItemType.WANTED_PLATE) {
+        if (uiState.isNew) stringResource(R.string.saved_to_wishlist)
+        else stringResource(R.string.saved_generic)
+    } else {
+        if (uiState.isNew) stringResource(R.string.saved_new_item, uiState.itemDetails.regNo ?: "")
+        else stringResource(R.string.saved_old_item, uiState.itemDetails.regNo ?: "")
     }
     val copyToast = stringResource(R.string.copied)
     val pasteToast = stringResource(R.string.pasted)
