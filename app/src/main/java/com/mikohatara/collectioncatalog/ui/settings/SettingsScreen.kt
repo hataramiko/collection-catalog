@@ -30,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.pm.PackageInfoCompat.getLongVersionCode
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
@@ -39,6 +38,7 @@ import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
+import com.mikohatara.collectioncatalog.util.getLocale
 import com.mikohatara.collectioncatalog.util.toDisplayCountry
 import java.util.Locale
 
@@ -85,7 +85,6 @@ private fun SettingsScreen(
         content = { innerPadding ->
             SettingsScreenContent(
                 uiState = uiState,
-                viewModel = viewModel,
                 onClickCountry = { showCountryDialog = true },
                 onClickLanguage = { showRedirectDialog = true },
                 modifier = Modifier.padding(innerPadding)
@@ -136,13 +135,13 @@ private fun SettingsScreen(
 @Composable
 private fun SettingsScreenContent(
     uiState: SettingsUiState,
-    viewModel: SettingsViewModel,
     onClickCountry: () -> Unit,
     onClickLanguage: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val userCountry = uiState.userCountry
-    val displayCountry = Locale("", userCountry).getDisplayCountry(Locale.getDefault())
+    val currentLocale = getLocale(userCountry)
+    val displayCountry = currentLocale.getDisplayCountry(Locale.getDefault())
 
     Column(modifier = modifier) {
         SettingsButton(

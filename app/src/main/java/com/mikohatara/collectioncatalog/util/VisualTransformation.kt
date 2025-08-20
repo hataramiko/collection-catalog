@@ -52,6 +52,14 @@ class VisualTransformationOffsetMapping(
 private class CurrencyVisualTransformation(localeCode: String) : VisualTransformation {
 
     private val locale = Locale(localeCode, localeCode)
+    /* TODO replace Locale(language, country)
+    *
+    *  Using getLocale from util won't work – while the currency will be correctly set based on
+    *  "localeCode", numbers will still be formatted based on the current language, leaving room
+    *  for discrepancies, e.g. "1 200,50 $" instead of the desired "$1,200.50" for an effective
+    *  locale of "fi_US" when localeCode is "US" and the app language is Finnish.
+    *
+    * */
     private val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
     private val fractions = currency.defaultFractionDigits
 
