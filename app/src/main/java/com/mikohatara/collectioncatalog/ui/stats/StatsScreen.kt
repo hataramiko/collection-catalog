@@ -132,6 +132,8 @@ private fun StatsScreenContent(
         .getPropertyExtractor("country") }
     val propertyExtractorType = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("type") }
+    val propertyExtractorDateYear = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("dateYear") }
     val propertyExtractorSourceType = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("sourceType") }
     val propertyExtractorSourceCountry = remember(uiState.activeItemType) { viewModel
@@ -226,7 +228,20 @@ private fun StatsScreenContent(
             if (uiState.activeItemType != ItemType.WANTED_PLATE) {
                 item {
                     ExpandableCard(
-                        label = stringResource(R.string.cost),
+                        label = stringResource(R.string.date), //TODO replace with "dates"
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    ) {
+                        Table(
+                            userPreferences = userPreferences,
+                            rows = uiState.dateYears,
+                            items = uiState.activeItems,
+                            propertyExtractor = propertyExtractorDateYear
+                        )
+                    }
+                }
+                item {
+                    ExpandableCard(
+                        label = stringResource(R.string.cost), //TODO replace with "costs"
                         modifier = Modifier.padding(bottom = 20.dp)
                     ) {
                         CostCardContent(uiState)
@@ -273,8 +288,8 @@ private fun StatsHeaderCard(
     message: String,
     amount: String,
     painter: Painter,
-    isSelected: Boolean = false,
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
     fontSize: TextUnit = 16.sp,
     onClick: () -> Unit
 ) {
@@ -342,10 +357,10 @@ private fun StatsHeaderCard(
 
 @Composable
 private fun CollectionCard(
+    modifier: Modifier = Modifier,
     collection: Collection? = null,
     collectionSize: String,
     percentageOfAllPlates: String,
-    modifier: Modifier = Modifier,
     fontSize: TextUnit = 16.sp,
     onClick: () -> Unit
 ) {

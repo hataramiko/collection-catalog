@@ -106,7 +106,7 @@ class DatabaseModule {
             "Plate"
         )
             .addMigrations(MIGRATION_17_18)
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
 }

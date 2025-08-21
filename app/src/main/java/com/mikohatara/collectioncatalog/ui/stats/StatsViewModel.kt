@@ -13,6 +13,7 @@ import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.data.WantedPlate
+import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.toCurrencyString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,7 @@ data class StatsUiState(
     // Sets for tables
     val countries: Set<String> = emptySet(),
     val types: Set<String> = emptySet(),
+    val dateYears: Set<String> = emptySet(),
     val sourceTypes: Set<String?> = emptySet(),
     val sourceCountries: Set<String?> = emptySet(),
     val archivalReasons: Set<String?> = emptySet(),
@@ -68,9 +70,9 @@ class StatsViewModel @Inject constructor(
 
     val userPreferences: StateFlow<UserPreferences> = userPreferencesRepository.userPreferences
         .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            UserPreferences()
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = UserPreferences()
         )
 
     private val _allCollections = mutableStateListOf<Collection>()
@@ -125,6 +127,8 @@ class StatsViewModel @Inject constructor(
                     val newCountries = getCountries(newActiveItems)
                     val newTypes = getTypes(newActiveItems)
                     ensureActive()
+                    val newDateYears = getDateYears(newActiveItems)
+                    ensureActive()
                     val newSourceTypes = getSourceTypes(newActiveItems)
                     val newSourceCountries = getSourceCountries(newActiveItems)
                     ensureActive()
@@ -145,6 +149,7 @@ class StatsViewModel @Inject constructor(
                             activeItems = newActiveItems,
                             countries = newCountries,
                             types = newTypes,
+                            dateYears = newDateYears,
                             sourceTypes = newSourceTypes,
                             sourceCountries = newSourceCountries,
                             archivalReasons = newArchivalReasons,
@@ -215,6 +220,10 @@ class StatsViewModel @Inject constructor(
                 }
             }
         }.thenBy { it }).toSet()
+    }
+
+    fun getDateYears(activeItems: List<Item>): Set<String> {
+        return getDateYearIntList(activeItems).map { it.toString() }.toSet()
     }
 
     fun getSourceTypes(activeItems: List<Item>): Set<String?> {
@@ -305,6 +314,7 @@ class StatsViewModel @Inject constructor(
                         when (property) {
                             "country" -> item.plate.commonDetails.country
                             "type" -> item.plate.commonDetails.type
+                            "dateYear" -> item.plate.uniqueDetails.date?.split("-")?.firstOrNull()
                             "sourceType" -> item.plate.source.type
                             "sourceCountry" -> item.plate.source.country
                             else -> ""
@@ -325,6 +335,7 @@ class StatsViewModel @Inject constructor(
                         when (property) {
                             "country" -> item.formerPlate.commonDetails.country
                             "type" -> item.formerPlate.commonDetails.type
+                            "dateYear" -> item.formerPlate.uniqueDetails.date?.split("-")?.firstOrNull()
                             "sourceType" -> item.formerPlate.source.type
                             "sourceCountry" -> item.formerPlate.source.country
                             "archivalReason" -> item.formerPlate.archivalDetails.archivalReason
@@ -459,11 +470,89 @@ class StatsViewModel @Inject constructor(
                 activeItems = emptyList(),
                 countries = emptySet(),
                 types = emptySet(),
+                dateYears = emptySet(),
                 sourceTypes = emptySet(),
                 sourceCountries = emptySet(),
                 archivalReasons = emptySet(),
                 recipientCountries = emptySet()
             )
         }
+    }
+
+    private fun getMinYear(): Int {
+        val maxYear = getMaxYear()
+        val items = _uiState.value.activeItems.takeIf { it.isNotEmpty() } ?: return 1900
+
+        val allYears = items.flatMap { item ->
+            val details = when (item) {
+                is Item.PlateItem -> item.plate.commonDetails
+                is Item.WantedPlateItem -> item.wantedPlate.commonDetails
+                is Item.FormerPlateItem -> item.formerPlate.commonDetails
+            }
+            listOfNotNull(details.periodStart, details.periodEnd, details.year)
+        }
+
+        val minYear = if (allYears.isNotEmpty()) {
+            allYears.minOf { it }
+        } else {
+            1900
+        }
+        return if (minYear < maxYear) minYear else maxYear - 1
+    }
+
+    private fun getMaxYear(): Int {
+        val currentYear = getCurrentYear()
+        val items = _uiState.value.activeItems.takeIf { it.isNotEmpty() } ?: return currentYear
+
+        val allYears = items.flatMap { item ->
+            val details = when (item) {
+                is Item.PlateItem -> item.plate.commonDetails
+                is Item.WantedPlateItem -> item.wantedPlate.commonDetails
+                is Item.FormerPlateItem -> item.formerPlate.commonDetails
+            }
+            listOfNotNull(details.periodStart, details.periodEnd, details.year)
+        }
+
+        val maxYear = if (allYears.isNotEmpty()) {
+            allYears.maxOf { it }
+        } else {
+            currentYear
+        }
+        return listOf(currentYear, maxYear).maxOf { it }
+    }
+
+    private fun getDateYearIntList(activeItems: List<Item>): List<Int> {
+        // lastYear should always be the current year, negating the need to pass activeItems?
+        val lastYear = getMaxDate(/*activeItems*/)
+        val firstYear = getMinDate(activeItems)
+
+        if (firstYear >= lastYear) return listOf(lastYear)
+
+        return (firstYear..lastYear).toList()
+    }
+
+    private fun getMinDate(activeItems: List<Item>): Int {
+        val currentYear = getCurrentYear()
+        if (activeItems.isEmpty()) return currentYear
+        if (activeItems.first() is Item.WantedPlateItem) return currentYear
+
+        val allDates = activeItems.flatMap { item ->
+            val details = when (item) {
+                is Item.PlateItem -> item.plate.uniqueDetails
+                is Item.WantedPlateItem -> return currentYear
+                is Item.FormerPlateItem -> item.formerPlate.uniqueDetails
+            }
+            listOfNotNull(details.date)
+        }
+
+        val minDate = if (allDates.isNotEmpty()) allDates.minOf { it } else return currentYear
+        val firstYearString = minDate.split("-").firstOrNull() ?: return currentYear
+        val firstYear = firstYearString.toIntOrNull()
+
+        return firstYear ?: currentYear
+    }
+
+    private fun getMaxDate(): Int {
+        return getCurrentYear()
     }
 }
