@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,5 +66,54 @@ fun ExpandableCard(
     }
     if (isExpanded) { // Extra space after the card if it's expanded
         Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+fun ExpandableStatsCard(
+    label: String,
+    modifier: Modifier = Modifier,
+    shape: RoundedCornerShape = RoundedCornerShape(20.dp),
+    content: @Composable () -> Unit
+) {
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
+    val onClick = remember { Modifier.clickable { isExpanded = !isExpanded } }
+    val containerColor by animateColorAsState(
+        targetValue = if (isExpanded) {
+            colorScheme.surfaceContainerHigh
+        } else {
+            colorScheme.surfaceContainerLow
+        },
+        label = "ExpandableStatsCardContainerColor"
+    )
+
+    Card(
+        shape = shape,
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        modifier = modifier.animateContentSize()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(onClick)
+        ) {
+            Text(
+                text = label,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Icon(
+                imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
+                else Icons.Rounded.KeyboardArrowDown,
+                contentDescription = null,
+                tint = colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        if (isExpanded) {
+            content()
+            Spacer(modifier = Modifier.height(4.dp))
+        }
     }
 }

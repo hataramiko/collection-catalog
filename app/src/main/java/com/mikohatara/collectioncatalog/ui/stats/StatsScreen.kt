@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -53,7 +54,7 @@ import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
-import com.mikohatara.collectioncatalog.ui.components.ExpandableCard
+import com.mikohatara.collectioncatalog.ui.components.ExpandableStatsCard
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.InfoDialog
 import com.mikohatara.collectioncatalog.ui.components.Loading
@@ -61,6 +62,28 @@ import com.mikohatara.collectioncatalog.ui.components.SelectCollectionBottomShee
 import com.mikohatara.collectioncatalog.ui.components.StatsTopAppBar
 import com.mikohatara.collectioncatalog.util.toFormattedString
 import com.mikohatara.collectioncatalog.util.toPercentage
+
+// Temporary solution to manage card shapes within StatsScreen
+// TODO implement unified app-wide approach in theme etc.
+private object RoundedCorners {
+    val AllRound = RoundedCornerShape(20.dp)
+
+    val AllSharp = RoundedCornerShape(8.dp)
+
+    val BottomSharp = RoundedCornerShape(
+        topStart = 20.dp,
+        topEnd = 20.dp,
+        bottomStart = 8.dp,
+        bottomEnd = 8.dp
+    )
+
+    val TopSharp = RoundedCornerShape(
+        topStart = 8.dp,
+        topEnd = 8.dp,
+        bottomStart = 20.dp,
+        bottomEnd = 20.dp
+    )
+}
 
 @Composable
 fun StatsScreen(
@@ -149,7 +172,8 @@ private fun StatsScreenContent(
         LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
             item {
                 StatsHeaderCard(
-                    isSelected = uiState.activeItemType == ItemType.PLATE && uiState.collection == null,
+                    isSelected = uiState.activeItemType ==
+                        ItemType.PLATE && uiState.collection == null,
                     message = stringResource(R.string.all_plates),
                     amount = uiState.allPlates.size
                         .toFormattedString(userPreferences.userCountry),
@@ -169,7 +193,7 @@ private fun StatsScreenContent(
                         .toPercentage(userPreferences.userCountry),
                     onClick = { onShowCollectionBottomSheet() }
                 )
-                Row(modifier = Modifier.padding(bottom = 32.dp)) {
+                Row(modifier = Modifier.padding(bottom = 40.dp)) {
                     StatsHeaderCard(
                         isSelected = uiState.activeItemType == ItemType.WANTED_PLATE,
                         message = stringResource(R.string.wishlist),
@@ -198,9 +222,10 @@ private fun StatsScreenContent(
                 }
             }
             item {
-                ExpandableCard(
+                ExpandableStatsCard(
                     label = stringResource(R.string.countries),
-                    modifier = Modifier.padding(bottom = 20.dp)
+                    shape = RoundedCorners.BottomSharp,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 ) {
                     SumRow(uiState.countries.size)
                     Table(
@@ -212,9 +237,10 @@ private fun StatsScreenContent(
                 }
             }
             item {
-                ExpandableCard(
+                ExpandableStatsCard(
                     label = stringResource(R.string.types),
-                    modifier = Modifier.padding(bottom = 20.dp)
+                    shape = RoundedCorners.TopSharp,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
                     SumRow(uiState.types.size)
                     Table(
@@ -225,11 +251,26 @@ private fun StatsScreenContent(
                     )
                 }
             }
+            /*item {
+                ExpandableStatsCard(
+                    label = stringResource(R.string.period),
+                    shape = RoundedCorners.BottomSharp,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                ) { /*TODO*/ }
+            }
+            item {
+                ExpandableStatsCard(
+                    label = stringResource(R.string.year),
+                    shape = RoundedCorners.TopSharp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                ) { /*TODO*/ }
+            }*/
             if (uiState.activeItemType != ItemType.WANTED_PLATE) {
                 item {
-                    ExpandableCard(
-                        label = stringResource(R.string.date), //TODO replace with "dates"
-                        modifier = Modifier.padding(bottom = 20.dp)
+                    ExpandableStatsCard(
+                        label = stringResource(R.string.date),
+                        shape = RoundedCorners.BottomSharp,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         Table(
                             userPreferences = userPreferences,
@@ -240,45 +281,80 @@ private fun StatsScreenContent(
                     }
                 }
                 item {
-                    ExpandableCard(
-                        label = stringResource(R.string.cost), //TODO replace with "costs"
+                    ExpandableStatsCard(
+                        label = stringResource(R.string.cost),
+                        shape = RoundedCorners.TopSharp,
                         modifier = Modifier.padding(bottom = 20.dp)
                     ) {
                         CostCardContent(uiState)
                     }
                 }
+                item { Subheader(stringResource(R.string.source)) }
                 item {
-                    ExpandableCard(
-                        label = stringResource(R.string.source),
-                        modifier = Modifier.padding(bottom = 20.dp)
+                    ExpandableStatsCard(
+                        label = stringResource(R.string.source_type),
+                        shape = RoundedCorners.BottomSharp,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
-                        SourceCardContent(
+                        SourceTypeContent(
                             uiState,
                             userPreferences,
-                            propertyExtractorSourceType,
+                            propertyExtractorSourceType
+                        )
+                    }
+                }
+                item {
+                    ExpandableStatsCard(
+                        label = stringResource(R.string.source_country),
+                        shape = RoundedCorners.TopSharp,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    ) {
+                        SourceCountryContent(
+                            uiState,
+                            userPreferences,
                             propertyExtractorSourceCountry
                         )
                     }
                 }
             }
             if (uiState.activeItemType == ItemType.FORMER_PLATE) {
+                item { Subheader(stringResource(R.string.archival)) }
                 item {
-                    ExpandableCard(
-                        label = stringResource(R.string.archive),
-                        modifier = Modifier.padding(bottom = 20.dp)
+                    ExpandableStatsCard(
+                        label = stringResource(R.string.archival_reason),
+                        shape = RoundedCorners.BottomSharp
                     ) {
-                        ArchiveCardContent(
+                        ArchivalReasonContent(
                             uiState,
                             userPreferences,
-                            propertyExtractorArchivalReason,
+                            propertyExtractorArchivalReason
+                        )
+                    }
+                }
+                item {
+                    ExpandableStatsCard(
+                        label = stringResource(R.string.sold_price),
+                        shape = RoundedCorners.AllSharp,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    ) {
+                        ArchivalPriceContent(uiState)
+                    }
+                }
+                item {
+                    ExpandableStatsCard(
+                        label = stringResource(R.string.recipient_country),
+                        shape = RoundedCorners.TopSharp,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    ) {
+                        RecipientCountryContent(
+                            uiState,
+                            userPreferences,
                             propertyExtractorRecipientCountry
                         )
                     }
                 }
             }
-            item {
-                EndOfList()
-            }
+            item { EndOfList() }
         }
     }
 }
@@ -351,7 +427,6 @@ private fun StatsHeaderCard(
                 )
             }
         }
-
     }
 }
 
@@ -473,12 +548,40 @@ private fun CostCardContent(uiState: StatsUiState) {
 
     Spacer(modifier = Modifier.height(4.dp))
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(
+                text = stringResource(R.string.total) +
+                    stringResource(R.string.punctuation_colon),
+                //color = colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = uiState.selectionCost,
+                //color = colorScheme.onSurfaceVariant,
+            )
+        }
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(
+                text = stringResource(R.string.cost_per_plate) +
+                    stringResource(R.string.punctuation_colon),
+                //color = colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = uiState.selectionCostPerPlate,
+                //color = colorScheme.onSurfaceVariant,
+            )
+        }
+        HorizontalDivider(
+            color = colorScheme.surface,
+            modifier = Modifier.padding(vertical = 20.dp)
+        )
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.cost_gross), modifier = Modifier.padding(bottom = 16.dp))
-            Box(modifier = Modifier.size(32.dp).offset(x = 4.dp, y = (-6).dp)) {
+            Box(modifier = Modifier.size(32.dp).offset(x = 0.dp, y = (-6).dp)) {
                 IconButton(onClick = { showInfo.value = true }) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_info),
@@ -490,49 +593,53 @@ private fun CostCardContent(uiState: StatsUiState) {
             }
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.total) + stringResource(R.string.punctuation_colon))
+            Text(
+                text = stringResource(R.string.total) +
+                    stringResource(R.string.punctuation_colon),
+                //color = colorScheme.onSurfaceVariant,
+            )
             Spacer(modifier = Modifier.weight(1f))
-            Text(uiState.combinedCostGross)
+            Text(
+                text = uiState.combinedCostGross,
+                //color = colorScheme.onSurfaceVariant,
+            )
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(
-                stringResource(R.string.cost_per_plate) +
-                stringResource(R.string.punctuation_colon)
+                text = stringResource(R.string.cost_per_plate) +
+                    stringResource(R.string.punctuation_colon),
+                //color = colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Text(uiState.combinedCostGrossPerPlate)
+            Text(
+                text = uiState.combinedCostGrossPerPlate,
+                //color = colorScheme.onSurfaceVariant,
+            )
         }
         Text(stringResource(R.string.cost_net), modifier = Modifier.padding(vertical = 16.dp))
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.total) + stringResource(R.string.punctuation_colon))
+            Text(
+                text = stringResource(R.string.total) +
+                    stringResource(R.string.punctuation_colon),
+                //color = colorScheme.onSurfaceVariant,
+            )
             Spacer(modifier = Modifier.weight(1f))
-            Text(uiState.combinedCostNet)
+            Text(
+                text = uiState.combinedCostNet,
+                //color = colorScheme.onSurfaceVariant,
+            )
         }
         Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(
-                stringResource(R.string.cost_per_plate) +
-                stringResource(R.string.punctuation_colon)
+                text = stringResource(R.string.cost_per_plate) +
+                    stringResource(R.string.punctuation_colon),
+                //color = colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Text(uiState.combinedCostNetPerPlate)
-        }
-        HorizontalDivider(
-            color = colorScheme.surface,
-            modifier = Modifier.padding(top = 20.dp)
-        )
-        Text(stringResource(R.string.current_selection), modifier = Modifier.padding(vertical = 16.dp))
-        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text(stringResource(R.string.total) + stringResource(R.string.punctuation_colon))
-            Spacer(modifier = Modifier.weight(1f))
-            Text(uiState.selectionCost)
-        }
-        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(
-                stringResource(R.string.cost_per_plate) +
-                stringResource(R.string.punctuation_colon)
+                text = uiState.combinedCostNetPerPlate,
+                //color = colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(uiState.selectionCostPerPlate)
         }
     }
     Spacer(modifier = Modifier.height(20.dp))
@@ -546,29 +653,25 @@ private fun CostCardContent(uiState: StatsUiState) {
 }
 
 @Composable
-private fun SourceCardContent(
+private fun SourceTypeContent(
     uiState: StatsUiState,
     userPreferences: UserPreferences,
-    propertyExtractorSourceType: (Item) -> String?,
-    propertyExtractorSourceCountry: (Item) -> String?
+    propertyExtractorSourceType: (Item) -> String?
 ) {
-    Text(
-        text = stringResource(R.string.source_type),
-        modifier = Modifier.padding(horizontal = 16.dp)
-    )
-    Spacer(modifier = Modifier.height(16.dp))
     Table(
         userPreferences = userPreferences,
         rows = uiState.sourceTypes,
         items = uiState.activeItems,
-        propertyExtractor = propertyExtractorSourceType,
-        modifier = Modifier.padding(bottom = 20.dp)
+        propertyExtractor = propertyExtractorSourceType
     )
-    //Spacer(modifier = Modifier.height(16.dp))
-    Text(
-        text = stringResource(R.string.source_country),
-        modifier = Modifier.padding(16.dp)
-    )
+}
+
+@Composable
+private fun SourceCountryContent(
+    uiState: StatsUiState,
+    userPreferences: UserPreferences,
+    propertyExtractorSourceCountry: (Item) -> String?
+) {
     Table(
         userPreferences = userPreferences,
         rows = uiState.sourceCountries,
@@ -578,38 +681,50 @@ private fun SourceCardContent(
 }
 
 @Composable
-private fun ArchiveCardContent(
+private fun ArchivalReasonContent(
     uiState: StatsUiState,
     userPreferences: UserPreferences,
-    propertyExtractorArchivalReason: (Item) -> String?,
-    propertyExtractorRecipientCountry: (Item) -> String?
+    propertyExtractorArchivalReason: (Item) -> String?
 ) {
-    Text(
-        text = stringResource(R.string.archival_reason),
-        modifier = Modifier.padding(horizontal = 16.dp)
-    )
-    Spacer(modifier = Modifier.height(16.dp))
     Table(
         userPreferences = userPreferences,
         rows = uiState.archivalReasons,
         items = uiState.activeItems,
         propertyExtractor = propertyExtractorArchivalReason
     )
-    Row(modifier = Modifier.padding(16.dp)) {
-        Text(stringResource(R.string.sold_price) + stringResource(R.string.punctuation_colon))
-        Spacer(modifier = Modifier.weight(1f))
-        Text(uiState.archivePriceSum)
-    }
-    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+private fun ArchivalPriceContent(
+    uiState: StatsUiState
+) {
     Text(
-        text = stringResource(R.string.recipient_country),
-        modifier = Modifier.padding(16.dp)
+        text = uiState.archivePriceSum,
+        modifier = Modifier.padding(start = 20.dp, end = 16.dp, bottom = 16.dp)
     )
+}
+
+@Composable
+private fun RecipientCountryContent(
+    uiState: StatsUiState,
+    userPreferences: UserPreferences,
+    propertyExtractorRecipientCountry: (Item) -> String?
+) {
     Table(
         userPreferences = userPreferences,
         rows = uiState.recipientCountries,
         items = uiState.activeItems,
         propertyExtractor = propertyExtractorRecipientCountry
+    )
+}
+
+@Composable
+private fun Subheader(text: String) {
+    Text(
+        text = text,
+        color = colorScheme.secondary,
+        style = typography.titleSmall,
+        modifier = Modifier.padding(16.dp)
     )
 }
 
@@ -640,16 +755,20 @@ private fun Table(
                 modifier = Modifier.padding(4.dp)
             ) {
                 Text(
-                    row.takeIf { !it.isNullOrEmpty() } ?: stringResource(R.string.not_applicable),
+                    text = row.takeIf { !it.isNullOrEmpty() } ?:
+                        stringResource(R.string.not_applicable),
+                    //color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f).padding(end = 8.dp)
                 )
                 Text(
-                    quantity,
+                    text = quantity,
+                    //color = colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(0.3f).padding(end = 8.dp)
                 )
                 Text(
-                    percentage,
+                    text = percentage,
+                    //color = colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.End,
                     modifier = Modifier.weight(0.5f)
                 )
@@ -672,11 +791,11 @@ private fun SumRow(sum: Int) {
         Row(modifier = Modifier.padding(start = 16.dp, bottom = 16.dp, end = 16.dp)) {
             Text(
                 text = stringResource(R.string.total) + stringResource(R.string.punctuation_colon),
-                //color = MaterialTheme.colorScheme.onSurfaceVariant
+                //color = colorScheme.outline
             )
             Text(
                 text = "$sum",
-                //fontWeight = FontWeight.Bold
+                //color = colorScheme.outline
             )
         }
     }
