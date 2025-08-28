@@ -155,12 +155,14 @@ private fun StatsScreenContent(
         .getPropertyExtractor("country") }
     val propertyExtractorType = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("type") }
-    val propertyExtractorDateYear = remember(uiState.activeItemType) { viewModel
-        .getPropertyExtractor("dateYear") }
+    val propertyExtractorStartDateYear = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("startDateYear") }
     val propertyExtractorSourceType = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("sourceType") }
     val propertyExtractorSourceCountry = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("sourceCountry") }
+    val propertyExtractorEndDateYear = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("endDateYear") }
     val propertyExtractorArchivalReason = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("archivalReason") }
     val propertyExtractorRecipientCountry = remember(uiState.activeItemType) { viewModel
@@ -274,9 +276,9 @@ private fun StatsScreenContent(
                     ) {
                         Table(
                             userPreferences = userPreferences,
-                            rows = uiState.dateYears,
+                            rows = uiState.startDateYears,
                             items = uiState.activeItems,
-                            propertyExtractor = propertyExtractorDateYear
+                            propertyExtractor = propertyExtractorStartDateYear
                         )
                     }
                 }
@@ -321,8 +323,23 @@ private fun StatsScreenContent(
                 item { Subheader(stringResource(R.string.archival)) }
                 item {
                     ExpandableStatsCard(
+                        label = stringResource(R.string.archival_date),
+                        shape = RoundedCorners.BottomSharp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    ) {
+                        Table(
+                            userPreferences = userPreferences,
+                            rows = uiState.endDateYears,
+                            items = uiState.activeItems,
+                            propertyExtractor = propertyExtractorEndDateYear
+                        )
+                    }
+                }
+                item {
+                    ExpandableStatsCard(
                         label = stringResource(R.string.archival_reason),
-                        shape = RoundedCorners.BottomSharp
+                        shape = RoundedCorners.AllSharp,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         ArchivalReasonContent(
                             uiState,
@@ -335,7 +352,7 @@ private fun StatsScreenContent(
                     ExpandableStatsCard(
                         label = stringResource(R.string.sold_price),
                         shape = RoundedCorners.AllSharp,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        modifier = Modifier.padding(bottom = 4.dp)
                     ) {
                         ArchivalPriceContent(uiState)
                     }
@@ -757,18 +774,18 @@ private fun Table(
                 Text(
                     text = row.takeIf { !it.isNullOrEmpty() } ?:
                         stringResource(R.string.not_applicable),
-                    //color = colorScheme.onSurfaceVariant,
+                    color = colorScheme.secondary,
                     modifier = Modifier.weight(1f).padding(end = 8.dp)
                 )
                 Text(
                     text = quantity,
-                    //color = colorScheme.onSurfaceVariant,
+                    color = colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(0.3f).padding(end = 8.dp)
                 )
                 Text(
                     text = percentage,
-                    //color = colorScheme.onSurfaceVariant,
+                    color = colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.End,
                     modifier = Modifier.weight(0.5f)
                 )
