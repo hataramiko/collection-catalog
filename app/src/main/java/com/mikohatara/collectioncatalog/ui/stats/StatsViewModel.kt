@@ -59,6 +59,8 @@ data class StatsUiState(
     val combinedCostNetPerPlate: String = "–",
     val selectionCost: String = "–",
     val selectionCostPerPlate: String = "–",
+    val selectionValue: String = "–",
+    val selectionValuePerPlate: String = "–",
     val archivePriceSum: String = "–"
 )
 
@@ -143,6 +145,8 @@ class StatsViewModel @Inject constructor(
                     val newCombinedCostNetPerPlate = getCombinedCost(isNet = true, isPerPlate = true)
                     val newSelectionCost = getSelectionCost()
                     val newSelectionCostPerPlate = getSelectionCost(isPerPlate = true)
+                    val newSelectionValue = getSelectionValue()
+                    val newSelectionValuePerPlate = getSelectionValue(isPerPlate = true)
                     val newArchivePriceSum = getArchivePriceSum()
                     ensureActive()
 
@@ -163,6 +167,8 @@ class StatsViewModel @Inject constructor(
                             combinedCostNetPerPlate = newCombinedCostNetPerPlate,
                             selectionCost = newSelectionCost,
                             selectionCostPerPlate = newSelectionCostPerPlate,
+                            selectionValue = newSelectionValue,
+                            selectionValuePerPlate = newSelectionValuePerPlate,
                             archivePriceSum = newArchivePriceSum
                         )
                         _uiState.update { newState }
@@ -427,6 +433,41 @@ class StatsViewModel @Inject constructor(
             } else return cost.toCurrencyString(countryCode)
         }
         return "–" // Effectively "if (itemType == ItemType.WANTED_PLATE)"
+    }
+
+    fun getSelectionValue(isPerPlate: Boolean = false): String {
+        val countryCode = _uiState.value.userCountry
+        val itemType = _uiState.value.activeItemType
+        if (itemType == ItemType.PLATE && _uiState.value.collectionPlates.isNotEmpty()) {
+            val value = _uiState.value.collectionPlates
+                .sumOf { it.uniqueDetails.value?.toLong() ?: 0 }
+
+            if (isPerPlate) {
+                val size = _uiState.value.collectionPlates.size
+
+                if (size == 0) {
+                    return "–"
+                } else {
+                    val valuePerPlate = value / size
+                    return valuePerPlate.toCurrencyString(countryCode)
+                }
+            } else return value.toCurrencyString(countryCode)
+
+        } else if (itemType == ItemType.PLATE) {
+            val value = _uiState.value.allPlates.sumOf { it.uniqueDetails.value?.toLong() ?: 0 }
+
+            if (isPerPlate) {
+                val size = _uiState.value.allPlates.size
+
+                if (size == 0) {
+                    return "–"
+                } else {
+                    val valuePerPlate = value / size
+                    return valuePerPlate.toCurrencyString(countryCode)
+                }
+            } else return value.toCurrencyString(countryCode)
+        }
+        return "–" // Effectively "if (itemType != ItemType.PLATE)"
     }
 
     fun getArchivePriceSum(): String {

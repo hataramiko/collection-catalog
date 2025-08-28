@@ -241,8 +241,8 @@ private fun StatsScreenContent(
             item {
                 ExpandableStatsCard(
                     label = stringResource(R.string.types),
-                    shape = RoundedCorners.TopSharp,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    shape = RoundedCorners.AllSharp,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 ) {
                     SumRow(uiState.types.size)
                     Table(
@@ -253,10 +253,10 @@ private fun StatsScreenContent(
                     )
                 }
             }
-            /*item {
+            item {
                 ExpandableStatsCard(
                     label = stringResource(R.string.period),
-                    shape = RoundedCorners.BottomSharp,
+                    shape = RoundedCorners.AllSharp,
                     modifier = Modifier.padding(bottom = 4.dp)
                 ) { /*TODO*/ }
             }
@@ -266,8 +266,12 @@ private fun StatsScreenContent(
                     shape = RoundedCorners.TopSharp,
                     modifier = Modifier.padding(bottom = 16.dp)
                 ) { /*TODO*/ }
-            }*/
+            }
             if (uiState.activeItemType != ItemType.WANTED_PLATE) {
+                val (costShape, costPadding) = if (uiState.activeItemType == ItemType.PLATE) {
+                    RoundedCorners.AllSharp to 4.dp
+                } else RoundedCorners.TopSharp to 16.dp
+
                 item {
                     ExpandableStatsCard(
                         label = stringResource(R.string.date),
@@ -285,10 +289,30 @@ private fun StatsScreenContent(
                 item {
                     ExpandableStatsCard(
                         label = stringResource(R.string.cost),
-                        shape = RoundedCorners.TopSharp,
-                        modifier = Modifier.padding(bottom = 20.dp)
+                        shape = costShape,
+                        modifier = Modifier.padding(bottom = costPadding)
                     ) {
                         CostCardContent(uiState)
+                    }
+                }
+                if (uiState.activeItemType == ItemType.PLATE) {
+                    item {
+                        ExpandableStatsCard(
+                            label = stringResource(R.string.value),
+                            shape = RoundedCorners.AllSharp,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        ) {
+                            ValueCardContent(uiState)
+                        }
+                    }
+                    item {
+                        ExpandableStatsCard(
+                            label = stringResource(R.string.location),
+                            shape = RoundedCorners.TopSharp,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        ) {
+                            //TODO
+                        }
                     }
                 }
                 item { Subheader(stringResource(R.string.source)) }
@@ -309,7 +333,7 @@ private fun StatsScreenContent(
                     ExpandableStatsCard(
                         label = stringResource(R.string.source_country),
                         shape = RoundedCorners.TopSharp,
-                        modifier = Modifier.padding(bottom = 20.dp)
+                        modifier = Modifier.padding(bottom = 16.dp)
                     ) {
                         SourceCountryContent(
                             uiState,
@@ -361,7 +385,7 @@ private fun StatsScreenContent(
                     ExpandableStatsCard(
                         label = stringResource(R.string.recipient_country),
                         shape = RoundedCorners.TopSharp,
-                        modifier = Modifier.padding(bottom = 20.dp)
+                        modifier = Modifier.padding(bottom = 16.dp)
                     ) {
                         RecipientCountryContent(
                             uiState,
@@ -667,6 +691,38 @@ private fun CostCardContent(uiState: StatsUiState) {
             text = stringResource(R.string.info_stats_cost)
         )
     }
+}
+
+@Composable
+private fun ValueCardContent(uiState: StatsUiState) {
+    Spacer(modifier = Modifier.height(4.dp))
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(
+                text = stringResource(R.string.total) +
+                        stringResource(R.string.punctuation_colon),
+                //color = colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = uiState.selectionValue,
+                //color = colorScheme.onSurfaceVariant,
+            )
+        }
+        Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Text(
+                text = stringResource(R.string.cost_per_plate) +
+                        stringResource(R.string.punctuation_colon),
+                //color = colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = uiState.selectionValuePerPlate,
+                //color = colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
