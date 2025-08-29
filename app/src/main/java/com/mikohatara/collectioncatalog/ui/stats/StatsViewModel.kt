@@ -47,6 +47,7 @@ data class StatsUiState(
     val countries: Set<String> = emptySet(),
     val types: Set<String> = emptySet(),
     val startDateYears: Set<String> = emptySet(),
+    val locations: Set<String?> = emptySet(),
     val sourceTypes: Set<String?> = emptySet(),
     val sourceCountries: Set<String?> = emptySet(),
     val endDateYears: Set<String> = emptySet(),
@@ -131,6 +132,7 @@ class StatsViewModel @Inject constructor(
                     val newTypes = getTypes(newActiveItems)
                     ensureActive()
                     val newStartDateYears = getStartDateYears(newActiveItems)
+                    val newLocations = getLocations(newActiveItems)
                     ensureActive()
                     val newSourceTypes = getSourceTypes(newActiveItems)
                     val newSourceCountries = getSourceCountries(newActiveItems)
@@ -156,6 +158,7 @@ class StatsViewModel @Inject constructor(
                             countries = newCountries,
                             types = newTypes,
                             startDateYears = newStartDateYears,
+                            locations = newLocations,
                             sourceTypes = newSourceTypes,
                             sourceCountries = newSourceCountries,
                             endDateYears = newEndDateYears,
@@ -237,6 +240,24 @@ class StatsViewModel @Inject constructor(
 
     fun getEndDateYears(activeItems: List<Item>): Set<String> {
         return getEndDateYearIntList(activeItems).map { it.toString() }.toSet()
+    }
+
+    fun getLocations(activeItems: List<Item>): Set<String?> {
+        if (_uiState.value.activeItemType != ItemType.PLATE) return emptySet()
+
+        return activeItems.map { item ->
+            when (item) {
+                is Item.PlateItem -> item.plate.uniqueDetails.status
+                else -> null
+            }
+        }.sortedWith(compareByDescending<String?> { location ->
+            activeItems.count { item ->
+                when (item) {
+                    is Item.PlateItem -> item.plate.uniqueDetails.status == location
+                    else -> false
+                }
+            }
+        }.thenBy { it }).toSet()
     }
 
     fun getSourceTypes(activeItems: List<Item>): Set<String?> {
@@ -328,6 +349,7 @@ class StatsViewModel @Inject constructor(
                             "country" -> item.plate.commonDetails.country
                             "type" -> item.plate.commonDetails.type
                             "startDateYear" -> item.plate.uniqueDetails.date?.split("-")?.firstOrNull()
+                            "location" -> item.plate.uniqueDetails.status
                             "sourceType" -> item.plate.source.type
                             "sourceCountry" -> item.plate.source.country
                             else -> ""
@@ -520,6 +542,7 @@ class StatsViewModel @Inject constructor(
                 countries = emptySet(),
                 types = emptySet(),
                 startDateYears = emptySet(),
+                locations = emptySet(),
                 sourceTypes = emptySet(),
                 sourceCountries = emptySet(),
                 endDateYears = emptySet(),

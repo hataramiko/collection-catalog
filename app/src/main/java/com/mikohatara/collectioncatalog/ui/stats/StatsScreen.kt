@@ -157,6 +157,8 @@ private fun StatsScreenContent(
         .getPropertyExtractor("type") }
     val propertyExtractorStartDateYear = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("startDateYear") }
+    val propertyExtractorLocation = remember(uiState.activeItemType) { viewModel
+        .getPropertyExtractor("location") }
     val propertyExtractorSourceType = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("sourceType") }
     val propertyExtractorSourceCountry = remember(uiState.activeItemType) { viewModel
@@ -311,7 +313,12 @@ private fun StatsScreenContent(
                             shape = RoundedCorners.TopSharp,
                             modifier = Modifier.padding(bottom = 16.dp)
                         ) {
-                            //TODO
+                            Table(
+                                userPreferences = userPreferences,
+                                rows = uiState.locations,
+                                items = uiState.activeItems,
+                                propertyExtractor = propertyExtractorLocation
+                            )
                         }
                     }
                 }
