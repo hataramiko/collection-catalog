@@ -837,7 +837,7 @@ private fun Table(
                 Text(
                     text = row.takeIf { !it.isNullOrEmpty() } ?:
                         stringResource(R.string.not_applicable),
-                    color = colorScheme.secondary,
+                    color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f).padding(end = 8.dp)
                 )
                 Text(

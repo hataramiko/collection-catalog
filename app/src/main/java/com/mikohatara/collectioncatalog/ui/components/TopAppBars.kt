@@ -45,7 +45,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Item
-import com.mikohatara.collectioncatalog.ui.help.HelpPage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -476,37 +475,22 @@ fun SettingsTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HelpTopAppBar(
-    helpPage: HelpPage = HelpPage.DEFAULT,
+    title: String,
     onBack: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
-    if (helpPage != HelpPage.DEFAULT) {
-        TopAppBar(
-            title = { Text(stringResource(R.string.help)) },
-            navigationIcon = {
-                IconButton(onClick = { onBack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = null
-                    )
-                }
-            },
-            scrollBehavior = scrollBehavior
-        )
-    } else {
-        LargeTopAppBar(
-            title = { Text(stringResource(R.string.help)) },
-            navigationIcon = {
-                IconButton(onClick = { onBack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = null
-                    )
-                }
-            },
-            scrollBehavior = scrollBehavior
-        )
-    }
+    LargeTopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            IconButton(onClick = { onBack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = null
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior
+    )
 }
 
 @Composable

@@ -208,4 +208,11 @@
     <string name="save_new_collection">Luo <xliff:g name="collection_name" example="Collection">%s</xliff:g></string>
     <string name="saved_to_wishlist">Lisätty toivelistalle</string>
     <string name="saved_generic">Tallennettu</string>
+    <string name="help_and_feedback">Ohjeet ja palaute</string>
+    <string name="privacy_policy">Tietosuojaseloste</string>
+    <string name="send_feedback">Lähetä palautetta</string>
+    <string name="rate">Arvioi</string>
+    <string name="review">Arvostele</string>
+    <string name="rate_and_review">Arvioi ja arvostele</string>
+    <string name="give_feedback">Anna palautetta</string>
 </resources>

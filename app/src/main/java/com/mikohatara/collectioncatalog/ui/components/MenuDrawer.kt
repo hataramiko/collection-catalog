@@ -227,7 +227,7 @@ private fun MenuDrawerContent(
                         onClick = { navActions.navigateToSettingsScreen() }
                     )
                     NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.help)) },
+                        label = { Text(stringResource(R.string.help_and_feedback)) },
                         icon = { Icon(
                             painter = painterResource(R.drawable.rounded_help),
                             contentDescription = null

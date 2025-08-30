@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -95,7 +96,7 @@ private fun HelpScreen(
     navActions: CollectionCatalogNavigationActions,
     onBack: () -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     LaunchedEffect(key1 = uiState.downloadResult) {
         uiState.downloadResult?.let { result ->
@@ -115,7 +116,7 @@ private fun HelpScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             HelpTopAppBar(
-                helpPage = uiState.helpPage,
+                title = viewModel.getTopAppBarTitle(context),
                 onBack = onBack,
                 scrollBehavior = scrollBehavior
             )
@@ -160,6 +161,28 @@ private fun LandingPage(
         onClick = { navActions.navigateToHelpScreen(HelpPage.IMPORT) },
         modifier = modifier
     )
+    HelpPageHorizontalDivider()
+    LandingPageButton(
+        text = stringResource(R.string.send_feedback),
+        painter = painterResource(R.drawable.rounded_forward_to_inbox_24),
+        isLink = true,
+        onClick = { /*TODO*/ },
+        modifier = modifier
+    )
+    LandingPageButton(
+        text = stringResource(R.string.rate),
+        painter = painterResource(R.drawable.rounded_reviews_24),
+        isLink = true,
+        onClick = { /*TODO*/ },
+        modifier = modifier
+    )
+    LandingPageButton(
+        text = stringResource(R.string.privacy_policy),
+        painter = painterResource(R.drawable.rounded_privacy_tip_24),
+        isLink = true,
+        onClick = { /*TODO*/ },
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -176,7 +199,6 @@ private fun ImportPage(
         }
     )
 
-    HelpPageTitle(stringResource(R.string.import_dialog_title))
     HelpPageNotTranslated()
     HelpPageParagraph(stringResource(R.string.help_import_a_p1))
     HelpPageParagraph(stringResource(R.string.help_import_a_p2))
@@ -220,8 +242,8 @@ private fun ImportPage(
     HelpPageParagraph(stringResource(R.string.help_import_p6))
     HelpPageTextButton(
         text = stringResource(R.string.import_download_template),
-        onClick = {
-            val fileName = getFileNameForExport("ImportTemplate") //TODO replace w/ localized string
+        onClick = { //TODO replace w/ localized string?
+            val fileName = getFileNameForExport("ImportTemplate")
             createImportTemplateCsvForExport.launch(fileName)
         }
     )
@@ -239,6 +261,8 @@ private fun ImportPage(
     EndOfList()
 }
 
+// This was used before modifying the TopAppBar
+// TODO remove?
 @Composable
 private fun HelpPageTitle(text: String) {
     Spacer(modifier = Modifier.height(16.dp))
@@ -272,8 +296,8 @@ private fun HelpPageSubheader(text: String) {
 @Composable
 private fun HelpPageParagraph(
     text: String,
-    color: Color = LocalContentColor.current,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current
 ) {
     Text(
         text = text,
@@ -313,8 +337,6 @@ private fun HelpPageValueList(
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     val buttonText = if (!isExpanded) buttonTextShow else buttonTextHide
     val onClick = remember { Modifier.clickable { isExpanded = !isExpanded } }
-    val buttonColor = colorScheme.primary
-    val valuesColor = colorScheme.onSurfaceVariant
 
     Column(modifier = Modifier.animateContentSize()) {
         Row(
@@ -326,7 +348,7 @@ private fun HelpPageValueList(
         ) {
             Text(
                 text = buttonText,
-                color = buttonColor,
+                color = colorScheme.primary,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(16.dp)
             )
@@ -334,14 +356,14 @@ private fun HelpPageValueList(
                 imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
                     else Icons.Rounded.KeyboardArrowDown,
                 contentDescription = null,
-                tint = buttonColor,
+                tint = colorScheme.secondary,
                 modifier = Modifier.padding(16.dp)
             )
         }
         if (isExpanded) {
             HelpPageParagraph(
                 text = values,
-                color = valuesColor,
+                color = colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -380,14 +402,21 @@ private fun LandingPageButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    painter: Painter = painterResource(R.drawable.rounded_help)
+    painter: Painter = painterResource(R.drawable.rounded_help),
+    isLink: Boolean = false
 ) {
+    val (rowEndIconColor, rowEndIconPainter) = if (isLink) {
+        colorScheme.outline to painterResource(R.drawable.rounded_open_in_new_24)
+    } else {
+        colorScheme.onSurfaceVariant to painterResource(R.drawable.rounded_chevron_forward)
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(horizontal = 24.dp, vertical = 8.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Card(
             colors = CardDefaults.cardColors(colorScheme.secondaryContainer),
@@ -407,7 +436,14 @@ private fun LandingPageButton(
         Text(
             text = text,
             fontSize = 18.sp,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
+            modifier = Modifier.padding(horizontal = 16.dp).weight(1f)
+        )
+        Icon(
+            painter = rowEndIconPainter,
+            contentDescription = null,
+            tint = rowEndIconColor
         )
     }
 }
@@ -415,7 +451,7 @@ private fun LandingPageButton(
 @Composable
 private fun HelpPageHorizontalDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
-        color = colorScheme.outlineVariant.copy(alpha = 0.5f),
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        color = colorScheme.outlineVariant,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 32.dp)
     )
 }

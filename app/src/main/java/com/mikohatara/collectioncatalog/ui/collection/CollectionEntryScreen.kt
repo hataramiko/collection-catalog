@@ -251,7 +251,6 @@ private fun CollectionEntryScreenContent(
                     ) {
                         Text(
                             text = stringResource(R.string.collection_color),
-                            color = MaterialTheme.colorScheme.onBackground,
                             softWrap = false,
                             overflow = TextOverflow.Ellipsis
                         )

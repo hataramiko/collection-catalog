@@ -86,9 +86,9 @@ class CollectionEntryViewModel @Inject constructor(
         val newColor = CollectionColor.entries.find {
             getCollectionColor(it, context) == input
         } ?: CollectionColor.DEFAULT
-        _uiState.update {
-            it.copy(collectionDetails = it.collectionDetails.copy(color = newColor))
-        }
+        val newCollectionDetails = uiState.value.collectionDetails.copy(color = newColor)
+
+        updateUiState(newCollectionDetails)
     }
 
     fun showToast(context: Context, message: String) {

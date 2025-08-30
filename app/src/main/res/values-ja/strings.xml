@@ -204,4 +204,11 @@
     <string name="save_new_collection">｢<xliff:g name="collection_name" example="Collection">%s</xliff:g>｣ を作成</string>
     <string name="saved_to_wishlist">欲しい物を作成しました</string>
     <string name="saved_generic">保存しました</string>
+    <string name="help_and_feedback">ヘルプとフィードバック</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="send_feedback">フィードバックを送信</string>
+    <string name="rate_and_review">評価とレビュー</string>
+    <string name="give_feedback">フィードバックを送信</string>
+    <string name="rate">評価</string>
+    <string name="review">レビュー</string>
 </resources>

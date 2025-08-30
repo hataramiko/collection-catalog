@@ -109,6 +109,13 @@ class HelpViewModel @Inject constructor(
         _uiState.update { it?.copy(isDownloading = false, downloadResult = null) }
     }
 
+    fun getTopAppBarTitle(context: Context): String {
+        return when (helpPage) {
+            HelpPage.DEFAULT -> context.getString(R.string.help_and_feedback)
+            HelpPage.IMPORT -> context.getString(R.string.import_dialog_title)
+        }
+    }
+
     fun getImportFirstRowExample(): String {
         return importFirstRowExample
     }
