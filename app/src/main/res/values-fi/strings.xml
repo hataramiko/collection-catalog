@@ -215,4 +215,7 @@
     <string name="review">Arvostele</string>
     <string name="rate_and_review">Arvioi ja arvostele</string>
     <string name="give_feedback">Anna palautetta</string>
+    <string name="open_url_error">Linkkiä ei voitu avata</string>
+    <string name="url_redirect_to_browser">Tämä sisältö on saatavilla verkossa. Sinut ohjataan verkkoselaimeesi sisällön avaamista varten.</string>
+    <string name="url_redirect_to_google_play">Sinut ohjataan Google Play -kauppaan.</string>
 </resources>

@@ -4,7 +4,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,24 +44,6 @@ class HelpViewModel @Inject constructor(
     private val _uiState = MutableStateFlow< HelpUiState?>(null)
     val uiState: StateFlow<HelpUiState?> = _uiState.asStateFlow()
 
-    private val importFirstRowExample = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\n" +
-        "type\nperiod_start\nperiod_end\nyear\nnotes\nvehicle\ndate\ncost\nvalue\nstatus\n" +
-        "width\nheight\nweight\ncolor_main\ncolor_secondary\n" +
-        "source_name\nsource_alias\nsource_type\nsource_country\nsource_details\n" +
-        "archival_date\narchival_reason\nprice\n" +
-        "recipient_name\nrecipient_alias\nrecipient_country\narchival_details"
-    private val importFirstRowString = "\"reg_no\",\"country\",\"region_1st\",\"region_2nd\"," +
-        "\"region_3rd\",\"type\",\"period_start\",\"period_end\",\"year\"," +
-        "\"notes\",\"vehicle\",\"date\",\"cost\",\"value\",\"status\"," +
-        "\"width\",\"height\",\"weight\"," +
-        "\"color_main\",\"color_secondary\"," +
-        "\"source_name\",\"source_alias\",\"source_type\",\"source_country\",\"source_details\"," +
-        "\"archival_date\",\"archival_reason\",\"price\"," +
-        "\"recipient_name\",\"recipient_alias\",\"recipient_country\",\"archival_details\""
-    private val importEmptyRowString = "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"," +
-        "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"," +
-        "\"\",\"\",\"\",\"\",\"\",\"\",\"\""
-
     init {
         viewModelScope.launch {
             when (helpPage) {
@@ -70,13 +55,17 @@ class HelpViewModel @Inject constructor(
 
     fun copyImportFirstRowToClipboard(context: Context) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("ImportFirstRow", importFirstRowString)
+        val clip = ClipData.newPlainText(
+            "ImportFirstRow", ImportConstString.FIRST_ROW_TEMPLATE
+        )
         clipboard.setPrimaryClip(clip)
     }
 
     fun copyImportEmptyRowToClipboard(context: Context) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("ImportEmptyRow", importEmptyRowString)
+        val clip = ClipData.newPlainText(
+            "ImportEmptyRow", ImportConstString.EMPTY_ROW_TEMPLATE
+        )
         clipboard.setPrimaryClip(clip)
     }
 
@@ -117,25 +106,26 @@ class HelpViewModel @Inject constructor(
     }
 
     fun getImportFirstRowExample(): String {
-        return importFirstRowExample
+        return ImportConstString.FIRST_ROW_EXAMPLE
     }
 
     fun getAllPlatesUnusedValues(): String {
-        val values = "archival_date\narchival_reason\nprice\n" +
-            "recipient_name\nrecipient_alias\nrecipient_country\narchival_details"
-        return values
+        return ImportConstString.UNUSED_VALUES_ALL_PLATES
     }
 
     fun getArchiveUnusedValues(): String {
-        val values = "value\nstatus"
-        return values
+        return ImportConstString.UNUSED_VALUES_ARCHIVE
     }
 
     fun getWishlistUsedValues(): String {
-        val values = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\n" +
-            "type\nperiod_start\nperiod_end\nyear\nnotes\n" +
-            "width\nheight\nweight\ncolor_main\ncolor_secondary"
-        return values
+        return ImportConstString.USED_VALUES_WISHLIST
+    }
+
+    fun showToast(context: Context, message: String) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun getDownloadMessage(isSuccess: Boolean, context: Context): String {
@@ -149,4 +139,30 @@ class HelpViewModel @Inject constructor(
 enum class HelpPage {
     DEFAULT,
     IMPORT
+}
+
+private object ImportConstString {
+    const val FIRST_ROW_EXAMPLE = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\n" +
+            "type\nperiod_start\nperiod_end\nyear\nnotes\nvehicle\ndate\ncost\nvalue\nstatus\n" +
+            "width\nheight\nweight\ncolor_main\ncolor_secondary\n" +
+            "source_name\nsource_alias\nsource_type\nsource_country\nsource_details\n" +
+            "archival_date\narchival_reason\nprice\n" +
+            "recipient_name\nrecipient_alias\nrecipient_country\narchival_details"
+    const val FIRST_ROW_TEMPLATE = "\"reg_no\",\"country\",\"region_1st\",\"region_2nd\"," +
+            "\"region_3rd\",\"type\",\"period_start\",\"period_end\",\"year\"," +
+            "\"notes\",\"vehicle\",\"date\",\"cost\",\"value\",\"status\"," +
+            "\"width\",\"height\",\"weight\"," +
+            "\"color_main\",\"color_secondary\"," +
+            "\"source_name\",\"source_alias\",\"source_type\",\"source_country\",\"source_details\"," +
+            "\"archival_date\",\"archival_reason\",\"price\"," +
+            "\"recipient_name\",\"recipient_alias\",\"recipient_country\",\"archival_details\""
+    const val EMPTY_ROW_TEMPLATE = "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"," +
+            "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"," +
+            "\"\",\"\",\"\",\"\",\"\",\"\",\"\""
+    const val UNUSED_VALUES_ALL_PLATES = "archival_date\narchival_reason\nprice\n" +
+            "recipient_name\nrecipient_alias\nrecipient_country\narchival_details"
+    const val UNUSED_VALUES_ARCHIVE = "value\nstatus"
+    const val USED_VALUES_WISHLIST = "reg_no\ncountry\nregion_1st\nregion_2nd\nregion_3rd\n" +
+            "type\nperiod_start\nperiod_end\nyear\nnotes\n" +
+            "width\nheight\nweight\ncolor_main\ncolor_secondary"
 }

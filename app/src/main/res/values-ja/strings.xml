@@ -211,4 +211,7 @@
     <string name="give_feedback">フィードバックを送信</string>
     <string name="rate">評価</string>
     <string name="review">レビュー</string>
+    <string name="open_url_error">リンク先に遷移できませんでした</string>
+    <string name="url_redirect_to_browser">このコンテンツを利用するために、ウェブブラウザに遷移します。</string>
+    <string name="url_redirect_to_google_play">Google Play ストアに遷移します。</string>
 </resources>

@@ -258,4 +258,7 @@
     <string name="review">Review</string>
     <string name="rate_and_review">Rate &amp; review</string>
     <string name="give_feedback">Give feedback</string>
+    <string name="open_url_error">Unable to open the link</string>
+    <string name="url_redirect_to_browser">This content is available online. You will be redirected to your web browser.</string>
+    <string name="url_redirect_to_google_play">You will be redirected to the Google Play Store.</string>
 </resources>

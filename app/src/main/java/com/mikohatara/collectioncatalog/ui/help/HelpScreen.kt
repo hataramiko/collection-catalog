@@ -1,6 +1,8 @@
 package com.mikohatara.collectioncatalog.ui.help
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -55,15 +57,24 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.HelpTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
+import com.mikohatara.collectioncatalog.ui.components.OpenUrlDialog
+import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
 import com.mikohatara.collectioncatalog.util.getDateExample
 import com.mikohatara.collectioncatalog.util.getFileNameForExport
+
+private object Url {
+    const val PRIVACY_POLICY = "https://hataramiko.github.io/rekkary/privacy-policy.html"
+    const val SEND_FEEDBACK = ""
+    const val RATE = "market://details?id=com.mikohatara.collectioncatalog"
+}
 
 @Composable
 fun HelpScreen(
@@ -143,15 +154,21 @@ private fun HelpScreenContent(
 ) {
     LazyColumn(modifier = modifier) {
         when (uiState.helpPage) {
-            HelpPage.DEFAULT -> item { LandingPage(navActions = navActions) }
-            HelpPage.IMPORT -> item { ImportPage(viewModel = viewModel, context = context) }
+            HelpPage.DEFAULT -> item {
+                LandingPage(viewModel = viewModel, navActions = navActions, context = context)
+            }
+            HelpPage.IMPORT -> item {
+                ImportPage(viewModel = viewModel, context = context)
+            }
         }
     }
 }
 
 @Composable
 private fun LandingPage(
+    viewModel: HelpViewModel,
     navActions: CollectionCatalogNavigationActions,
+    context: Context,
     modifier: Modifier = Modifier
 ) {
     Spacer(modifier = Modifier.height(16.dp))
@@ -162,26 +179,30 @@ private fun LandingPage(
         modifier = modifier
     )
     HelpPageHorizontalDivider()
-    LandingPageButton(
+    LandingPageLink(
         text = stringResource(R.string.send_feedback),
         painter = painterResource(R.drawable.rounded_forward_to_inbox_24),
-        isLink = true,
-        onClick = { /*TODO*/ },
-        modifier = modifier
+        url = Url.SEND_FEEDBACK,
+        context = context,
+        modifier = modifier,
+        viewModel = viewModel
     )
-    LandingPageButton(
+    LandingPageLink(
         text = stringResource(R.string.rate),
         painter = painterResource(R.drawable.rounded_reviews_24),
-        isLink = true,
-        onClick = { /*TODO*/ },
-        modifier = modifier
+        url = Url.RATE,
+        context = context,
+        modifier = modifier,
+        viewModel = viewModel
     )
-    LandingPageButton(
+    HelpPageHorizontalDivider()
+    LandingPageLink(
         text = stringResource(R.string.privacy_policy),
         painter = painterResource(R.drawable.rounded_privacy_tip_24),
-        isLink = true,
-        onClick = { /*TODO*/ },
-        modifier = modifier
+        url = Url.PRIVACY_POLICY,
+        context = context,
+        modifier = modifier,
+        viewModel = viewModel
     )
 }
 
@@ -402,13 +423,88 @@ private fun LandingPageButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    painter: Painter = painterResource(R.drawable.rounded_help),
-    isLink: Boolean = false
+    painter: Painter = painterResource(R.drawable.rounded_help)
 ) {
-    val (rowEndIconColor, rowEndIconPainter) = if (isLink) {
-        colorScheme.outline to painterResource(R.drawable.rounded_open_in_new_24)
+    HelpPageButton(
+        text = text,
+        onClick = onClick,
+        modifier = modifier,
+        mainIconPainter = painter
+    )
+}
+
+@Composable
+private fun LandingPageLink(
+    viewModel: HelpViewModel,
+    text: String,
+    context: Context,
+    url: String,
+    modifier: Modifier = Modifier,
+    painter: Painter = painterResource(R.drawable.rounded_help)
+) {
+    var showRedirectDialog by rememberSaveable { mutableStateOf(false) }
+    val openUrlErrorMessage = stringResource(R.string.open_url_error)
+    val openUrl: (Context, String) -> Unit = { context, url ->
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            viewModel.showToast(context, openUrlErrorMessage)
+            e.printStackTrace()
+        }
+    }
+
+    HelpPageButton(
+        text = text,
+        onClick = { showRedirectDialog = true },
+        modifier = modifier,
+        mainIconPainter = painter,
+        trailingIconPainter = painterResource(R.drawable.rounded_open_in_new_24),
+        trailingIconColor = colorScheme.outline,
+        isMainIconColorTertiary = (url == Url.PRIVACY_POLICY),
+        isMainIconColorSecondary = true,
+    )
+
+    if (showRedirectDialog) {
+        if (url == Url.RATE) {
+            RedirectDialog(
+                message = stringResource(R.string.url_redirect_to_google_play),
+                onConfirm = {
+                    showRedirectDialog = false
+                    openUrl(context, url)
+                },
+                onCancel = { showRedirectDialog = false }
+            )
+        } else {
+            OpenUrlDialog(
+                title = text,
+                onConfirm = {
+                    showRedirectDialog = false
+                    openUrl(context, url)
+                },
+                onCancel = { showRedirectDialog = false }
+            )
+        }
+    }
+}
+
+@Composable
+private fun HelpPageButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    mainIconPainter: Painter = painterResource(R.drawable.rounded_help),
+    trailingIconPainter: Painter = painterResource(R.drawable.rounded_chevron_forward),
+    trailingIconColor: Color = colorScheme.onSurfaceVariant,
+    isMainIconColorTertiary: Boolean = false,
+    isMainIconColorSecondary: Boolean = false
+) {
+    val (mainIconContainerColor, mainIconColor) = if (isMainIconColorTertiary) {
+        colorScheme.tertiaryContainer to colorScheme.onTertiaryContainer
+    } else if (isMainIconColorSecondary) {
+        colorScheme.secondaryContainer to colorScheme.onSecondaryContainer
     } else {
-        colorScheme.onSurfaceVariant to painterResource(R.drawable.rounded_chevron_forward)
+        colorScheme.primaryContainer to colorScheme.onPrimaryContainer
     }
 
     Row(
@@ -419,7 +515,7 @@ private fun LandingPageButton(
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Card(
-            colors = CardDefaults.cardColors(colorScheme.secondaryContainer),
+            colors = CardDefaults.cardColors(mainIconContainerColor),
             modifier = Modifier.size(40.dp)
         ) {
             Box(
@@ -427,9 +523,9 @@ private fun LandingPageButton(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Icon(
-                    painter = painter,
+                    painter = mainIconPainter,
                     contentDescription = null,
-                    tint = colorScheme.onSecondaryContainer
+                    tint = mainIconColor
                 )
             }
         }
@@ -441,9 +537,9 @@ private fun LandingPageButton(
             modifier = Modifier.padding(horizontal = 16.dp).weight(1f)
         )
         Icon(
-            painter = rowEndIconPainter,
+            painter = trailingIconPainter,
             contentDescription = null,
-            tint = rowEndIconColor
+            tint = trailingIconColor
         )
     }
 }
@@ -452,6 +548,6 @@ private fun LandingPageButton(
 private fun HelpPageHorizontalDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         color = colorScheme.outlineVariant,
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 32.dp)
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 12.dp)
     )
 }
