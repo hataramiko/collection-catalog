@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.FormerPlate
 import com.mikohatara.collectioncatalog.data.PlateRepository
+import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.util.exportFormerPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
@@ -16,9 +17,11 @@ import com.mikohatara.collectioncatalog.util.importFormerPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.OutputStreamWriter
@@ -46,6 +49,14 @@ class ArchiveViewModel @Inject constructor(
     private val plateRepository: PlateRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
+
+    val userPreferences: StateFlow<UserPreferences> = userPreferencesRepository.userPreferences
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = UserPreferences()
+        )
+
     private val _allItems = mutableListOf<FormerPlate>()
     val showSortByBottomSheet = mutableStateOf(false)
     val showFilterBottomSheet = mutableStateOf(false)

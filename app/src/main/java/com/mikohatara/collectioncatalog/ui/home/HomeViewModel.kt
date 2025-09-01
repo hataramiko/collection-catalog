@@ -14,6 +14,7 @@ import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
+import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.util.exportPlatesToCsv
@@ -22,14 +23,17 @@ import com.mikohatara.collectioncatalog.util.importPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.OutputStreamWriter
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 data class HomeUiState(
     val items: List<Plate> = emptyList(),
@@ -38,6 +42,7 @@ data class HomeUiState(
     val activeFilterCount: Int = 0,
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
+    val valueSliderPosition: ClosedRange<Float>? = null,
     val isSearchActive: Boolean = false,
     val searchQuery: String = "",
     val isLoading: Boolean = false,
@@ -64,6 +69,14 @@ class HomeViewModel @Inject constructor(
     private val collectionRepository: CollectionRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
+
+    val userPreferences: StateFlow<UserPreferences> = userPreferencesRepository.userPreferences
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = UserPreferences()
+        )
+
     // Make this private and add an isCollection Boolean to the UiState?
     val collectionId: Int? = savedStateHandle.get<Int>(COLLECTION_ID)
     private val _collection = mutableStateOf<Collection?>(null)
@@ -168,6 +181,7 @@ class HomeViewModel @Inject constructor(
     fun setFilter() {
         setPeriodFilter()
         setYearFilter()
+        setValueFilter()
         val filters = _uiState.value.filters
 
         val filteredItems = _allItems.filter { item ->
@@ -208,6 +222,14 @@ class HomeViewModel @Inject constructor(
                     else -> false
                 }
             } != false
+            val isWithinValueRange = filters.valueRange?.let { range ->
+                val value = item.uniqueDetails.value
+
+                when {
+                    value != null -> value in range
+                    else -> false
+                }
+            } != false
 
             when {
                 filters.country.isNotEmpty() && filters.country.none {
@@ -221,6 +243,7 @@ class HomeViewModel @Inject constructor(
                 } -> false
                 !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
+                !isWithinValueRange -> false
                 else -> true
             }
         }
@@ -251,11 +274,16 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(yearSliderPosition = yearSliderPosition) }
     }
 
+    fun updateValueSliderPosition(valueSliderPosition: ClosedRange<Float>) {
+        _uiState.update { it.copy(valueSliderPosition = valueSliderPosition) }
+    }
+
     fun resetFilter() {
         _uiState.update { it.copy(
             filters = FilterData(),
             periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
-            yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()
+            yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
+            valueSliderPosition = getMinValue().toFloat()..getMaxValue().toFloat()
         ) }
         setFilter()
     }
@@ -286,14 +314,18 @@ class HomeViewModel @Inject constructor(
         val locationSize = filters.location.size
 
         val yearSliderRange = getYearSliderRange()
+        val valueSliderRange = getValueSliderRange()
         val periodSize = if (
             isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
         ) 1 else 0
         val yearSize = if (
             isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
         ) 1 else 0
+        val valueSize = if (
+            isSliderActive(_uiState.value.valueSliderPosition, valueSliderRange)
+        ) 1 else 0
 
-        return countrySize + typeSize + locationSize + periodSize + yearSize
+        return countrySize + typeSize + locationSize + periodSize + yearSize + valueSize
     }
 
     fun getCountries(): Set<String> {
@@ -316,6 +348,10 @@ class HomeViewModel @Inject constructor(
 
     fun getYearSliderRange(): ClosedRange<Float> {
         return getMinYear().toFloat()..getMaxYear().toFloat()
+    }
+
+    fun getValueSliderRange(): ClosedRange<Float> {
+        return getMinValue().toFloat()..getMaxValue().toFloat()
     }
 
     fun exportItems(context: Context, uri: Uri) {
@@ -441,6 +477,10 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(
                 yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
         }
+        if (uiState.value.valueSliderPosition == null) {
+            _uiState.update { it.copy(
+                valueSliderPosition = getMinValue().toFloat()..getMaxValue().toFloat()) }
+        }
     }
 
     private fun isSliderActive(
@@ -469,6 +509,17 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(filters = it.filters.copy(yearRange = null)) }
         } else {
             _uiState.update { it.copy(filters = it.filters.copy(yearRange = rangeStart..rangeEnd)) }
+        }
+    }
+
+    private fun setValueFilter() {
+        val valueRange = uiState.value.valueSliderPosition ?: return
+        val rangeStart = valueRange.start.roundToLong()
+        val rangeEnd = valueRange.endInclusive.roundToLong()
+        if (rangeStart == getMinValue() && rangeEnd == getMaxValue()) {
+            _uiState.update { it.copy(filters = it.filters.copy(valueRange = null)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(valueRange = rangeStart..rangeEnd)) }
         }
     }
 
@@ -506,6 +557,20 @@ class HomeViewModel @Inject constructor(
         return listOf(currentYear, maxYear).maxOf { it }
     }
 
+    private fun getMinValue(): Long {
+        return 0L
+    }
+
+    private fun getMaxValue(): Long {
+        val fallback = 0L
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
+        val allValues = items.mapNotNull { it.uniqueDetails.value }
+
+        return if (allValues.isNotEmpty()) {
+            allValues.maxOf { it }
+        } else fallback
+    }
+
     private fun getExportMessage(isSuccess: Boolean, context: Context): String {
         val stringResId = if (isSuccess) {
             R.string.export_msg_success
@@ -539,5 +604,6 @@ data class FilterData(
     val type: Set<String> = emptySet(),
     val periodRange: ClosedRange<Int>? = null,
     val yearRange: ClosedRange<Int>? = null,
+    val valueRange: ClosedRange<Long>? = null,
     val location: Set<String> = emptySet()
 )

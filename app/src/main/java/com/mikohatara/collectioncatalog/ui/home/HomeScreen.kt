@@ -51,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Plate
+import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.ExportDialog
@@ -71,6 +72,7 @@ fun HomeScreen(
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit
 ) {
+    val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -78,6 +80,7 @@ fun HomeScreen(
         itemList = uiState.items,
         uiState = uiState,
         viewModel = viewModel,
+        userPreferences = userPreferences,
         context = context,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
@@ -92,6 +95,7 @@ private fun HomeScreen(
     itemList: List<Plate>,
     uiState: HomeUiState,
     viewModel: HomeViewModel,
+    userPreferences: UserPreferences,
     context: Context,
     onAddItem: () -> Unit,
     onItemClick: (Plate) -> Unit,
@@ -234,6 +238,7 @@ private fun HomeScreen(
                     filterCount = viewModel.getFilterCount(),
                     onApply = { viewModel.setFilter() },
                     onReset = { viewModel.resetFilter() },
+                    localeCode = userPreferences.userCountry,
                     countries = viewModel.getCountries(),
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),
@@ -246,6 +251,11 @@ private fun HomeScreen(
                     yearSliderPosition = uiState.yearSliderPosition,
                     onYearSliderChange = { newPosition ->
                         viewModel.updateYearSliderPosition(newPosition)
+                    },
+                    valueSliderRange = viewModel.getValueSliderRange(),
+                    valueSliderPosition = uiState.valueSliderPosition,
+                    onValueSliderChange = { newPosition ->
+                        viewModel.updateValueSliderPosition(newPosition)
                     },
                     locations = viewModel.getLocations(),
                     toggleLocation = { viewModel.toggleLocationFilter(it) }

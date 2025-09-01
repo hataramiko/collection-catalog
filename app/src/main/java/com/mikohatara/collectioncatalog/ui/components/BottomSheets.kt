@@ -70,7 +70,9 @@ import com.mikohatara.collectioncatalog.ui.home.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
 import com.mikohatara.collectioncatalog.util.isCollectionColor
 import com.mikohatara.collectioncatalog.util.toColor
+import com.mikohatara.collectioncatalog.util.toCurrencyString
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,6 +128,7 @@ fun FilterBottomSheet(
     filterCount: Int,
     onApply: () -> Unit,
     onReset: () -> Unit,
+    localeCode: String = "FI", // A default value shouldn't be necessary here? TODO remove later?
     countries: Set<String>,
     toggleCountry: (String) -> Unit,
     types: Set<String>,
@@ -136,6 +139,9 @@ fun FilterBottomSheet(
     yearSliderRange: ClosedRange<Float>? = null,
     yearSliderPosition: ClosedRange<Float>? = null,
     onYearSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
+    valueSliderRange: ClosedRange<Float>? = null,
+    valueSliderPosition: ClosedRange<Float>? = null,
+    onValueSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     locations: Set<String>? = null,
     toggleLocation: ((String) -> Unit)? = null
 ) {
@@ -146,6 +152,7 @@ fun FilterBottomSheet(
     var isTypesExpanded by remember { mutableStateOf(false) }
     var isPeriodExpanded by remember { mutableStateOf(false) }
     var isYearExpanded by remember { mutableStateOf(false) }
+    var isValueExpanded by remember { mutableStateOf(false) }
     var isLocationsExpanded by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
@@ -240,6 +247,32 @@ fun FilterBottomSheet(
                             isExpanded = isYearExpanded,
                             onSliderChange = { newSliderPosition ->
                                 onYearSliderChange(newSliderPosition)
+                            }
+                        )
+                    }
+                }
+                if (valueSliderRange != null && valueSliderPosition != null &&
+                    onValueSliderChange != null) {
+                    stickyHeader {
+                        val minValue = valueSliderPosition.start.roundToLong()
+                        val maxValue = valueSliderPosition.endInclusive.roundToLong()
+
+                        FilterListLabel(
+                            label = stringResource(R.string.value),
+                            activeFilters = emptySet(),
+                            isExpanded = isValueExpanded,
+                            onExpand = { isValueExpanded = !isValueExpanded },
+                            value = "${minValue.toCurrencyString(localeCode)} – ${maxValue.toCurrencyString(localeCode)}",
+                            isSliderActive = valueSliderPosition != valueSliderRange.start..valueSliderRange.endInclusive
+                        )
+                    }
+                    item {
+                        FilterListSlider(
+                            sliderRange = valueSliderRange,
+                            sliderPosition = valueSliderPosition,
+                            isExpanded = isValueExpanded,
+                            onSliderChange = { newSliderPosition ->
+                                onValueSliderChange(newSliderPosition)
                             }
                         )
                     }

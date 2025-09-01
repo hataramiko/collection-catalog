@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.WantedPlate
 import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
@@ -69,6 +70,7 @@ fun WishlistScreen(
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit
 ) {
+    val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -76,6 +78,7 @@ fun WishlistScreen(
         itemList = uiState.items,
         uiState = uiState,
         viewModel = viewModel,
+        userPreferences = userPreferences,
         context = context,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
@@ -90,6 +93,7 @@ private fun WishlistScreen(
     itemList: List<WantedPlate>,
     uiState: WishlistUiState,
     viewModel: WishlistViewModel,
+    userPreferences: UserPreferences,
     context: Context,
     onAddItem: () -> Unit,
     onItemClick: (WantedPlate) -> Unit,
@@ -210,6 +214,7 @@ private fun WishlistScreen(
                     filterCount = viewModel.getFilterCount(),
                     onApply = { viewModel.setFilter() },
                     onReset = { viewModel.resetFilter() },
+                    localeCode = userPreferences.userCountry,
                     countries = viewModel.getCountries(),
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),

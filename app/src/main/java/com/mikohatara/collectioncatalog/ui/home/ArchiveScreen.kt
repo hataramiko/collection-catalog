@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.FormerPlate
+import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.ExportDialog
@@ -70,6 +71,7 @@ fun ArchiveScreen(
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit
 ) {
+    val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -77,6 +79,7 @@ fun ArchiveScreen(
         itemList = uiState.items,
         uiState = uiState,
         viewModel = viewModel,
+        userPreferences = userPreferences,
         context = context,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
@@ -91,6 +94,7 @@ private fun ArchiveScreen(
     itemList: List<FormerPlate>,
     uiState: ArchiveUiState,
     viewModel: ArchiveViewModel,
+    userPreferences: UserPreferences,
     context: Context,
     onAddItem: () -> Unit,
     onItemClick: (FormerPlate) -> Unit,
@@ -219,6 +223,7 @@ private fun ArchiveScreen(
                     filterCount = viewModel.getFilterCount(),
                     onApply = { viewModel.setFilter() },
                     onReset = { viewModel.resetFilter() },
+                    localeCode = userPreferences.userCountry,
                     countries = viewModel.getCountries(),
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),
