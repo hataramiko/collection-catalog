@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import java.io.OutputStreamWriter
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 data class ArchiveUiState(
     val items: List<FormerPlate> = emptyList(),
@@ -35,6 +36,7 @@ data class ArchiveUiState(
     val activeFilterCount: Int = 0,
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
+    val costSliderPosition: ClosedRange<Float>? = null,
     val isSearchActive: Boolean = false,
     val searchQuery: String = "",
     val isLoading: Boolean = false,
@@ -170,16 +172,26 @@ class ArchiveViewModel @Inject constructor(
         val countrySize = filters.country.size
         val typeSize = filters.type.size
         val locationSize = filters.location.size
+        val sourceTypeSize = filters.sourceType.size
+        val sourceCountrySize = filters.sourceCountry.size
+        val archivalReasonSize = filters.archivalReason.size
+        val recipientCountrySize = filters.recipientCountry.size
 
         val yearSliderRange = getYearSliderRange()
+        val costSliderRange = getCostSliderRange()
         val periodSize = if (
             isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
         ) 1 else 0
         val yearSize = if (
             isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
         ) 1 else 0
+        val costSize = if (
+            isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
+        ) 1 else 0
 
-        return countrySize + typeSize + locationSize + periodSize + yearSize
+        return countrySize + typeSize + locationSize + periodSize + yearSize +
+                costSize + sourceTypeSize + sourceCountrySize +
+                archivalReasonSize + recipientCountrySize
     }
 
     fun openFilterBottomSheet() {
@@ -190,6 +202,7 @@ class ArchiveViewModel @Inject constructor(
     fun setFilter() {
         setPeriodFilter()
         setYearFilter()
+        setCostFilter()
         val filters = _uiState.value.filters
 
         val filteredItems = _allItems.filter { item ->
@@ -218,6 +231,14 @@ class ArchiveViewModel @Inject constructor(
                     else -> false
                 }
             } != false
+            val isWithinCostRange = filters.costRange?.let { range ->
+                val cost = item.uniqueDetails.cost
+
+                when {
+                    cost != null -> cost in range
+                    else -> false
+                }
+            } != false
 
             when {
                 filters.country.isNotEmpty() && filters.country.none {
@@ -226,8 +247,21 @@ class ArchiveViewModel @Inject constructor(
                 filters.type.isNotEmpty() && filters.type.none {
                     it == item.commonDetails.type
                 } -> false
+                filters.sourceType.isNotEmpty() && filters.sourceType.none {
+                    it == item.source.type
+                } -> false
+                filters.sourceCountry.isNotEmpty() && filters.sourceCountry.none {
+                    it == item.source.country
+                } -> false
+                filters.archivalReason.isNotEmpty() && filters.archivalReason.none {
+                    it == item.archivalDetails.archivalReason
+                } -> false
+                filters.recipientCountry.isNotEmpty() && filters.recipientCountry.none {
+                    it == item.archivalDetails.recipientCountry
+                } -> false
                 !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
+                !isWithinCostRange -> false
                 else -> true
             }
         }
@@ -245,6 +279,26 @@ class ArchiveViewModel @Inject constructor(
         _uiState.update { it.copy(filters = it.filters.copy(type = newFilter)) }
     }
 
+    fun toggleSourceTypeFilter(sourceType: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.sourceType, sourceType)
+        _uiState.update { it.copy(filters = it.filters.copy(sourceType = newFilter)) }
+    }
+
+    fun toggleSourceCountryFilter(sourceCountry: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.sourceCountry, sourceCountry)
+        _uiState.update { it.copy(filters = it.filters.copy(sourceCountry = newFilter)) }
+    }
+
+    fun toggleArchivalReasonFilter(archivalReason: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.archivalReason, archivalReason)
+        _uiState.update { it.copy(filters = it.filters.copy(archivalReason = newFilter)) }
+    }
+
+    fun toggleRecipientCountryFilter(recipientCountry: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.recipientCountry, recipientCountry)
+        _uiState.update { it.copy(filters = it.filters.copy(recipientCountry = newFilter)) }
+    }
+
     fun updatePeriodSliderPosition(periodSliderPosition: ClosedRange<Float>) {
         _uiState.update { it.copy(periodSliderPosition = periodSliderPosition) }
     }
@@ -253,11 +307,16 @@ class ArchiveViewModel @Inject constructor(
         _uiState.update { it.copy(yearSliderPosition = yearSliderPosition) }
     }
 
+    fun updateCostSliderPosition(costSliderPosition: ClosedRange<Float>) {
+        _uiState.update { it.copy(costSliderPosition = costSliderPosition) }
+    }
+
     fun resetFilter() {
         _uiState.update { it.copy(
             filters = FilterData(),
             periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
-            yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()
+            yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
+            costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat()
         ) }
         setFilter()
     }
@@ -274,8 +333,36 @@ class ArchiveViewModel @Inject constructor(
             .toSet()
     }
 
+    fun getSourceTypes(): Set<String> {
+        return _allItems.mapNotNull { it.source.type }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getSourceCountries(): Set<String> {
+        return _allItems.mapNotNull { it.source.country }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getArchivalReasons(): Set<String> {
+        return _allItems.mapNotNull { it.archivalDetails.archivalReason }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getRecipientCountries(): Set<String> {
+        return _allItems.mapNotNull { it.archivalDetails.recipientCountry }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
     fun getYearSliderRange(): ClosedRange<Float> {
         return getMinYear().toFloat()..getMaxYear().toFloat()
+    }
+
+    fun getCostSliderRange(): ClosedRange<Float> {
+        return getMinCost().toFloat()..getMaxCost().toFloat()
     }
 
     fun exportItems(context: Context, uri: Uri) {
@@ -372,6 +459,10 @@ class ArchiveViewModel @Inject constructor(
             _uiState.update { it.copy(
                 yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
         }
+        if (uiState.value.costSliderPosition == null) {
+            _uiState.update { it.copy(
+                costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat()) }
+        }
     }
 
     private fun isSliderActive(
@@ -400,6 +491,17 @@ class ArchiveViewModel @Inject constructor(
             _uiState.update { it.copy(filters = it.filters.copy(yearRange = null)) }
         } else {
             _uiState.update { it.copy(filters = it.filters.copy(yearRange = rangeStart..rangeEnd)) }
+        }
+    }
+
+    private fun setCostFilter() {
+        val costRange = uiState.value.costSliderPosition ?: return
+        val rangeStart = costRange.start.roundToLong()
+        val rangeEnd = costRange.endInclusive.roundToLong()
+        if (rangeStart == getMinCost() && rangeEnd == getMaxCost()) {
+            _uiState.update { it.copy(filters = it.filters.copy(costRange = null)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(costRange = rangeStart..rangeEnd)) }
         }
     }
 
@@ -435,6 +537,20 @@ class ArchiveViewModel @Inject constructor(
             currentYear
         }
         return listOf(currentYear, maxYear).maxOf { it }
+    }
+
+    private fun getMinCost(): Long {
+        return 0L
+    }
+
+    private fun getMaxCost(): Long {
+        val fallback = 0L
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
+        val allValues = items.mapNotNull { it.uniqueDetails.cost }
+
+        return if (allValues.isNotEmpty()) {
+            allValues.maxOf { it }
+        } else fallback
     }
 
     private fun getExportMessage(isSuccess: Boolean, context: Context): String {

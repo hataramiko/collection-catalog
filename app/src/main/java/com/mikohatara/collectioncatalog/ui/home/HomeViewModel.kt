@@ -42,6 +42,7 @@ data class HomeUiState(
     val activeFilterCount: Int = 0,
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
+    val costSliderPosition: ClosedRange<Float>? = null,
     val valueSliderPosition: ClosedRange<Float>? = null,
     val isSearchActive: Boolean = false,
     val searchQuery: String = "",
@@ -181,6 +182,7 @@ class HomeViewModel @Inject constructor(
     fun setFilter() {
         setPeriodFilter()
         setYearFilter()
+        setCostFilter()
         setValueFilter()
         val filters = _uiState.value.filters
 
@@ -222,6 +224,14 @@ class HomeViewModel @Inject constructor(
                     else -> false
                 }
             } != false
+            val isWithinCostRange = filters.costRange?.let { range ->
+                val cost = item.uniqueDetails.cost
+
+                when {
+                    cost != null -> cost in range
+                    else -> false
+                }
+            } != false
             val isWithinValueRange = filters.valueRange?.let { range ->
                 val value = item.uniqueDetails.value
 
@@ -241,8 +251,15 @@ class HomeViewModel @Inject constructor(
                 filters.location.isNotEmpty() && filters.location.none {
                     it == item.uniqueDetails.status
                 } -> false
+                filters.sourceType.isNotEmpty() && filters.sourceType.none {
+                    it == item.source.type
+                } -> false
+                filters.sourceCountry.isNotEmpty() && filters.sourceCountry.none {
+                    it == item.source.country
+                } -> false
                 !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
+                !isWithinCostRange -> false
                 !isWithinValueRange -> false
                 else -> true
             }
@@ -266,12 +283,26 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(filters = it.filters.copy(location = newFilter)) }
     }
 
+    fun toggleSourceTypeFilter(sourceType: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.sourceType, sourceType)
+        _uiState.update { it.copy(filters = it.filters.copy(sourceType = newFilter)) }
+    }
+
+    fun toggleSourceCountryFilter(sourceCountry: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.sourceCountry, sourceCountry)
+        _uiState.update { it.copy(filters = it.filters.copy(sourceCountry = newFilter)) }
+    }
+
     fun updatePeriodSliderPosition(periodSliderPosition: ClosedRange<Float>) {
         _uiState.update { it.copy(periodSliderPosition = periodSliderPosition) }
     }
 
     fun updateYearSliderPosition(yearSliderPosition: ClosedRange<Float>) {
         _uiState.update { it.copy(yearSliderPosition = yearSliderPosition) }
+    }
+
+    fun updateCostSliderPosition(costSliderPosition: ClosedRange<Float>) {
+        _uiState.update { it.copy(costSliderPosition = costSliderPosition) }
     }
 
     fun updateValueSliderPosition(valueSliderPosition: ClosedRange<Float>) {
@@ -283,6 +314,7 @@ class HomeViewModel @Inject constructor(
             filters = FilterData(),
             periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
             yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
+            costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat(),
             valueSliderPosition = getMinValue().toFloat()..getMaxValue().toFloat()
         ) }
         setFilter()
@@ -312,8 +344,11 @@ class HomeViewModel @Inject constructor(
         val countrySize = filters.country.size
         val typeSize = filters.type.size
         val locationSize = filters.location.size
+        val sourceTypeSize = filters.sourceType.size
+        val sourceCountrySize = filters.sourceCountry.size
 
         val yearSliderRange = getYearSliderRange()
+        val costSliderRange = getCostSliderRange()
         val valueSliderRange = getValueSliderRange()
         val periodSize = if (
             isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
@@ -321,11 +356,15 @@ class HomeViewModel @Inject constructor(
         val yearSize = if (
             isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
         ) 1 else 0
+        val costSize = if (
+            isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
+        ) 1 else 0
         val valueSize = if (
             isSliderActive(_uiState.value.valueSliderPosition, valueSliderRange)
         ) 1 else 0
 
-        return countrySize + typeSize + locationSize + periodSize + yearSize + valueSize
+        return countrySize + typeSize + locationSize + periodSize + yearSize +
+                costSize + valueSize + sourceTypeSize + sourceCountrySize
     }
 
     fun getCountries(): Set<String> {
@@ -346,8 +385,24 @@ class HomeViewModel @Inject constructor(
             .toSet()
     }
 
+    fun getSourceTypes(): Set<String> {
+        return _allItems.mapNotNull { it.source.type }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getSourceCountries(): Set<String> {
+        return _allItems.mapNotNull { it.source.country }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
     fun getYearSliderRange(): ClosedRange<Float> {
         return getMinYear().toFloat()..getMaxYear().toFloat()
+    }
+
+    fun getCostSliderRange(): ClosedRange<Float> {
+        return getMinCost().toFloat()..getMaxCost().toFloat()
     }
 
     fun getValueSliderRange(): ClosedRange<Float> {
@@ -477,6 +532,10 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(
                 yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
         }
+        if (uiState.value.costSliderPosition == null) {
+            _uiState.update { it.copy(
+                costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat()) }
+        }
         if (uiState.value.valueSliderPosition == null) {
             _uiState.update { it.copy(
                 valueSliderPosition = getMinValue().toFloat()..getMaxValue().toFloat()) }
@@ -509,6 +568,17 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(filters = it.filters.copy(yearRange = null)) }
         } else {
             _uiState.update { it.copy(filters = it.filters.copy(yearRange = rangeStart..rangeEnd)) }
+        }
+    }
+
+    private fun setCostFilter() {
+        val costRange = uiState.value.costSliderPosition ?: return
+        val rangeStart = costRange.start.roundToLong()
+        val rangeEnd = costRange.endInclusive.roundToLong()
+        if (rangeStart == getMinCost() && rangeEnd == getMaxCost()) {
+            _uiState.update { it.copy(filters = it.filters.copy(costRange = null)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(costRange = rangeStart..rangeEnd)) }
         }
     }
 
@@ -555,6 +625,20 @@ class HomeViewModel @Inject constructor(
             currentYear
         }
         return listOf(currentYear, maxYear).maxOf { it }
+    }
+
+    private fun getMinCost(): Long {
+        return 0L
+    }
+
+    private fun getMaxCost(): Long {
+        val fallback = 0L
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
+        val allValues = items.mapNotNull { it.uniqueDetails.cost }
+
+        return if (allValues.isNotEmpty()) {
+            allValues.maxOf { it }
+        } else fallback
     }
 
     private fun getMinValue(): Long {
@@ -604,6 +688,11 @@ data class FilterData(
     val type: Set<String> = emptySet(),
     val periodRange: ClosedRange<Int>? = null,
     val yearRange: ClosedRange<Int>? = null,
+    val costRange: ClosedRange<Long>? = null,
     val valueRange: ClosedRange<Long>? = null,
-    val location: Set<String> = emptySet()
+    val location: Set<String> = emptySet(),
+    val sourceType: Set<String> = emptySet(),
+    val sourceCountry: Set<String> = emptySet(),
+    val archivalReason: Set<String> = emptySet(),
+    val recipientCountry: Set<String> = emptySet()
 )

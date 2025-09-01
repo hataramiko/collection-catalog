@@ -252,13 +252,22 @@ private fun HomeScreen(
                     onYearSliderChange = { newPosition ->
                         viewModel.updateYearSliderPosition(newPosition)
                     },
+                    costSliderRange = viewModel.getCostSliderRange(),
+                    costSliderPosition = uiState.costSliderPosition,
+                    onCostSliderChange = { newPosition ->
+                        viewModel.updateCostSliderPosition(newPosition)
+                    },
                     valueSliderRange = viewModel.getValueSliderRange(),
                     valueSliderPosition = uiState.valueSliderPosition,
                     onValueSliderChange = { newPosition ->
                         viewModel.updateValueSliderPosition(newPosition)
                     },
                     locations = viewModel.getLocations(),
-                    toggleLocation = { viewModel.toggleLocationFilter(it) }
+                    toggleLocation = { viewModel.toggleLocationFilter(it) },
+                    sourceTypes = viewModel.getSourceTypes(),
+                    toggleSourceType = { viewModel.toggleSourceTypeFilter(it) },
+                    sourceCountries = viewModel.getSourceCountries(),
+                    toggleSourceCountry = { viewModel.toggleSourceCountryFilter(it) }
                 )
             }
         }

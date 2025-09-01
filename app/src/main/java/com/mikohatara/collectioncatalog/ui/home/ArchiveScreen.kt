@@ -237,6 +237,19 @@ private fun ArchiveScreen(
                     onYearSliderChange = { newPosition ->
                         viewModel.updateYearSliderPosition(newPosition)
                     },
+                    costSliderRange = viewModel.getCostSliderRange(),
+                    costSliderPosition = uiState.costSliderPosition,
+                    onCostSliderChange = { newPosition ->
+                        viewModel.updateCostSliderPosition(newPosition)
+                    },
+                    sourceTypes = viewModel.getSourceTypes(),
+                    toggleSourceType = { viewModel.toggleSourceTypeFilter(it) },
+                    sourceCountries = viewModel.getSourceCountries(),
+                    toggleSourceCountry = { viewModel.toggleSourceCountryFilter(it) },
+                    archivalReasons = viewModel.getArchivalReasons(),
+                    toggleArchivalReason = { viewModel.toggleArchivalReasonFilter(it) },
+                    recipientCountries = viewModel.getRecipientCountries(),
+                    toggleRecipientCountry = { viewModel.toggleRecipientCountryFilter(it) }
                 )
             }
         }

@@ -37,6 +37,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -59,6 +60,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -139,11 +141,22 @@ fun FilterBottomSheet(
     yearSliderRange: ClosedRange<Float>? = null,
     yearSliderPosition: ClosedRange<Float>? = null,
     onYearSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
+    costSliderRange: ClosedRange<Float>? = null,
+    costSliderPosition: ClosedRange<Float>? = null,
+    onCostSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     valueSliderRange: ClosedRange<Float>? = null,
     valueSliderPosition: ClosedRange<Float>? = null,
     onValueSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     locations: Set<String>? = null,
-    toggleLocation: ((String) -> Unit)? = null
+    toggleLocation: ((String) -> Unit)? = null,
+    sourceTypes: Set<String>? = null,
+    toggleSourceType: ((String) -> Unit)? = null,
+    sourceCountries: Set<String>? = null,
+    toggleSourceCountry: ((String) -> Unit)? = null,
+    archivalReasons: Set<String>? = null,
+    toggleArchivalReason: ((String) -> Unit)? = null,
+    recipientCountries: Set<String>? = null,
+    toggleRecipientCountry: ((String) -> Unit)? = null
 ) {
     val sheetState = rememberModalBottomSheetState()
     var sheetHeight by remember { mutableIntStateOf(0) }
@@ -152,8 +165,13 @@ fun FilterBottomSheet(
     var isTypesExpanded by remember { mutableStateOf(false) }
     var isPeriodExpanded by remember { mutableStateOf(false) }
     var isYearExpanded by remember { mutableStateOf(false) }
+    var isCostExpanded by remember { mutableStateOf(false) }
     var isValueExpanded by remember { mutableStateOf(false) }
     var isLocationsExpanded by remember { mutableStateOf(false) }
+    var isSourceTypesExpanded by remember { mutableStateOf(false) }
+    var isSourceCountriesExpanded by remember { mutableStateOf(false) }
+    var isArchivalReasonsExpanded by remember { mutableStateOf(false) }
+    var isRecipientCountriesExpanded by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -251,6 +269,32 @@ fun FilterBottomSheet(
                         )
                     }
                 }
+                if (costSliderRange != null && costSliderPosition != null &&
+                    onCostSliderChange != null) {
+                    stickyHeader {
+                        val minValue = costSliderPosition.start.roundToLong()
+                        val maxValue = costSliderPosition.endInclusive.roundToLong()
+
+                        FilterListLabel(
+                            label = stringResource(R.string.cost),
+                            activeFilters = emptySet(),
+                            isExpanded = isCostExpanded,
+                            onExpand = { isCostExpanded = !isCostExpanded },
+                            value = "${minValue.toCurrencyString(localeCode)} – ${maxValue.toCurrencyString(localeCode)}",
+                            isSliderActive = costSliderPosition != costSliderRange.start..costSliderRange.endInclusive
+                        )
+                    }
+                    item {
+                        FilterListSlider(
+                            sliderRange = costSliderRange,
+                            sliderPosition = costSliderPosition,
+                            isExpanded = isCostExpanded,
+                            onSliderChange = { newSliderPosition ->
+                                onCostSliderChange(newSliderPosition)
+                            }
+                        )
+                    }
+                }
                 if (valueSliderRange != null && valueSliderPosition != null &&
                     onValueSliderChange != null) {
                     stickyHeader {
@@ -292,6 +336,86 @@ fun FilterBottomSheet(
                             activeFilters = filters.location,
                             isExpanded = isLocationsExpanded,
                             onToggleFilter = { toggleLocation(it) }
+                        )
+                    }
+                }
+                //TODO improve logic
+                if (toggleSourceType != null || toggleSourceCountry != null) {
+                    item { FilterSubheader(text = stringResource(R.string.source)) }
+                }
+                if (sourceTypes != null && toggleSourceType != null) {
+                    stickyHeader {
+                        FilterListLabel(
+                            label = stringResource(R.string.source_type),
+                            activeFilters = filters.sourceType,
+                            isExpanded = isSourceTypesExpanded,
+                            onExpand = { isSourceTypesExpanded = !isSourceTypesExpanded }
+                        )
+                    }
+                    item {
+                        FilterListCheckboxes(
+                            filterOptions = sourceTypes,
+                            activeFilters = filters.sourceType,
+                            isExpanded = isSourceTypesExpanded,
+                            onToggleFilter = { toggleSourceType(it) }
+                        )
+                    }
+                }
+                if (sourceCountries != null && toggleSourceCountry != null) {
+                    stickyHeader {
+                        FilterListLabel(
+                            label = stringResource(R.string.source_country),
+                            activeFilters = filters.sourceCountry,
+                            isExpanded = isSourceCountriesExpanded,
+                            onExpand = { isSourceCountriesExpanded = !isSourceCountriesExpanded }
+                        )
+                    }
+                    item {
+                        FilterListCheckboxes(
+                            filterOptions = sourceCountries,
+                            activeFilters = filters.sourceCountry,
+                            isExpanded = isSourceCountriesExpanded,
+                            onToggleFilter = { toggleSourceCountry(it) }
+                        )
+                    }
+                }
+                //TODO improve logic
+                if (toggleArchivalReason != null || toggleRecipientCountry != null) {
+                    item { FilterSubheader(text = stringResource(R.string.archival)) }
+                }
+                if (archivalReasons != null && toggleArchivalReason != null) {
+                    stickyHeader {
+                        FilterListLabel(
+                            label = stringResource(R.string.archival_reason),
+                            activeFilters = filters.archivalReason,
+                            isExpanded = isArchivalReasonsExpanded,
+                            onExpand = { isArchivalReasonsExpanded = !isArchivalReasonsExpanded }
+                        )
+                    }
+                    item {
+                        FilterListCheckboxes(
+                            filterOptions = archivalReasons,
+                            activeFilters = filters.archivalReason,
+                            isExpanded = isArchivalReasonsExpanded,
+                            onToggleFilter = { toggleArchivalReason(it) }
+                        )
+                    }
+                }
+                if (recipientCountries != null && toggleRecipientCountry != null) {
+                    stickyHeader {
+                        FilterListLabel(
+                            label = stringResource(R.string.recipient_country),
+                            activeFilters = filters.recipientCountry,
+                            isExpanded = isRecipientCountriesExpanded,
+                            onExpand = { isRecipientCountriesExpanded = !isRecipientCountriesExpanded }
+                        )
+                    }
+                    item {
+                        FilterListCheckboxes(
+                            filterOptions = recipientCountries,
+                            activeFilters = filters.recipientCountry,
+                            isExpanded = isRecipientCountriesExpanded,
+                            onToggleFilter = { toggleRecipientCountry(it) }
                         )
                     }
                 }
@@ -636,6 +760,19 @@ private fun FilterHorizontalDivider(
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
     )
+}
+
+@Composable
+private fun FilterSubheader(text: String) {
+    Spacer(modifier = Modifier.height(24.dp))
+    Text(
+        text = text,
+        color = colorScheme.secondary,
+        fontWeight = FontWeight.Bold,
+        style = typography.labelLarge,
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
+    )
+    FilterHorizontalDivider()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
