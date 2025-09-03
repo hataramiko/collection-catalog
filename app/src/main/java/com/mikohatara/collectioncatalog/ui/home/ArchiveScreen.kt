@@ -242,6 +242,10 @@ private fun ArchiveScreen(
                     onCostSliderChange = { newPosition ->
                         viewModel.updateCostSliderPosition(newPosition)
                     },
+                    colorsMain = viewModel.getColorsMain(),
+                    toggleColorMain = { viewModel.toggleColorMainFilter(it) },
+                    colorsSecondary = viewModel.getColorsSecondary(),
+                    toggleColorSecondary = { viewModel.toggleColorSecondaryFilter(it) },
                     sourceTypes = viewModel.getSourceTypes(),
                     toggleSourceType = { viewModel.toggleSourceTypeFilter(it) },
                     sourceCountries = viewModel.getSourceCountries(),

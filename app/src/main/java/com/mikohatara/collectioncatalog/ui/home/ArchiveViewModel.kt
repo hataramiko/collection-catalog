@@ -172,6 +172,8 @@ class ArchiveViewModel @Inject constructor(
         val countrySize = filters.country.size
         val typeSize = filters.type.size
         val locationSize = filters.location.size
+        val colorMainSize = filters.colorMain.size
+        val colorSecondarySize = filters.colorSecondary.size
         val sourceTypeSize = filters.sourceType.size
         val sourceCountrySize = filters.sourceCountry.size
         val archivalReasonSize = filters.archivalReason.size
@@ -189,8 +191,8 @@ class ArchiveViewModel @Inject constructor(
             isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
         ) 1 else 0
 
-        return countrySize + typeSize + locationSize + periodSize + yearSize +
-                costSize + sourceTypeSize + sourceCountrySize +
+        return countrySize + typeSize + periodSize + yearSize + costSize +
+                colorMainSize + colorSecondarySize + sourceTypeSize + sourceCountrySize +
                 archivalReasonSize + recipientCountrySize
     }
 
@@ -247,6 +249,12 @@ class ArchiveViewModel @Inject constructor(
                 filters.type.isNotEmpty() && filters.type.none {
                     it == item.commonDetails.type
                 } -> false
+                filters.colorMain.isNotEmpty() && filters.colorMain.none {
+                    it == item.color.main
+                } -> false
+                filters.colorSecondary.isNotEmpty() && filters.colorSecondary.none {
+                    it == item.color.secondary
+                } -> false
                 filters.sourceType.isNotEmpty() && filters.sourceType.none {
                     it == item.source.type
                 } -> false
@@ -277,6 +285,16 @@ class ArchiveViewModel @Inject constructor(
     fun toggleTypeFilter(type: String) {
         val newFilter = toggleFilter(_uiState.value.filters.type, type)
         _uiState.update { it.copy(filters = it.filters.copy(type = newFilter)) }
+    }
+
+    fun toggleColorMainFilter(colorMain: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.colorMain, colorMain)
+        _uiState.update { it.copy(filters = it.filters.copy(colorMain = newFilter)) }
+    }
+
+    fun toggleColorSecondaryFilter(colorSecondary: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.colorSecondary, colorSecondary)
+        _uiState.update { it.copy(filters = it.filters.copy(colorSecondary = newFilter)) }
     }
 
     fun toggleSourceTypeFilter(sourceType: String) {
@@ -329,6 +347,18 @@ class ArchiveViewModel @Inject constructor(
 
     fun getTypes(): Set<String> {
         return _allItems.map { it.commonDetails.type }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getColorsMain(): Set<String> {
+        return _allItems.mapNotNull { it.color.main }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getColorsSecondary(): Set<String> {
+        return _allItems.mapNotNull { it.color.secondary }
             .sortedWith(compareBy { it })
             .toSet()
     }

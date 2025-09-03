@@ -130,17 +130,20 @@ fun FilterBottomSheet(
     filterCount: Int,
     onApply: () -> Unit,
     onReset: () -> Unit,
-    localeCode: String = "FI", // A default value shouldn't be necessary here? TODO remove later?
+    localeCode: String,
     countries: Set<String>,
     toggleCountry: (String) -> Unit,
     types: Set<String>,
     toggleType: (String) -> Unit,
+    // Period uses yearSliderRange alongside Year
     periodSliderPosition: ClosedRange<Float>? = null,
     onPeriodSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
-    // yearSliderRange is shared between Period and Year
     yearSliderRange: ClosedRange<Float>? = null,
     yearSliderPosition: ClosedRange<Float>? = null,
     onYearSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
+    /*dateSliderRange: ClosedRange<Float>? = null, //TODO
+    dateSliderPosition: ClosedRange<Float>? = null,
+    onDateSliderChange: ((ClosedRange<Float>) -> Unit)? = null,*/
     costSliderRange: ClosedRange<Float>? = null,
     costSliderPosition: ClosedRange<Float>? = null,
     onCostSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
@@ -149,10 +152,17 @@ fun FilterBottomSheet(
     onValueSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     locations: Set<String>? = null,
     toggleLocation: ((String) -> Unit)? = null,
+    colorsMain: Set<String>? = null,
+    toggleColorMain: ((String) -> Unit)? = null,
+    colorsSecondary: Set<String>? = null,
+    toggleColorSecondary: ((String) -> Unit)? = null,
     sourceTypes: Set<String>? = null,
     toggleSourceType: ((String) -> Unit)? = null,
     sourceCountries: Set<String>? = null,
     toggleSourceCountry: ((String) -> Unit)? = null,
+    /*archivalDateSliderRange: ClosedRange<String>? = null, //TODO
+    archivalDateSliderPosition: ClosedRange<String>? = null,
+    onArchivalDateSliderChange: ((ClosedRange<String>) -> Unit)? = null,*/
     archivalReasons: Set<String>? = null,
     toggleArchivalReason: ((String) -> Unit)? = null,
     recipientCountries: Set<String>? = null,
@@ -165,11 +175,15 @@ fun FilterBottomSheet(
     var isTypesExpanded by remember { mutableStateOf(false) }
     var isPeriodExpanded by remember { mutableStateOf(false) }
     var isYearExpanded by remember { mutableStateOf(false) }
+    //var isDateExpanded by remember { mutableStateOf(false) } TODO
     var isCostExpanded by remember { mutableStateOf(false) }
     var isValueExpanded by remember { mutableStateOf(false) }
     var isLocationsExpanded by remember { mutableStateOf(false) }
+    var isColorsMainExpanded by remember { mutableStateOf(false) }
+    var isColorsSecondaryExpanded by remember { mutableStateOf(false) }
     var isSourceTypesExpanded by remember { mutableStateOf(false) }
     var isSourceCountriesExpanded by remember { mutableStateOf(false) }
+    //var isArchivalDateExpanded by remember { mutableStateOf(false) } TODO
     var isArchivalReasonsExpanded by remember { mutableStateOf(false) }
     var isRecipientCountriesExpanded by remember { mutableStateOf(false) }
 
@@ -269,6 +283,32 @@ fun FilterBottomSheet(
                         )
                     }
                 }
+                /*if (dateSliderRange != null && dateSliderPosition != null && //TODO
+                    onDateSliderChange != null) {
+                    stickyHeader {
+                        val minValue = dateSliderPosition.start.roundToLong()
+                        val maxValue = dateSliderPosition.endInclusive.roundToLong()
+
+                        FilterListLabel(
+                            label = stringResource(R.string.date),
+                            activeFilters = emptySet(),
+                            isExpanded = isDateExpanded,
+                            onExpand = { isDateExpanded = !isDateExpanded }, //TODO address nullability in toDate()?
+                            value = "${minValue.toDate()?.toFormattedDate(localeCode, SimpleDateFormat.MEDIUM)} – ${maxValue.toDate()?.toFormattedDate(localeCode, SimpleDateFormat.MEDIUM)}",
+                            isSliderActive = dateSliderPosition != dateSliderRange.start..dateSliderRange.endInclusive
+                        )
+                    }
+                    item {
+                        FilterListSlider(
+                            sliderRange = dateSliderRange,
+                            sliderPosition = dateSliderPosition,
+                            isExpanded = isDateExpanded,
+                            onSliderChange = { newSliderPosition ->
+                                onDateSliderChange(newSliderPosition)
+                            }
+                        )
+                    }
+                }*/
                 if (costSliderRange != null && costSliderPosition != null &&
                     onCostSliderChange != null) {
                     stickyHeader {
@@ -340,8 +380,48 @@ fun FilterBottomSheet(
                     }
                 }
                 //TODO improve logic
+                if (toggleColorMain != null || toggleColorSecondary != null) {
+                    stickyHeader { FilterSubheader(text = stringResource(R.string.physical_attributes)) }
+                }
+                if (colorsMain != null && toggleColorMain != null) {
+                    stickyHeader {
+                        FilterListLabel(
+                            label = stringResource(R.string.color_main),
+                            activeFilters = filters.colorMain,
+                            isExpanded = isColorsMainExpanded,
+                            onExpand = { isColorsMainExpanded = !isColorsMainExpanded }
+                        )
+                    }
+                    item {
+                        FilterListCheckboxes(
+                            filterOptions = colorsMain,
+                            activeFilters = filters.colorMain,
+                            isExpanded = isColorsMainExpanded,
+                            onToggleFilter = { toggleColorMain(it) }
+                        )
+                    }
+                }
+                if (colorsSecondary != null && toggleColorSecondary != null) {
+                    stickyHeader {
+                        FilterListLabel(
+                            label = stringResource(R.string.color_secondary),
+                            activeFilters = filters.colorSecondary,
+                            isExpanded = isColorsSecondaryExpanded,
+                            onExpand = { isColorsSecondaryExpanded = !isColorsSecondaryExpanded }
+                        )
+                    }
+                    item {
+                        FilterListCheckboxes(
+                            filterOptions = colorsSecondary,
+                            activeFilters = filters.colorSecondary,
+                            isExpanded = isColorsSecondaryExpanded,
+                            onToggleFilter = { toggleColorSecondary(it) }
+                        )
+                    }
+                }
+                //TODO improve logic
                 if (toggleSourceType != null || toggleSourceCountry != null) {
-                    item { FilterSubheader(text = stringResource(R.string.source)) }
+                    stickyHeader { FilterSubheader(text = stringResource(R.string.source)) }
                 }
                 if (sourceTypes != null && toggleSourceType != null) {
                     stickyHeader {
@@ -381,8 +461,34 @@ fun FilterBottomSheet(
                 }
                 //TODO improve logic
                 if (toggleArchivalReason != null || toggleRecipientCountry != null) {
-                    item { FilterSubheader(text = stringResource(R.string.archival)) }
+                    stickyHeader { FilterSubheader(text = stringResource(R.string.archival)) }
                 }
+                /*if (archivalDateSliderRange != null && archivalDateSliderPosition != null && //TODO
+                    onArchivalDateSliderChange != null) {
+                    stickyHeader {
+                        val minValue = archivalDateSliderPosition.start//.roundToLong()
+                        val maxValue = archivalDateSliderPosition.endInclusive//.roundToLong()
+
+                        FilterListLabel(
+                            label = stringResource(R.string.archival_date),
+                            activeFilters = emptySet(),
+                            isExpanded = isArchivalDateExpanded,
+                            onExpand = { isArchivalDateExpanded = !isArchivalDateExpanded },
+                            value = "${minValue.toFormattedDate(localeCode, SimpleDateFormat.SHORT)} – ${maxValue.toFormattedDate(localeCode, SimpleDateFormat.SHORT)}",
+                            isSliderActive = archivalDateSliderPosition != archivalDateSliderRange.start..archivalDateSliderRange.endInclusive
+                        )
+                    }
+                    item {
+                        FilterListSlider(
+                            sliderRange = archivalDateSliderRange,
+                            sliderPosition = archivalDateSliderPosition,
+                            isExpanded = isArchivalDateExpanded,
+                            onSliderChange = { newSliderPosition ->
+                                onArchivalDateSliderChange(newSliderPosition)
+                            }
+                        )
+                    }
+                }*/
                 if (archivalReasons != null && toggleArchivalReason != null) {
                     stickyHeader {
                         FilterListLabel(

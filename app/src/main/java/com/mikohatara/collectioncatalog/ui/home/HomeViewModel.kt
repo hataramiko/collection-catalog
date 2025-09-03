@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.home
 
 import android.content.Context
+import android.icu.util.Calendar
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -21,6 +22,8 @@ import com.mikohatara.collectioncatalog.util.exportPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.importPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
+import com.mikohatara.collectioncatalog.util.toDateString
+import com.mikohatara.collectioncatalog.util.toTimestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,6 +45,7 @@ data class HomeUiState(
     val activeFilterCount: Int = 0,
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
+    //val dateSliderPosition: ClosedRange<Float>? = null, TODO
     val costSliderPosition: ClosedRange<Float>? = null,
     val valueSliderPosition: ClosedRange<Float>? = null,
     val isSearchActive: Boolean = false,
@@ -182,6 +186,7 @@ class HomeViewModel @Inject constructor(
     fun setFilter() {
         setPeriodFilter()
         setYearFilter()
+        //setDateFilter() TODO
         setCostFilter()
         setValueFilter()
         val filters = _uiState.value.filters
@@ -224,6 +229,13 @@ class HomeViewModel @Inject constructor(
                     else -> false
                 }
             } != false
+            /*val isWithinDateRange = filters.dateRange?.let { range -> //TODO
+                val date = item.uniqueDetails.date
+                when {
+                    date != null -> date in range
+                    else -> false
+                }
+            } != false*/
             val isWithinCostRange = filters.costRange?.let { range ->
                 val cost = item.uniqueDetails.cost
 
@@ -251,6 +263,12 @@ class HomeViewModel @Inject constructor(
                 filters.location.isNotEmpty() && filters.location.none {
                     it == item.uniqueDetails.status
                 } -> false
+                filters.colorMain.isNotEmpty() && filters.colorMain.none {
+                    it == item.color.main
+                } -> false
+                filters.colorSecondary.isNotEmpty() && filters.colorSecondary.none {
+                    it == item.color.secondary
+                } -> false
                 filters.sourceType.isNotEmpty() && filters.sourceType.none {
                     it == item.source.type
                 } -> false
@@ -259,6 +277,7 @@ class HomeViewModel @Inject constructor(
                 } -> false
                 !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
+                //!isWithinDateRange -> false TODO
                 !isWithinCostRange -> false
                 !isWithinValueRange -> false
                 else -> true
@@ -283,6 +302,16 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(filters = it.filters.copy(location = newFilter)) }
     }
 
+    fun toggleColorMainFilter(colorMain: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.colorMain, colorMain)
+        _uiState.update { it.copy(filters = it.filters.copy(colorMain = newFilter)) }
+    }
+
+    fun toggleColorSecondaryFilter(colorSecondary: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.colorSecondary, colorSecondary)
+        _uiState.update { it.copy(filters = it.filters.copy(colorSecondary = newFilter)) }
+    }
+
     fun toggleSourceTypeFilter(sourceType: String) {
         val newFilter = toggleFilter(_uiState.value.filters.sourceType, sourceType)
         _uiState.update { it.copy(filters = it.filters.copy(sourceType = newFilter)) }
@@ -301,6 +330,10 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(yearSliderPosition = yearSliderPosition) }
     }
 
+    /*fun updateDateSliderPosition(dateSliderPosition: ClosedRange<Float>) { //TODO
+        _uiState.update { it.copy(dateSliderPosition = dateSliderPosition) }
+    }*/
+
     fun updateCostSliderPosition(costSliderPosition: ClosedRange<Float>) {
         _uiState.update { it.copy(costSliderPosition = costSliderPosition) }
     }
@@ -314,6 +347,7 @@ class HomeViewModel @Inject constructor(
             filters = FilterData(),
             periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
             yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
+            //dateSliderPosition = getMinDate()..getMaxDate(), TODO
             costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat(),
             valueSliderPosition = getMinValue().toFloat()..getMaxValue().toFloat()
         ) }
@@ -344,10 +378,13 @@ class HomeViewModel @Inject constructor(
         val countrySize = filters.country.size
         val typeSize = filters.type.size
         val locationSize = filters.location.size
+        val colorMainSize = filters.colorMain.size
+        val colorSecondarySize = filters.colorSecondary.size
         val sourceTypeSize = filters.sourceType.size
         val sourceCountrySize = filters.sourceCountry.size
 
         val yearSliderRange = getYearSliderRange()
+        //val dateSliderRange = getDateSliderRange() TODO
         val costSliderRange = getCostSliderRange()
         val valueSliderRange = getValueSliderRange()
         val periodSize = if (
@@ -356,6 +393,9 @@ class HomeViewModel @Inject constructor(
         val yearSize = if (
             isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
         ) 1 else 0
+        /*val dateSize = if ( //TODO
+            isSliderActive(_uiState.value.dateSliderPosition, dateSliderRange)
+        ) 1 else 0*/
         val costSize = if (
             isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
         ) 1 else 0
@@ -363,8 +403,9 @@ class HomeViewModel @Inject constructor(
             isSliderActive(_uiState.value.valueSliderPosition, valueSliderRange)
         ) 1 else 0
 
-        return countrySize + typeSize + locationSize + periodSize + yearSize +
-                costSize + valueSize + sourceTypeSize + sourceCountrySize
+        return countrySize + typeSize + locationSize + periodSize + yearSize + //dateSize + TODO
+                costSize + valueSize + colorMainSize + colorSecondarySize +
+                sourceTypeSize + sourceCountrySize
     }
 
     fun getCountries(): Set<String> {
@@ -385,6 +426,18 @@ class HomeViewModel @Inject constructor(
             .toSet()
     }
 
+    fun getColorsMain(): Set<String> {
+        return _allItems.mapNotNull { it.color.main }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getColorsSecondary(): Set<String> {
+        return _allItems.mapNotNull { it.color.secondary }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
     fun getSourceTypes(): Set<String> {
         return _allItems.mapNotNull { it.source.type }
             .sortedWith(compareBy { it })
@@ -400,6 +453,10 @@ class HomeViewModel @Inject constructor(
     fun getYearSliderRange(): ClosedRange<Float> {
         return getMinYear().toFloat()..getMaxYear().toFloat()
     }
+
+    /*fun getDateSliderRange(): ClosedRange<Float> { //TODO
+        return getMinDate()..getMaxDate()
+    }*/
 
     fun getCostSliderRange(): ClosedRange<Float> {
         return getMinCost().toFloat()..getMaxCost().toFloat()
@@ -532,6 +589,10 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(
                 yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
         }
+        /*if (uiState.value.dateSliderPosition == null) { //TODO
+            _uiState.update { it.copy(
+                dateSliderPosition = getMinDate()..getMaxDate()) }
+        }*/
         if (uiState.value.costSliderPosition == null) {
             _uiState.update { it.copy(
                 costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat()) }
@@ -570,6 +631,20 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(filters = it.filters.copy(yearRange = rangeStart..rangeEnd)) }
         }
     }
+
+    /*private fun setDateFilter() { //TODO
+        val dateRange = uiState.value.dateSliderPosition ?: return
+        val rangeStart = dateRange.start
+        val rangeEnd = dateRange.endInclusive
+        val rangeStartString = rangeStart.toLong().toDateString()
+        val rangeEndString = rangeEnd.toLong().toDateString()
+
+        if (rangeStart != getMinDate() && rangeEnd != getMaxDate() && rangeStartString != null && rangeEndString != null) {
+            _uiState.update { it.copy(filters = it.filters.copy(dateRange = rangeStartString..rangeEndString)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(dateRange = null)) }
+        }
+    }*/
 
     private fun setCostFilter() {
         val costRange = uiState.value.costSliderPosition ?: return
@@ -626,6 +701,24 @@ class HomeViewModel @Inject constructor(
         }
         return listOf(currentYear, maxYear).maxOf { it }
     }
+
+    /*private fun getMinDate(): Float { //TODO
+        val maxDate = getMaxDate()
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return maxDate
+        val allDates = items.mapNotNull { it.uniqueDetails.date?.toTimestamp() }.sorted()
+        val minDate = allDates.firstOrNull()?.toFloat() ?: return maxDate
+
+        return minOf(maxDate, minDate)
+    }
+
+    private fun getMaxDate(): Float {
+        val today = Calendar.getInstance().timeInMillis.toFloat()
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return today
+        val allDates = items.mapNotNull { it.uniqueDetails.date?.toTimestamp() }.sorted()
+        val maxDate = allDates.lastOrNull()?.toFloat() ?: return today
+
+        return maxOf(today, maxDate)
+    }*/
 
     private fun getMinCost(): Long {
         return 0L
@@ -688,11 +781,15 @@ data class FilterData(
     val type: Set<String> = emptySet(),
     val periodRange: ClosedRange<Int>? = null,
     val yearRange: ClosedRange<Int>? = null,
+    //val dateRange: ClosedRange<String>? = null, TODO
     val costRange: ClosedRange<Long>? = null,
     val valueRange: ClosedRange<Long>? = null,
     val location: Set<String> = emptySet(),
+    val colorMain: Set<String> = emptySet(),
+    val colorSecondary: Set<String> = emptySet(),
     val sourceType: Set<String> = emptySet(),
     val sourceCountry: Set<String> = emptySet(),
+    //val archivalDate: ClosedRange<String>? = null, TODO
     val archivalReason: Set<String> = emptySet(),
     val recipientCountry: Set<String> = emptySet()
 )

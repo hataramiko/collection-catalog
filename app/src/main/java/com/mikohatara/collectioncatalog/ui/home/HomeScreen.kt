@@ -252,6 +252,11 @@ private fun HomeScreen(
                     onYearSliderChange = { newPosition ->
                         viewModel.updateYearSliderPosition(newPosition)
                     },
+                    /*dateSliderRange = viewModel.getDateSliderRange(), //TODO
+                    dateSliderPosition = uiState.dateSliderPosition,
+                    onDateSliderChange = { newPosition ->
+                        viewModel.updateDateSliderPosition(newPosition)
+                    },*/
                     costSliderRange = viewModel.getCostSliderRange(),
                     costSliderPosition = uiState.costSliderPosition,
                     onCostSliderChange = { newPosition ->
@@ -264,6 +269,10 @@ private fun HomeScreen(
                     },
                     locations = viewModel.getLocations(),
                     toggleLocation = { viewModel.toggleLocationFilter(it) },
+                    colorsMain = viewModel.getColorsMain(),
+                    toggleColorMain = { viewModel.toggleColorMainFilter(it) },
+                    colorsSecondary = viewModel.getColorsSecondary(),
+                    toggleColorSecondary = { viewModel.toggleColorSecondaryFilter(it) },
                     sourceTypes = viewModel.getSourceTypes(),
                     toggleSourceType = { viewModel.toggleSourceTypeFilter(it) },
                     sourceCountries = viewModel.getSourceCountries(),

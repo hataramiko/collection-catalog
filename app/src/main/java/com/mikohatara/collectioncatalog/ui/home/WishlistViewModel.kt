@@ -134,7 +134,8 @@ class WishlistViewModel @Inject constructor(
         val filters = _uiState.value.filters
         val countrySize = filters.country.size
         val typeSize = filters.type.size
-        val locationSize = filters.location.size
+        val colorMainSize = filters.colorMain.size
+        val colorSecondarySize = filters.colorSecondary.size
 
         val yearSliderRange = getYearSliderRange()
         val periodSize = if (
@@ -144,7 +145,7 @@ class WishlistViewModel @Inject constructor(
             isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
         ) 1 else 0
 
-        return countrySize + typeSize + locationSize + periodSize + yearSize
+        return countrySize + typeSize + periodSize + yearSize + colorMainSize + colorSecondarySize
     }
 
     fun openFilterBottomSheet() {
@@ -191,6 +192,12 @@ class WishlistViewModel @Inject constructor(
                 filters.type.isNotEmpty() && filters.type.none {
                     it == item.commonDetails.type
                 } -> false
+                filters.colorMain.isNotEmpty() && filters.colorMain.none {
+                    it == item.color.main
+                } -> false
+                filters.colorSecondary.isNotEmpty() && filters.colorSecondary.none {
+                    it == item.color.secondary
+                } -> false
                 !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
                 else -> true
@@ -208,6 +215,16 @@ class WishlistViewModel @Inject constructor(
     fun toggleTypeFilter(type: String) {
         val newFilter = toggleFilter(_uiState.value.filters.type, type)
         _uiState.update { it.copy(filters = it.filters.copy(type = newFilter)) }
+    }
+
+    fun toggleColorMainFilter(colorMain: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.colorMain, colorMain)
+        _uiState.update { it.copy(filters = it.filters.copy(colorMain = newFilter)) }
+    }
+
+    fun toggleColorSecondaryFilter(colorSecondary: String) {
+        val newFilter = toggleFilter(_uiState.value.filters.colorSecondary, colorSecondary)
+        _uiState.update { it.copy(filters = it.filters.copy(colorSecondary = newFilter)) }
     }
 
     fun updatePeriodSliderPosition(periodSliderPosition: ClosedRange<Float>) {
@@ -237,6 +254,18 @@ class WishlistViewModel @Inject constructor(
     fun getTypes(): Set<String> {
         return _allItems.map { it.commonDetails.type }
             .filter { it.isNotBlank() }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getColorsMain(): Set<String> {
+        return _allItems.mapNotNull { it.color.main }
+            .sortedWith(compareBy { it })
+            .toSet()
+    }
+
+    fun getColorsSecondary(): Set<String> {
+        return _allItems.mapNotNull { it.color.secondary }
             .sortedWith(compareBy { it })
             .toSet()
     }

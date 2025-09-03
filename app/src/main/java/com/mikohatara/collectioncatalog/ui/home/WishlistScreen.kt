@@ -228,6 +228,10 @@ private fun WishlistScreen(
                     onYearSliderChange = { newPosition ->
                         viewModel.updateYearSliderPosition(newPosition)
                     },
+                    colorsMain = viewModel.getColorsMain(),
+                    toggleColorMain = { viewModel.toggleColorMainFilter(it) },
+                    colorsSecondary = viewModel.getColorsSecondary(),
+                    toggleColorSecondary = { viewModel.toggleColorSecondaryFilter(it) },
                 )
             }
         }
@@ -236,7 +240,7 @@ private fun WishlistScreen(
         ImportDialog(
             onConfirm = {
                 showImportDialog = false
-                pickCsvForImport.launch(
+                pickCsvForImport.launch( //TODO improve
                     arrayOf("text/csv", "application/csv", "application/vnd.ms-excel", "*/*"))
             },
             onCancel = { showImportDialog = false },
