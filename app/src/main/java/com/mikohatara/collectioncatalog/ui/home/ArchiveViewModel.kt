@@ -171,7 +171,7 @@ class ArchiveViewModel @Inject constructor(
         val filters = _uiState.value.filters
         val countrySize = filters.country.size
         val typeSize = filters.type.size
-        val locationSize = filters.location.size
+        val vehicleSize = if (filters.hasVehicle) 1 else 0
         val colorMainSize = filters.colorMain.size
         val colorSecondarySize = filters.colorSecondary.size
         val sourceTypeSize = filters.sourceType.size
@@ -191,7 +191,7 @@ class ArchiveViewModel @Inject constructor(
             isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
         ) 1 else 0
 
-        return countrySize + typeSize + periodSize + yearSize + costSize +
+        return countrySize + typeSize + periodSize + yearSize + vehicleSize + costSize +
                 colorMainSize + colorSecondarySize + sourceTypeSize + sourceCountrySize +
                 archivalReasonSize + recipientCountrySize
     }
@@ -242,6 +242,10 @@ class ArchiveViewModel @Inject constructor(
                 }
             } != false
 
+            val matchesVehicleFilter = if (filters.hasVehicle) {
+                !item.uniqueDetails.vehicle.isNullOrEmpty()
+            } else true
+
             when {
                 filters.country.isNotEmpty() && filters.country.none {
                     it == item.commonDetails.country
@@ -270,6 +274,7 @@ class ArchiveViewModel @Inject constructor(
                 !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
                 !isWithinCostRange -> false
+                !matchesVehicleFilter -> false
                 else -> true
             }
         }
@@ -327,6 +332,10 @@ class ArchiveViewModel @Inject constructor(
 
     fun updateCostSliderPosition(costSliderPosition: ClosedRange<Float>) {
         _uiState.update { it.copy(costSliderPosition = costSliderPosition) }
+    }
+
+    fun toggleVehicleSwitch() {
+        _uiState.update { it.copy(filters = it.filters.copy(hasVehicle = !it.filters.hasVehicle)) }
     }
 
     fun resetFilter() {

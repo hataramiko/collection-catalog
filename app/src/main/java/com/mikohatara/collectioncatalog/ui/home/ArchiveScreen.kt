@@ -237,6 +237,8 @@ private fun ArchiveScreen(
                     onYearSliderChange = { newPosition ->
                         viewModel.updateYearSliderPosition(newPosition)
                     },
+                    hasVehicle = uiState.filters.hasVehicle,
+                    toggleVehicleSwitch = { viewModel.toggleVehicleSwitch() },
                     costSliderRange = viewModel.getCostSliderRange(),
                     costSliderPosition = uiState.costSliderPosition,
                     onCostSliderChange = { newPosition ->

@@ -252,6 +252,8 @@ private fun HomeScreen(
                     onYearSliderChange = { newPosition ->
                         viewModel.updateYearSliderPosition(newPosition)
                     },
+                    hasVehicle = uiState.filters.hasVehicle,
+                    toggleVehicleSwitch = { viewModel.toggleVehicleSwitch() },
                     /*dateSliderRange = viewModel.getDateSliderRange(), //TODO
                     dateSliderPosition = uiState.dateSliderPosition,
                     onDateSliderChange = { newPosition ->

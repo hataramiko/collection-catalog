@@ -253,6 +253,10 @@ class HomeViewModel @Inject constructor(
                 }
             } != false
 
+            val matchesVehicleFilter = if (filters.hasVehicle) {
+                !item.uniqueDetails.vehicle.isNullOrEmpty()
+            } else true
+
             when {
                 filters.country.isNotEmpty() && filters.country.none {
                     it == item.commonDetails.country
@@ -280,6 +284,7 @@ class HomeViewModel @Inject constructor(
                 //!isWithinDateRange -> false TODO
                 !isWithinCostRange -> false
                 !isWithinValueRange -> false
+                !matchesVehicleFilter -> false
                 else -> true
             }
         }
@@ -342,6 +347,10 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(valueSliderPosition = valueSliderPosition) }
     }
 
+    fun toggleVehicleSwitch() {
+        _uiState.update { it.copy(filters = it.filters.copy(hasVehicle = !it.filters.hasVehicle)) }
+    }
+
     fun resetFilter() {
         _uiState.update { it.copy(
             filters = FilterData(),
@@ -377,6 +386,7 @@ class HomeViewModel @Inject constructor(
         val filters = _uiState.value.filters
         val countrySize = filters.country.size
         val typeSize = filters.type.size
+        val vehicleSize = if (filters.hasVehicle) 1 else 0
         val locationSize = filters.location.size
         val colorMainSize = filters.colorMain.size
         val colorSecondarySize = filters.colorSecondary.size
@@ -403,7 +413,7 @@ class HomeViewModel @Inject constructor(
             isSliderActive(_uiState.value.valueSliderPosition, valueSliderRange)
         ) 1 else 0
 
-        return countrySize + typeSize + locationSize + periodSize + yearSize + //dateSize + TODO
+        return countrySize + typeSize + locationSize + periodSize + yearSize + vehicleSize +//dateSize + TODO
                 costSize + valueSize + colorMainSize + colorSecondarySize +
                 sourceTypeSize + sourceCountrySize
     }
@@ -781,6 +791,7 @@ data class FilterData(
     val type: Set<String> = emptySet(),
     val periodRange: ClosedRange<Int>? = null,
     val yearRange: ClosedRange<Int>? = null,
+    val hasVehicle: Boolean = false,
     //val dateRange: ClosedRange<String>? = null, TODO
     val costRange: ClosedRange<Long>? = null,
     val valueRange: ClosedRange<Long>? = null,

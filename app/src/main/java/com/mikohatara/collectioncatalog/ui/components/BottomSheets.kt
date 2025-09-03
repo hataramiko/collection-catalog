@@ -43,6 +43,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -55,6 +56,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
@@ -141,6 +143,8 @@ fun FilterBottomSheet(
     yearSliderRange: ClosedRange<Float>? = null,
     yearSliderPosition: ClosedRange<Float>? = null,
     onYearSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
+    hasVehicle: Boolean = false,
+    toggleVehicleSwitch: (() -> Unit)? = null,
     /*dateSliderRange: ClosedRange<Float>? = null, //TODO
     dateSliderPosition: ClosedRange<Float>? = null,
     onDateSliderChange: ((ClosedRange<Float>) -> Unit)? = null,*/
@@ -280,6 +284,15 @@ fun FilterBottomSheet(
                             onSliderChange = { newSliderPosition ->
                                 onYearSliderChange(newSliderPosition)
                             }
+                        )
+                    }
+                }
+                if (toggleVehicleSwitch != null) {
+                    stickyHeader {
+                        FilterListSwitch(
+                            label = stringResource(R.string.vehicle),
+                            isFilterActive = hasVehicle,
+                            onToggle = toggleVehicleSwitch
                         )
                     }
                 }
@@ -857,6 +870,43 @@ private fun FilterListSlider(
 }
 
 @Composable
+private fun FilterListSwitch(
+    label: String,
+    isFilterActive: Boolean,
+    onToggle: () -> Unit
+) {
+    val onClick = remember { Modifier.clickable { onToggle() } }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(onClick)
+    ) {
+        Row {
+            Text(
+                text = label,
+                modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
+            )
+            if (isFilterActive) {
+                Badge(
+                    modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+                ) {
+                    Text(text = "1")
+                }
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(
+            checked = isFilterActive,
+            onCheckedChange = null,
+            modifier = Modifier.scale(0.9f).padding(end = 24.dp)
+        )
+    }
+    FilterHorizontalDivider()
+}
+
+@Composable
 private fun FilterHorizontalDivider(
     color: Color = DividerDefaults.color,
 ) {
@@ -873,7 +923,7 @@ private fun FilterSubheader(text: String) {
     Spacer(modifier = Modifier.height(24.dp))
     Text(
         text = text,
-        color = colorScheme.secondary,
+        color = colorScheme.primary,
         fontWeight = FontWeight.Bold,
         style = typography.labelLarge,
         modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
