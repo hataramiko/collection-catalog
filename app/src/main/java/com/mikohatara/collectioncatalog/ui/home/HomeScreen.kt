@@ -254,11 +254,11 @@ private fun HomeScreen(
                     },
                     hasVehicle = uiState.filters.hasVehicle,
                     toggleVehicleSwitch = { viewModel.toggleVehicleSwitch() },
-                    /*dateSliderRange = viewModel.getDateSliderRange(), //TODO
+                    dateSliderRange = viewModel.getDateSliderRange(),
                     dateSliderPosition = uiState.dateSliderPosition,
                     onDateSliderChange = { newPosition ->
                         viewModel.updateDateSliderPosition(newPosition)
-                    },*/
+                    },
                     costSliderRange = viewModel.getCostSliderRange(),
                     costSliderPosition = uiState.costSliderPosition,
                     onCostSliderChange = { newPosition ->

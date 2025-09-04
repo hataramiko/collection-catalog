@@ -75,6 +75,9 @@ import com.mikohatara.collectioncatalog.util.getSortByText
 import com.mikohatara.collectioncatalog.util.isCollectionColor
 import com.mikohatara.collectioncatalog.util.toColor
 import com.mikohatara.collectioncatalog.util.toCurrencyString
+import com.mikohatara.collectioncatalog.util.toDateString
+import com.mikohatara.collectioncatalog.util.toFormattedDate
+import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -145,9 +148,9 @@ fun FilterBottomSheet(
     onYearSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     hasVehicle: Boolean = false,
     toggleVehicleSwitch: (() -> Unit)? = null,
-    /*dateSliderRange: ClosedRange<Float>? = null, //TODO
+    dateSliderRange: ClosedRange<Float>? = null,
     dateSliderPosition: ClosedRange<Float>? = null,
-    onDateSliderChange: ((ClosedRange<Float>) -> Unit)? = null,*/
+    onDateSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     costSliderRange: ClosedRange<Float>? = null,
     costSliderPosition: ClosedRange<Float>? = null,
     onCostSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
@@ -164,9 +167,9 @@ fun FilterBottomSheet(
     toggleSourceType: ((String) -> Unit)? = null,
     sourceCountries: Set<String>? = null,
     toggleSourceCountry: ((String) -> Unit)? = null,
-    /*archivalDateSliderRange: ClosedRange<String>? = null, //TODO
-    archivalDateSliderPosition: ClosedRange<String>? = null,
-    onArchivalDateSliderChange: ((ClosedRange<String>) -> Unit)? = null,*/
+    archivalDateSliderRange: ClosedRange<Float>? = null,
+    archivalDateSliderPosition: ClosedRange<Float>? = null,
+    onArchivalDateSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     archivalReasons: Set<String>? = null,
     toggleArchivalReason: ((String) -> Unit)? = null,
     recipientCountries: Set<String>? = null,
@@ -179,7 +182,7 @@ fun FilterBottomSheet(
     var isTypesExpanded by remember { mutableStateOf(false) }
     var isPeriodExpanded by remember { mutableStateOf(false) }
     var isYearExpanded by remember { mutableStateOf(false) }
-    //var isDateExpanded by remember { mutableStateOf(false) } TODO
+    var isDateExpanded by remember { mutableStateOf(false) }
     var isCostExpanded by remember { mutableStateOf(false) }
     var isValueExpanded by remember { mutableStateOf(false) }
     var isLocationsExpanded by remember { mutableStateOf(false) }
@@ -187,7 +190,7 @@ fun FilterBottomSheet(
     var isColorsSecondaryExpanded by remember { mutableStateOf(false) }
     var isSourceTypesExpanded by remember { mutableStateOf(false) }
     var isSourceCountriesExpanded by remember { mutableStateOf(false) }
-    //var isArchivalDateExpanded by remember { mutableStateOf(false) } TODO
+    var isArchivalDateExpanded by remember { mutableStateOf(false) }
     var isArchivalReasonsExpanded by remember { mutableStateOf(false) }
     var isRecipientCountriesExpanded by remember { mutableStateOf(false) }
 
@@ -296,18 +299,24 @@ fun FilterBottomSheet(
                         )
                     }
                 }
-                /*if (dateSliderRange != null && dateSliderPosition != null && //TODO
+                if (dateSliderRange != null && dateSliderPosition != null &&
                     onDateSliderChange != null) {
                     stickyHeader {
                         val minValue = dateSliderPosition.start.roundToLong()
                         val maxValue = dateSliderPosition.endInclusive.roundToLong()
+                        val minValueString = minValue
+                            .toDateString()
+                            .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                        val maxValueString = maxValue
+                            .toDateString()
+                            .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
 
                         FilterListLabel(
                             label = stringResource(R.string.date),
                             activeFilters = emptySet(),
                             isExpanded = isDateExpanded,
-                            onExpand = { isDateExpanded = !isDateExpanded }, //TODO address nullability in toDate()?
-                            value = "${minValue.toDate()?.toFormattedDate(localeCode, SimpleDateFormat.MEDIUM)} – ${maxValue.toDate()?.toFormattedDate(localeCode, SimpleDateFormat.MEDIUM)}",
+                            onExpand = { isDateExpanded = !isDateExpanded },
+                            value = "$minValueString – $maxValueString",
                             isSliderActive = dateSliderPosition != dateSliderRange.start..dateSliderRange.endInclusive
                         )
                     }
@@ -321,7 +330,7 @@ fun FilterBottomSheet(
                             }
                         )
                     }
-                }*/
+                }
                 if (costSliderRange != null && costSliderPosition != null &&
                     onCostSliderChange != null) {
                     stickyHeader {
@@ -473,21 +482,28 @@ fun FilterBottomSheet(
                     }
                 }
                 //TODO improve logic
-                if (toggleArchivalReason != null || toggleRecipientCountry != null) {
+                if (toggleArchivalReason != null || toggleRecipientCountry != null ||
+                    onArchivalDateSliderChange != null) {
                     stickyHeader { FilterSubheader(text = stringResource(R.string.archival)) }
                 }
-                /*if (archivalDateSliderRange != null && archivalDateSliderPosition != null && //TODO
+                if (archivalDateSliderRange != null && archivalDateSliderPosition != null &&
                     onArchivalDateSliderChange != null) {
                     stickyHeader {
-                        val minValue = archivalDateSliderPosition.start//.roundToLong()
-                        val maxValue = archivalDateSliderPosition.endInclusive//.roundToLong()
+                        val minValue = archivalDateSliderPosition.start.roundToLong()
+                        val maxValue = archivalDateSliderPosition.endInclusive.roundToLong()
+                        val minValueString = minValue
+                            .toDateString()
+                            .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                        val maxValueString = maxValue
+                            .toDateString()
+                            .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
 
                         FilterListLabel(
                             label = stringResource(R.string.archival_date),
                             activeFilters = emptySet(),
                             isExpanded = isArchivalDateExpanded,
                             onExpand = { isArchivalDateExpanded = !isArchivalDateExpanded },
-                            value = "${minValue.toFormattedDate(localeCode, SimpleDateFormat.SHORT)} – ${maxValue.toFormattedDate(localeCode, SimpleDateFormat.SHORT)}",
+                            value = "$minValueString – $maxValueString",
                             isSliderActive = archivalDateSliderPosition != archivalDateSliderRange.start..archivalDateSliderRange.endInclusive
                         )
                     }
@@ -501,7 +517,7 @@ fun FilterBottomSheet(
                             }
                         )
                     }
-                }*/
+                }
                 if (archivalReasons != null && toggleArchivalReason != null) {
                     stickyHeader {
                         FilterListLabel(

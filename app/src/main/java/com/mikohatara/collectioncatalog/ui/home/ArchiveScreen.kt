@@ -239,6 +239,11 @@ private fun ArchiveScreen(
                     },
                     hasVehicle = uiState.filters.hasVehicle,
                     toggleVehicleSwitch = { viewModel.toggleVehicleSwitch() },
+                    dateSliderRange = viewModel.getDateSliderRange(),
+                    dateSliderPosition = uiState.dateSliderPosition,
+                    onDateSliderChange = { newPosition ->
+                        viewModel.updateDateSliderPosition(newPosition)
+                    },
                     costSliderRange = viewModel.getCostSliderRange(),
                     costSliderPosition = uiState.costSliderPosition,
                     onCostSliderChange = { newPosition ->
@@ -252,6 +257,11 @@ private fun ArchiveScreen(
                     toggleSourceType = { viewModel.toggleSourceTypeFilter(it) },
                     sourceCountries = viewModel.getSourceCountries(),
                     toggleSourceCountry = { viewModel.toggleSourceCountryFilter(it) },
+                    archivalDateSliderRange = viewModel.getArchivalDateSliderRange(),
+                    archivalDateSliderPosition = uiState.archivalDateSliderPosition,
+                    onArchivalDateSliderChange = { newPosition ->
+                        viewModel.updateArchivalDateSliderPosition(newPosition)
+                    },
                     archivalReasons = viewModel.getArchivalReasons(),
                     toggleArchivalReason = { viewModel.toggleArchivalReasonFilter(it) },
                     recipientCountries = viewModel.getRecipientCountries(),

@@ -21,24 +21,28 @@ fun String.toFormattedDate(
     }
 }
 
-fun String.toTimestamp(): Long? {
+fun String.toTimestamp(): Long {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
     dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
     return try {
         val date = dateFormat.parse(this)
-        date?.time
+        date?.time ?: 0L
     } catch (e: Exception) {
-        null
+        0L
     }
 }
 
-fun Long.toDateString(): String? {
+fun Long.toDateString(): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
     dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
     val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
     calendar.timeInMillis = this
 
-    return dateFormat.format(calendar.time)
+    return try {
+        dateFormat.format(calendar.time)
+    } catch (e: Exception) {
+        ""
+    }
 }

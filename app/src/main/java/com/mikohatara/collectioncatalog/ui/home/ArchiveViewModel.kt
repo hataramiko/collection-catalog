@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.home
 
 import android.content.Context
+import android.icu.util.Calendar
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +16,8 @@ import com.mikohatara.collectioncatalog.util.exportFormerPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.importFormerPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
+import com.mikohatara.collectioncatalog.util.toDateString
+import com.mikohatara.collectioncatalog.util.toTimestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,7 +39,9 @@ data class ArchiveUiState(
     val activeFilterCount: Int = 0,
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
+    val dateSliderPosition: ClosedRange<Float>? = null,
     val costSliderPosition: ClosedRange<Float>? = null,
+    val archivalDateSliderPosition: ClosedRange<Float>? = null,
     val isSearchActive: Boolean = false,
     val searchQuery: String = "",
     val isLoading: Boolean = false,
@@ -180,20 +185,28 @@ class ArchiveViewModel @Inject constructor(
         val recipientCountrySize = filters.recipientCountry.size
 
         val yearSliderRange = getYearSliderRange()
+        val dateSliderRange = getDateSliderRange()
         val costSliderRange = getCostSliderRange()
+        val archivalDateSliderRange = getArchivalDateSliderRange()
         val periodSize = if (
             isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
         ) 1 else 0
         val yearSize = if (
             isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
         ) 1 else 0
+        val dateSize = if (
+            isSliderActive(_uiState.value.dateSliderPosition, dateSliderRange)
+        ) 1 else 0
         val costSize = if (
             isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
         ) 1 else 0
+        val archivalDateSize = if (
+            isSliderActive(_uiState.value.archivalDateSliderPosition, archivalDateSliderRange)
+        ) 1 else 0
 
-        return countrySize + typeSize + periodSize + yearSize + vehicleSize + costSize +
+        return countrySize + typeSize + periodSize + yearSize + dateSize + vehicleSize + costSize +
                 colorMainSize + colorSecondarySize + sourceTypeSize + sourceCountrySize +
-                archivalReasonSize + recipientCountrySize
+                archivalDateSize + archivalReasonSize + recipientCountrySize
     }
 
     fun openFilterBottomSheet() {
@@ -204,7 +217,9 @@ class ArchiveViewModel @Inject constructor(
     fun setFilter() {
         setPeriodFilter()
         setYearFilter()
+        setDateFilter()
         setCostFilter()
+        setArchivalDateFilter()
         val filters = _uiState.value.filters
 
         val filteredItems = _allItems.filter { item ->
@@ -233,11 +248,25 @@ class ArchiveViewModel @Inject constructor(
                     else -> false
                 }
             } != false
+            val isWithinDateRange = filters.dateRange?.let { range ->
+                val date = item.uniqueDetails.date
+                when {
+                    date != null -> date in range
+                    else -> false
+                }
+            } != false
             val isWithinCostRange = filters.costRange?.let { range ->
                 val cost = item.uniqueDetails.cost
 
                 when {
                     cost != null -> cost in range
+                    else -> false
+                }
+            } != false
+            val isWithinArchivalDateRange = filters.archivalDateRange?.let { range ->
+                val archivalDate = item.archivalDetails.archivalDate
+                when {
+                    archivalDate != null -> archivalDate in range
                     else -> false
                 }
             } != false
@@ -273,7 +302,9 @@ class ArchiveViewModel @Inject constructor(
                 } -> false
                 !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
+                !isWithinDateRange -> false
                 !isWithinCostRange -> false
+                !isWithinArchivalDateRange -> false
                 !matchesVehicleFilter -> false
                 else -> true
             }
@@ -330,8 +361,16 @@ class ArchiveViewModel @Inject constructor(
         _uiState.update { it.copy(yearSliderPosition = yearSliderPosition) }
     }
 
+    fun updateDateSliderPosition(dateSliderPosition: ClosedRange<Float>) {
+        _uiState.update { it.copy(dateSliderPosition = dateSliderPosition) }
+    }
+
     fun updateCostSliderPosition(costSliderPosition: ClosedRange<Float>) {
         _uiState.update { it.copy(costSliderPosition = costSliderPosition) }
+    }
+
+    fun updateArchivalDateSliderPosition(archivalDateSliderPosition: ClosedRange<Float>) {
+        _uiState.update { it.copy(archivalDateSliderPosition = archivalDateSliderPosition) }
     }
 
     fun toggleVehicleSwitch() {
@@ -343,7 +382,9 @@ class ArchiveViewModel @Inject constructor(
             filters = FilterData(),
             periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
             yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
-            costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat()
+            dateSliderPosition = getMinDate()..getMaxDate(),
+            costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat(),
+            archivalDateSliderPosition = getMinArchivalDate()..getMaxArchivalDate()
         ) }
         setFilter()
     }
@@ -400,8 +441,16 @@ class ArchiveViewModel @Inject constructor(
         return getMinYear().toFloat()..getMaxYear().toFloat()
     }
 
+    fun getDateSliderRange(): ClosedRange<Float> {
+        return getMinDate()..getMaxDate()
+    }
+
     fun getCostSliderRange(): ClosedRange<Float> {
         return getMinCost().toFloat()..getMaxCost().toFloat()
+    }
+
+    fun getArchivalDateSliderRange(): ClosedRange<Float> {
+        return getMinArchivalDate()..getMaxArchivalDate()
     }
 
     fun exportItems(context: Context, uri: Uri) {
@@ -498,9 +547,17 @@ class ArchiveViewModel @Inject constructor(
             _uiState.update { it.copy(
                 yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
         }
+        if (uiState.value.dateSliderPosition == null) {
+            _uiState.update { it.copy(
+                dateSliderPosition = getMinDate()..getMaxDate()) }
+        }
         if (uiState.value.costSliderPosition == null) {
             _uiState.update { it.copy(
                 costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat()) }
+        }
+        if (uiState.value.archivalDateSliderPosition == null) {
+            _uiState.update { it.copy(
+                archivalDateSliderPosition = getMinArchivalDate()..getMaxArchivalDate()) }
         }
     }
 
@@ -533,6 +590,21 @@ class ArchiveViewModel @Inject constructor(
         }
     }
 
+    private fun setDateFilter() {
+        val dateRange = uiState.value.dateSliderPosition ?: return
+        val rangeStart = dateRange.start
+        val rangeEnd = dateRange.endInclusive
+        val startString = rangeStart.toLong().toDateString()
+        val endString = rangeEnd.toLong().toDateString()
+
+        if ((rangeStart != getMinDate() || rangeEnd != getMaxDate()) &&
+            startString.isNotBlank() && endString.isNotBlank()) {
+            _uiState.update { it.copy(filters = it.filters.copy(dateRange = startString..endString)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(dateRange = null)) }
+        }
+    }
+
     private fun setCostFilter() {
         val costRange = uiState.value.costSliderPosition ?: return
         val rangeStart = costRange.start.roundToLong()
@@ -541,6 +613,22 @@ class ArchiveViewModel @Inject constructor(
             _uiState.update { it.copy(filters = it.filters.copy(costRange = null)) }
         } else {
             _uiState.update { it.copy(filters = it.filters.copy(costRange = rangeStart..rangeEnd)) }
+        }
+    }
+
+    private fun setArchivalDateFilter() {
+        val dateRange = uiState.value.archivalDateSliderPosition ?: return
+        val rangeStart = dateRange.start
+        val rangeEnd = dateRange.endInclusive
+        val startString = rangeStart.toLong().toDateString()
+        val endString = rangeEnd.toLong().toDateString()
+
+        if ((rangeStart != getMinDate() || rangeEnd != getMaxDate()) &&
+            startString.isNotBlank() && endString.isNotBlank()) {
+            _uiState.update { it
+                .copy(filters = it.filters.copy(archivalDateRange = startString..endString)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(archivalDateRange = null)) }
         }
     }
 
@@ -578,6 +666,25 @@ class ArchiveViewModel @Inject constructor(
         return listOf(currentYear, maxYear).maxOf { it }
     }
 
+    private fun getMinDate(): Float {
+        val fallback = "1900-01-02".toTimestamp().toFloat()
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
+        val allDates = items.mapNotNull { it.uniqueDetails.date }.map { it.toTimestamp() }.sorted()
+        val minDate = allDates.firstOrNull()?.toFloat() ?: return fallback
+        val maxDate = getMaxDate()
+
+        return if (minDate < maxDate) minDate else fallback
+    }
+
+    private fun getMaxDate(): Float {
+        val today = Calendar.getInstance().timeInMillis.toFloat()
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return today
+        val allDates = items.mapNotNull { it.uniqueDetails.date }.map { it.toTimestamp() }.sorted()
+        val maxDate = allDates.lastOrNull()?.toFloat() ?: return today
+
+        return maxOf(today, maxDate)
+    }
+
     private fun getMinCost(): Long {
         return 0L
     }
@@ -590,6 +697,27 @@ class ArchiveViewModel @Inject constructor(
         return if (allValues.isNotEmpty()) {
             allValues.maxOf { it }
         } else fallback
+    }
+
+    private fun getMinArchivalDate(): Float {
+        val fallback = "1900-01-02".toTimestamp().toFloat()
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
+        val allDates = items.mapNotNull { it.archivalDetails.archivalDate }
+            .map { it.toTimestamp() }.sorted()
+        val minDate = allDates.firstOrNull()?.toFloat() ?: return fallback
+        val maxDate = getMaxDate()
+
+        return if (minDate < maxDate) minDate else fallback
+    }
+
+    private fun getMaxArchivalDate(): Float {
+        val today = Calendar.getInstance().timeInMillis.toFloat()
+        val items = _allItems.takeIf { it.isNotEmpty() } ?: return today
+        val allDates = items.mapNotNull { it.archivalDetails.archivalDate }
+            .map { it.toTimestamp() }.sorted()
+        val maxDate = allDates.lastOrNull()?.toFloat() ?: return today
+
+        return maxOf(today, maxDate)
     }
 
     private fun getExportMessage(isSuccess: Boolean, context: Context): String {
