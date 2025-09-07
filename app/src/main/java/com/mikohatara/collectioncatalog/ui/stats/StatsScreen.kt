@@ -1,12 +1,14 @@
 package com.mikohatara.collectioncatalog.ui.stats
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +30,7 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,8 +39,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -260,14 +266,29 @@ private fun StatsScreenContent(
                     label = stringResource(R.string.period),
                     shape = RoundedCorners.AllSharp,
                     modifier = Modifier.padding(bottom = 4.dp)
-                ) { /*TODO*/ }
+                ) {
+                    if (uiState.periodAmounts.isNotEmpty() && uiState.years.isNotEmpty()) {
+                        Graph(
+                            verticalValues = uiState.periodAmounts,
+                            horizontalValues = uiState.years,
+                            hasSpacerAfterValueColumn = false
+                        )
+                    }
+                }
             }
             item {
                 ExpandableStatsCard(
                     label = stringResource(R.string.year),
                     shape = RoundedCorners.TopSharp,
                     modifier = Modifier.padding(bottom = 16.dp)
-                ) { /*TODO*/ }
+                ) {
+                    if (uiState.yearAmounts.isNotEmpty() && uiState.years.isNotEmpty()) {
+                        Graph(
+                            verticalValues = uiState.yearAmounts,
+                            horizontalValues = uiState.years
+                        )
+                    }
+                }
             }
             if (uiState.activeItemType != ItemType.WANTED_PLATE) {
                 val (costShape, costPadding) = if (uiState.activeItemType == ItemType.PLATE) {
@@ -862,6 +883,116 @@ private fun Table(
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
+    }
+}
+
+@Composable
+private fun Graph(
+    verticalValues: Map<Int, Int>,
+    horizontalValues: Set<Int>,
+    hasSpacerAfterValueColumn: Boolean = true
+) {
+    var verticalColumnWidth by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+
+    val graphHeight = 96.dp
+
+    val maxVerticalValue = remember(verticalValues) { (verticalValues
+        .values.maxOrNull() ?: 0) }
+    val verticalEndLabel = remember(maxVerticalValue) { maxVerticalValue.toString() }
+    val horizontalStartLabel = remember(horizontalValues) { horizontalValues
+        .firstOrNull()?.toString() ?: "" }
+    val horizontalEndLabel = remember(horizontalValues) { horizontalValues
+        .lastOrNull()?.toString() ?: "" }
+
+    //TODO calculate an in-between value, e.g. maxVerticalValue / 2
+
+    Row {
+        Column( // for the vertical values
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier
+                .height(graphHeight + 12.dp)
+                .padding(start = 16.dp, top = 4.dp, bottom = 0.dp, end = 8.dp)
+                .onGloballyPositioned {
+                    verticalColumnWidth = with(density) { it.size.width.toDp() }
+                }
+        ) {
+            Text(verticalEndLabel)
+            //TODO
+            Text("0")
+        }
+        Box( // for the actual graph
+            contentAlignment = Alignment.BottomStart,
+            modifier = Modifier
+                .padding(end = 16.dp, top = 8.dp)
+                .fillMaxWidth()
+                .height(graphHeight)
+        ) {
+            VerticalDivider(
+                color = colorScheme.outline,
+                modifier = Modifier.fillMaxHeight()
+            )
+            HorizontalDivider(
+                color = colorScheme.outline,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.matchParentSize()
+            ) {
+                HorizontalDivider(
+                    color = colorScheme.outlineVariant.copy(alpha = 0.33f),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                HorizontalDivider(
+                    color = colorScheme.outlineVariant.copy(alpha = 0.33f),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                HorizontalDivider( // A blank divider for the SpaceBetween to work as intended
+                    color = Color.Transparent,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            Box(
+                contentAlignment = Alignment.BottomStart,
+                modifier = Modifier.padding(start = 1.dp, bottom = 1.dp).matchParentSize()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    horizontalValues.forEach { value ->
+                        val amount = verticalValues[value] ?: 0
+                        val color = if (amount > 0) colorScheme.tertiary else Color.Transparent
+                        val columnHeightFraction = if (maxVerticalValue > 0 && amount > 0) {
+                            amount.toFloat() / maxVerticalValue.toFloat()
+                        } else {
+                            0f
+                        }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(fraction = columnHeightFraction.coerceIn(0f, 1f))
+                                .background(color)
+                        )
+                        if (hasSpacerAfterValueColumn) {
+                            Spacer(modifier = Modifier.width(0.5.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Row( // for the horizontal values
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = verticalColumnWidth + 24.dp, end = 16.dp, bottom = 8.dp)
+    ) {
+        Text(horizontalStartLabel)
+        Text(horizontalEndLabel)
     }
 }
 

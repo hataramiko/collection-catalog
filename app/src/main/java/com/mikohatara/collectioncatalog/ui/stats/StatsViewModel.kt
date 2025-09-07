@@ -46,6 +46,9 @@ data class StatsUiState(
     // Sets for tables
     val countries: Set<String> = emptySet(),
     val types: Set<String> = emptySet(),
+    val years: Set<Int> = emptySet(), // used by both periodAmounts and yearAmounts
+    val periodAmounts: Map<Int, Int> = emptyMap(),
+    val yearAmounts: Map<Int, Int> = emptyMap(),
     val startDateYears: Set<String> = emptySet(),
     val locations: Set<String?> = emptySet(),
     val sourceTypes: Set<String?> = emptySet(),
@@ -131,6 +134,10 @@ class StatsViewModel @Inject constructor(
                     val newCountries = getCountries(newActiveItems)
                     val newTypes = getTypes(newActiveItems)
                     ensureActive()
+                    val newYears = getYears(newActiveItems)
+                    val newPeriodAmounts = getPeriodAmounts(newActiveItems)
+                    val newYearAmounts = getYearAmounts(newActiveItems)
+                    ensureActive()
                     val newStartDateYears = getStartDateYears(newActiveItems)
                     val newLocations = getLocations(newActiveItems)
                     ensureActive()
@@ -157,6 +164,9 @@ class StatsViewModel @Inject constructor(
                             activeItems = newActiveItems,
                             countries = newCountries,
                             types = newTypes,
+                            years = newYears,
+                            periodAmounts = newPeriodAmounts,
+                            yearAmounts = newYearAmounts,
                             startDateYears = newStartDateYears,
                             locations = newLocations,
                             sourceTypes = newSourceTypes,
@@ -232,6 +242,61 @@ class StatsViewModel @Inject constructor(
                 }
             }
         }.thenBy { it }).toSet()
+    }
+
+    fun getYears(activeItems: List<Item>): Set<Int> {
+        val minYear = getMinYear()
+        val maxYear = getMaxYear()
+
+        val yearsFromMinToMax = (minYear..maxYear).toSet()
+        val itemYears = activeItems.mapNotNull { item ->
+            when (item) {
+                is Item.PlateItem -> item.plate.commonDetails.year
+                is Item.WantedPlateItem -> item.wantedPlate.commonDetails.year
+                is Item.FormerPlateItem -> item.formerPlate.commonDetails.year
+            }
+
+        }.toSet()
+
+        return (yearsFromMinToMax + itemYears).toSortedSet()
+    }
+
+    fun getPeriodAmounts(activeItems: List<Item>): Map<Int, Int> {
+        if (activeItems.isEmpty()) {
+            return emptyMap()
+        }
+
+        val yearAmounts = mutableMapOf<Int, Int>()
+        activeItems.forEach { item ->
+            val details = when (item) {
+                is Item.PlateItem -> item.plate.commonDetails
+                is Item.WantedPlateItem -> item.wantedPlate.commonDetails
+                is Item.FormerPlateItem -> item.formerPlate.commonDetails
+            }
+            val periodStart = details.periodStart
+            val periodEnd = details.periodEnd
+
+            if (periodStart != null && periodEnd != null && periodStart <= periodEnd) {
+                for (year in periodStart..periodEnd) {
+                    yearAmounts[year] = (yearAmounts[year] ?: 0) + 1
+                }
+            }
+        }
+
+        return yearAmounts.toSortedMap()
+    }
+
+    fun getYearAmounts(activeItems: List<Item>): Map<Int, Int> {
+        if (activeItems.isEmpty()) {
+            return emptyMap()
+        }
+        return activeItems.mapNotNull { item ->
+            when (item) {
+                is Item.PlateItem -> item.plate.commonDetails.year
+                is Item.WantedPlateItem -> item.wantedPlate.commonDetails.year
+                is Item.FormerPlateItem -> item.formerPlate.commonDetails.year
+            }
+        }.groupBy { it }.mapValues { it.value.size }.toSortedMap()
     }
 
     fun getStartDateYears(activeItems: List<Item>): Set<String> {
@@ -541,6 +606,9 @@ class StatsViewModel @Inject constructor(
                 activeItems = emptyList(),
                 countries = emptySet(),
                 types = emptySet(),
+                years = emptySet(),
+                periodAmounts = emptyMap(),
+                yearAmounts = emptyMap(),
                 startDateYears = emptySet(),
                 locations = emptySet(),
                 sourceTypes = emptySet(),
