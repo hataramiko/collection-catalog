@@ -153,6 +153,7 @@ private fun CollectionEntryScreen(
     }
     if (showDeletionDialog) {
         DeletionDialog(
+            message = stringResource(R.string.deletion_dialog_collection),
             onConfirm = {
                 showDeletionDialog = false
                 coroutineScope.launch {

@@ -72,7 +72,7 @@ import com.mikohatara.collectioncatalog.util.getFileNameForExport
 
 private object Url {
     const val PRIVACY_POLICY = "https://hataramiko.github.io/rekkary/privacy-policy.html"
-    const val SEND_FEEDBACK = ""
+    const val SEND_FEEDBACK = "https://forms.gle/wfK6dfLMHQxnEw169"
     const val RATE = "market://details?id=com.mikohatara.collectioncatalog"
 }
 
@@ -181,6 +181,7 @@ private fun LandingPage(
     HelpPageHorizontalDivider()
     LandingPageLink(
         text = stringResource(R.string.send_feedback),
+        dialogMessage = stringResource(R.string.url_redirect_to_feedback),
         painter = painterResource(R.drawable.rounded_forward_to_inbox_24),
         url = Url.SEND_FEEDBACK,
         context = context,
@@ -189,6 +190,7 @@ private fun LandingPage(
     )
     LandingPageLink(
         text = stringResource(R.string.rate),
+        dialogMessage = stringResource(R.string.url_redirect_to_rating),
         painter = painterResource(R.drawable.rounded_reviews_24),
         url = Url.RATE,
         context = context,
@@ -440,6 +442,7 @@ private fun LandingPageLink(
     context: Context,
     url: String,
     modifier: Modifier = Modifier,
+    dialogMessage: String? = null,
     painter: Painter = painterResource(R.drawable.rounded_help)
 ) {
     var showRedirectDialog by rememberSaveable { mutableStateOf(false) }
@@ -460,15 +463,14 @@ private fun LandingPageLink(
         modifier = modifier,
         mainIconPainter = painter,
         trailingIconPainter = painterResource(R.drawable.rounded_open_in_new_24),
-        trailingIconColor = colorScheme.outline,
         isMainIconColorTertiary = (url == Url.PRIVACY_POLICY),
         isMainIconColorSecondary = true,
     )
 
     if (showRedirectDialog) {
-        if (url == Url.RATE) {
+        if (dialogMessage != null) {
             RedirectDialog(
-                message = stringResource(R.string.url_redirect_to_google_play),
+                message = dialogMessage,
                 onConfirm = {
                     showRedirectDialog = false
                     openUrl(context, url)
@@ -495,7 +497,6 @@ private fun HelpPageButton(
     modifier: Modifier = Modifier,
     mainIconPainter: Painter = painterResource(R.drawable.rounded_help),
     trailingIconPainter: Painter = painterResource(R.drawable.rounded_chevron_forward),
-    trailingIconColor: Color = colorScheme.onSurfaceVariant,
     isMainIconColorTertiary: Boolean = false,
     isMainIconColorSecondary: Boolean = false
 ) {
@@ -539,7 +540,7 @@ private fun HelpPageButton(
         Icon(
             painter = trailingIconPainter,
             contentDescription = null,
-            tint = trailingIconColor
+            tint = colorScheme.outline
         )
     }
 }

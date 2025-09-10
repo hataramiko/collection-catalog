@@ -26,6 +26,7 @@ import com.mikohatara.collectioncatalog.ui.theme.CollectionCatalogTheme
 
 @Composable
 fun DeletionDialog(
+    message: String = stringResource(R.string.deletion_dialog),
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -40,7 +41,7 @@ fun DeletionDialog(
             modifier = Modifier.size(48.dp)
         ) },
         title = { Text(stringResource(R.string.delete)) },
-        text = { Text(stringResource(R.string.deletion_dialog)) },
+        text = { Text(message) },
         dismissButton = {
             TextButton(onClick = { onCancel() }) {
                 Text(stringResource(R.string.cancel))

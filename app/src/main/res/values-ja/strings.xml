@@ -179,7 +179,7 @@
     <string name="sort_by_archival_newest">アーカイブが最新</string>
     <string name="help_page_not_translated">このヘルプページはまだ日本語ではありません。</string>
     <string name="attention">注意</string>
-    <string name="info_width">プレートの表示サイズは、他のプレートの横幅との比較で決定されます。</string>
+    <string name="info_width">横を使用し、プレートの表示サイズが決定されます。</string>
     <string name="download_msg_success">ダウンロードが完成しました</string>
     <string name="download_msg_failure">ダウンロードが失敗しました</string>
     <string name="cost_net">正味</string>
@@ -214,4 +214,10 @@
     <string name="open_url_error">リンク先に遷移できませんでした</string>
     <string name="url_redirect_to_browser">このコンテンツを利用するために、ウェブブラウザに遷移します。</string>
     <string name="url_redirect_to_google_play">Google Play ストアに遷移します。</string>
+    <string name="info_region_1st">国家を基準とした並び替え、行政区画が加わります。</string>
+    <string name="redirect_to_feedback_supporting_text">誤りに気づきましたか？改善についてご提案がありますか？どうか、フィードバックを送信してください。</string>
+    <string name="redirect_to_google_play_supporting_text">Rekkary のことを気に入っていますか？是非、評価してください！</string>
+    <string name="url_redirect_to_feedback">誤りに気づきましたか？改善についてご提案がありますか？どうか、フィードバックを送信してください。\n\nこの先ウェブブラウザに遷移します。</string>
+    <string name="url_redirect_to_rating">Rekkary のことを気に入っていますか？是非、評価してください。\n\nこの先Google Play ストアに遷移します。</string>
+    <string name="deletion_dialog_collection">コレクションを削除すると、全てのプレートから削除されます。削除したら、元に戻せません。プレートは削除されません。</string>
 </resources>

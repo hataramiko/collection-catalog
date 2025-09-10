@@ -183,7 +183,7 @@
     <string name="sort_by_archival_newest">Uusin arkistointi</string>
     <string name="help_page_not_translated">Tämä ohje ei ole vielä saatavilla suomeksi.</string>
     <string name="attention">Huomioi</string>
-    <string name="info_width">Kilven koko kataloginäkymässä määräytyy vertaamalla leveyttä muihin kilpiin.</string>
+    <string name="info_width">Leveyttä käytetään kilpien koon määrittelyyn kataloginäkymässä.</string>
     <string name="download_msg_success">Lataus onnistui</string>
     <string name="download_msg_failure">Lataus epäonnistui</string>
     <string name="cost_gross">Brutto</string>
@@ -211,11 +211,17 @@
     <string name="help_and_feedback">Ohjeet ja palaute</string>
     <string name="privacy_policy">Tietosuojaseloste</string>
     <string name="send_feedback">Lähetä palautetta</string>
-    <string name="rate">Arvioi</string>
+    <string name="rate">Arvostele</string>
     <string name="review">Arvostele</string>
     <string name="rate_and_review">Arvioi ja arvostele</string>
     <string name="give_feedback">Anna palautetta</string>
     <string name="open_url_error">Linkkiä ei voitu avata</string>
-    <string name="url_redirect_to_browser">Tämä sisältö on saatavilla verkossa. Sinut ohjataan verkkoselaimeesi sisällön avaamista varten.</string>
+    <string name="url_redirect_to_browser">Tämä sisältö on saatavilla verkossa. Sinut ohjataan selaimeen sisällön avaamista varten.</string>
     <string name="url_redirect_to_google_play">Sinut ohjataan Google Play -kauppaan.</string>
+    <string name="info_region_1st">Kilpien järjestyksen perustuessa valtioon, hallintoalue täydentää sitä.</string>
+    <string name="redirect_to_feedback_supporting_text">Oletko löytänyt virheen? Keksitkö jotain parannettavaa? Lähetä palautetta!</string>
+    <string name="redirect_to_google_play_supporting_text">Pidätkö Rekkarysta? Käy arvostelemassa!</string>
+    <string name="url_redirect_to_feedback">Oletko löytänyt virheen? Keksitkö jotain parannettavaa? Lähetä palautetta!\n\nSinut ohjataan selaimeen palautelomakkeen avaamista varten.</string>
+    <string name="url_redirect_to_rating">Pidätkö Rekkarysta? Käy antamassa sille arvostelu!\n\nSinut ohjataan seuraavaksi Google Play -kauppaan.</string>
+    <string name="deletion_dialog_collection">Kokoelma poistetaan ja se poistuu kaikista kilvistä. Tätä toimintoa ei voi kumota. Yhtäkään kilpeä ei poisteta.</string>
 </resources>
