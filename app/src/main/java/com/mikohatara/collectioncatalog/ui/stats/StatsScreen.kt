@@ -39,6 +39,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -270,8 +271,7 @@ private fun StatsScreenContent(
                     if (uiState.periodAmounts.isNotEmpty() && uiState.years.isNotEmpty()) {
                         Graph(
                             verticalValues = uiState.periodAmounts,
-                            horizontalValues = uiState.years,
-                            hasSpacerAfterValueColumn = false
+                            horizontalValues = uiState.years
                         )
                     }
                 }
@@ -889,12 +889,10 @@ private fun Table(
 @Composable
 private fun Graph(
     verticalValues: Map<Int, Int>,
-    horizontalValues: Set<Int>,
-    hasSpacerAfterValueColumn: Boolean = true
+    horizontalValues: Set<Int>
 ) {
     var verticalColumnWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
-
     val graphHeight = 96.dp
 
     val maxVerticalValue = remember(verticalValues) { (verticalValues
@@ -905,64 +903,55 @@ private fun Graph(
     val horizontalEndLabel = remember(horizontalValues) { horizontalValues
         .lastOrNull()?.toString() ?: "" }
 
-    //TODO calculate an in-between value, e.g. maxVerticalValue / 2
-
     Row {
         Column( // for the vertical values
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.End,
             modifier = Modifier
                 .height(graphHeight + 12.dp)
-                .padding(start = 16.dp, top = 4.dp, bottom = 0.dp, end = 8.dp)
+                .padding(start = 16.dp, top = 2.dp, bottom = 0.dp, end = 8.dp)
                 .onGloballyPositioned {
                     verticalColumnWidth = with(density) { it.size.width.toDp() }
                 }
         ) {
             Text(verticalEndLabel)
-            //TODO
             Text("0")
         }
-        Box( // for the actual graph
-            contentAlignment = Alignment.BottomStart,
-            modifier = Modifier
-                .padding(end = 16.dp, top = 8.dp)
-                .fillMaxWidth()
-                .height(graphHeight)
+        Column( // for the actual graph
+            modifier = Modifier.padding(top = 8.dp, end = 16.dp)
         ) {
-            VerticalDivider(
-                color = colorScheme.outline,
-                modifier = Modifier.fillMaxHeight()
-            )
-            HorizontalDivider(
-                color = colorScheme.outline,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.matchParentSize()
-            ) {
-                HorizontalDivider(
-                    color = colorScheme.outlineVariant.copy(alpha = 0.33f),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                HorizontalDivider(
-                    color = colorScheme.outlineVariant.copy(alpha = 0.33f),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                HorizontalDivider( // A blank divider for the SpaceBetween to work as intended
-                    color = Color.Transparent,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
             Box(
                 contentAlignment = Alignment.BottomStart,
-                modifier = Modifier.padding(start = 1.dp, bottom = 1.dp).matchParentSize()
+                modifier = Modifier.height(graphHeight).fillMaxWidth()
             ) {
+                Column(
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.matchParentSize()
+                ) {
+                    HorizontalDivider(
+                        color = colorScheme.outlineVariant,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    HorizontalDivider(
+                        color = colorScheme.outlineVariant,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    HorizontalDivider(
+                        color = colorScheme.outline,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.Bottom,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .matchParentSize()
+                        .padding(horizontal = 4.dp, vertical = 3.dp)
                 ) {
+                    val spacerModifier = if (horizontalValues.size > 24) {
+                        Modifier.width(1.dp)
+                    } else Modifier.weight(0.33f)
+
                     horizontalValues.forEach { value ->
                         val amount = verticalValues[value] ?: 0
                         val color = if (amount > 0) colorScheme.tertiary else Color.Transparent
@@ -975,21 +964,31 @@ private fun Graph(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight(fraction = columnHeightFraction.coerceIn(0f, 1f))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(color)
                         )
-                        if (hasSpacerAfterValueColumn) {
-                            Spacer(modifier = Modifier.width(0.5.dp))
-                        }
+                        if (value != horizontalValues.last()) Spacer(modifier = spacerModifier)
                     }
                 }
             }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                VerticalDivider(color = colorScheme.outline, modifier = Modifier.height(8.dp))
+                VerticalDivider(color = colorScheme.outline, modifier = Modifier.height(4.dp))
+                VerticalDivider(color = colorScheme.outline, modifier = Modifier.height(8.dp))
+                VerticalDivider(color = colorScheme.outline, modifier = Modifier.height(4.dp))
+                VerticalDivider(color = colorScheme.outline, modifier = Modifier.height(8.dp))
+            }
         }
+
     }
     Row( // for the horizontal values
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = verticalColumnWidth + 24.dp, end = 16.dp, bottom = 8.dp)
+            .padding(start = verticalColumnWidth + 24.dp, end = 16.dp, bottom = 8.dp, top = 2.dp)
     ) {
         Text(horizontalStartLabel)
         Text(horizontalEndLabel)
