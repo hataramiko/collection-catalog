@@ -850,6 +850,13 @@ private fun Table(
                 .toFormattedString(userPreferences.userCountry)
             val percentage = (quantity.toFloat() / allItems.toFloat())
                 .toPercentage(userPreferences.userCountry)
+            val spacerSize = if (row != rows.last()) 8.dp else 14.dp
+
+            val barLengthFraction = if (items.isNotEmpty() && filteredItems.isNotEmpty()) {
+                quantity.toFloat() / items.size.toFloat()
+            } else {
+                0f
+            }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -874,14 +881,22 @@ private fun Table(
                     modifier = Modifier.weight(0.5f)
                 )
             }
-            if (row != rows.last()) {
-                HorizontalDivider(
-                    color = dividerColor,
-                    modifier = Modifier.padding(vertical = 4.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(colorScheme.surfaceContainer)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(fraction = barLengthFraction.coerceIn(0f, 1f))
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(colorScheme.primary)
                 )
-            } else {
-                Spacer(modifier = Modifier.height(8.dp))
             }
+            Spacer(modifier = Modifier.height(spacerSize))
         }
     }
 }

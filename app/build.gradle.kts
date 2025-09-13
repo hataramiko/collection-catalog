@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.appcompat.resources)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
