@@ -72,7 +72,8 @@ import com.mikohatara.collectioncatalog.util.getFileNameForExport
 
 private object Url {
     const val PRIVACY_POLICY = "https://hataramiko.github.io/rekkary/privacy-policy.html"
-    const val SEND_FEEDBACK = "https://forms.gle/wfK6dfLMHQxnEw169"
+    //const val SEND_FEEDBACK = "https://forms.gle/wfK6dfLMHQxnEw169"
+    const val SEND_FEEDBACK = "https://docs.google.com/forms/d/e/1FAIpQLScRNaiJSxO-83v3Y4SU0zZdU5ldrl0spurOfLdrYs2rz7oXIA/viewform?usp=dialog"
     const val RATE = "market://details?id=com.mikohatara.collectioncatalog"
 }
 

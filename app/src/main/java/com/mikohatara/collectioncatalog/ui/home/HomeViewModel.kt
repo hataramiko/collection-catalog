@@ -17,6 +17,10 @@ import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
+import com.mikohatara.collectioncatalog.ui.catalog.ExportResult
+import com.mikohatara.collectioncatalog.ui.catalog.FilterData
+import com.mikohatara.collectioncatalog.ui.catalog.ImportResult
+import com.mikohatara.collectioncatalog.ui.catalog.SortBy
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.util.exportPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
@@ -56,16 +60,6 @@ data class HomeUiState(
     val exportResult: ExportResult? = null,
     val importResult: ImportResult? = null
 )
-
-sealed class ExportResult {
-    data class Success(val message: String) : ExportResult()
-    data class Failure(val message: String) : ExportResult()
-}
-
-sealed class ImportResult {
-    data class Success(val message: String) : ImportResult()
-    data class Failure(val message: String) : ImportResult()
-}
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -777,32 +771,3 @@ class HomeViewModel @Inject constructor(
         if (item in filters) filters - item else filters + item
 }
 
-enum class SortBy {
-    COUNTRY_AND_TYPE_ASC,
-    COUNTRY_AND_TYPE_DESC,
-    AGE_ASC,
-    AGE_DESC,
-    START_DATE_NEWEST,
-    START_DATE_OLDEST,
-    END_DATE_NEWEST,
-    END_DATE_OLDEST
-}
-
-data class FilterData(
-    val country: Set<String> = emptySet(),
-    val type: Set<String> = emptySet(),
-    val periodRange: ClosedRange<Int>? = null,
-    val yearRange: ClosedRange<Int>? = null,
-    val hasVehicle: Boolean = false,
-    val dateRange: ClosedRange<String>? = null,
-    val costRange: ClosedRange<Long>? = null,
-    val valueRange: ClosedRange<Long>? = null,
-    val location: Set<String> = emptySet(),
-    val colorMain: Set<String> = emptySet(),
-    val colorSecondary: Set<String> = emptySet(),
-    val sourceType: Set<String> = emptySet(),
-    val sourceCountry: Set<String> = emptySet(),
-    val archivalDateRange: ClosedRange<String>? = null,
-    val archivalReason: Set<String> = emptySet(),
-    val recipientCountry: Set<String> = emptySet()
-)

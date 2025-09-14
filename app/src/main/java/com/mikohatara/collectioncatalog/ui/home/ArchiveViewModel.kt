@@ -12,6 +12,10 @@ import com.mikohatara.collectioncatalog.data.FormerPlate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
+import com.mikohatara.collectioncatalog.ui.catalog.ExportResult
+import com.mikohatara.collectioncatalog.ui.catalog.FilterData
+import com.mikohatara.collectioncatalog.ui.catalog.ImportResult
+import com.mikohatara.collectioncatalog.ui.catalog.SortBy
 import com.mikohatara.collectioncatalog.util.exportFormerPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.importFormerPlatesFromCsv

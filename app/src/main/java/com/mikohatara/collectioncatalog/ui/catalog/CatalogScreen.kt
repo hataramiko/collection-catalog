@@ -63,11 +63,8 @@ import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.TopRow
 import com.mikohatara.collectioncatalog.ui.components.WishlistCard
-import com.mikohatara.collectioncatalog.ui.home.ExportResult
-import com.mikohatara.collectioncatalog.ui.home.FilterData
-import com.mikohatara.collectioncatalog.ui.home.ImportResult
 import com.mikohatara.collectioncatalog.util.getFileNameForExport
-import kotlin.contracts.contract
+import com.mikohatara.collectioncatalog.util.toItemDetails
 
 @Composable
 fun CatalogScreen(
@@ -121,7 +118,7 @@ private fun CatalogScreen(
         } else onAddItem()
     }
     val (fabContainerColor, fabContentColor) = if (uiState.isCollection) {
-        FloatingActionButtonDefaults.containerColor.copy(alpha = 0.25f) to
+        FloatingActionButtonDefaults.containerColor.copy(alpha = 0.1f) to
                 MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.38f)
     } else {
         FloatingActionButtonDefaults.containerColor to
@@ -232,9 +229,63 @@ private fun CatalogScreen(
                 )
             }
             if (viewModel.showFilterBottomSheet.value) {
-                /*FilterBottomSheet(
-
-                )*/
+                FilterBottomSheet(
+                    onDismiss = { viewModel.closeFilterBottomSheet() },
+                    filters = uiState.filters,
+                    filterCount = viewModel.getFilterCount(),
+                    onApply = { viewModel.setFilter() },
+                    onReset = { viewModel.resetFilter() },
+                    localeCode = userPreferences.userCountry,
+                    countries = viewModel.getCountries(),
+                    toggleCountry = { viewModel.toggleCountryFilter(it) },
+                    types = viewModel.getTypes(),
+                    toggleType = { viewModel.toggleTypeFilter(it) },
+                    periodSliderPosition = uiState.periodSliderPosition,
+                    onPeriodSliderChange = { newPosition ->
+                        viewModel.updatePeriodSliderPosition(newPosition)
+                    },
+                    yearSliderRange = viewModel.getYearSliderRange(),
+                    yearSliderPosition = uiState.yearSliderPosition,
+                    onYearSliderChange = { newPosition ->
+                        viewModel.updateYearSliderPosition(newPosition)
+                    },
+                    hasVehicle = uiState.filters.hasVehicle,
+                    toggleVehicleSwitch = { viewModel.toggleVehicleSwitch() },
+                    dateSliderRange = viewModel.getDateSliderRange(),
+                    dateSliderPosition = uiState.dateSliderPosition,
+                    onDateSliderChange = { newPosition ->
+                        viewModel.updateDateSliderPosition(newPosition)
+                    },
+                    costSliderRange = viewModel.getCostSliderRange(),
+                    costSliderPosition = uiState.costSliderPosition,
+                    onCostSliderChange = { newPosition ->
+                        viewModel.updateCostSliderPosition(newPosition)
+                    },
+                    valueSliderRange = viewModel.getValueSliderRange(),
+                    valueSliderPosition = uiState.valueSliderPosition,
+                    onValueSliderChange = { newPosition ->
+                        viewModel.updateValueSliderPosition(newPosition)
+                    },
+                    locations = viewModel.getLocations(),
+                    toggleLocation = { viewModel.toggleLocationFilter(it) },
+                    colorsMain = viewModel.getColorsMain(),
+                    toggleColorMain = { viewModel.toggleColorMainFilter(it) },
+                    colorsSecondary = viewModel.getColorsSecondary(),
+                    toggleColorSecondary = { viewModel.toggleColorSecondaryFilter(it) },
+                    sourceTypes = viewModel.getSourceTypes(),
+                    toggleSourceType = { viewModel.toggleSourceTypeFilter(it) },
+                    sourceCountries = viewModel.getSourceCountries(),
+                    toggleSourceCountry = { viewModel.toggleSourceCountryFilter(it) },
+                    archivalDateSliderRange = viewModel.getArchivalDateSliderRange(),
+                    archivalDateSliderPosition = uiState.archivalDateSliderPosition,
+                    onArchivalDateSliderChange = { newPosition ->
+                        viewModel.updateArchivalDateSliderPosition(newPosition)
+                    },
+                    archivalReasons = viewModel.getArchivalReasons(),
+                    toggleArchivalReason = { viewModel.toggleArchivalReasonFilter(it) },
+                    recipientCountries = viewModel.getRecipientCountries(),
+                    toggleRecipientCountry = { viewModel.toggleRecipientCountryFilter(it) }
+                )
             }
         }
     )
@@ -362,34 +413,34 @@ private fun CatalogScreenContent(
             item { // an effectively empty item for improved TopRow manipulation
                 Spacer(modifier = Modifier.height(0.dp))
             }
-            items(items = itemList/*, key = { it.id }*/) { item ->
-                //val details
+            items(items = itemList/*, key = { it.toItemDetails().id }*/) { item ->
+                val details = item.toItemDetails()
 
                 if (uiState.itemType == ItemType.WANTED_PLATE) {
-                    /*WishlistCard(
-                        country = item.commonDetails.country,
-                        region1st = item.commonDetails.region1st,
-                        region2nd = item.commonDetails.region2nd,
-                        region3rd = item.commonDetails.region3rd,
-                        type = item.commonDetails.type,
-                        periodStart = item.commonDetails.periodStart,
-                        periodEnd = item.commonDetails.periodEnd,
-                        year = item.commonDetails.year,
-                        regNo = item.regNo,
-                        imagePath = item.imagePath,
-                        notes = item.notes,
+                    WishlistCard(
+                        country = details.country ?: "",
+                        region1st = details.region1st,
+                        region2nd = details.region2nd,
+                        region3rd = details.region3rd,
+                        type = details.type ?: "",
+                        periodStart = details.periodStart,
+                        periodEnd = details.periodEnd,
+                        year = details.year,
+                        regNo = details.regNo,
+                        imagePath = details.imagePath,
+                        notes = details.notes,
                     ) {
-                        onItemClick(item)
-                    }*/
+                        onItemClick(/*item*/)
+                    }
                 } else {
-                    /*ItemCard(
-                        title = item.uniqueDetails.regNo,
-                        imagePath = item.uniqueDetails.imagePath,
-                        itemWidth = item.size.width,
+                    ItemCard(
+                        title = details.regNo ?: "",
+                        imagePath = details.imagePath,
+                        itemWidth = details.width,
                         maxWidth = maxItemWidth
                     ) {
-                        onItemClick(item)
-                    }*/
+                        onItemClick(/*item*/)
+                    }
                 }
             }
             item {

@@ -71,8 +71,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
-import com.mikohatara.collectioncatalog.ui.home.FilterData
-import com.mikohatara.collectioncatalog.ui.home.SortBy
+import com.mikohatara.collectioncatalog.ui.catalog.FilterData
+import com.mikohatara.collectioncatalog.ui.catalog.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
 import com.mikohatara.collectioncatalog.util.isCollectionColor
 import com.mikohatara.collectioncatalog.util.toColor

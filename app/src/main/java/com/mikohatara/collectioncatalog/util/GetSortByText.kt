@@ -3,7 +3,7 @@ package com.mikohatara.collectioncatalog.util
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.ui.home.SortBy
+import com.mikohatara.collectioncatalog.ui.catalog.SortBy
 
 @Composable
 fun getSortByText(sortBy: SortBy): String {

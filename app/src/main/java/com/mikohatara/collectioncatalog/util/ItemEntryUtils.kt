@@ -4,6 +4,7 @@ import com.mikohatara.collectioncatalog.data.ArchivalDetails
 import com.mikohatara.collectioncatalog.data.Color
 import com.mikohatara.collectioncatalog.data.CommonDetails
 import com.mikohatara.collectioncatalog.data.FormerPlate
+import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.Size
@@ -125,6 +126,14 @@ fun ItemDetails.toFormerPlate(): FormerPlate = FormerPlate(
         recipientCountry?.takeIf { it.isNotBlank() }
     )
 )
+
+fun Item.toItemDetails(): ItemDetails {
+    return when (this) {
+        is Item.PlateItem -> this.plate.toItemDetails()
+        is Item.WantedPlateItem -> this.wantedPlate.toItemDetails()
+        is Item.FormerPlateItem -> this.formerPlate.toItemDetails()
+    }
+}
 
 fun Plate.toItemDetails(): ItemDetails = ItemDetails(
     id = id,

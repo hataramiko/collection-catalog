@@ -2,8 +2,6 @@ package com.mikohatara.collectioncatalog.ui.catalog
 
 import android.content.Context
 import android.icu.util.Calendar
-import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -15,21 +13,14 @@ import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
-import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
-import com.mikohatara.collectioncatalog.ui.home.ExportResult
-import com.mikohatara.collectioncatalog.ui.home.FilterData
-import com.mikohatara.collectioncatalog.ui.home.HomeUiState
-import com.mikohatara.collectioncatalog.ui.home.ImportResult
-import com.mikohatara.collectioncatalog.ui.home.SortBy
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
-import com.mikohatara.collectioncatalog.util.exportFormerPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
-import com.mikohatara.collectioncatalog.util.importFormerPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
 import com.mikohatara.collectioncatalog.util.toDateString
+import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toTimestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,9 +31,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.OutputStreamWriter
 import javax.inject.Inject
-import kotlin.collections.isNotEmpty
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -70,7 +59,6 @@ data class CatalogUiState(
     val importResult: ImportResult? = null
 )
 
-/*
 sealed class ExportResult {
     data class Success(val message: String) : ExportResult()
     data class Failure(val message: String) : ExportResult()
@@ -79,7 +67,7 @@ sealed class ExportResult {
 sealed class ImportResult {
     data class Success(val message: String) : ImportResult()
     data class Failure(val message: String) : ImportResult()
-}*/
+}
 
 @HiltViewModel
 class CatalogViewModel @Inject constructor(
@@ -98,12 +86,10 @@ class CatalogViewModel @Inject constructor(
 
     private val _itemType: ItemType = savedStateHandle.get<String>("")//ITEM_TYPE)
         ?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
-
-    // This has not been private, added isCollection bool to the state for the UI to access
     private val _collectionId: Int? = savedStateHandle.get<Int>(COLLECTION_ID)
     private val _collection = mutableStateOf<Collection?>(null)
 
-    private val _allItems = mutableStateListOf<Item>() //StateFlow??
+    private val _allItems = mutableStateListOf<Item>()
     val showSortByBottomSheet = mutableStateOf(false)
     val showFilterBottomSheet = mutableStateOf(false)
 
@@ -133,7 +119,6 @@ class CatalogViewModel @Inject constructor(
 
     fun getTopBarTitle(context: Context): String {
         val collectionName = getCollectionName() ?: ""
-
         return collectionName.ifEmpty {
             when (_itemType) {
                 ItemType.PLATE -> context.getString(R.string.all_plates)
@@ -143,9 +128,12 @@ class CatalogViewModel @Inject constructor(
         }
     }
 
-
     fun getMaxItemWidth(): Int {
-        return 1 //TODO
+        val allWidths = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            details.width
+        }
+        return allWidths.maxOrNull() ?: 1
     }
 
     fun updateTopRowVisibility(itemIndex: Int, topBarCollapsedFraction: Float) {
@@ -154,7 +142,7 @@ class CatalogViewModel @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
-        //searchItems() //TODO
+        searchItems()
     }
 
     fun toggleSearch() {
@@ -163,27 +151,137 @@ class CatalogViewModel @Inject constructor(
     }
 
     fun setSortBy(sortBy: SortBy) {
+        val items = _uiState.value.items
+        val comparator: Comparator<Item>? = when (sortBy) {
+            SortBy.COUNTRY_AND_TYPE_ASC ->
+                compareBy<Item, String?>(nullsLast()) { it.toItemDetails().country }
+                    .thenBy(nullsFirst()) { it.toItemDetails().region1st }
+                    .thenBy(nullsLast()) { it.toItemDetails().type }
+                    .thenBy(nullsFirst()) {
+                        val details = it.toItemDetails()
+                        details.year ?: details.periodStart
+                    }
+                    .thenBy(nullsLast()) { it.toItemDetails().regNo }
+            SortBy.COUNTRY_AND_TYPE_DESC ->
+                compareByDescending<Item, String?>(nullsFirst()) { it.toItemDetails().country }
+                    .thenByDescending(nullsLast()) { it.toItemDetails().region1st }
+                    .thenByDescending(nullsFirst()) { it.toItemDetails().type }
+                    .thenByDescending(nullsLast()) {
+                        val details = it.toItemDetails()
+                        details.year ?: details.periodStart
+                    }
+                    .thenByDescending(nullsFirst()) { it.toItemDetails().regNo }
+            SortBy.AGE_ASC ->
+                if (_itemType != ItemType.WANTED_PLATE) {
+                    compareBy<Item, Int?>(nullsLast()) {
+                        val details = it.toItemDetails()
+                        details.year ?: details.periodStart
+                    }
+                        .thenBy(nullsLast()) { it.toItemDetails().country }
+                        .thenBy(nullsFirst()) { it.toItemDetails().region1st }
+                        .thenBy { it.toItemDetails().type }
+                        .thenBy { it.toItemDetails().regNo }
+                } else null
+            SortBy.AGE_DESC ->
+                if (_itemType != ItemType.WANTED_PLATE) {
+                    compareByDescending<Item, Int?>(nullsFirst()) {
+                        val details = it.toItemDetails()
+                        details.year ?: details.periodStart
+                    }
+                        .thenByDescending(nullsFirst()) { it.toItemDetails().country }
+                        .thenByDescending(nullsLast()) { it.toItemDetails().region1st }
+                        .thenByDescending(nullsFirst()) { it.toItemDetails().type }
+                        .thenByDescending(nullsFirst()) { it.toItemDetails().regNo }
+                } else null
+            SortBy.START_DATE_NEWEST ->
+                if (_itemType == ItemType.PLATE) {
+                    compareByDescending<Item, String?>(nullsLast()) {
+                        it.toItemDetails().date
+                    }.thenByDescending { it.toItemDetails().id }
+                } else null
+            SortBy.START_DATE_OLDEST ->
+                if (_itemType == ItemType.PLATE) {
+                    compareBy<Item, String?>(nullsFirst()) {
+                        it.toItemDetails().date
+                    }.thenBy { it.toItemDetails().id }
+                } else null
+            SortBy.END_DATE_NEWEST ->
+                if (_itemType == ItemType.FORMER_PLATE) {
+                    compareByDescending<Item, String?>(nullsLast()) {
+                        it.toItemDetails().archivalDate
+                    }.thenByDescending { it.toItemDetails().id }
+                } else null
+            SortBy.END_DATE_OLDEST ->
+                if (_itemType == ItemType.FORMER_PLATE) {
+                    compareBy<Item, String?>(nullsLast()) {
+                        it.toItemDetails().archivalDate
+                    }.thenBy { it.toItemDetails().id }
+                } else null
+        }
+        val sortedItems = if (comparator != null) items.sortedWith(comparator) else items
 
+        _uiState.update { it.copy(items = sortedItems, sortBy = sortBy) }
+        updateDefaultSortBy(sortBy)
     }
 
     fun getSortByOptions(): List<SortBy> {
-        // This relies on ItemType
-        /*val sortByOptions = SortBy.entries.filter {
-            it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
+        return when (_itemType) {
+            ItemType.PLATE -> SortBy.entries.filter {
+                it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
+            }
+            ItemType.WANTED_PLATE -> SortBy.entries.filter {
+                it != SortBy.AGE_ASC && it != SortBy.AGE_DESC &&
+                it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST &&
+                it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
+            }
+            ItemType.FORMER_PLATE -> SortBy.entries.filter {
+                it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST
+            }
         }
-        val sortByOptions = SortBy.entries.filter {
-            it != SortBy.AGE_ASC && it != SortBy.AGE_DESC &&
-                    it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST &&
-                    it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
-        }
-        val sortByOptions = SortBy.entries.filter {
-            it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST
-        }*/
-        return emptyList()//sortByOptions
     }
 
     fun getFilterCount(): Int {
-        return 0
+        val filters = _uiState.value.filters
+        val countrySize = filters.country.size
+        val typeSize = filters.type.size
+        val vehicleSize = if (filters.hasVehicle) 1 else 0
+        val locationSize = filters.location.size
+        val colorMainSize = filters.colorMain.size
+        val colorSecondarySize = filters.colorSecondary.size
+        val sourceTypeSize = filters.sourceType.size
+        val sourceCountrySize = filters.sourceCountry.size
+        val archivalReasonSize = filters.archivalReason.size
+        val recipientCountrySize = filters.recipientCountry.size
+
+        val yearSliderRange = getYearSliderRange()
+        val dateSliderRange = getDateSliderRange()
+        val costSliderRange = getCostSliderRange()
+        val valueSliderRange = getValueSliderRange()
+        val archivalDateSliderRange = getArchivalDateSliderRange()
+
+        val periodSize = if (
+            isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
+        ) 1 else 0
+        val yearSize = if (
+            isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
+        ) 1 else 0
+        val dateSize = if (
+            isSliderActive(_uiState.value.dateSliderPosition, dateSliderRange)
+        ) 1 else 0
+        val costSize = if (
+            isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
+        ) 1 else 0
+        val valueSize = if (
+            isSliderActive(_uiState.value.valueSliderPosition, valueSliderRange)
+        ) 1 else 0
+        val archivalDateSize = if (
+            isSliderActive(_uiState.value.archivalDateSliderPosition, archivalDateSliderRange)
+        ) 1 else 0
+
+        return countrySize + typeSize + vehicleSize + locationSize + colorMainSize +
+                colorSecondarySize + sourceTypeSize + sourceCountrySize + archivalReasonSize +
+                recipientCountrySize + periodSize + yearSize + dateSize + costSize +
+                valueSize + archivalDateSize
     }
 
     fun openSortByBottomSheet() {
@@ -191,7 +289,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     fun openFilterBottomSheet() {
-        //setFilterSliderStartPositions()
+        setFilterSliderStartPositions()
         showFilterBottomSheet.value = true
     }
 
@@ -204,7 +302,111 @@ class CatalogViewModel @Inject constructor(
     }
 
     fun setFilter() {
+        setPeriodFilter()
+        setYearFilter()
+        setDateFilter()
+        setCostFilter()
+        setValueFilter()
+        setArchivalDateFilter()
+        val filters = _uiState.value.filters
 
+        val filteredItems = _allItems.filter { item ->
+            val details = item.toItemDetails()
+            val isWithinPeriodRange = filters.periodRange?.let { range ->
+                val periodStart = details.periodStart
+                val periodEnd = details.periodEnd
+
+                when {
+                    periodStart != null && periodEnd != null -> {
+                        periodStart >= range.start && periodEnd <= range.endInclusive
+                    }
+                    periodStart != null && range.endInclusive == getMaxYear() -> {
+                        periodStart >= range.start && periodStart <= range.endInclusive
+                    }
+                    range.start == getMinYear() && periodEnd != null -> {
+                        periodEnd >= range.start && periodEnd <= range.endInclusive
+                    }
+                    else -> false
+                }
+            } != false
+            val isWithinYearRange = filters.yearRange?.let { range ->
+                val year = details.year
+
+                when {
+                    year != null -> year in range
+                    else -> false
+                }
+            } != false
+            val isWithinDateRange = filters.dateRange?.let { range ->
+                val date = details.date
+                when {
+                    date != null -> date in range
+                    else -> false
+                }
+            } != false
+            val isWithinCostRange = filters.costRange?.let { range ->
+                val cost = details.cost
+
+                when {
+                    cost != null -> cost in range
+                    else -> false
+                }
+            } != false
+            val isWithinValueRange = filters.valueRange?.let { range ->
+                val value = details.value
+
+                when {
+                    value != null -> value in range
+                    else -> false
+                }
+            } != false
+            val isWithinArchivalDateRange = filters.archivalDateRange?.let { range ->
+                val archivalDate = details.archivalDate
+
+                when {
+                    archivalDate != null -> archivalDate in range
+                    else -> false
+                }
+            } != false
+
+            val matchesVehicleFilter = if (filters.hasVehicle) {
+                !details.vehicle.isNullOrEmpty()
+            } else true
+
+            when {
+                filters.country.isNotEmpty() && filters.country.none {
+                    it == details.country
+                } -> false
+                filters.type.isNotEmpty() && filters.type.none {
+                    it == details.type
+                } -> false
+                filters.location.isNotEmpty() && filters.location.none {
+                    it == details.status
+                } -> false
+                filters.colorMain.isNotEmpty() && filters.colorMain.none {
+                    it == details.colorMain
+                } -> false
+                filters.colorSecondary.isNotEmpty() && filters.colorSecondary.none {
+                    it == details.colorSecondary
+                } -> false
+                filters.sourceType.isNotEmpty() && filters.sourceType.none {
+                    it == details.sourceType
+                } -> false
+                filters.sourceCountry.isNotEmpty() && filters.sourceCountry.none {
+                    it == details.sourceCountry
+                } -> false
+                !isWithinPeriodRange -> false
+                !isWithinYearRange -> false
+                !isWithinDateRange -> false
+                !isWithinCostRange -> false
+                !isWithinValueRange -> false
+                !isWithinArchivalDateRange -> false
+                !matchesVehicleFilter -> false
+                else -> true
+            }
+        }
+        _uiState.update { it.copy(items = filteredItems, activeFilterCount = getFilterCount()) }
+        setSortBy(uiState.value.sortBy)
     }
 
     fun toggleCountryFilter(country: String) {
@@ -280,74 +482,82 @@ class CatalogViewModel @Inject constructor(
         _uiState.update { it.copy(filters = it.filters.copy(hasVehicle = !it.filters.hasVehicle)) }
     }
 
-    /*fun resetFilter() {
+    fun resetFilter() {
         _uiState.update { it.copy(
             filters = FilterData(),
-            periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
-            yearSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat(),
-            dateSliderPosition = getMinDate()..getMaxDate(),
-            costSliderPosition = getMinCost().toFloat()..getMaxCost().toFloat(),
-            archivalDateSliderPosition = getMinArchivalDate()..getMaxArchivalDate()
+            periodSliderPosition = getYearSliderRange(),
+            yearSliderPosition = getYearSliderRange(),
+            dateSliderPosition = getDateSliderRange(),
+            costSliderPosition = getCostSliderRange(),
+            archivalDateSliderPosition = getArchivalDateSliderRange()
         ) }
         setFilter()
-    }*/
+    }
 
-    // These are dependent on ItemType
-    /*fun getCountries(): Set<String> {
-        return _allItems.map { it.commonDetails.country }
+    fun getCountries(): Set<String> {
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.country }
             .sortedWith(compareBy { it })
             .toSet()
     }
 
     fun getTypes(): Set<String> {
-        return _allItems.map { it.commonDetails.type }
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.type }
             .sortedWith(compareBy { it })
             .toSet()
     }
 
     fun getLocations(): Set<String> {
-        return _allItems.mapNotNull { it.uniqueDetails.status }
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.status }
             .sortedWith(compareBy { it })
             .toSet()
     }
 
     fun getColorsMain(): Set<String> {
-        return _allItems.mapNotNull { it.color.main }
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.colorMain }
             .sortedWith(compareBy { it })
             .toSet()
     }
 
     fun getColorsSecondary(): Set<String> {
-        return _allItems.mapNotNull { it.color.secondary }
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.colorSecondary }
             .sortedWith(compareBy { it })
             .toSet()
     }
 
     fun getSourceTypes(): Set<String> {
-        return _allItems.mapNotNull { it.source.type }
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.sourceType }
             .sortedWith(compareBy { it })
             .toSet()
     }
 
     fun getSourceCountries(): Set<String> {
-        return _allItems.mapNotNull { it.source.country }
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.sourceCountry }
             .sortedWith(compareBy { it })
             .toSet()
     }
 
     fun getArchivalReasons(): Set<String> {
-        return _allItems.mapNotNull { it.archivalDetails.archivalReason }
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.archivalType }
             .sortedWith(compareBy { it })
             .toSet()
     }
 
     fun getRecipientCountries(): Set<String> {
-        return _allItems.mapNotNull { it.archivalDetails.recipientCountry }
+        val details = _allItems.map { it.toItemDetails() }
+        return details.mapNotNull { it.recipientCountry }
             .sortedWith(compareBy { it })
             .toSet()
-    }*/
+    }
 
-    /*fun getYearSliderRange(): ClosedRange<Float> {
+    fun getYearSliderRange(): ClosedRange<Float> {
         return getMinYear().toFloat()..getMaxYear().toFloat()
     }
 
@@ -365,7 +575,7 @@ class CatalogViewModel @Inject constructor(
 
     fun getArchivalDateSliderRange(): ClosedRange<Float> {
         return getMinArchivalDate()..getMaxArchivalDate()
-    }*/
+    }
 
     fun getCollectionName(): String? {
         return _collection.value?.name
@@ -379,8 +589,7 @@ class CatalogViewModel @Inject constructor(
         return _collection.value?.color ?: CollectionColor.DEFAULT
     }
 
-    // ItemType dependent
-    /*fun exportItems(context: Context, uri: Uri) {
+    /*fun exportItems(context: Context, uri: Uri) {//TODO
         _uiState.update { it.copy(isExporting = true, exportResult = null) }
 
         viewModelScope.launch {
@@ -406,7 +615,7 @@ class CatalogViewModel @Inject constructor(
         }
     }
 
-    fun importItems(context: Context, uri: Uri) {
+    fun importItems(context: Context, uri: Uri) {//TODO
         _uiState.update { it.copy(isImporting = true, importResult = null) }
 
         viewModelScope.launch {
@@ -443,17 +652,21 @@ class CatalogViewModel @Inject constructor(
         _uiState.update { it.copy(isImporting = false, importResult = null) }
     }
 
-    // ItemType
-    /*private fun searchItems() {
+    private fun searchItems() {
         val query = _uiState.value.searchQuery.lowercase()
         setFilter()
         val searchResults = if (query.isBlank()) {
             uiState.value.items.toList()
         } else {
             val queryNormalized = normalizeString(query)
-            uiState.value.items.filter {
-                val regNoNormalized = normalizeString(it.uniqueDetails.regNo)
-                regNoNormalized.contains(queryNormalized)
+            uiState.value.items.filter { item ->
+                val details = item.toItemDetails()
+                val regNo = details.regNo
+
+                if (regNo != null) {
+                    val regNoNormalized = normalizeString(regNo)//.lowercase())
+                    regNoNormalized.contains(queryNormalized)
+                } else false
             }
         }
         _uiState.update { it.copy(items = searchResults) }
@@ -462,11 +675,18 @@ class CatalogViewModel @Inject constructor(
 
     private fun updateDefaultSortBy(sortBy: SortBy) {
         viewModelScope.launch {
-            userPreferencesRepository.saveDefaultSortOrderWishlist(sortBy)
+            when (_itemType) {
+                ItemType.PLATE -> userPreferencesRepository
+                    .saveDefaultSortOrderMain(sortBy)
+                ItemType.WANTED_PLATE -> userPreferencesRepository
+                    .saveDefaultSortOrderWishlist(sortBy)
+                ItemType.FORMER_PLATE -> userPreferencesRepository
+                    .saveDefaultSortOrderArchive(sortBy)
+            }
         }
-    }*/
+    }
 
-    /*private fun setFilterSliderStartPositions() {
+    private fun setFilterSliderStartPositions() {
         if (uiState.value.periodSliderPosition == null) {
             _uiState.update { it.copy(
                 periodSliderPosition = getMinYear().toFloat()..getMaxYear().toFloat()) }
@@ -566,7 +786,7 @@ class CatalogViewModel @Inject constructor(
         } else {
             _uiState.update { it.copy(filters = it.filters.copy(archivalDateRange = null)) }
         }
-    }*/
+    }
 
     private fun getItems(itemType: ItemType) {
         viewModelScope.launch {
@@ -585,7 +805,7 @@ class CatalogViewModel @Inject constructor(
                                         it.copy(items = items, isLoading = false)
                                     }
                                 }
-                                //setFilter()
+                                setFilter()
                             }
                     } else {
                         plateRepository.getAllPlatesStream().collect { plates ->
@@ -593,7 +813,7 @@ class CatalogViewModel @Inject constructor(
                             _allItems.clear()
                             _allItems.addAll(items)
                             _uiState.update { it.copy(items = items, isLoading = false) }
-                            //setFilter()
+                            setFilter()
                         }
                     }
                 }
@@ -603,7 +823,7 @@ class CatalogViewModel @Inject constructor(
                         _allItems.clear()
                         _allItems.addAll(items)
                         _uiState.update { it.copy(items = items, isLoading = false) }
-                        //setFilter()
+                        setFilter()
                     }
                 }
                 ItemType.FORMER_PLATE -> {
@@ -612,7 +832,7 @@ class CatalogViewModel @Inject constructor(
                         _allItems.clear()
                         _allItems.addAll(items)
                         _uiState.update { it.copy(items = items, isLoading = false) }
-                        //setFilter()
+                        setFilter()
                     }
                 }
             }
@@ -634,81 +854,105 @@ class CatalogViewModel @Inject constructor(
         return sliderPosition != null && sliderPosition != defaultRange
     }
 
-    /*private fun getMinYear(): Int {
+    private fun getMinYear(): Int {
         val maxYear = getMaxYear()
-        val items = _allItems.takeIf { it.isNotEmpty() } ?: return 1900
-        val allYears = listOfNotNull(
-            items.mapNotNull { it.commonDetails.periodStart }.takeIf { it.isNotEmpty() },
-            items.mapNotNull { it.commonDetails.periodEnd }.takeIf { it.isNotEmpty() },
-            items.mapNotNull { it.commonDetails.year }.takeIf { it.isNotEmpty() }
-        ).flatten()
+        if (_allItems.isEmpty()) return 1900
 
-        val minYear = if (allYears.isNotEmpty()) {
-            allYears.minOf { it }
-        } else {
-            1900
+        val allYears = _allItems.flatMap { item ->
+            val details = item.toItemDetails()
+            listOfNotNull(details.periodStart, details.periodEnd, details.year)
         }
+
+        val minYear = allYears.minOrNull() ?: 1900
         return if (minYear < maxYear) minYear else maxYear - 1
     }
 
     private fun getMaxYear(): Int {
         val currentYear = getCurrentYear()
-        val items = _allItems.takeIf { it.isNotEmpty() } ?: return currentYear
-        val allYears = listOfNotNull(
-            items.mapNotNull { it.commonDetails.periodStart }.takeIf { it.isNotEmpty() },
-            items.mapNotNull { it.commonDetails.periodEnd }.takeIf { it.isNotEmpty() },
-            items.mapNotNull { it.commonDetails.year }.takeIf { it.isNotEmpty() }
-        ).flatten()
+        if (_allItems.isEmpty()) return currentYear
 
-        val maxYear = if (allYears.isNotEmpty()) {
-            allYears.maxOf { it }
-        } else {
-            currentYear
+        val allYears = _allItems.flatMap { item ->
+            val details = item.toItemDetails()
+            listOfNotNull(details.periodStart, details.periodEnd, details.year)
         }
+
+        val maxYear = allYears.maxOrNull() ?: currentYear
         return listOf(currentYear, maxYear).maxOf { it }
     }
 
     private fun getMinDate(): Float {
         val fallback = "1900-01-02".toTimestamp().toFloat()
-        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
-        val allDates = items.mapNotNull { it.uniqueDetails.date }.map { it.toTimestamp() }.sorted()
-        val minDate = allDates.firstOrNull()?.toFloat() ?: return fallback
-        val maxDate = getMaxDate()
+        if (_allItems.isEmpty()) return fallback
 
+        val allDates = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            val date = details.date
+
+            if (date != null) {
+                try {
+                    date.toTimestamp()
+                } catch (e: Exception) {
+                    null
+                }
+            } else null
+        }
+
+        val minDate = allDates.minOrNull()?.toFloat() ?: return fallback
+        val maxDate = getMaxDate()
         return if (minDate < maxDate) minDate else fallback
     }
 
     private fun getMaxDate(): Float {
         val today = Calendar.getInstance().timeInMillis.toFloat()
-        val items = _allItems.takeIf { it.isNotEmpty() } ?: return today
-        val allDates = items.mapNotNull { it.uniqueDetails.date }.map { it.toTimestamp() }.sorted()
-        val maxDate = allDates.lastOrNull()?.toFloat() ?: return today
+        if (_allItems.isEmpty()) return today
 
-        return maxOf(today, maxDate)
-    }*/
+        val allDates = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            val date = details.date
+
+            if (date != null) {
+                try {
+                    date.toTimestamp()
+                } catch (e: Exception) {
+                    null
+                }
+            } else null
+        }
+
+        val maxDate = allDates.maxOrNull()?.toFloat() ?: return today
+        return listOf(today, maxDate).maxOf { it }
+    }
 
     private fun getMinCost(): Long {
         return 0L
     }
-/*
+
     private fun getMaxCost(): Long {
         val fallback = 0L
-        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
-        val allValues = items.mapNotNull { it.uniqueDetails.cost }
+        if (_allItems.isEmpty()) return fallback
+
+        val allValues = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            details.cost
+        }
 
         return if (allValues.isNotEmpty()) {
             allValues.maxOf { it }
         } else fallback
-    }*/
+    }
 
     private fun getMinValue(): Long {
         return 0L
     }
-/*
+
     private fun getMaxValue(): Long {
         val fallback = 0L
-        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
-        val allValues = items.mapNotNull { it.uniqueDetails.value }
+        if (_allItems.isEmpty()) return fallback
+
+        val allValues = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            details.value
+        }
 
         return if (allValues.isNotEmpty()) {
             allValues.maxOf { it }
@@ -717,24 +961,46 @@ class CatalogViewModel @Inject constructor(
 
     private fun getMinArchivalDate(): Float {
         val fallback = "1900-01-02".toTimestamp().toFloat()
-        val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
-        val allDates = items.mapNotNull { it.archivalDetails.archivalDate }
-            .map { it.toTimestamp() }.sorted()
-        val minDate = allDates.firstOrNull()?.toFloat() ?: return fallback
-        val maxDate = getMaxDate()
+        if (_allItems.isEmpty()) return fallback
 
+        val allDates = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            val date = details.archivalDate
+
+            if (date != null) {
+                try {
+                    date.toTimestamp()
+                } catch (e: Exception) {
+                    null
+                }
+            } else null
+        }
+
+        val minDate = allDates.minOrNull()?.toFloat() ?: return fallback
+        val maxDate = getMaxDate()
         return if (minDate < maxDate) minDate else fallback
     }
 
     private fun getMaxArchivalDate(): Float {
         val today = Calendar.getInstance().timeInMillis.toFloat()
-        val items = _allItems.takeIf { it.isNotEmpty() } ?: return today
-        val allDates = items.mapNotNull { it.archivalDetails.archivalDate }
-            .map { it.toTimestamp() }.sorted()
-        val maxDate = allDates.lastOrNull()?.toFloat() ?: return today
+        if (_allItems.isEmpty()) return today
 
-        return maxOf(today, maxDate)
-    }*/
+        val allDates = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            val date = details.archivalDate
+
+            if (date != null) {
+                try {
+                    date.toTimestamp()
+                } catch (e: Exception) {
+                    null
+                }
+            } else null
+        }
+
+        val maxDate = allDates.maxOrNull()?.toFloat() ?: return today
+        return listOf(today, maxDate).maxOf { it }
+    }
 
     private fun getExportMessage(isSuccess: Boolean, context: Context): String {
         val stringResId = if (isSuccess) {
@@ -753,7 +1019,6 @@ class CatalogViewModel @Inject constructor(
         if (item in filters) filters - item else filters + item
 }
 
-/*
 enum class SortBy {
     COUNTRY_AND_TYPE_ASC,
     COUNTRY_AND_TYPE_DESC,
@@ -782,4 +1047,4 @@ data class FilterData(
     val archivalDateRange: ClosedRange<String>? = null,
     val archivalReason: Set<String> = emptySet(),
     val recipientCountry: Set<String> = emptySet()
-)*/
+)
