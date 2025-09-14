@@ -969,7 +969,7 @@ private fun Graph(
 
                     horizontalValues.forEach { value ->
                         val amount = verticalValues[value] ?: 0
-                        val color = if (amount > 0) colorScheme.tertiary else Color.Transparent
+                        val color = if (amount > 0) colorScheme.secondary else Color.Transparent
                         val columnHeightFraction = if (maxVerticalValue > 0 && amount > 0) {
                             amount.toFloat() / maxVerticalValue.toFloat()
                         } else {

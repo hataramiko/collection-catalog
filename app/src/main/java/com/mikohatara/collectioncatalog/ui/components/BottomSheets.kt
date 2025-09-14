@@ -6,6 +6,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,6 +64,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -761,38 +763,41 @@ private fun FilterListLabel(
             .background(backgroundColor)
             .then(onClick)
     ) {
-        Row {
-            Text(
-                label,
-                modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
-            )
-            if (activeFilters.isNotEmpty()) {
-                Badge(
-                    modifier = Modifier.padding(start = 4.dp, top = 8.dp)
-                ) {
-                    Text(activeFilters.size.toString())
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
+        ) {
+            Row {
+                Text(
+                    text = label,
+                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
+                )
+                if (activeFilters.isNotEmpty()) {
+                    Badge(
+                        modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+                    ) {
+                        Text(activeFilters.size.toString())
+                    }
                 }
-            }
-            if (isSliderActive) {
-                Badge(
-                    modifier = Modifier.padding(start = 4.dp, top = 8.dp)
-                ) {
-                    Text("1")
-                    /*if (value != null) {
-                        Text(value)
-                    } else {
+                if (isSliderActive) {
+                    Badge(
+                        modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+                    ) {
                         Text("1")
-                    }*/
+                    }
                 }
             }
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        value?.let {
-            Text(
-                text = it,
-                color = colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(end = 16.dp)
-            )
+            value?.let {
+                Text(
+                    text = it,
+                    color = colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
         }
         Icon(
             imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp

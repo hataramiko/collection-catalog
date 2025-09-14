@@ -267,4 +267,5 @@
     <string name="url_redirect_to_feedback">Found an error? Thought of an improvement? Send feedback!\n\nYou will be redirected to your browser for an online feedback form.</string>
     <string name="url_redirect_to_rating">Enjoy using Rekkary? Please leave a rating!\n\nYou will be redirected to the Google Play Store.</string>
     <string name="deletion_dialog_collection">Deleting a collection removes it from all plates. This action cannot be undone. Any plates will not be deleted.</string>
+    <string name="no_data">No data</string>
 </resources>

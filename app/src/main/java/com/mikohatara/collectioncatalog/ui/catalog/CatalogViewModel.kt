@@ -131,13 +131,30 @@ class CatalogViewModel @Inject constructor(
         }
     }
 
+    fun getTopBarTitle(context: Context): String {
+        val collectionName = getCollectionName() ?: ""
+
+        return collectionName.ifEmpty {
+            when (_itemType) {
+                ItemType.PLATE -> context.getString(R.string.all_plates)
+                ItemType.WANTED_PLATE -> context.getString(R.string.wishlist)
+                ItemType.FORMER_PLATE -> context.getString(R.string.archive)
+            }
+        }
+    }
+
+
+    fun getMaxItemWidth(): Int {
+        return 1 //TODO
+    }
+
     fun updateTopRowVisibility(itemIndex: Int, topBarCollapsedFraction: Float) {
         _isTopRowHidden.value = (topBarCollapsedFraction > 0.5f) && (itemIndex > 0)
     }
 
     fun updateSearchQuery(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
-        //searchItems()
+        //searchItems() //TODO
     }
 
     fun toggleSearch() {
@@ -176,6 +193,14 @@ class CatalogViewModel @Inject constructor(
     fun openFilterBottomSheet() {
         //setFilterSliderStartPositions()
         showFilterBottomSheet.value = true
+    }
+
+    fun closeSortByBottomSheet() {
+        showSortByBottomSheet.value = false
+    }
+
+    fun closeFilterBottomSheet() {
+        showFilterBottomSheet.value = false
     }
 
     fun setFilter() {
@@ -660,12 +685,12 @@ class CatalogViewModel @Inject constructor(
         val maxDate = allDates.lastOrNull()?.toFloat() ?: return today
 
         return maxOf(today, maxDate)
-    }
+    }*/
 
     private fun getMinCost(): Long {
         return 0L
     }
-
+/*
     private fun getMaxCost(): Long {
         val fallback = 0L
         val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
@@ -674,12 +699,12 @@ class CatalogViewModel @Inject constructor(
         return if (allValues.isNotEmpty()) {
             allValues.maxOf { it }
         } else fallback
-    }
+    }*/
 
     private fun getMinValue(): Long {
         return 0L
     }
-
+/*
     private fun getMaxValue(): Long {
         val fallback = 0L
         val items = _allItems.takeIf { it.isNotEmpty() } ?: return fallback
