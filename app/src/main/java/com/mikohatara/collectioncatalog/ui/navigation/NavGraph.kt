@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.ItemType
+import com.mikohatara.collectioncatalog.ui.catalog.CatalogScreen
 import com.mikohatara.collectioncatalog.ui.collection.CollectionEntryScreen
 import com.mikohatara.collectioncatalog.ui.collection.CollectionListScreen
 import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
@@ -33,6 +34,10 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_ARCHIVE_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_COLLECTION_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_DEFAULT_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_ENTRY_ADD_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_ENTRY_EDIT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_LIST_ROUTE
@@ -83,6 +88,109 @@ fun CollectionCatalogNavGraph(
         startDestination = startDestination,
         modifier = modifier
     ) {
+        composable(
+            route = CATALOG_DEFAULT_ROUTE,
+            arguments = listOf(navArgument(ITEM_TYPE) { type = NavType.StringType })
+        ) {
+            ModalMenuDrawer(
+                drawerState,
+                currentRoute,
+                navActions,
+                collectionList,
+                onEditCollections,
+                onAddCollection,
+                currentNavBackStackEntry
+            ) {
+                CatalogScreen(
+                    onAddItem = {
+                        navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
+                    },
+                    onItemClick = { //TODO
+                        //navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
+                    },
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
+                )
+            }
+        }
+        composable(
+            route = CATALOG_COLLECTION_ROUTE,
+            arguments = listOf(
+                navArgument(ITEM_TYPE) { type = NavType.StringType },
+                navArgument(COLLECTION_ID) { type = NavType.IntType }
+            )
+        ) {
+            ModalMenuDrawer(
+                drawerState,
+                currentRoute,
+                navActions,
+                collectionList,
+                onEditCollections,
+                onAddCollection,
+                currentNavBackStackEntry
+            ) {
+                CatalogScreen(
+                    onAddItem = {
+                        navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
+                    },
+                    onItemClick = { //TODO
+                        //navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
+                    },
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
+                )
+            }
+        }
+        composable(
+            route = CATALOG_WISHLIST_ROUTE,
+            arguments = listOf(navArgument(ITEM_TYPE) { type = NavType.StringType })
+        ) {
+            ModalMenuDrawer(
+                drawerState,
+                currentRoute,
+                navActions,
+                collectionList,
+                onEditCollections,
+                onAddCollection,
+                currentNavBackStackEntry
+            ) {
+                CatalogScreen(
+                    onAddItem = {
+                        navActions.navigateToItemEntryScreen(ItemType.WANTED_PLATE, null)
+                    },
+                    onItemClick = { //TODO
+                        //navActions.navigateToItemSummaryScreen(ItemType.WANTED_PLATE, it.id)
+                    },
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
+                )
+            }
+        }
+        composable(
+            route = CATALOG_ARCHIVE_ROUTE,
+            arguments = listOf(navArgument(ITEM_TYPE) { type = NavType.StringType })
+        ) {
+            ModalMenuDrawer(
+                drawerState,
+                currentRoute,
+                navActions,
+                collectionList,
+                onEditCollections,
+                onAddCollection,
+                currentNavBackStackEntry
+            ) {
+                CatalogScreen(
+                    onAddItem = {
+                        navActions.navigateToItemEntryScreen(ItemType.FORMER_PLATE, null)
+                    },
+                    onItemClick = {
+                        //navActions.navigateToItemSummaryScreen(ItemType.FORMER_PLATE, it.id)
+                    },
+                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
+                )
+            }
+        }
         composable(
             route = HOME_DEFAULT_ROUTE
         ) {

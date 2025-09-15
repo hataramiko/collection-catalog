@@ -15,6 +15,7 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ARCHIVE_SCREEN
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.CATALOG_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.COLLECTION_ENTRY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.COLLECTION_LIST_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HELP_SCREEN
@@ -26,6 +27,7 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.S
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.WISHLIST_SCREEN
 
 object CollectionCatalogScreens {
+    const val CATALOG_SCREEN = "catalog"
     const val HOME_SCREEN = "home"
     const val WISHLIST_SCREEN = "wishlist"
     const val ARCHIVE_SCREEN = "archive"
@@ -46,6 +48,10 @@ object CollectionCatalogDestinationArgs {
 }
 
 object CollectionCatalogDestinations {
+    const val CATALOG_DEFAULT_ROUTE = "$CATALOG_SCREEN/{$ITEM_TYPE}"
+    const val CATALOG_COLLECTION_ROUTE = "$CATALOG_SCREEN/{$ITEM_TYPE}/{$COLLECTION_ID}"
+    const val CATALOG_WISHLIST_ROUTE = "$CATALOG_SCREEN/{$ITEM_TYPE}"
+    const val CATALOG_ARCHIVE_ROUTE = "$CATALOG_SCREEN/{$ITEM_TYPE}"
     const val HOME_DEFAULT_ROUTE = HOME_SCREEN
     const val HOME_COLLECTION_ROUTE = "$HOME_SCREEN/{$COLLECTION_ID}"
     const val WISHLIST_ROUTE = WISHLIST_SCREEN
@@ -63,6 +69,16 @@ object CollectionCatalogDestinations {
 }
 
 class CollectionCatalogNavigationActions(private val navController: NavHostController) {
+
+    fun navigateToCatalogScreen(itemType: ItemType = ItemType.PLATE, collectionId: Int? = null) {
+        navController.navigate(
+            if (collectionId != null) {
+                "$CATALOG_SCREEN/${itemType.name}/$collectionId"
+            } else {
+                "$CATALOG_SCREEN/${itemType.name}"
+            }
+        )
+    }
 
     fun navigateToHomeScreen(collectionId: Int? = null) {
         navController.navigate(

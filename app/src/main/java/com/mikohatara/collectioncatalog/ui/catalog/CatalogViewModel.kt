@@ -17,6 +17,7 @@ import com.mikohatara.collectioncatalog.data.PlateRepository
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.normalizeString
 import com.mikohatara.collectioncatalog.util.toDateString
@@ -84,7 +85,7 @@ class CatalogViewModel @Inject constructor(
             initialValue = UserPreferences()
         )
 
-    private val _itemType: ItemType = savedStateHandle.get<String>("")//ITEM_TYPE)
+    private val _itemType: ItemType = savedStateHandle.get<String>(ITEM_TYPE)
         ?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
     private val _collectionId: Int? = savedStateHandle.get<Int>(COLLECTION_ID)
     private val _collection = mutableStateOf<Collection?>(null)

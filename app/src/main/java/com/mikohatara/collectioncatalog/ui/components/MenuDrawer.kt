@@ -35,13 +35,19 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_ARCHIVE_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_DEFAULT_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_COLLECTION_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_DEFAULT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.CATALOG_SCREEN
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -83,16 +89,64 @@ private fun MenuDrawerContent(
     onEditCollections: () -> Unit,
     onAddCollection: () -> Unit,
     onCloseDrawer: () -> Unit,
-    modifier: Modifier = Modifier,
     navBackStackEntry: NavBackStackEntry? = null
 ) {
-    val collectionId = navBackStackEntry?.arguments?.getInt(COLLECTION_ID)
+    val collectionIdArg = navBackStackEntry?.arguments?.getInt(COLLECTION_ID)
+    val itemTypeArg = navBackStackEntry?.arguments?.getString(ITEM_TYPE)
+    val catalogItemType = itemTypeArg?.let {
+        try { ItemType.valueOf(it) } catch (e: IllegalArgumentException) { null }
+    }
 
     ModalDrawerSheet {
         LazyColumn {
             item {
                 DrawerHeader()
                 DrawerDivider()
+                /* //TODO
+                DrawerColumn {
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.all_plates)) },
+                        icon = { Icon(
+                            painter = painterResource(R.drawable.rounded_newsstand),
+                            contentDescription = null
+                        ) },
+                        selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
+                                catalogItemType == ItemType.PLATE &&
+                                navBackStackEntry.arguments?.containsKey(COLLECTION_ID) == false,
+                        onClick = {
+                            navActions.navigateToCatalogScreen(ItemType.PLATE)
+                            onCloseDrawer()
+                        }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.wishlist)) },
+                        icon = { Icon(
+                            painter = painterResource(R.drawable.rounded_heart),
+                            contentDescription = null
+                        ) },
+                        selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
+                                catalogItemType == ItemType.WANTED_PLATE,
+                        onClick = {
+                            navActions.navigateToCatalogScreen(ItemType.WANTED_PLATE)
+                            onCloseDrawer()
+                        }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.archive)) },
+                        icon = { Icon(
+                            painter = painterResource(R.drawable.rounded_archive),
+                            contentDescription = null
+                        ) },
+                        selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
+                                catalogItemType == ItemType.FORMER_PLATE,
+                        onClick = {
+                            navActions.navigateToCatalogScreen(ItemType.FORMER_PLATE)
+                            onCloseDrawer()
+                        }
+                    )
+                }
+                DrawerDivider()
+                */
                 DrawerColumn {
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.all_plates)) },
@@ -130,9 +184,43 @@ private fun MenuDrawerContent(
                     }
                 }
             }
+            /* //TODO
+            items(items = collectionList, key = { it.id }) { collection ->
+                val selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
+                        catalogItemType == ItemType.PLATE && collectionIdArg == collection.id
+
+                NavigationDrawerItem(
+                    label = { Text(
+                        text = collection.name,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    ) },
+                    icon = {
+                        if (collection.emoji != null) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Text(
+                                    text = collection.emoji,
+                                    modifier = Modifier.offset(y = (-1.5).dp)
+                                )
+                            }
+                        } else {
+                            IconCollectionLabel(color = collection.color.color)
+                        }
+                    },
+                    selected = selected,
+                    onClick = {
+                        navActions.navigateToCatalogScreen(ItemType.PLATE, collection.id)
+                        onCloseDrawer()
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+            }*/
             items(items = collectionList, key = { it.id }) { collection ->
                 val selected = currentRoute == HOME_COLLECTION_ROUTE &&
-                        collectionId == collection.id
+                        collectionIdArg == collection.id
 
                 NavigationDrawerItem(
                     label = { Text(

@@ -70,7 +70,7 @@ import com.mikohatara.collectioncatalog.util.toItemDetails
 fun CatalogScreen(
     viewModel: CatalogViewModel = hiltViewModel(),
     onAddItem: () -> Unit,
-    onItemClick: (/**/) -> Unit,
+    onItemClick: (Item) -> Unit,
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit
 ) {
@@ -100,7 +100,7 @@ private fun CatalogScreen(
     userPreferences: UserPreferences,
     context: Context,
     onAddItem: () -> Unit,
-    onItemClick: (/**/) -> Unit,
+    onItemClick: (Item) -> Unit,
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit,
     modifier: Modifier = Modifier
@@ -323,7 +323,7 @@ private fun CatalogScreenContent(
     viewModel: CatalogViewModel,
     topBarState: TopAppBarState,
     itemList: List<Item>,
-    onItemClick: (/**/) -> Unit,
+    onItemClick: (Item) -> Unit,
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -430,7 +430,7 @@ private fun CatalogScreenContent(
                         imagePath = details.imagePath,
                         notes = details.notes,
                     ) {
-                        onItemClick(/*item*/)
+                        onItemClick(item)
                     }
                 } else {
                     ItemCard(
@@ -439,7 +439,7 @@ private fun CatalogScreenContent(
                         itemWidth = details.width,
                         maxWidth = maxItemWidth
                     ) {
-                        onItemClick(/*item*/)
+                        onItemClick(item)
                     }
                 }
             }
