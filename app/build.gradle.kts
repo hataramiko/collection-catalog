@@ -16,8 +16,8 @@ android {
         applicationId = "com.mikohatara.collectioncatalog"
         minSdk = 24
         targetSdk = 35
-        versionCode = 9
-        versionName = "0.5.0"
+        versionCode = 10
+        versionName = "0.6.0"
 
         resourceConfigurations += setOf("en", "fi", "ja")
 
@@ -88,7 +88,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.appcompat.resources)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

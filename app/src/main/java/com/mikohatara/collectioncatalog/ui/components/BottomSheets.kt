@@ -792,7 +792,7 @@ private fun FilterListLabel(
                 Text(
                     text = it,
                     color = colorScheme.onSurfaceVariant,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.End,
                     modifier = Modifier.padding(horizontal = 16.dp)

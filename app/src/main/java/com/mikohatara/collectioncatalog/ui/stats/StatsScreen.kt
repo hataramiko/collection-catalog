@@ -838,7 +838,6 @@ private fun Table(
     modifier: Modifier = Modifier
 ) {
     val allItems = items.size
-    val dividerColor = colorScheme.surface
 
     Column(
         modifier = modifier.padding(horizontal = 16.dp)
@@ -969,7 +968,7 @@ private fun Graph(
 
                     horizontalValues.forEach { value ->
                         val amount = verticalValues[value] ?: 0
-                        val color = if (amount > 0) colorScheme.secondary else Color.Transparent
+                        val color = if (amount > 0) colorScheme.primary else Color.Transparent
                         val columnHeightFraction = if (maxVerticalValue > 0 && amount > 0) {
                             amount.toFloat() / maxVerticalValue.toFloat()
                         } else {
