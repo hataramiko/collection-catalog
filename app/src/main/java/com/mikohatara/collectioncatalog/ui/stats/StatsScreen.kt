@@ -52,7 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
@@ -1022,5 +1022,12 @@ private fun SumRow(sum: Int) {
                 //color = colorScheme.outline
             )
         }
+    }
+}
+
+@Composable //TODO implement and get rid of the RoundedCorners object?
+private fun CardGroupContainer(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(modifier = modifier.clip(shape = RoundedCornerShape(20.dp))) {
+        content()
     }
 }
