@@ -104,9 +104,12 @@ class StatsViewModel @Inject constructor(
                 _uiState.update { it.copy(archive = archive) }
             }
             val collectionsJob = launch {
-                collectionRepository.getAllCollectionsStream().first {
+                try {
+                    val collections = collectionRepository.getAllCollectionsStream().first()
                     _allCollections.clear()
-                    _allCollections.addAll(it)
+                    _allCollections.addAll(collections)
+                } catch (e: Exception) {
+                    _allCollections.clear()
                 }
             }
 
@@ -152,11 +155,12 @@ class StatsViewModel @Inject constructor(
                     val newCombinedCostGrossPerPlate = getCombinedCost(isPerPlate =  true)
                     val newCombinedCostNet = getCombinedCost(isNet = true)
                     val newCombinedCostNetPerPlate = getCombinedCost(isNet = true, isPerPlate = true)
-                    val newSelectionCost = getSelectionCost()
-                    val newSelectionCostPerPlate = getSelectionCost(isPerPlate = true)
-                    val newSelectionValue = getSelectionValue()
-                    val newSelectionValuePerPlate = getSelectionValue(isPerPlate = true)
-                    val newArchivePriceSum = getArchivePriceSum()
+                    ensureActive()
+                    val newSelectionCost = getSelectionCost(newActiveItems)
+                    val newSelectionCostPerPlate = getSelectionCost(newActiveItems, true)
+                    val newSelectionValue = getSelectionValue(newActiveItems)
+                    val newSelectionValuePerPlate = getSelectionValue(newActiveItems, true)
+                    val newArchivePriceSum = getArchivePriceSum(newActiveItems)
                     ensureActive()
 
                     if (isActive && _uiState.value.activeItemType == state.activeItemType) {
@@ -458,12 +462,14 @@ class StatsViewModel @Inject constructor(
             platesCost + archiveCost - archivePrice
         } else platesCost + archiveCost
 
+        if (combinedCost == 0L) return "–"
+
         if (isPerPlate) {
             val platesSize = _uiState.value.allPlates.size
             val archiveSize = _uiState.value.archive.size
             val combinedSize = platesSize + archiveSize
 
-            if (combinedSize == 0 || combinedCost == 0L) {
+            if (combinedSize == 0) {
                 return "–"
             } else {
                 val costPerPlate = combinedCost / combinedSize
@@ -472,7 +478,9 @@ class StatsViewModel @Inject constructor(
         } else return combinedCost.toCurrencyString(countryCode)
     }
 
-    fun getSelectionCost(isPerPlate: Boolean = false): String {
+    fun getSelectionCost(activeItems: List<Item>, isPerPlate: Boolean = false): String {
+        if (activeItems.isEmpty()) return "–"
+
         val countryCode = _uiState.value.userCountry
         val itemType = _uiState.value.activeItemType
 
@@ -522,9 +530,12 @@ class StatsViewModel @Inject constructor(
         return "–" // Effectively "if (itemType == ItemType.WANTED_PLATE)"
     }
 
-    fun getSelectionValue(isPerPlate: Boolean = false): String {
+    fun getSelectionValue(activeItems: List<Item>, isPerPlate: Boolean = false): String {
+        if (activeItems.isEmpty()) return "–"
+
         val countryCode = _uiState.value.userCountry
         val itemType = _uiState.value.activeItemType
+
         if (itemType == ItemType.PLATE && _uiState.value.collectionPlates.isNotEmpty()) {
             val value = _uiState.value.collectionPlates
                 .sumOf { it.uniqueDetails.value?.toLong() ?: 0 }
@@ -557,7 +568,9 @@ class StatsViewModel @Inject constructor(
         return "–" // Effectively "if (itemType != ItemType.PLATE)"
     }
 
-    fun getArchivePriceSum(): String {
+    fun getArchivePriceSum(activeItems: List<Item>): String {
+        if (activeItems.isEmpty()) return "–"
+
         val countryCode = _uiState.value.userCountry
         val itemType = _uiState.value.activeItemType
 

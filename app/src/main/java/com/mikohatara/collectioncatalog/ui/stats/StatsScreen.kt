@@ -238,13 +238,15 @@ private fun StatsScreenContent(
                     shape = RoundedCorners.BottomSharp,
                     modifier = Modifier.padding(bottom = 4.dp)
                 ) {
-                    SumRow(uiState.countries.size)
-                    Table(
-                        userPreferences = userPreferences,
-                        rows = uiState.countries,
-                        items = uiState.activeItems,
-                        propertyExtractor = propertyExtractorCountry
-                    )
+                    if (uiState.countries.isNotEmpty()) {
+                        SumRow(uiState.countries.size)
+                        Table(
+                            userPreferences = userPreferences,
+                            rows = uiState.countries,
+                            items = uiState.activeItems,
+                            propertyExtractor = propertyExtractorCountry
+                        )
+                    } else NoData()
                 }
             }
             item {
@@ -253,13 +255,15 @@ private fun StatsScreenContent(
                     shape = RoundedCorners.AllSharp,
                     modifier = Modifier.padding(bottom = 4.dp)
                 ) {
-                    SumRow(uiState.types.size)
-                    Table(
-                        userPreferences = userPreferences,
-                        rows = uiState.types,
-                        items = uiState.activeItems,
-                        propertyExtractor = propertyExtractorType
-                    )
+                    if (uiState.types.isNotEmpty()) {
+                        SumRow(uiState.types.size)
+                        Table(
+                            userPreferences = userPreferences,
+                            rows = uiState.types,
+                            items = uiState.activeItems,
+                            propertyExtractor = propertyExtractorType
+                        )
+                    } else NoData()
                 }
             }
             item {
@@ -273,7 +277,7 @@ private fun StatsScreenContent(
                             verticalValues = uiState.periodAmounts,
                             horizontalValues = uiState.years
                         )
-                    }
+                    } else NoData()
                 }
             }
             item {
@@ -287,7 +291,7 @@ private fun StatsScreenContent(
                             verticalValues = uiState.yearAmounts,
                             horizontalValues = uiState.years
                         )
-                    }
+                    } else NoData()
                 }
             }
             if (uiState.activeItemType != ItemType.WANTED_PLATE) {
@@ -301,12 +305,14 @@ private fun StatsScreenContent(
                         shape = RoundedCorners.BottomSharp,
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {
-                        Table(
-                            userPreferences = userPreferences,
-                            rows = uiState.startDateYears,
-                            items = uiState.activeItems,
-                            propertyExtractor = propertyExtractorStartDateYear
-                        )
+                        if (uiState.activeItems.isNotEmpty()) {
+                            Table(
+                                userPreferences = userPreferences,
+                                rows = uiState.startDateYears,
+                                items = uiState.activeItems,
+                                propertyExtractor = propertyExtractorStartDateYear
+                            )
+                        } else NoData()
                     }
                 }
                 item {
@@ -334,12 +340,14 @@ private fun StatsScreenContent(
                             shape = RoundedCorners.TopSharp,
                             modifier = Modifier.padding(bottom = 16.dp)
                         ) {
-                            Table(
-                                userPreferences = userPreferences,
-                                rows = uiState.locations,
-                                items = uiState.activeItems,
-                                propertyExtractor = propertyExtractorLocation
-                            )
+                            if (uiState.locations.isNotEmpty()) {
+                                Table(
+                                    userPreferences = userPreferences,
+                                    rows = uiState.locations,
+                                    items = uiState.activeItems,
+                                    propertyExtractor = propertyExtractorLocation
+                                )
+                            } else NoData()
                         }
                     }
                 }
@@ -379,12 +387,14 @@ private fun StatsScreenContent(
                         shape = RoundedCorners.BottomSharp,
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {
-                        Table(
-                            userPreferences = userPreferences,
-                            rows = uiState.endDateYears,
-                            items = uiState.activeItems,
-                            propertyExtractor = propertyExtractorEndDateYear
-                        )
+                        if (uiState.activeItems.isNotEmpty()) {
+                            Table(
+                                userPreferences = userPreferences,
+                                rows = uiState.endDateYears,
+                                items = uiState.activeItems,
+                                propertyExtractor = propertyExtractorEndDateYear
+                            )
+                        } else NoData()
                     }
                 }
                 item {
@@ -759,12 +769,14 @@ private fun SourceTypeContent(
     userPreferences: UserPreferences,
     propertyExtractorSourceType: (Item) -> String?
 ) {
-    Table(
-        userPreferences = userPreferences,
-        rows = uiState.sourceTypes,
-        items = uiState.activeItems,
-        propertyExtractor = propertyExtractorSourceType
-    )
+    if (uiState.sourceTypes.isNotEmpty()) {
+        Table(
+            userPreferences = userPreferences,
+            rows = uiState.sourceTypes,
+            items = uiState.activeItems,
+            propertyExtractor = propertyExtractorSourceType
+        )
+    } else NoData()
 }
 
 @Composable
@@ -773,12 +785,14 @@ private fun SourceCountryContent(
     userPreferences: UserPreferences,
     propertyExtractorSourceCountry: (Item) -> String?
 ) {
-    Table(
-        userPreferences = userPreferences,
-        rows = uiState.sourceCountries,
-        items = uiState.activeItems,
-        propertyExtractor = propertyExtractorSourceCountry
-    )
+    if (uiState.sourceCountries.isNotEmpty()) {
+        Table(
+            userPreferences = userPreferences,
+            rows = uiState.sourceCountries,
+            items = uiState.activeItems,
+            propertyExtractor = propertyExtractorSourceCountry
+        )
+    } else NoData()
 }
 
 @Composable
@@ -787,12 +801,14 @@ private fun ArchivalReasonContent(
     userPreferences: UserPreferences,
     propertyExtractorArchivalReason: (Item) -> String?
 ) {
-    Table(
-        userPreferences = userPreferences,
-        rows = uiState.archivalReasons,
-        items = uiState.activeItems,
-        propertyExtractor = propertyExtractorArchivalReason
-    )
+    if (uiState.archivalReasons.isNotEmpty()) {
+        Table(
+            userPreferences = userPreferences,
+            rows = uiState.archivalReasons,
+            items = uiState.activeItems,
+            propertyExtractor = propertyExtractorArchivalReason
+        )
+    } else NoData()
 }
 
 @Composable
@@ -811,12 +827,14 @@ private fun RecipientCountryContent(
     userPreferences: UserPreferences,
     propertyExtractorRecipientCountry: (Item) -> String?
 ) {
-    Table(
-        userPreferences = userPreferences,
-        rows = uiState.recipientCountries,
-        items = uiState.activeItems,
-        propertyExtractor = propertyExtractorRecipientCountry
-    )
+    if (uiState.recipientCountries.isNotEmpty()) {
+        Table(
+            userPreferences = userPreferences,
+            rows = uiState.recipientCountries,
+            items = uiState.activeItems,
+            propertyExtractor = propertyExtractorRecipientCountry
+        )
+    } else NoData()
 }
 
 @Composable
@@ -1025,9 +1043,21 @@ private fun SumRow(sum: Int) {
     }
 }
 
-@Composable //TODO implement and get rid of the RoundedCorners object?
-private fun CardGroupContainer(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Box(modifier = modifier.clip(shape = RoundedCornerShape(20.dp))) {
-        content()
+@Composable
+private fun NoData(modifier: Modifier = Modifier) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth().padding(bottom = 48.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.rounded_bar_chart_off_24),
+            contentDescription = null,
+            tint = colorScheme.outline
+        )
+        Text(
+            text = stringResource(R.string.no_data),
+            color = colorScheme.outline,
+            modifier = Modifier.padding(top = 4.dp)
+        )
     }
 }
