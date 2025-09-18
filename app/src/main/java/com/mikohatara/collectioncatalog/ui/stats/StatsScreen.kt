@@ -1052,12 +1052,12 @@ private fun NoData(modifier: Modifier = Modifier) {
         Icon(
             painter = painterResource(R.drawable.rounded_bar_chart_off_24),
             contentDescription = null,
-            tint = colorScheme.outline
+            tint = colorScheme.outline,
+            modifier = Modifier.padding(4.dp)
         )
         Text(
             text = stringResource(R.string.no_data),
-            color = colorScheme.outline,
-            modifier = Modifier.padding(top = 4.dp)
+            color = colorScheme.outline
         )
     }
 }
