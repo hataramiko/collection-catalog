@@ -36,6 +36,8 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -261,6 +263,7 @@ private fun ItemEntryScreenContent(
                 value = uiState.itemDetails.region1st ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(region1st = it)) }
             )
+            InfoField(stringResource(R.string.info_region_1st))
             EntryField(
                 label = stringResource(R.string.region),
                 value = uiState.itemDetails.region2nd ?: "",
@@ -436,6 +439,7 @@ private fun ItemEntryScreenContent(
         EntrySection(
             label = stringResource(R.string.physical_attributes)
         ) {
+            InfoField(stringResource(R.string.info_width))
             Row {
                 EntryFieldBackground(modifier = Modifier.weight(1f)) {
                     EntryField(
@@ -991,6 +995,27 @@ fun DatePickerField(
                 showModeToggle = false
             )
         }
+    }
+}
+
+@Composable
+private fun InfoField(text: String, modifier: Modifier = Modifier) {
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.rounded_info),
+            contentDescription = null,
+            tint = colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(24.dp).padding(end = 8.dp)
+        )
+        Text(
+            text = text,
+            color = colorScheme.onSurfaceVariant,
+            style = typography.bodySmall
+        )
     }
 }
 
