@@ -263,7 +263,10 @@ private fun ItemEntryScreenContent(
                 value = uiState.itemDetails.region1st ?: "",
                 onValueChange = { onValueChange(uiState.itemDetails.copy(region1st = it)) }
             )
-            InfoField(stringResource(R.string.info_region_1st))
+            InfoField(
+                text = stringResource(R.string.info_region_1st),
+                modifier = Modifier.padding(top = 4.dp)
+            )
             EntryField(
                 label = stringResource(R.string.region),
                 value = uiState.itemDetails.region2nd ?: "",
@@ -1008,12 +1011,12 @@ private fun InfoField(text: String, modifier: Modifier = Modifier) {
         Icon(
             painter = painterResource(R.drawable.rounded_info),
             contentDescription = null,
-            tint = colorScheme.onSurfaceVariant,
+            tint = colorScheme.outline,
             modifier = Modifier.size(24.dp).padding(end = 8.dp)
         )
         Text(
             text = text,
-            color = colorScheme.onSurfaceVariant,
+            color = colorScheme.outline,
             style = typography.bodySmall
         )
     }

@@ -28,9 +28,9 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.W
 
 object CollectionCatalogScreens {
     const val CATALOG_SCREEN = "catalog"
-    const val HOME_SCREEN = "home"
-    const val WISHLIST_SCREEN = "wishlist"
-    const val ARCHIVE_SCREEN = "archive"
+    const val HOME_SCREEN = "home"  //TODO remove
+    const val WISHLIST_SCREEN = "wishlist"  //TODO remove
+    const val ARCHIVE_SCREEN = "archive"  //TODO remove
     const val STATS_SCREEN = "stats"
     const val SETTINGS_SCREEN = "settings"
     const val HELP_SCREEN = "help"
@@ -48,14 +48,14 @@ object CollectionCatalogDestinationArgs {
 }
 
 object CollectionCatalogDestinations {
-    const val CATALOG_DEFAULT_ROUTE = "$CATALOG_SCREEN/{$ITEM_TYPE}"
-    const val CATALOG_COLLECTION_ROUTE = "$CATALOG_SCREEN/{$ITEM_TYPE}/{$COLLECTION_ID}"
-    const val CATALOG_WISHLIST_ROUTE = "$CATALOG_SCREEN/{$ITEM_TYPE}"
-    const val CATALOG_ARCHIVE_ROUTE = "$CATALOG_SCREEN/{$ITEM_TYPE}"
-    const val HOME_DEFAULT_ROUTE = HOME_SCREEN
-    const val HOME_COLLECTION_ROUTE = "$HOME_SCREEN/{$COLLECTION_ID}"
-    const val WISHLIST_ROUTE = WISHLIST_SCREEN
-    const val ARCHIVE_ROUTE = ARCHIVE_SCREEN
+    const val CATALOG_DEFAULT_ROUTE = "$CATALOG_SCREEN/a/{$ITEM_TYPE}"
+    const val CATALOG_COLLECTION_ROUTE = "$CATALOG_SCREEN/a/{$ITEM_TYPE}/{$COLLECTION_ID}"
+    const val CATALOG_WISHLIST_ROUTE = "$CATALOG_SCREEN/b/{$ITEM_TYPE}"
+    const val CATALOG_ARCHIVE_ROUTE = "$CATALOG_SCREEN/c/{$ITEM_TYPE}"
+    const val HOME_DEFAULT_ROUTE = HOME_SCREEN  //TODO remove
+    const val HOME_COLLECTION_ROUTE = "$HOME_SCREEN/{$COLLECTION_ID}"  //TODO remove
+    const val WISHLIST_ROUTE = WISHLIST_SCREEN  //TODO remove
+    const val ARCHIVE_ROUTE = ARCHIVE_SCREEN  //TODO remove
     const val STATS_ROUTE = STATS_SCREEN
     const val SETTINGS_ROUTE = SETTINGS_SCREEN
     const val HELP_DEFAULT_ROUTE = HELP_SCREEN
@@ -71,16 +71,17 @@ object CollectionCatalogDestinations {
 class CollectionCatalogNavigationActions(private val navController: NavHostController) {
 
     fun navigateToCatalogScreen(itemType: ItemType = ItemType.PLATE, collectionId: Int? = null) {
-        navController.navigate(
-            if (collectionId != null) {
-                "$CATALOG_SCREEN/${itemType.name}/$collectionId"
-            } else {
-                "$CATALOG_SCREEN/${itemType.name}"
-            }
-        )
+        val route = when {
+            collectionId != null -> "$CATALOG_SCREEN/a/${itemType.name}/$collectionId"
+            itemType == ItemType.PLATE -> "$CATALOG_SCREEN/a/${itemType.name}"
+            itemType == ItemType.WANTED_PLATE -> "$CATALOG_SCREEN/b/${itemType.name}"
+            itemType == ItemType.FORMER_PLATE -> "$CATALOG_SCREEN/c/${itemType.name}"
+            else -> "$CATALOG_SCREEN/a/${itemType.name}"
+        }
+        navController.navigate(route)
     }
 
-    fun navigateToHomeScreen(collectionId: Int? = null) {
+    fun navigateToHomeScreen(collectionId: Int? = null) { //TODO remove
         navController.navigate(
             if (collectionId != null) {
                 "$HOME_SCREEN/$collectionId"
@@ -90,11 +91,11 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
         )
     }
 
-    fun navigateToWishlistScreen() {
+    fun navigateToWishlistScreen() { //TODO remove
         navController.navigate(WISHLIST_ROUTE)
     }
 
-    fun navigateToArchiveScreen() {
+    fun navigateToArchiveScreen() { //TODO remove
         navController.navigate(ARCHIVE_ROUTE)
     }
 

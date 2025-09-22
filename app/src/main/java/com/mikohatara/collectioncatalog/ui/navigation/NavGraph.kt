@@ -17,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mikohatara.collectioncatalog.data.CollectionRepository
+import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.catalog.CatalogScreen
 import com.mikohatara.collectioncatalog.ui.collection.CollectionEntryScreen
@@ -51,6 +52,7 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
+import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.CATALOG_SCREEN
 import com.mikohatara.collectioncatalog.ui.settings.SettingsScreen
 import com.mikohatara.collectioncatalog.ui.stats.StatsScreen
 import com.mikohatara.collectioncatalog.util.getItemId
@@ -65,7 +67,7 @@ fun CollectionCatalogNavGraph(
     navController: NavHostController = rememberNavController(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    startDestination: String = HOME_DEFAULT_ROUTE,
+    startDestination: String = "$CATALOG_SCREEN/a/${ItemType.PLATE.name}",
     navActions: CollectionCatalogNavigationActions = remember(navController) {
         CollectionCatalogNavigationActions(navController)
     }
@@ -105,8 +107,11 @@ fun CollectionCatalogNavGraph(
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
                     },
-                    onItemClick = { //TODO
-                        //navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
+                    onItemClick = { item ->
+                        if (item is Item.PlateItem) {
+                            val itemId = item.plate.id
+                            navActions.navigateToItemSummaryScreen(ItemType.PLATE, itemId)
+                        }
                     },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
                     onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
@@ -131,10 +136,13 @@ fun CollectionCatalogNavGraph(
             ) {
                 CatalogScreen(
                     onAddItem = {
-                        navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
+                        //navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
                     },
-                    onItemClick = { //TODO
-                        //navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
+                    onItemClick = { item ->
+                        if (item is Item.PlateItem) {
+                            val itemId = item.plate.id
+                            navActions.navigateToItemSummaryScreen(ItemType.PLATE, itemId)
+                        }
                     },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
                     onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
@@ -158,8 +166,11 @@ fun CollectionCatalogNavGraph(
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.WANTED_PLATE, null)
                     },
-                    onItemClick = { //TODO
-                        //navActions.navigateToItemSummaryScreen(ItemType.WANTED_PLATE, it.id)
+                    onItemClick = { item ->
+                        if (item is Item.WantedPlateItem) {
+                            val itemId = item.wantedPlate.id
+                            navActions.navigateToItemSummaryScreen(ItemType.WANTED_PLATE, itemId)
+                        }
                     },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
                     onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
@@ -183,15 +194,18 @@ fun CollectionCatalogNavGraph(
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.FORMER_PLATE, null)
                     },
-                    onItemClick = {
-                        //navActions.navigateToItemSummaryScreen(ItemType.FORMER_PLATE, it.id)
+                    onItemClick = { item ->
+                        if (item is Item.FormerPlateItem) {
+                            val itemId = item.formerPlate.id
+                            navActions.navigateToItemSummaryScreen(ItemType.FORMER_PLATE, itemId)
+                        }
                     },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
                     onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
                 )
             }
         }
-        composable(
+        composable( //TODO remove
             route = HOME_DEFAULT_ROUTE
         ) {
             ModalMenuDrawer(
@@ -215,7 +229,7 @@ fun CollectionCatalogNavGraph(
                 )
             }
         }
-        composable(
+        composable( //TODO remove
             route = HOME_COLLECTION_ROUTE,
             arguments = listOf(navArgument(COLLECTION_ID) { type = NavType.IntType })
         ) {
@@ -240,7 +254,7 @@ fun CollectionCatalogNavGraph(
                 )
             }
         }
-        composable(
+        composable( //TODO remove
             route = WISHLIST_ROUTE
         ) {
             ModalMenuDrawer(
@@ -264,7 +278,7 @@ fun CollectionCatalogNavGraph(
                 )
             }
         }
-        composable(
+        composable( //TODO remove
             route = ARCHIVE_ROUTE
         ) {
             ModalMenuDrawer(

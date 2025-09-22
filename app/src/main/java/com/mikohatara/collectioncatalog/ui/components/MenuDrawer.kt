@@ -38,14 +38,7 @@ import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_ARCHIVE_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_DEFAULT_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.CATALOG_WISHLIST_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_COLLECTION_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_DEFAULT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.CATALOG_SCREEN
 import kotlinx.coroutines.CoroutineScope
@@ -102,7 +95,6 @@ private fun MenuDrawerContent(
             item {
                 DrawerHeader()
                 DrawerDivider()
-                /* //TODO
                 DrawerColumn {
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.all_plates)) },
@@ -118,36 +110,7 @@ private fun MenuDrawerContent(
                             onCloseDrawer()
                         }
                     )
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.wishlist)) },
-                        icon = { Icon(
-                            painter = painterResource(R.drawable.rounded_heart),
-                            contentDescription = null
-                        ) },
-                        selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
-                                catalogItemType == ItemType.WANTED_PLATE,
-                        onClick = {
-                            navActions.navigateToCatalogScreen(ItemType.WANTED_PLATE)
-                            onCloseDrawer()
-                        }
-                    )
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.archive)) },
-                        icon = { Icon(
-                            painter = painterResource(R.drawable.rounded_archive),
-                            contentDescription = null
-                        ) },
-                        selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
-                                catalogItemType == ItemType.FORMER_PLATE,
-                        onClick = {
-                            navActions.navigateToCatalogScreen(ItemType.FORMER_PLATE)
-                            onCloseDrawer()
-                        }
-                    )
-                }
-                DrawerDivider()
-                */
-                DrawerColumn {
+                    /* //TODO remove
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.all_plates)) },
                         icon = { Icon(
@@ -159,7 +122,7 @@ private fun MenuDrawerContent(
                             navActions.navigateToHomeScreen()
                             onCloseDrawer()
                         }
-                    )
+                    )*/
                 }
                 DrawerDivider(hasHorizontalPadding = true)
             }
@@ -184,7 +147,6 @@ private fun MenuDrawerContent(
                     }
                 }
             }
-            /* //TODO
             items(items = collectionList, key = { it.id }) { collection ->
                 val selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
                         catalogItemType == ItemType.PLATE && collectionIdArg == collection.id
@@ -217,7 +179,8 @@ private fun MenuDrawerContent(
                     },
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
-            }*/
+            }
+            /* //TODO remove
             items(items = collectionList, key = { it.id }) { collection ->
                 val selected = currentRoute == HOME_COLLECTION_ROUTE &&
                         collectionIdArg == collection.id
@@ -250,7 +213,7 @@ private fun MenuDrawerContent(
                     },
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
-            }
+            }*/
             item {
                 NavigationDrawerItem(
                     label = { Text(stringResource(R.string.create_collection)) },
@@ -266,6 +229,33 @@ private fun MenuDrawerContent(
             }
             item {
                 DrawerColumn {
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.wishlist)) },
+                        icon = { Icon(
+                            painter = painterResource(R.drawable.rounded_heart),
+                            contentDescription = null
+                        ) },
+                        selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
+                                catalogItemType == ItemType.WANTED_PLATE,
+                        onClick = {
+                            navActions.navigateToCatalogScreen(ItemType.WANTED_PLATE)
+                            onCloseDrawer()
+                        }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.archive)) },
+                        icon = { Icon(
+                            painter = painterResource(R.drawable.rounded_archive),
+                            contentDescription = null
+                        ) },
+                        selected = currentRoute.startsWith("$CATALOG_SCREEN/") &&
+                                catalogItemType == ItemType.FORMER_PLATE,
+                        onClick = {
+                            navActions.navigateToCatalogScreen(ItemType.FORMER_PLATE)
+                            onCloseDrawer()
+                        }
+                    )
+                    /* //TODO remove
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.wishlist)) },
                         icon = { Icon(
@@ -289,7 +279,7 @@ private fun MenuDrawerContent(
                             navActions.navigateToArchiveScreen()
                             onCloseDrawer()
                         }
-                    )
+                    )*/
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.statistics)) },
                         icon = { Icon(
