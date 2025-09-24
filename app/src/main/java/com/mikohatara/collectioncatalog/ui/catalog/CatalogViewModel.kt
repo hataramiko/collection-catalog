@@ -396,6 +396,12 @@ class CatalogViewModel @Inject constructor(
                 filters.sourceCountry.isNotEmpty() && filters.sourceCountry.none {
                     it == details.sourceCountry
                 } -> false
+                filters.archivalReason.isNotEmpty() && filters.archivalReason.none {
+                    it == details.archivalType
+                } -> false
+                filters.recipientCountry.isNotEmpty() && filters.recipientCountry.none {
+                    it == details.recipientCountry
+                } -> false
                 !isWithinPeriodRange -> false
                 !isWithinYearRange -> false
                 !isWithinDateRange -> false
