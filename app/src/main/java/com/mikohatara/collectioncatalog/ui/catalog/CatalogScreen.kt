@@ -127,9 +127,10 @@ private fun CatalogScreen(
 
     var showImportDialog by rememberSaveable { mutableStateOf(false) }
     var showExportDialog by rememberSaveable { mutableStateOf(false) }
-    val onImport = if (uiState.isCollection || uiState.itemType == ItemType.WANTED_PLATE) {
-        { showImportDialog = true }
-    } else null //{ null } ???
+    val onImport = if (!uiState.isCollection) { { showImportDialog = true } } else null
+    val onToggleSearch = if (uiState.itemType != ItemType.WANTED_PLATE) {
+        { viewModel.toggleSearch() }
+    } else null
 
     val pickCsvForImport = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
@@ -178,7 +179,7 @@ private fun CatalogScreen(
             HomeTopAppBar(
                 title = topBarTitle,
                 onOpenDrawer = onOpenDrawer,
-                onToggleSearch = { viewModel.toggleSearch() },
+                onToggleSearch = onToggleSearch,
                 onImport = onImport,
                 onExport = { showExportDialog = true },
                 itemListSize = itemList.size,
@@ -413,7 +414,7 @@ private fun CatalogScreenContent(
             item { // an effectively empty item for improved TopRow manipulation
                 Spacer(modifier = Modifier.height(0.dp))
             }
-            items(items = itemList/*, key = { it.toItemDetails().id }*/) { item ->
+            items(items = itemList, key = { it.toItemDetails().id ?: 0 }) { item ->
                 val details = item.toItemDetails()
 
                 if (uiState.itemType == ItemType.WANTED_PLATE) {
