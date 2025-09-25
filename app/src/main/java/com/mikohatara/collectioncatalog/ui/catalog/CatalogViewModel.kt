@@ -786,7 +786,7 @@ class CatalogViewModel @Inject constructor(
         val startString = rangeStart.toLong().toDateString()
         val endString = rangeEnd.toLong().toDateString()
 
-        if ((rangeStart != getMinDate() || rangeEnd != getMaxDate()) &&
+        if ((rangeStart != getMinArchivalDate() || rangeEnd != getMaxArchivalDate()) &&
             startString.isNotBlank() && endString.isNotBlank()) {
             _uiState.update { it
                 .copy(filters = it.filters.copy(archivalDateRange = startString..endString)) }
