@@ -231,6 +231,7 @@ private fun CatalogScreen(
             }
             if (viewModel.showFilterBottomSheet.value) {
                 FilterBottomSheet(
+                    itemType = uiState.itemType,
                     onDismiss = { viewModel.closeFilterBottomSheet() },
                     filters = uiState.filters,
                     filterCount = viewModel.getFilterCount(),

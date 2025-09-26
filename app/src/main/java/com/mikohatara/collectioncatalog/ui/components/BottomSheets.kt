@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
+import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.catalog.FilterData
 import com.mikohatara.collectioncatalog.ui.catalog.SortBy
 import com.mikohatara.collectioncatalog.util.getSortByText
@@ -132,6 +133,7 @@ fun SortByBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun FilterBottomSheet(
+    itemType: ItemType,
     onDismiss: () -> Unit,
     filters: FilterData,
     filterCount: Int,
@@ -292,7 +294,7 @@ fun FilterBottomSheet(
                         )
                     }
                 }
-                if (toggleVehicleSwitch != null) {
+                if (itemType != ItemType.WANTED_PLATE && toggleVehicleSwitch != null) {
                     stickyHeader {
                         FilterListSwitch(
                             label = stringResource(R.string.vehicle),
@@ -301,110 +303,113 @@ fun FilterBottomSheet(
                         )
                     }
                 }
-                if (dateSliderRange != null && dateSliderPosition != null &&
-                    onDateSliderChange != null) {
-                    stickyHeader {
-                        val minValue = dateSliderPosition.start.roundToLong()
-                        val maxValue = dateSliderPosition.endInclusive.roundToLong()
-                        val minValueString = minValue
-                            .toDateString()
-                            .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
-                        val maxValueString = maxValue
-                            .toDateString()
-                            .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                if (itemType != ItemType.WANTED_PLATE) {
+                    if (dateSliderRange != null && dateSliderPosition != null &&
+                        onDateSliderChange != null) {
+                        stickyHeader {
+                            val minValue = dateSliderPosition.start.roundToLong()
+                            val maxValue = dateSliderPosition.endInclusive.roundToLong()
+                            val minValueString = minValue
+                                .toDateString()
+                                .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                            val maxValueString = maxValue
+                                .toDateString()
+                                .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
 
-                        FilterListLabel(
-                            label = stringResource(R.string.date),
-                            activeFilters = emptySet(),
-                            isExpanded = isDateExpanded,
-                            onExpand = { isDateExpanded = !isDateExpanded },
-                            value = "$minValueString – $maxValueString",
-                            isSliderActive = dateSliderPosition != dateSliderRange.start..dateSliderRange.endInclusive
-                        )
+                            FilterListLabel(
+                                label = stringResource(R.string.date),
+                                activeFilters = emptySet(),
+                                isExpanded = isDateExpanded,
+                                onExpand = { isDateExpanded = !isDateExpanded },
+                                value = "$minValueString – $maxValueString",
+                                isSliderActive = dateSliderPosition != dateSliderRange.start..dateSliderRange.endInclusive
+                            )
+                        }
+                        item {
+                            FilterListSlider(
+                                sliderRange = dateSliderRange,
+                                sliderPosition = dateSliderPosition,
+                                isExpanded = isDateExpanded,
+                                onSliderChange = { newSliderPosition ->
+                                    onDateSliderChange(newSliderPosition)
+                                }
+                            )
+                        }
                     }
-                    item {
-                        FilterListSlider(
-                            sliderRange = dateSliderRange,
-                            sliderPosition = dateSliderPosition,
-                            isExpanded = isDateExpanded,
-                            onSliderChange = { newSliderPosition ->
-                                onDateSliderChange(newSliderPosition)
-                            }
-                        )
-                    }
-                }
-                if (costSliderRange != null && costSliderPosition != null &&
-                    onCostSliderChange != null) {
-                    stickyHeader {
-                        val minValue = costSliderPosition.start.roundToLong()
-                        val maxValue = costSliderPosition.endInclusive.roundToLong()
+                    if (costSliderRange != null && costSliderPosition != null &&
+                        onCostSliderChange != null) {
+                        stickyHeader {
+                            val minValue = costSliderPosition.start.roundToLong()
+                            val maxValue = costSliderPosition.endInclusive.roundToLong()
 
-                        FilterListLabel(
-                            label = stringResource(R.string.cost),
-                            activeFilters = emptySet(),
-                            isExpanded = isCostExpanded,
-                            onExpand = { isCostExpanded = !isCostExpanded },
-                            value = "${minValue.toCurrencyString(localeCode)} – ${maxValue.toCurrencyString(localeCode)}",
-                            isSliderActive = costSliderPosition != costSliderRange.start..costSliderRange.endInclusive
-                        )
-                    }
-                    item {
-                        FilterListSlider(
-                            sliderRange = costSliderRange,
-                            sliderPosition = costSliderPosition,
-                            isExpanded = isCostExpanded,
-                            onSliderChange = { newSliderPosition ->
-                                onCostSliderChange(newSliderPosition)
-                            }
-                        )
+                            FilterListLabel(
+                                label = stringResource(R.string.cost),
+                                activeFilters = emptySet(),
+                                isExpanded = isCostExpanded,
+                                onExpand = { isCostExpanded = !isCostExpanded },
+                                value = "${minValue.toCurrencyString(localeCode)} – ${maxValue.toCurrencyString(localeCode)}",
+                                isSliderActive = costSliderPosition != costSliderRange.start..costSliderRange.endInclusive
+                            )
+                        }
+                        item {
+                            FilterListSlider(
+                                sliderRange = costSliderRange,
+                                sliderPosition = costSliderPosition,
+                                isExpanded = isCostExpanded,
+                                onSliderChange = { newSliderPosition ->
+                                    onCostSliderChange(newSliderPosition)
+                                }
+                            )
+                        }
                     }
                 }
-                if (valueSliderRange != null && valueSliderPosition != null &&
-                    onValueSliderChange != null) {
-                    stickyHeader {
-                        val minValue = valueSliderPosition.start.roundToLong()
-                        val maxValue = valueSliderPosition.endInclusive.roundToLong()
+                if (itemType == ItemType.PLATE) {
+                    if (valueSliderRange != null && valueSliderPosition != null &&
+                        onValueSliderChange != null) {
+                        stickyHeader {
+                            val minValue = valueSliderPosition.start.roundToLong()
+                            val maxValue = valueSliderPosition.endInclusive.roundToLong()
 
-                        FilterListLabel(
-                            label = stringResource(R.string.value),
-                            activeFilters = emptySet(),
-                            isExpanded = isValueExpanded,
-                            onExpand = { isValueExpanded = !isValueExpanded },
-                            value = "${minValue.toCurrencyString(localeCode)} – ${maxValue.toCurrencyString(localeCode)}",
-                            isSliderActive = valueSliderPosition != valueSliderRange.start..valueSliderRange.endInclusive
-                        )
+                            FilterListLabel(
+                                label = stringResource(R.string.value),
+                                activeFilters = emptySet(),
+                                isExpanded = isValueExpanded,
+                                onExpand = { isValueExpanded = !isValueExpanded },
+                                value = "${minValue.toCurrencyString(localeCode)} – ${maxValue.toCurrencyString(localeCode)}",
+                                isSliderActive = valueSliderPosition != valueSliderRange.start..valueSliderRange.endInclusive
+                            )
+                        }
+                        item {
+                            FilterListSlider(
+                                sliderRange = valueSliderRange,
+                                sliderPosition = valueSliderPosition,
+                                isExpanded = isValueExpanded,
+                                onSliderChange = { newSliderPosition ->
+                                    onValueSliderChange(newSliderPosition)
+                                }
+                            )
+                        }
                     }
-                    item {
-                        FilterListSlider(
-                            sliderRange = valueSliderRange,
-                            sliderPosition = valueSliderPosition,
-                            isExpanded = isValueExpanded,
-                            onSliderChange = { newSliderPosition ->
-                                onValueSliderChange(newSliderPosition)
-                            }
-                        )
+                    if (locations != null && toggleLocation != null) {
+                        stickyHeader {
+                            FilterListLabel(
+                                label = stringResource(R.string.location),
+                                activeFilters = filters.location,
+                                isExpanded = isLocationsExpanded,
+                                onExpand = { isLocationsExpanded = !isLocationsExpanded }
+                            )
+                        }
+                        item {
+                            FilterListCheckboxes(
+                                filterOptions = locations,
+                                activeFilters = filters.location,
+                                isExpanded = isLocationsExpanded,
+                                onToggleFilter = { toggleLocation(it) }
+                            )
+                        }
                     }
                 }
-                if (locations != null && toggleLocation != null) {
-                    stickyHeader {
-                        FilterListLabel(
-                            label = stringResource(R.string.location),
-                            activeFilters = filters.location,
-                            isExpanded = isLocationsExpanded,
-                            onExpand = { isLocationsExpanded = !isLocationsExpanded }
-                        )
-                    }
-                    item {
-                        FilterListCheckboxes(
-                            filterOptions = locations,
-                            activeFilters = filters.location,
-                            isExpanded = isLocationsExpanded,
-                            onToggleFilter = { toggleLocation(it) }
-                        )
-                    }
-                }
-                //TODO improve logic
-                if (toggleColorMain != null || toggleColorSecondary != null) {
+                if (colorsMain != null || colorsSecondary != null) {
                     stickyHeader { FilterSubheader(text = stringResource(R.string.physical_attributes)) }
                 }
                 if (colorsMain != null && toggleColorMain != null) {
@@ -443,117 +448,120 @@ fun FilterBottomSheet(
                         )
                     }
                 }
-                //TODO improve logic
-                if (toggleSourceType != null || toggleSourceCountry != null) {
+                if (itemType != ItemType.WANTED_PLATE) {
                     stickyHeader { FilterSubheader(text = stringResource(R.string.source)) }
+                    if (sourceTypes != null && toggleSourceType != null) {
+                        stickyHeader {
+                            FilterListLabel(
+                                label = stringResource(R.string.source_type),
+                                activeFilters = filters.sourceType,
+                                isExpanded = isSourceTypesExpanded,
+                                onExpand = { isSourceTypesExpanded = !isSourceTypesExpanded }
+                            )
+                        }
+                        item {
+                            FilterListCheckboxes(
+                                filterOptions = sourceTypes,
+                                activeFilters = filters.sourceType,
+                                isExpanded = isSourceTypesExpanded,
+                                onToggleFilter = { toggleSourceType(it) }
+                            )
+                        }
+                    }
+                    if (sourceCountries != null && toggleSourceCountry != null) {
+                        stickyHeader {
+                            FilterListLabel(
+                                label = stringResource(R.string.source_country),
+                                activeFilters = filters.sourceCountry,
+                                isExpanded = isSourceCountriesExpanded,
+                                onExpand = {
+                                    isSourceCountriesExpanded = !isSourceCountriesExpanded
+                                }
+                            )
+                        }
+                        item {
+                            FilterListCheckboxes(
+                                filterOptions = sourceCountries,
+                                activeFilters = filters.sourceCountry,
+                                isExpanded = isSourceCountriesExpanded,
+                                onToggleFilter = { toggleSourceCountry(it) }
+                            )
+                        }
+                    }
                 }
-                if (sourceTypes != null && toggleSourceType != null) {
-                    stickyHeader {
-                        FilterListLabel(
-                            label = stringResource(R.string.source_type),
-                            activeFilters = filters.sourceType,
-                            isExpanded = isSourceTypesExpanded,
-                            onExpand = { isSourceTypesExpanded = !isSourceTypesExpanded }
-                        )
-                    }
-                    item {
-                        FilterListCheckboxes(
-                            filterOptions = sourceTypes,
-                            activeFilters = filters.sourceType,
-                            isExpanded = isSourceTypesExpanded,
-                            onToggleFilter = { toggleSourceType(it) }
-                        )
-                    }
-                }
-                if (sourceCountries != null && toggleSourceCountry != null) {
-                    stickyHeader {
-                        FilterListLabel(
-                            label = stringResource(R.string.source_country),
-                            activeFilters = filters.sourceCountry,
-                            isExpanded = isSourceCountriesExpanded,
-                            onExpand = { isSourceCountriesExpanded = !isSourceCountriesExpanded }
-                        )
-                    }
-                    item {
-                        FilterListCheckboxes(
-                            filterOptions = sourceCountries,
-                            activeFilters = filters.sourceCountry,
-                            isExpanded = isSourceCountriesExpanded,
-                            onToggleFilter = { toggleSourceCountry(it) }
-                        )
-                    }
-                }
-                //TODO improve logic
-                if (toggleArchivalReason != null || toggleRecipientCountry != null ||
-                    onArchivalDateSliderChange != null) {
+                if (itemType == ItemType.FORMER_PLATE) {
                     stickyHeader { FilterSubheader(text = stringResource(R.string.archival)) }
-                }
-                if (archivalDateSliderRange != null && archivalDateSliderPosition != null &&
-                    onArchivalDateSliderChange != null) {
-                    stickyHeader {
-                        val minValue = archivalDateSliderPosition.start.roundToLong()
-                        val maxValue = archivalDateSliderPosition.endInclusive.roundToLong()
-                        val minValueString = minValue
-                            .toDateString()
-                            .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
-                        val maxValueString = maxValue
-                            .toDateString()
-                            .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                    if (archivalDateSliderRange != null && archivalDateSliderPosition != null &&
+                        onArchivalDateSliderChange != null) {
+                        stickyHeader {
+                            val minValue = archivalDateSliderPosition.start.roundToLong()
+                            val maxValue = archivalDateSliderPosition.endInclusive.roundToLong()
+                            val minValueString = minValue
+                                .toDateString()
+                                .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                            val maxValueString = maxValue
+                                .toDateString()
+                                .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
 
-                        FilterListLabel(
-                            label = stringResource(R.string.archival_date),
-                            activeFilters = emptySet(),
-                            isExpanded = isArchivalDateExpanded,
-                            onExpand = { isArchivalDateExpanded = !isArchivalDateExpanded },
-                            value = "$minValueString – $maxValueString",
-                            isSliderActive = archivalDateSliderPosition != archivalDateSliderRange.start..archivalDateSliderRange.endInclusive
-                        )
+                            FilterListLabel(
+                                label = stringResource(R.string.archival_date),
+                                activeFilters = emptySet(),
+                                isExpanded = isArchivalDateExpanded,
+                                onExpand = { isArchivalDateExpanded = !isArchivalDateExpanded },
+                                value = "$minValueString – $maxValueString",
+                                isSliderActive =archivalDateSliderPosition != archivalDateSliderRange.start..archivalDateSliderRange.endInclusive
+                            )
+                        }
+                        item {
+                            FilterListSlider(
+                                sliderRange = archivalDateSliderRange,
+                                sliderPosition = archivalDateSliderPosition,
+                                isExpanded = isArchivalDateExpanded,
+                                onSliderChange = { newSliderPosition ->
+                                    onArchivalDateSliderChange(newSliderPosition)
+                                }
+                            )
+                        }
                     }
-                    item {
-                        FilterListSlider(
-                            sliderRange = archivalDateSliderRange,
-                            sliderPosition = archivalDateSliderPosition,
-                            isExpanded = isArchivalDateExpanded,
-                            onSliderChange = { newSliderPosition ->
-                                onArchivalDateSliderChange(newSliderPosition)
-                            }
-                        )
+                    if (archivalReasons != null && toggleArchivalReason != null) {
+                        stickyHeader {
+                            FilterListLabel(
+                                label = stringResource(R.string.archival_reason),
+                                activeFilters = filters.archivalReason,
+                                isExpanded = isArchivalReasonsExpanded,
+                                onExpand = {
+                                    isArchivalReasonsExpanded = !isArchivalReasonsExpanded
+                                }
+                            )
+                        }
+                        item {
+                            FilterListCheckboxes(
+                                filterOptions = archivalReasons,
+                                activeFilters = filters.archivalReason,
+                                isExpanded = isArchivalReasonsExpanded,
+                                onToggleFilter = { toggleArchivalReason(it) }
+                            )
+                        }
                     }
-                }
-                if (archivalReasons != null && toggleArchivalReason != null) {
-                    stickyHeader {
-                        FilterListLabel(
-                            label = stringResource(R.string.archival_reason),
-                            activeFilters = filters.archivalReason,
-                            isExpanded = isArchivalReasonsExpanded,
-                            onExpand = { isArchivalReasonsExpanded = !isArchivalReasonsExpanded }
-                        )
-                    }
-                    item {
-                        FilterListCheckboxes(
-                            filterOptions = archivalReasons,
-                            activeFilters = filters.archivalReason,
-                            isExpanded = isArchivalReasonsExpanded,
-                            onToggleFilter = { toggleArchivalReason(it) }
-                        )
-                    }
-                }
-                if (recipientCountries != null && toggleRecipientCountry != null) {
-                    stickyHeader {
-                        FilterListLabel(
-                            label = stringResource(R.string.recipient_country),
-                            activeFilters = filters.recipientCountry,
-                            isExpanded = isRecipientCountriesExpanded,
-                            onExpand = { isRecipientCountriesExpanded = !isRecipientCountriesExpanded }
-                        )
-                    }
-                    item {
-                        FilterListCheckboxes(
-                            filterOptions = recipientCountries,
-                            activeFilters = filters.recipientCountry,
-                            isExpanded = isRecipientCountriesExpanded,
-                            onToggleFilter = { toggleRecipientCountry(it) }
-                        )
+                    if (recipientCountries != null && toggleRecipientCountry != null) {
+                        stickyHeader {
+                            FilterListLabel(
+                                label = stringResource(R.string.recipient_country),
+                                activeFilters = filters.recipientCountry,
+                                isExpanded = isRecipientCountriesExpanded,
+                                onExpand = {
+                                    isRecipientCountriesExpanded = !isRecipientCountriesExpanded
+                                }
+                            )
+                        }
+                        item {
+                            FilterListCheckboxes(
+                                filterOptions = recipientCountries,
+                                activeFilters = filters.recipientCountry,
+                                isExpanded = isRecipientCountriesExpanded,
+                                onToggleFilter = { toggleRecipientCountry(it) }
+                            )
+                        }
                     }
                 }
                 item {

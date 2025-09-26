@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.catalog.ExportResult
@@ -236,6 +237,7 @@ private fun HomeScreen(
             }
             if (viewModel.showFilterBottomSheet.value) {
                 FilterBottomSheet(
+                    itemType = ItemType.PLATE,
                     onDismiss = { viewModel.showFilterBottomSheet.value = false },
                     filters = uiState.filters,
                     filterCount = viewModel.getFilterCount(),
