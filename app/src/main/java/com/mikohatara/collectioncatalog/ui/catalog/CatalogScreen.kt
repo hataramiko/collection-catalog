@@ -135,7 +135,7 @@ private fun CatalogScreen(
     val pickCsvForImport = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
         onResult = { uri: Uri? ->
-            uri?.let { /*viewModel.importItems(context, it)*/ }
+            uri?.let { viewModel.importItems(context, it) }
         }
     )
     val createCsvForExport = rememberLauncherForActivityResult(
@@ -170,6 +170,7 @@ private fun CatalogScreen(
                     Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
                 }
             }
+            viewModel.clearExportResult()
         }
     }
 

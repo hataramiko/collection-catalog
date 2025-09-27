@@ -22,6 +22,9 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.util.exportItemDetailsToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
+import com.mikohatara.collectioncatalog.util.importFormerPlatesFromCsv
+import com.mikohatara.collectioncatalog.util.importPlatesFromCsv
+import com.mikohatara.collectioncatalog.util.importWantedPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
 import com.mikohatara.collectioncatalog.util.toDateString
 import com.mikohatara.collectioncatalog.util.toItemDetails
@@ -629,35 +632,89 @@ class CatalogViewModel @Inject constructor(
         }
     }
 
-    /*
-    fun importItems(context: Context, uri: Uri) {//TODO
+    fun importItems(context: Context, uri: Uri) {
         _uiState.update { it.copy(isImporting = true, importResult = null) }
+        val itemType = uiState.value.itemType
 
         viewModelScope.launch {
             try {
-                val formerPlates = importFormerPlatesFromCsv(context, uri)
-                if (formerPlates != null && formerPlates.isNotEmpty()) {
-                    plateRepository.addFormerPlates(formerPlates)
-                    _uiState.update { it.copy(
-                        isImporting = false,
-                        importResult = ImportResult.Success(getImportMessage(context, formerPlates.size))
-                    ) }
-                } else {
-                    Log.e("ArchiveViewModel, import", "Import failed, list empty")
-                    _uiState.update { it.copy(
-                        isImporting = false,
-                        importResult = ImportResult.Failure(getImportMessage(context))
-                    ) }
+                when (itemType) {
+                    ItemType.PLATE -> {
+                        val plates = importPlatesFromCsv(context, uri)
+                        if (plates != null && plates.isNotEmpty()) {
+                            plateRepository.addPlates(plates)
+                            _uiState.update { it.copy(
+                                isImporting = false,
+                                importResult = ImportResult.Success(
+                                    getImportMessage(context, plates.size)
+                                )
+                            ) }
+                        } else {
+                            Log.e(
+                                "CatalogViewModel, importItems",
+                                "Import failed, list empty"
+                            )
+                            _uiState.update { it.copy(
+                                isImporting = false,
+                                importResult = ImportResult
+                                    .Failure(getImportMessage(context))
+                            ) }
+                        }
+                    }
+                    ItemType.WANTED_PLATE -> {
+                        val wantedPlates = importWantedPlatesFromCsv(context, uri)
+                        if (wantedPlates != null && wantedPlates.isNotEmpty()) {
+                            plateRepository.addWantedPlates(wantedPlates)
+                            _uiState.update { it.copy(
+                                isImporting = false,
+                                importResult = ImportResult.Success(
+                                    getImportMessage(context, wantedPlates.size)
+                                )
+                            ) }
+                        } else {
+                            Log.e(
+                                "CatalogViewModel, importItems",
+                                "Import failed, list empty"
+                            )
+                            _uiState.update { it.copy(
+                                isImporting = false,
+                                importResult = ImportResult
+                                    .Failure(getImportMessage(context))
+                            ) }
+                        }
+                    }
+                    ItemType.FORMER_PLATE -> {
+                        val formerPlates = importFormerPlatesFromCsv(context, uri)
+                        if (formerPlates != null && formerPlates.isNotEmpty()) {
+                            plateRepository.addFormerPlates(formerPlates)
+                            _uiState.update { it.copy(
+                                isImporting = false,
+                                importResult = ImportResult.Success(
+                                    getImportMessage(context, formerPlates.size)
+                                )
+                            ) }
+                        } else {
+                            Log.e(
+                                "CatalogViewModel, importItems",
+                                "Import failed, list empty"
+                            )
+                            _uiState.update { it.copy(
+                                isImporting = false,
+                                importResult = ImportResult
+                                    .Failure(getImportMessage(context))
+                            ) }
+                        }
+                    }
                 }
             } catch (e: Exception) {
-                Log.e("ArchiveViewModel, import", "Import failed", e)
+                Log.e("CatalogViewModel, importItems", "Import failed", e)
                 _uiState.update { it.copy(
                     isImporting = false,
                     importResult = ImportResult.Failure(getImportMessage(context))
                 ) }
             }
         }
-    }*/
+    }
 
     fun clearExportResult() {
         _uiState.update { it.copy(isExporting = false, exportResult = null) }
