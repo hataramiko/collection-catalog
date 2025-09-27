@@ -2,6 +2,8 @@ package com.mikohatara.collectioncatalog.ui.catalog
 
 import android.content.Context
 import android.icu.util.Calendar
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -18,6 +20,7 @@ import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.exportItemDetailsToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.normalizeString
 import com.mikohatara.collectioncatalog.util.toDateString
@@ -32,6 +35,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.OutputStreamWriter
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -596,32 +600,36 @@ class CatalogViewModel @Inject constructor(
         return _collection.value?.color ?: CollectionColor.DEFAULT
     }
 
-    /*fun exportItems(context: Context, uri: Uri) {//TODO
+    fun exportItems(context: Context, uri: Uri) {
         _uiState.update { it.copy(isExporting = true, exportResult = null) }
 
         viewModelScope.launch {
             try {
                 val items = uiState.value.items
+                val itemsAsItemDetails = items.map { it.toItemDetails() }
                 val contentResolver = context.contentResolver
                 contentResolver.openOutputStream(uri)?.use { outputStream ->
                     OutputStreamWriter(outputStream).use { writer ->
-                        exportFormerPlatesToCsv(writer, items)
+                        exportItemDetailsToCsv(writer, itemsAsItemDetails)
                     }
                 }
                 _uiState.update { it.copy(
                     isExporting = false,
-                    exportResult = ExportResult.Success(getExportMessage(true, context))
+                    exportResult = ExportResult
+                        .Success(getExportMessage(true, context))
                 ) }
             } catch (e: Exception) {
-                Log.e("ArchiveViewModel, export", "Export failed", e)
+                Log.e("CatalogViewModel, exportItems", "Export failed", e)
                 _uiState.update { it.copy(
                     isExporting = false,
-                    exportResult = ExportResult.Failure(getExportMessage(false, context))
+                    exportResult = ExportResult
+                        .Failure(getExportMessage(false, context))
                 ) }
             }
         }
     }
 
+    /*
     fun importItems(context: Context, uri: Uri) {//TODO
         _uiState.update { it.copy(isImporting = true, importResult = null) }
 

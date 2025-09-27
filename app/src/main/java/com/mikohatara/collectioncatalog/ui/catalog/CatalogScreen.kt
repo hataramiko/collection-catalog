@@ -141,7 +141,7 @@ private fun CatalogScreen(
     val createCsvForExport = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("text/csv"),
         onResult = { uri: Uri? ->
-            uri?.let { /*viewModel.exportItems(context, it)*/ }
+            uri?.let { viewModel.exportItems(context, it) }
         }
     )
 

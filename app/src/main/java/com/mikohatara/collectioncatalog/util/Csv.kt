@@ -7,6 +7,7 @@ import com.mikohatara.collectioncatalog.data.ArchivalDetails
 import com.mikohatara.collectioncatalog.data.Color
 import com.mikohatara.collectioncatalog.data.CommonDetails
 import com.mikohatara.collectioncatalog.data.FormerPlate
+import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.Plate
 import com.mikohatara.collectioncatalog.data.Size
 import com.mikohatara.collectioncatalog.data.Source
@@ -23,7 +24,83 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.util.Calendar
 
-fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) {
+fun exportItemDetailsToCsv(writer: OutputStreamWriter, itemDetailsList: List<ItemDetails>) {
+    val csvItemDetailsList = itemDetailsList.map { itemDetails ->
+        CsvPlate(
+            //id = itemDetails.id ?: 0, not used for export
+            regNo = itemDetails.regNo ?: "", // this is part of UniqueDetails
+            // CommonDetails
+            country = itemDetails.country ?: "",
+            region1st = itemDetails.region1st,
+            region2nd = itemDetails.region2nd,
+            region3rd = itemDetails.region3rd,
+            type = itemDetails.type ?: "",
+            periodStart = itemDetails.periodStart,
+            periodEnd = itemDetails.periodEnd,
+            year = itemDetails.year,
+            // UniqueDetails
+            //imagePath = plate.uniqueDetails.imagePath, not used for export
+            notes = itemDetails.notes,
+            vehicle = itemDetails.vehicle,
+            date = itemDetails.date,
+            cost = itemDetails.cost,
+            value = itemDetails.value,
+            status = itemDetails.status,
+            // Size
+            width = itemDetails.width,
+            height = itemDetails.height,
+            weight = itemDetails.weight,
+            // Color
+            colorMain = itemDetails.colorMain,
+            colorSecondary = itemDetails.colorSecondary,
+            // Source
+            sourceName = itemDetails.sourceName,
+            sourceAlias = itemDetails.sourceAlias,
+            sourceType = itemDetails.sourceType,
+            sourceCountry = itemDetails.sourceCountry,
+            sourceDetails = itemDetails.sourceDetails,
+            // ArchivalDetails
+            archivalDate = itemDetails.archivalDate,
+            archivalType = itemDetails.archivalType,
+            price = itemDetails.price,
+            recipientName = itemDetails.recipientName,
+            recipientAlias = itemDetails.recipientAlias,
+            recipientCountry = itemDetails.recipientCountry,
+            archivalDetails = itemDetails.archivalDetails
+        )
+    }
+
+    try {
+        val mappingStrategy = ColumnPositionMappingStrategy<CsvPlate>()
+        mappingStrategy.type = CsvPlate::class.java
+
+        val columnOrder = arrayOf(
+            "regNo", "country", "region1st", "region2nd", "region3rd",
+            "type", "periodStart", "periodEnd", "year",
+            "notes", "vehicle", "date", "cost", "value", "status",
+            "width", "height", "weight", "colorMain", "colorSecondary",
+            "sourceName", "sourceAlias", "sourceType", "sourceCountry", "sourceDetails",
+            "archivalDate", "archivalType", "price",
+            "recipientName","recipientAlias", "recipientCountry", "archivalDetails"
+        )
+
+        mappingStrategy.setColumnMapping(*columnOrder)
+        val headerRow = columnOrder.map { it.toSnakeCase() }.toTypedArray()
+
+        CSVWriter(writer).use { csvWriter ->
+            csvWriter.writeNext(headerRow, true)
+            val beanToCsv = StatefulBeanToCsvBuilder<CsvPlate>(writer)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withMappingStrategy(mappingStrategy)
+                .build()
+            beanToCsv.write(csvItemDetailsList)
+        }
+    } catch (e: IOException) {
+        Log.e("CSV export", "Error writing to file", e)
+    }
+}
+
+fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) { //TODO remove
     val csvPlateList = plates.map { plate ->
         CsvPlate(
             //id = plate.id ?: 0,
@@ -99,7 +176,7 @@ fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) {
     }
 }
 
-fun exportWantedPlatesToCsv(writer: OutputStreamWriter, wantedPlates: List<WantedPlate>) {
+fun exportWantedPlatesToCsv(writer: OutputStreamWriter, wantedPlates: List<WantedPlate>) { //TODO remove
     val csvPlateList = wantedPlates.map { wantedPlate ->
         CsvPlate(
             //id = wantedPlate.id ?: 0,
@@ -175,7 +252,7 @@ fun exportWantedPlatesToCsv(writer: OutputStreamWriter, wantedPlates: List<Wante
     }
 }
 
-fun exportFormerPlatesToCsv(writer: OutputStreamWriter, formerPlates: List<FormerPlate>) {
+fun exportFormerPlatesToCsv(writer: OutputStreamWriter, formerPlates: List<FormerPlate>) { //TODO remove
     val csvPlateList = formerPlates.map { formerPlate ->
         CsvPlate(
             //id = formerPlate.id ?: 0,
