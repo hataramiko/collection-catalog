@@ -56,6 +56,7 @@ data class CatalogUiState(
     val dateSliderPosition: ClosedRange<Float>? = null,
     val costSliderPosition: ClosedRange<Float>? = null,
     val valueSliderPosition: ClosedRange<Float>? = null,
+    val widthSliderPosition: ClosedRange<Float>? = null,
     val archivalDateSliderPosition: ClosedRange<Float>? = null,
     //
     val isSearchActive: Boolean = false,
@@ -265,6 +266,7 @@ class CatalogViewModel @Inject constructor(
         val dateSliderRange = getDateSliderRange()
         val costSliderRange = getCostSliderRange()
         val valueSliderRange = getValueSliderRange()
+        val widthSliderRange = getWidthSliderRange()
         val archivalDateSliderRange = getArchivalDateSliderRange()
 
         val periodSize = if (
@@ -282,11 +284,14 @@ class CatalogViewModel @Inject constructor(
         val valueSize = if (
             isSliderActive(_uiState.value.valueSliderPosition, valueSliderRange)
         ) 1 else 0
+        val widthSize = if (
+            isSliderActive(_uiState.value.widthSliderPosition, widthSliderRange)
+        ) 1 else 0
         val archivalDateSize = if (
             isSliderActive(_uiState.value.archivalDateSliderPosition, archivalDateSliderRange)
         ) 1 else 0
 
-        return countrySize + typeSize + vehicleSize + locationSize + colorMainSize +
+        return countrySize + typeSize + vehicleSize + locationSize + widthSize + colorMainSize +
                 colorSecondarySize + sourceTypeSize + sourceCountrySize + archivalReasonSize +
                 recipientCountrySize + periodSize + yearSize + dateSize + costSize +
                 valueSize + archivalDateSize
@@ -315,6 +320,7 @@ class CatalogViewModel @Inject constructor(
         setDateFilter()
         setCostFilter()
         setValueFilter()
+        setWidthFilter()
         setArchivalDateFilter()
         val filters = _uiState.value.filters
 
@@ -323,7 +329,6 @@ class CatalogViewModel @Inject constructor(
             val isWithinPeriodRange = filters.periodRange?.let { range ->
                 val periodStart = details.periodStart
                 val periodEnd = details.periodEnd
-
                 when {
                     periodStart != null && periodEnd != null -> {
                         periodStart >= range.start && periodEnd <= range.endInclusive
@@ -339,7 +344,6 @@ class CatalogViewModel @Inject constructor(
             } != false
             val isWithinYearRange = filters.yearRange?.let { range ->
                 val year = details.year
-
                 when {
                     year != null -> year in range
                     else -> false
@@ -354,7 +358,6 @@ class CatalogViewModel @Inject constructor(
             } != false
             val isWithinCostRange = filters.costRange?.let { range ->
                 val cost = details.cost
-
                 when {
                     cost != null -> cost in range
                     else -> false
@@ -362,15 +365,20 @@ class CatalogViewModel @Inject constructor(
             } != false
             val isWithinValueRange = filters.valueRange?.let { range ->
                 val value = details.value
-
                 when {
                     value != null -> value in range
                     else -> false
                 }
             } != false
+            val isWithinWidthRange = filters.widthRange?.let { range ->
+                val width = details.width
+                when {
+                    width != null -> width in range
+                    else -> false
+                }
+            } != false
             val isWithinArchivalDateRange = filters.archivalDateRange?.let { range ->
                 val archivalDate = details.archivalDate
-
                 when {
                     archivalDate != null -> archivalDate in range
                     else -> false
@@ -414,6 +422,7 @@ class CatalogViewModel @Inject constructor(
                 !isWithinDateRange -> false
                 !isWithinCostRange -> false
                 !isWithinValueRange -> false
+                !isWithinWidthRange -> false
                 !isWithinArchivalDateRange -> false
                 !matchesVehicleFilter -> false
                 else -> true
@@ -486,6 +495,10 @@ class CatalogViewModel @Inject constructor(
 
     fun updateValueSliderPosition(valueSliderPosition: ClosedRange<Float>) {
         _uiState.update { it.copy(valueSliderPosition = valueSliderPosition) }
+    }
+
+    fun updateWidthSliderPosition(widthSliderPosition: ClosedRange<Float>) {
+        _uiState.update { it.copy(widthSliderPosition = widthSliderPosition) }
     }
 
     fun updateArchivalDateSliderPosition(archivalDateSliderPosition: ClosedRange<Float>) {
@@ -585,6 +598,10 @@ class CatalogViewModel @Inject constructor(
 
     fun getValueSliderRange(): ClosedRange<Float> {
         return getMinValue().toFloat()..getMaxValue().toFloat()
+    }
+
+    fun getWidthSliderRange(): ClosedRange<Float> {
+        return getMinWidth().toFloat()..getMaxWidth().toFloat()
     }
 
     fun getArchivalDateSliderRange(): ClosedRange<Float> {
@@ -779,6 +796,10 @@ class CatalogViewModel @Inject constructor(
             _uiState.update { it.copy(
                 valueSliderPosition = getMinValue().toFloat()..getMaxValue().toFloat()) }
         }
+        if (uiState.value.widthSliderPosition == null) {
+            _uiState.update { it.copy(
+                widthSliderPosition = getMinWidth().toFloat()..getMaxWidth().toFloat()) }
+        }
         if (uiState.value.archivalDateSliderPosition == null) {
             _uiState.update { it.copy(
                 archivalDateSliderPosition = getMinArchivalDate()..getMaxArchivalDate()) }
@@ -841,6 +862,17 @@ class CatalogViewModel @Inject constructor(
             _uiState.update { it.copy(filters = it.filters.copy(valueRange = null)) }
         } else {
             _uiState.update { it.copy(filters = it.filters.copy(valueRange = rangeStart..rangeEnd)) }
+        }
+    }
+
+    private fun setWidthFilter() {
+        val widthRange = uiState.value.widthSliderPosition ?: return
+        val rangeStart = widthRange.start.roundToInt()
+        val rangeEnd = widthRange.endInclusive.roundToInt()
+        if (rangeStart == getMinWidth() && rangeEnd == getMaxWidth()) {
+            _uiState.update { it.copy(filters = it.filters.copy(widthRange = null)) }
+        } else {
+            _uiState.update { it.copy(filters = it.filters.copy(widthRange = rangeStart..rangeEnd)) }
         }
     }
 
@@ -1031,6 +1063,24 @@ class CatalogViewModel @Inject constructor(
         } else fallback
     }
 
+    private fun getMinWidth(): Int {
+        return 0
+    }
+
+    private fun getMaxWidth(): Int {
+        val fallback = 0
+        if (_allItems.isEmpty()) return fallback
+
+        val allValues = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            details.width
+        }
+
+        return if (allValues.isNotEmpty()) {
+            allValues.maxOf { it }
+        } else fallback
+    }
+
     private fun getMinArchivalDate(): Float {
         val fallback = "1900-01-02".toTimestamp().toFloat()
         if (_allItems.isEmpty()) return fallback
@@ -1112,6 +1162,7 @@ data class FilterData(
     val costRange: ClosedRange<Long>? = null,
     val valueRange: ClosedRange<Long>? = null,
     val location: Set<String> = emptySet(),
+    val widthRange: ClosedRange<Int>? = null,
     val colorMain: Set<String> = emptySet(),
     val colorSecondary: Set<String> = emptySet(),
     val sourceType: Set<String> = emptySet(),

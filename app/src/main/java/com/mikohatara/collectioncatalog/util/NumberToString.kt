@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.util
 
 import android.icu.text.NumberFormat
 import android.icu.util.Currency
+import android.icu.util.MeasureUnit
 import java.util.Locale
 
 fun Int.toFormattedString(countryCode: String): String {
@@ -37,6 +38,13 @@ fun Float.toPercentage(countryCode: String): String {
     }
 }
 
-fun Int.toMeasurementString(unit: String): String {
-    return "$this $unit"
+fun Int.toMeasurementString(unit: MeasureUnit): String {
+    val symbol = when (unit) {
+        MeasureUnit.MILLIMETER -> " mm"
+        MeasureUnit.GRAM -> " g"
+        MeasureUnit.INCH -> " in"
+        MeasureUnit.OUNCE -> " oz"
+        else -> ""
+    }
+    return "$this$symbol"
 }

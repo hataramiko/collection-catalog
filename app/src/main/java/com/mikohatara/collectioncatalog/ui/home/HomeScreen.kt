@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.home
 
 import android.content.Context
+import android.icu.util.MeasureUnit
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -244,6 +245,7 @@ private fun HomeScreen(
                     onApply = { viewModel.setFilter() },
                     onReset = { viewModel.resetFilter() },
                     localeCode = userPreferences.userCountry,
+                    lengthUnit = MeasureUnit.MILLIMETER,
                     countries = viewModel.getCountries(),
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),

@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.icu.util.MeasureUnit
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -80,6 +81,7 @@ import com.mikohatara.collectioncatalog.util.toColor
 import com.mikohatara.collectioncatalog.util.toCurrencyString
 import com.mikohatara.collectioncatalog.util.toDateString
 import com.mikohatara.collectioncatalog.util.toFormattedDate
+import com.mikohatara.collectioncatalog.util.toMeasurementString
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -140,6 +142,7 @@ fun FilterBottomSheet(
     onApply: () -> Unit,
     onReset: () -> Unit,
     localeCode: String,
+    lengthUnit: MeasureUnit,
     countries: Set<String>,
     toggleCountry: (String) -> Unit,
     types: Set<String>,
@@ -163,6 +166,9 @@ fun FilterBottomSheet(
     onValueSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     locations: Set<String>? = null,
     toggleLocation: ((String) -> Unit)? = null,
+    widthSliderRange: ClosedRange<Float>? = null,
+    widthSliderPosition: ClosedRange<Float>? = null,
+    onWidthSliderChange: ((ClosedRange<Float>) -> Unit)? = null,
     colorsMain: Set<String>? = null,
     toggleColorMain: ((String) -> Unit)? = null,
     colorsSecondary: Set<String>? = null,
@@ -190,6 +196,7 @@ fun FilterBottomSheet(
     var isCostExpanded by remember { mutableStateOf(false) }
     var isValueExpanded by remember { mutableStateOf(false) }
     var isLocationsExpanded by remember { mutableStateOf(false) }
+    var isWidthExpanded by remember { mutableStateOf(false) }
     var isColorsMainExpanded by remember { mutableStateOf(false) }
     var isColorsSecondaryExpanded by remember { mutableStateOf(false) }
     var isSourceTypesExpanded by remember { mutableStateOf(false) }
@@ -411,6 +418,32 @@ fun FilterBottomSheet(
                 }
                 if (colorsMain != null || colorsSecondary != null) {
                     stickyHeader { FilterSubheader(text = stringResource(R.string.physical_attributes)) }
+                }
+                if (widthSliderRange != null && widthSliderPosition != null &&
+                    onWidthSliderChange != null) {
+                    stickyHeader {
+                        val minValue = widthSliderPosition.start.roundToInt()
+                        val maxValue = widthSliderPosition.endInclusive.roundToInt()
+
+                        FilterListLabel(
+                            label = stringResource(R.string.width),
+                            activeFilters = emptySet(),
+                            isExpanded = isWidthExpanded,
+                            onExpand = { isWidthExpanded = !isWidthExpanded },
+                            value = "${minValue.toMeasurementString(lengthUnit)} – ${maxValue.toMeasurementString(lengthUnit)}",
+                            isSliderActive = widthSliderPosition != widthSliderRange.start..widthSliderRange.endInclusive
+                        )
+                    }
+                    item {
+                        FilterListSlider(
+                            sliderRange = widthSliderRange,
+                            sliderPosition = widthSliderPosition,
+                            isExpanded = isWidthExpanded,
+                            onSliderChange = { newSliderPosition ->
+                                onWidthSliderChange(newSliderPosition)
+                            }
+                        )
+                    }
                 }
                 if (colorsMain != null && toggleColorMain != null) {
                     stickyHeader {

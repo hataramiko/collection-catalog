@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.data
 
+import android.icu.util.MeasureUnit
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
@@ -19,10 +20,38 @@ class UserPreferencesRepository @Inject constructor(
 ) {
     private companion object {
         val USER_COUNTRY = stringPreferencesKey("user_country")
+        val LENGTH_UNIT = stringPreferencesKey("length_unit_id")
+        val WEIGHT_UNIT = stringPreferencesKey("weight_unit_id")
         val DEFAULT_SORT_ORDER_MAIN = stringPreferencesKey("default_sort_order_main")
         val DEFAULT_SORT_ORDER_WISHLIST = stringPreferencesKey("default_sort_order_wishlist")
         val DEFAULT_SORT_ORDER_ARCHIVE = stringPreferencesKey("default_sort_order_archive")
         const val LOG_TAG = "UserPreferencesRepository"
+    }
+
+    private val LENGTH_UNITS = mapOf(
+        "mm" to MeasureUnit.MILLIMETER,
+        "in" to MeasureUnit.INCH
+    )
+
+    private val WEIGHT_UNITS = mapOf(
+        "g" to MeasureUnit.GRAM,
+        "oz" to MeasureUnit.OUNCE
+    )
+
+    fun String.toLengthMeasureUnit(): MeasureUnit? {
+        return LENGTH_UNITS[this]
+    }
+
+    fun MeasureUnit.getLengthIdentifier(): String? {
+        return LENGTH_UNITS.entries.find { it.value == this }?.key
+    }
+
+    fun String.toWeightMeasureUnit(): MeasureUnit? {
+        return WEIGHT_UNITS[this]
+    }
+
+    fun MeasureUnit.getWeightIdentifier(): String? {
+        return WEIGHT_UNITS.entries.find { it.value == this }?.key
     }
 
     val userPreferences: Flow<UserPreferences> = dataStore.data
@@ -36,6 +65,8 @@ class UserPreferencesRepository @Inject constructor(
         }
         .map { preferences ->
             val userCountry = preferences[USER_COUNTRY] ?: Locale.getDefault().country ?: "FI"
+            val lengthUnit = preferences[LENGTH_UNIT]?.toLengthMeasureUnit() ?: MeasureUnit.MILLIMETER
+            val weightUnit = preferences[WEIGHT_UNIT]?.toWeightMeasureUnit() ?: MeasureUnit.GRAM
             val defaultSortOrderMain = SortBy.valueOf(
                 preferences[DEFAULT_SORT_ORDER_MAIN] ?: SortBy.COUNTRY_AND_TYPE_ASC.toString()
             )
@@ -47,6 +78,8 @@ class UserPreferencesRepository @Inject constructor(
             )
             UserPreferences(
                 userCountry,
+                lengthUnit,
+                weightUnit,
                 defaultSortOrderMain,
                 defaultSortOrderWishlist,
                 defaultSortOrderArchive
@@ -56,6 +89,22 @@ class UserPreferencesRepository @Inject constructor(
     suspend fun saveUserCountry(userCountry: String) {
         dataStore.edit { preferences ->
             preferences[USER_COUNTRY] = userCountry
+        }
+    }
+
+    suspend fun saveLengthUnit(lengthUnit: MeasureUnit) {
+        lengthUnit.getLengthIdentifier()?.let {
+            dataStore.edit { preferences ->
+                preferences[LENGTH_UNIT] = it
+            }
+        }
+    }
+
+    suspend fun saveWeightUnit(weightUnit: MeasureUnit) {
+        weightUnit.getWeightIdentifier()?.let {
+            dataStore.edit { preferences ->
+                preferences[WEIGHT_UNIT] = it
+            }
         }
     }
 
@@ -80,6 +129,8 @@ class UserPreferencesRepository @Inject constructor(
 
 data class UserPreferences(
     val userCountry: String = Locale.getDefault().country ?: "FI",
+    val lengthUnit: MeasureUnit = MeasureUnit.MILLIMETER,
+    val weightUnit: MeasureUnit = MeasureUnit.GRAM,
     val defaultSortOrderMain: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
     val defaultSortOrderWishlist: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
     val defaultSortOrderArchive: SortBy = SortBy.COUNTRY_AND_TYPE_ASC

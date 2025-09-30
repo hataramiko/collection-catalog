@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.icu.util.MeasureUnit
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
@@ -540,7 +541,9 @@ private fun UniqueDetailsCard(
 
 @Composable
 private fun PhysicalAttributesCard(
-    itemDetails: ItemDetails
+    itemDetails: ItemDetails,
+    lengthUnit: MeasureUnit = MeasureUnit.MILLIMETER, //TODO improve
+    weightUnit: MeasureUnit = MeasureUnit.GRAM //TODO improve
 ) {
     ExpandableSummaryCard(
         label = stringResource(R.string.physical_attributes),
@@ -561,7 +564,7 @@ private fun PhysicalAttributesCard(
                 ) {
                     DataFieldContent(
                         label = stringResource(R.string.width),
-                        value = it.toMeasurementString("mm"),
+                        value = it.toMeasurementString(lengthUnit),
                         isSingleLine = itemDetails.height == null
                     )
                 }
@@ -575,7 +578,7 @@ private fun PhysicalAttributesCard(
                 ) {
                     DataFieldContent(
                         label = stringResource(R.string.height),
-                        value = it.toMeasurementString("mm"),
+                        value = it.toMeasurementString(lengthUnit),
                         isSingleLine = itemDetails.width == null
                     )
                 }
@@ -585,7 +588,7 @@ private fun PhysicalAttributesCard(
             DataFieldBackground {
                 DataFieldContent(
                     label = stringResource(R.string.weight),
-                    value = it.toMeasurementString("g")
+                    value = it.toMeasurementString(weightUnit)
                 )
             }
         }

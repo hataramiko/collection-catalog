@@ -239,6 +239,7 @@ private fun CatalogScreen(
                     onApply = { viewModel.setFilter() },
                     onReset = { viewModel.resetFilter() },
                     localeCode = userPreferences.userCountry,
+                    lengthUnit = userPreferences.lengthUnit,
                     countries = viewModel.getCountries(),
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
                     types = viewModel.getTypes(),
@@ -271,6 +272,11 @@ private fun CatalogScreen(
                     },
                     locations = viewModel.getLocations(),
                     toggleLocation = { viewModel.toggleLocationFilter(it) },
+                    widthSliderRange = viewModel.getWidthSliderRange(),
+                    widthSliderPosition = uiState.widthSliderPosition,
+                    onWidthSliderChange = { newPosition ->
+                        viewModel.updateWidthSliderPosition(newPosition)
+                    },
                     colorsMain = viewModel.getColorsMain(),
                     toggleColorMain = { viewModel.toggleColorMainFilter(it) },
                     colorsSecondary = viewModel.getColorsSecondary(),
