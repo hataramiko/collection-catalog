@@ -338,6 +338,9 @@ private fun CatalogScreenContent(
     modifier: Modifier = Modifier,
     maxItemWidth: Int = 1
 ) {
+    // Use this if filtered items need to occupy all available width, instead of conforming to
+    // the maximum available width from _allItems
+    //val maxItemWidth = itemList.maxOfOrNull { it.toItemDetails().width ?: 1 } ?: 1
     val listState = rememberLazyListState()
     val isAtTop = remember { derivedStateOf {
         (listState.firstVisibleItemIndex == 0) && (listState.firstVisibleItemScrollOffset == 0)

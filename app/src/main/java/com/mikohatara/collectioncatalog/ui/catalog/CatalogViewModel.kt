@@ -516,6 +516,7 @@ class CatalogViewModel @Inject constructor(
             yearSliderPosition = getYearSliderRange(),
             dateSliderPosition = getDateSliderRange(),
             costSliderPosition = getCostSliderRange(),
+            widthSliderPosition = getWidthSliderRange(),
             archivalDateSliderPosition = getArchivalDateSliderRange()
         ) }
         setFilter()
@@ -1035,13 +1036,13 @@ class CatalogViewModel @Inject constructor(
         val fallback = 0L
         if (_allItems.isEmpty()) return fallback
 
-        val allValues = _allItems.mapNotNull { item ->
+        val allCosts = _allItems.mapNotNull { item ->
             val details = item.toItemDetails()
             details.cost
         }
 
-        return if (allValues.isNotEmpty()) {
-            allValues.maxOf { it }
+        return if (allCosts.isNotEmpty()) {
+            allCosts.maxOf { it }
         } else fallback
     }
 
@@ -1064,7 +1065,17 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun getMinWidth(): Int {
-        return 0
+        val fallback = 0
+        if (_allItems.isEmpty()) return fallback
+
+        val allWidths = _allItems.mapNotNull { item ->
+            val details = item.toItemDetails()
+            details.width
+        }
+
+        val minWidth = allWidths.minOrNull() ?: return fallback
+        val maxWidth = getMaxWidth()
+        return if (minWidth < maxWidth) minWidth else fallback
     }
 
     private fun getMaxWidth(): Int {
