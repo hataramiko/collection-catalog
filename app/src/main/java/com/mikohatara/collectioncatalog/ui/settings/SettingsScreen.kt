@@ -39,6 +39,7 @@ import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.SettingsTopAppBar
 import com.mikohatara.collectioncatalog.util.getLocale
+import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.toDisplayCountry
 import java.util.Locale
 
@@ -73,6 +74,8 @@ private fun SettingsScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showCountryDialog by rememberSaveable { mutableStateOf(false) }
     var showRedirectDialog by rememberSaveable { mutableStateOf(false) }
+    var showLengthUnitDialog by rememberSaveable { mutableStateOf(false) }
+    var showWeightUnitDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -87,6 +90,8 @@ private fun SettingsScreen(
                 uiState = uiState,
                 onClickCountry = { showCountryDialog = true },
                 onClickLanguage = { showRedirectDialog = true },
+                onClickLengthUnit = { showLengthUnitDialog = true },
+                onClickWeightUnit = { showWeightUnitDialog = true },
                 modifier = Modifier.padding(innerPadding)
             )
         }
@@ -130,6 +135,26 @@ private fun SettingsScreen(
             onCancel = { showRedirectDialog = false }
         )
     }
+    if (showLengthUnitDialog) {
+        SettingsBottomSheet(
+            label = stringResource(R.string.width), //TODO
+            context = context,
+            options = listOf("mm", "in"),
+            selectedOption = getMeasurementUnitSymbol(uiState.lengthUnit),
+            onToggleSelection = { viewModel.setLengthUnit(it) },
+            onDismiss = { showLengthUnitDialog = false }
+        )
+    }
+    if (showWeightUnitDialog) {
+        SettingsBottomSheet(
+            label = stringResource(R.string.weight), //TODO
+            context = context,
+            options = listOf("g", "oz"),
+            selectedOption = getMeasurementUnitSymbol(uiState.weightUnit),
+            onToggleSelection = { viewModel.setWeightUnit(it) },
+            onDismiss = { showWeightUnitDialog = false }
+        )
+    }
 }
 
 @Composable
@@ -137,6 +162,8 @@ private fun SettingsScreenContent(
     uiState: SettingsUiState,
     onClickCountry: () -> Unit,
     onClickLanguage: () -> Unit,
+    onClickLengthUnit: () -> Unit,
+    onClickWeightUnit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val userCountry = uiState.userCountry
@@ -158,6 +185,21 @@ private fun SettingsScreenContent(
                 text = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() }
             )
         }
+
+        //TODO label
+
+        SettingsButton(
+            label = stringResource(R.string.width), //TODO
+            onClick = onClickLengthUnit,
+            painter = painterResource(R.drawable.rounded_ruler),
+            text = getMeasurementUnitSymbol(uiState.lengthUnit)
+        )
+        SettingsButton(
+            label = stringResource(R.string.weight), //TODO
+            onClick = onClickWeightUnit,
+            painter = painterResource(R.drawable.rounded_weight),
+            text = getMeasurementUnitSymbol(uiState.weightUnit)
+        )
         Version()
     }
 }

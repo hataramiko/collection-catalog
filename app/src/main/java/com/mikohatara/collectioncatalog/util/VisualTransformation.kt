@@ -109,7 +109,17 @@ private class MeasurementVisualTransformation(unit: String) : VisualTransformati
         }
 
         val intValue = originalText.toIntOrNull() ?: 0
-        val formattedText = "$intValue $measurementUnit"
+        val formattedValue = when (measurementUnit) {
+            "in", "oz" -> {
+                if (intValue % 10 == 0) {
+                    (intValue / 10).toString()
+                } else {
+                    (intValue / 10.0f).toString()
+                }
+            }
+            else -> intValue.toString()
+        }
+        val formattedText = "$formattedValue $measurementUnit"
 
         return TransformedText(
             AnnotatedString(formattedText),

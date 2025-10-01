@@ -39,12 +39,29 @@ fun Float.toPercentage(countryCode: String): String {
 }
 
 fun Int.toMeasurementString(unit: MeasureUnit): String {
-    val symbol = when (unit) {
-        MeasureUnit.MILLIMETER -> " mm"
-        MeasureUnit.GRAM -> " g"
-        MeasureUnit.INCH -> " in"
-        MeasureUnit.OUNCE -> " oz"
+    return when (unit) {
+        MeasureUnit.MILLIMETER -> "$this mm"
+        MeasureUnit.GRAM -> "$this g"
+        MeasureUnit.INCH, MeasureUnit.OUNCE -> {
+            val symbol = if (unit == MeasureUnit.INCH) " in" else " oz"
+
+            if (this % 10 == 0) {
+                "${this / 10}$symbol"
+            } else {
+                val formattedValue = this / 10.0f
+                "$formattedValue$symbol"
+            }
+        }
+        else -> this.toString()
+    }
+}
+
+fun getMeasurementUnitSymbol(unit: MeasureUnit): String {
+    return when (unit) {
+        MeasureUnit.MILLIMETER -> "mm"
+        MeasureUnit.GRAM -> "g"
+        MeasureUnit.INCH -> "in"
+        MeasureUnit.OUNCE -> "oz"
         else -> ""
     }
-    return "$this$symbol"
 }

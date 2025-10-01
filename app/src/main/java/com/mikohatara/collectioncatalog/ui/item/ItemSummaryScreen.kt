@@ -272,7 +272,9 @@ private fun ItemSummaryScreenContent(
             localeCode = userPreferences.userCountry
         )
         PhysicalAttributesCard(
-            itemDetails = itemDetails
+            itemDetails = itemDetails,
+            lengthUnit = userPreferences.lengthUnit,
+            weightUnit = userPreferences.weightUnit
         )
         SourceInfoCard(
             itemDetails = itemDetails
@@ -542,8 +544,8 @@ private fun UniqueDetailsCard(
 @Composable
 private fun PhysicalAttributesCard(
     itemDetails: ItemDetails,
-    lengthUnit: MeasureUnit = MeasureUnit.MILLIMETER, //TODO improve
-    weightUnit: MeasureUnit = MeasureUnit.GRAM //TODO improve
+    lengthUnit: MeasureUnit,
+    weightUnit: MeasureUnit
 ) {
     ExpandableSummaryCard(
         label = stringResource(R.string.physical_attributes),

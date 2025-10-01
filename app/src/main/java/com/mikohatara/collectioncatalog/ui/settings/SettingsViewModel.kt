@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.settings
 
 import android.content.Context
 import android.content.Intent
+import android.icu.util.MeasureUnit
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -20,7 +21,9 @@ import java.util.Locale
 import javax.inject.Inject
 
 data class SettingsUiState(
-    val userCountry: String
+    val userCountry: String,
+    val lengthUnit: MeasureUnit,
+    val weightUnit: MeasureUnit
 )
 
 @HiltViewModel
@@ -38,7 +41,9 @@ class SettingsViewModel @Inject constructor(
                 _uiState.value = SettingsUiState(
                     userCountry = preferences.userCountry.ifBlank {
                         Locale.getDefault().country ?: "FI"
-                    }
+                    },
+                    lengthUnit = preferences.lengthUnit,
+                    weightUnit = preferences.weightUnit
                 )
             }
         }
@@ -61,9 +66,41 @@ class SettingsViewModel @Inject constructor(
         updateUserCountry(newCountryCode)
     }
 
+    fun setLengthUnit(lengthUnitSymbol: String) {
+        val lengthUnit = when (lengthUnitSymbol) {
+            "mm" -> MeasureUnit.MILLIMETER
+            "in" -> MeasureUnit.INCH
+            else -> MeasureUnit.MILLIMETER
+        }
+        _uiState.update { it?.copy(lengthUnit = lengthUnit) }
+        updateLengthUnit(lengthUnit)
+    }
+
+    fun setWeightUnit(weightUnitSymbol: String) {
+        val weightUnit = when (weightUnitSymbol) {
+            "g" -> MeasureUnit.GRAM
+            "oz" -> MeasureUnit.OUNCE
+            else -> MeasureUnit.GRAM
+        }
+        _uiState.update { it?.copy(weightUnit = weightUnit) }
+        updateWeightUnit(weightUnit)
+    }
+
     private fun updateUserCountry(userCountry: String) {
         viewModelScope.launch {
             userPreferencesRepository.saveUserCountry(userCountry)
+        }
+    }
+
+    private fun updateLengthUnit(lengthUnit: MeasureUnit) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveLengthUnit(lengthUnit)
+        }
+    }
+
+    private fun updateWeightUnit(weightUnit: MeasureUnit) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveWeightUnit(weightUnit)
         }
     }
 }

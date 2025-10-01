@@ -82,6 +82,7 @@ import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
+import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
 import com.mikohatara.collectioncatalog.util.rememberCurrencyVisualTransformation
@@ -219,6 +220,8 @@ private fun ItemEntryScreenContent(
 ) {
     val collections = viewModel.getCollections()
     val localeCode = userPreferences.userCountry
+    val lengthUnit = getMeasurementUnitSymbol(userPreferences.lengthUnit)
+    val weightUnit = getMeasurementUnitSymbol(userPreferences.weightUnit)
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
@@ -447,7 +450,7 @@ private fun ItemEntryScreenContent(
                 EntryFieldBackground(modifier = Modifier.weight(1f)) {
                     EntryField(
                         label = stringResource(R.string.width),
-                        placeholder = { Text("mm") },
+                        placeholder = { Text(lengthUnit) },
                         value = uiState.itemDetails.width?.toString() ?: "",
                         onValueChange = { newValue ->
                             onValueChange(uiState.itemDetails.copy(
@@ -457,14 +460,14 @@ private fun ItemEntryScreenContent(
                         },
                         keyboardType = KeyboardType.Number,
                         isMeasurement = true,
-                        measurementUnit = "mm"
+                        measurementUnit = lengthUnit
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 EntryFieldBackground(modifier = Modifier.weight(1f)) {
                     EntryField(
                         label = stringResource(R.string.height),
-                        placeholder = { Text("mm") },
+                        placeholder = { Text(lengthUnit) },
                         value = uiState.itemDetails.height?.toString() ?: "",
                         onValueChange = { newValue ->
                             onValueChange(uiState.itemDetails.copy(
@@ -474,14 +477,14 @@ private fun ItemEntryScreenContent(
                         },
                         keyboardType = KeyboardType.Number,
                         isMeasurement = true,
-                        measurementUnit = "mm"
+                        measurementUnit = lengthUnit
                     )
                 }
             }
             EntryFieldBackground {
                 EntryField(
                     label = stringResource(R.string.weight),
-                    placeholder = { Text("g") },
+                    placeholder = { Text(weightUnit) },
                     value = uiState.itemDetails.weight?.toString() ?: "",
                     onValueChange = { newValue ->
                         onValueChange(uiState.itemDetails.copy(
@@ -491,7 +494,7 @@ private fun ItemEntryScreenContent(
                     },
                     keyboardType = KeyboardType.Number,
                     isMeasurement = true,
-                    measurementUnit = "g"
+                    measurementUnit = weightUnit
                 )
             }
             EntryFieldBackground {
