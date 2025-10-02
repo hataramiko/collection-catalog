@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -137,7 +139,7 @@ private fun SettingsScreen(
     }
     if (showLengthUnitDialog) {
         SettingsBottomSheet(
-            label = stringResource(R.string.width), //TODO
+            label = stringResource(R.string.measurement_length),
             context = context,
             options = listOf("mm", "in"),
             selectedOption = getMeasurementUnitSymbol(uiState.lengthUnit),
@@ -147,7 +149,7 @@ private fun SettingsScreen(
     }
     if (showWeightUnitDialog) {
         SettingsBottomSheet(
-            label = stringResource(R.string.weight), //TODO
+            label = stringResource(R.string.measurement_weight),
             context = context,
             options = listOf("g", "oz"),
             selectedOption = getMeasurementUnitSymbol(uiState.weightUnit),
@@ -185,17 +187,16 @@ private fun SettingsScreenContent(
                 text = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() }
             )
         }
-
-        //TODO label
-
+        //SettingsDivider()
+        SettingsHeader(stringResource(R.string.measurement_units))
         SettingsButton(
-            label = stringResource(R.string.width), //TODO
+            label = stringResource(R.string.measurement_length),
             onClick = onClickLengthUnit,
             painter = painterResource(R.drawable.rounded_ruler),
             text = getMeasurementUnitSymbol(uiState.lengthUnit)
         )
         SettingsButton(
-            label = stringResource(R.string.weight), //TODO
+            label = stringResource(R.string.measurement_weight),
             onClick = onClickWeightUnit,
             painter = painterResource(R.drawable.rounded_weight),
             text = getMeasurementUnitSymbol(uiState.weightUnit)
@@ -214,9 +215,9 @@ private fun SettingsButton(
     text: String? = null
 ) {
     val (labelColor, valueColor) = if (enabled) {
-        MaterialTheme.colorScheme.onBackground to MaterialTheme.colorScheme.secondary
+        colorScheme.onBackground to colorScheme.secondary
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant to MaterialTheme.colorScheme.outline
+        colorScheme.onSurfaceVariant to colorScheme.outline
     }
 
     Row(
@@ -230,7 +231,7 @@ private fun SettingsButton(
             Icon(
                 painter = painter,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = colorScheme.onSurfaceVariant,
                 modifier = ItemScreenModifiers.icon
             )
         } else Spacer(modifier = Modifier.size(64.dp))
@@ -251,6 +252,21 @@ private fun SettingsButton(
 }
 
 @Composable
+private fun SettingsHeader(text: String, modifier: Modifier = Modifier) {
+    Spacer(modifier = Modifier.height(24.dp))
+    Text(
+        text = text,
+        style = typography.titleSmall,
+        modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+    )
+}
+
+@Composable
+private fun SettingsDivider(modifier: Modifier = Modifier) {
+    HorizontalDivider(modifier = modifier.padding(horizontal = 24.dp, vertical = 12.dp))
+}
+
+@Composable
 private fun Version() {
     val packageManager = LocalContext.current.packageManager
     val packageName = LocalContext.current.packageName
@@ -264,9 +280,4 @@ private fun Version() {
         enabled = false,
         text = "$versionName"// ($versionCode)"
     )
-}
-
-@Composable
-private fun SettingsDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(modifier = modifier.padding(horizontal = 24.dp, vertical = 12.dp))
 }

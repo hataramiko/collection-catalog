@@ -48,7 +48,13 @@ fun Int.toMeasurementString(unit: MeasureUnit): String {
             if (this % 10 == 0) {
                 "${this / 10}$symbol"
             } else {
-                val formattedValue = this / 10.0f
+                val numberFormatter = NumberFormat.getNumberInstance(Locale.ROOT).apply {
+                    isGroupingUsed = false
+                    minimumFractionDigits = 1
+                    maximumFractionDigits = 1
+                }
+                val decimalValue = this / 10.0
+                val formattedValue = numberFormatter.format(decimalValue)
                 "$formattedValue$symbol"
             }
         }

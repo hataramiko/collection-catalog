@@ -268,4 +268,9 @@
     <string name="url_redirect_to_rating">Enjoy using Rekkary? Please leave a rating!\n\nYou will be redirected to the Google Play Store.</string>
     <string name="deletion_dialog_collection">Deleting a collection removes it from all plates. This action cannot be undone. Any plates will not be deleted.</string>
     <string name="no_data">No data</string>
+    <string name="measurement_units">Measurement units</string>
+    <string name="measurement_length">Length</string>
+    <string name="measurement_weight">Weight</string>
+    <string name="measurement_width">Width</string>
+    <string name="measurement_height">Height</string>
 </resources>

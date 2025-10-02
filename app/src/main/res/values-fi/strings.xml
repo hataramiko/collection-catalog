@@ -225,4 +225,9 @@
     <string name="url_redirect_to_rating">Pidätkö Rekkarysta? Käy antamassa sille arvostelu!\n\nSinut ohjataan seuraavaksi Google Play -kauppaan.</string>
     <string name="deletion_dialog_collection">Kokoelma poistetaan ja se poistuu kaikista kilvistä. Tätä toimintoa ei voi kumota. Yhtäkään kilpeä ei poisteta.</string>
     <string name="no_data">Ei dataa</string>
+    <string name="measurement_units">Mittayksiköt</string>
+    <string name="measurement_length">Pituus</string>
+    <string name="measurement_weight">Paino</string>
+    <string name="measurement_width">Leveys</string>
+    <string name="measurement_height">Korkeus</string>
 </resources>

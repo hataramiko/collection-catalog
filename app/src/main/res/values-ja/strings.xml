@@ -221,4 +221,9 @@
     <string name="url_redirect_to_rating">Rekkary のことを気に入っていますか？是非、評価してください。\n\nこの先Google Play ストアに遷移します。</string>
     <string name="deletion_dialog_collection">コレクションを削除すると、全てのプレートから削除されます。削除したら、元に戻せません。プレートは削除されません。</string>
     <string name="no_data">データなし</string>
+    <string name="measurement_units">計量単位</string>
+    <string name="measurement_length">長さ</string>
+    <string name="measurement_weight">重さ</string>
+    <string name="measurement_width">長さ、横</string>
+    <string name="measurement_height">長さ、縦</string>
 </resources>

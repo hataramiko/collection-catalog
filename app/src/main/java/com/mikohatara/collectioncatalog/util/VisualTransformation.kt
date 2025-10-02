@@ -101,6 +101,12 @@ private class MeasurementVisualTransformation(unit: String) : VisualTransformati
 
     private val measurementUnit = unit
 
+    private val numberFormatter = NumberFormat.getNumberInstance(Locale.ROOT).apply {
+        isGroupingUsed = false
+        minimumFractionDigits = 1
+        maximumFractionDigits = 1
+    }
+
     override fun filter(text: AnnotatedString): TransformedText {
         val originalText = text.text.trim()
 
@@ -111,11 +117,8 @@ private class MeasurementVisualTransformation(unit: String) : VisualTransformati
         val intValue = originalText.toIntOrNull() ?: 0
         val formattedValue = when (measurementUnit) {
             "in", "oz" -> {
-                if (intValue % 10 == 0) {
-                    (intValue / 10).toString()
-                } else {
-                    (intValue / 10.0f).toString()
-                }
+                val decimalValue = intValue / 10.0
+                numberFormatter.format(decimalValue)
             }
             else -> intValue.toString()
         }

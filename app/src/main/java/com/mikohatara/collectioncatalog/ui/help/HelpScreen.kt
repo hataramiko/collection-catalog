@@ -276,11 +276,12 @@ private fun ImportPage(
     HelpPageHeader("Pay attention")//stringResource(R.string.attention))
     HelpPageSubheader(/*stringResource(R.string.date)*/"Dates")
     HelpPageParagraph(stringResource(R.string.info_date_format, getDateExample()))
-    HelpPageSubheader("Numeral values")
+    HelpPageSubheader("Currency values")//"Numeral values")
     //HelpPageHorizontalDivider()
     HelpPageParagraph(stringResource(R.string.help_import_currency))
     HelpPageParagraph(stringResource(R.string.help_import_currency_with_decimal))
     HelpPageParagraph(stringResource(R.string.help_import_currency_non_decimal))
+    HelpPageSubheader("Measurement values")
     HelpPageParagraph(stringResource(R.string.help_import_other_numerals))
     EndOfList()
 }
