@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -26,7 +23,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.mikohatara.collectioncatalog.R
 
 @Composable
 fun ExpandableCard(
@@ -53,8 +52,8 @@ fun ExpandableCard(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Icon(
-                imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
-                else Icons.Rounded.KeyboardArrowDown,
+                painter = if (isExpanded) painterResource(R.drawable.rounded_keyboard_arrow_up_24)
+                else painterResource(R.drawable.rounded_keyboard_arrow_down_24),
                 contentDescription = null,
                 modifier = Modifier.padding(16.dp)
             )
@@ -104,8 +103,8 @@ fun ExpandableStatsCard(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Icon(
-                imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
-                else Icons.Rounded.KeyboardArrowDown,
+                painter = if (isExpanded) painterResource(R.drawable.rounded_keyboard_arrow_up_24)
+                else painterResource(R.drawable.rounded_keyboard_arrow_down_24),
                 contentDescription = null,
                 tint = colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(16.dp)

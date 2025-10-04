@@ -22,8 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -861,7 +859,7 @@ private fun EntryField(
             trailingIcon = { if (isFocused && currentValue.isNotEmpty()) {
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
-                        imageVector = Icons.Rounded.Clear,
+                        painter = painterResource(R.drawable.rounded_close_24),
                         contentDescription = null
                     )
                 }
@@ -950,7 +948,7 @@ fun DatePickerField(
             trailingIcon = { if (isFocused && displayValue.isNotEmpty()) {
                 IconButton(onClick = { onDateSelected("") }) {
                     Icon(
-                        imageVector = Icons.Rounded.Clear,
+                        painter = painterResource(R.drawable.rounded_close_24),
                         contentDescription = null
                     )
                 } }

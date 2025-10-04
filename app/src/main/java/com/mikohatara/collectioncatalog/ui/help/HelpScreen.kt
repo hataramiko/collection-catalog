@@ -21,9 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -378,8 +375,8 @@ private fun HelpPageValueList(
                 modifier = Modifier.padding(16.dp)
             )
             Icon(
-                imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
-                    else Icons.Rounded.KeyboardArrowDown,
+                painter = if (isExpanded) painterResource(R.drawable.rounded_keyboard_arrow_up_24)
+                else painterResource(R.drawable.rounded_keyboard_arrow_down_24),
                 contentDescription = null,
                 tint = colorScheme.secondary,
                 modifier = Modifier.padding(16.dp)

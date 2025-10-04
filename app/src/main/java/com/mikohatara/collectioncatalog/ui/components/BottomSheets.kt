@@ -25,10 +25,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
@@ -732,7 +728,7 @@ fun SelectCollectionBottomSheet(
                     )
                     if (collection.name == selectedCollection) {
                         Icon(
-                            imageVector = Icons.Rounded.Check,
+                            painter = painterResource(R.drawable.rounded_check_24),
                             tint = colorScheme.primary,
                             contentDescription = null,
                             modifier = Modifier.padding(start = 4.dp, end = 30.dp)
@@ -841,8 +837,8 @@ private fun FilterListLabel(
             }
         }
         Icon(
-            imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
-            else Icons.Rounded.KeyboardArrowDown,
+            painter = if (isExpanded) painterResource(R.drawable.rounded_keyboard_arrow_up_24)
+            else painterResource(R.drawable.rounded_keyboard_arrow_down_24),
             contentDescription = null,
             modifier = Modifier.padding(end = 32.dp)
         )

@@ -21,9 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
@@ -777,8 +774,8 @@ private fun ExpandableSummaryCard(
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
                 Icon(
-                    imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp
-                    else Icons.Rounded.KeyboardArrowDown,
+                    painter = if (isExpanded) painterResource(R.drawable.rounded_keyboard_arrow_up_24)
+                    else painterResource(R.drawable.rounded_keyboard_arrow_down_24),
                     contentDescription = null,
                     modifier = Modifier.padding(16.dp)
                 )

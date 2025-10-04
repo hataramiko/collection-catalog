@@ -5,12 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -75,7 +69,7 @@ fun HomeTopAppBar(
                     trailingIcon = { if (searchQuery.isNotEmpty()) {
                             IconButton(onClick = { onSearchQueryChange("") }) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Clear,
+                                    painter = painterResource(R.drawable.rounded_close_24),
                                     contentDescription = null
                                 )
                             }
@@ -103,7 +97,7 @@ fun HomeTopAppBar(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        painter = painterResource(R.drawable.rounded_arrow_back_24),
                         contentDescription = null
                     )
                 }
@@ -125,7 +119,7 @@ fun HomeTopAppBar(
             navigationIcon = {
                 IconButton(onClick = onOpenDrawer) {
                     Icon(
-                        imageVector = Icons.Rounded.Menu,
+                        painter = painterResource(R.drawable.rounded_menu_24),
                         contentDescription = null
                     )
                 }
@@ -136,7 +130,7 @@ fun HomeTopAppBar(
                     enabled = onToggleSearch != null
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Search,
+                        painter = painterResource(R.drawable.rounded_search_24),
                         contentDescription = null
                     )
                 }
@@ -145,7 +139,7 @@ fun HomeTopAppBar(
                     enabled = onExport != null || onImport != null
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.MoreVert,
+                        painter = painterResource(R.drawable.rounded_more_vert_24),
                         contentDescription = null
                     )
                     DropdownMenu(
@@ -217,7 +211,7 @@ fun ItemSummaryTopAppBar(
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
                 )
             }
@@ -231,7 +225,7 @@ fun ItemSummaryTopAppBar(
             }
             IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                 Icon(
-                    imageVector = Icons.Rounded.MoreVert,
+                    painter = painterResource(R.drawable.rounded_more_vert_24),
                     contentDescription = null
                 )
             }
@@ -302,7 +296,7 @@ fun ItemEntryTopAppBar(
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
                 )
             }
@@ -319,7 +313,7 @@ fun ItemEntryTopAppBar(
             }
             IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                 Icon(
-                    imageVector = Icons.Rounded.MoreVert,
+                    painter = painterResource(R.drawable.rounded_more_vert_24),
                     contentDescription = null
                 )
             }
@@ -371,7 +365,7 @@ fun CollectionListTopAppBar(
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
                 )
             }
@@ -401,7 +395,7 @@ fun CollectionEntryTopAppBar(
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
                 )
             }
@@ -409,7 +403,7 @@ fun CollectionEntryTopAppBar(
         actions = {
             IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
                 Icon(
-                    imageVector = Icons.Rounded.MoreVert,
+                    painter = painterResource(R.drawable.rounded_more_vert_24),
                     contentDescription = null
                 )
             }
@@ -443,7 +437,7 @@ fun StatsTopAppBar(
         navigationIcon = {
             IconButton(onClick = onOpenDrawer) {
                 Icon(
-                    imageVector = Icons.Rounded.Menu,
+                    painter = painterResource(R.drawable.rounded_menu_24),
                     contentDescription = null
                 )
             }
@@ -463,7 +457,7 @@ fun SettingsTopAppBar(
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
                 )
             }
@@ -484,7 +478,7 @@ fun HelpTopAppBar(
         navigationIcon = {
             IconButton(onClick = { onBack() }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = null
                 )
             }

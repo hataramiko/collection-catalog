@@ -253,7 +253,7 @@ private fun SettingsButton(
 
 @Composable
 private fun SettingsHeader(text: String, modifier: Modifier = Modifier) {
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(20.dp))
     Text(
         text = text,
         style = typography.titleSmall,

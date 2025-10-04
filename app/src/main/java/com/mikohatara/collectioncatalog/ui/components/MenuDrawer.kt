@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -218,7 +216,7 @@ private fun MenuDrawerContent(
                 NavigationDrawerItem(
                     label = { Text(stringResource(R.string.create_collection)) },
                     icon = { Icon(
-                        imageVector = Icons.Rounded.Add,
+                        painter = painterResource(R.drawable.rounded_add_24),
                         contentDescription = null
                     ) },
                     selected = false,
