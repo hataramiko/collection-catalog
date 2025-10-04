@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -49,6 +50,8 @@ fun TopRow(
         animationSpec = tween(250),
         label = "TopRowBackgroundColor"
     )
+    val buttonContentColor = colorScheme.primary
+
     /*  The backgroundColor seems to be in sync _well enough_ with that of the TopAppBar,
     *   but it might be worth exploring the possibility of getting the color directly off
     *   of the TopAppBar.
@@ -91,10 +94,12 @@ fun TopRow(
                         Icon(
                             painter = painterResource(R.drawable.rounded_swap_vert),
                             contentDescription = null,
+                            tint = buttonContentColor,
                             modifier = Modifier.padding(end = 4.dp)
                         )
                         Text(
-                            stringResource(R.string.sort_by),
+                            text = stringResource(R.string.sort_by),
+                            color = buttonContentColor,
                             modifier = Modifier.padding(end = 4.dp)
                         )
                     }
@@ -123,10 +128,12 @@ fun TopRow(
                             Icon(
                                 painter = painterResource(R.drawable.rounded_filter),
                                 contentDescription = null,
+                                tint = buttonContentColor,
                                 modifier = Modifier.padding(end = 6.dp)
                             )
                             Text(
-                                stringResource(R.string.filter),
+                                text = stringResource(R.string.filter),
+                                color = buttonContentColor,
                                 modifier = Modifier.padding(end = 4.dp)
                             )
                         }

@@ -173,6 +173,7 @@ private fun SettingsScreenContent(
     val displayCountry = currentLocale.getDisplayCountry(Locale.getDefault())
 
     Column(modifier = modifier) {
+        SettingsHeader(stringResource(R.string.settings_general), topSpacerHeight = 10)
         SettingsButton(
             label = stringResource(R.string.user_country),
             onClick = onClickCountry,
@@ -187,7 +188,6 @@ private fun SettingsScreenContent(
                 text = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() }
             )
         }
-        //SettingsDivider()
         SettingsHeader(stringResource(R.string.measurement_units))
         SettingsButton(
             label = stringResource(R.string.measurement_length),
@@ -215,7 +215,7 @@ private fun SettingsButton(
     text: String? = null
 ) {
     val (labelColor, valueColor) = if (enabled) {
-        colorScheme.onBackground to colorScheme.secondary
+        colorScheme.onBackground to colorScheme.onSurfaceVariant
     } else {
         colorScheme.onSurfaceVariant to colorScheme.outline
     }
@@ -252,10 +252,15 @@ private fun SettingsButton(
 }
 
 @Composable
-private fun SettingsHeader(text: String, modifier: Modifier = Modifier) {
-    Spacer(modifier = Modifier.height(20.dp))
+private fun SettingsHeader(
+    text: String,
+    modifier: Modifier = Modifier,
+    topSpacerHeight: Int = 20
+) {
+    Spacer(modifier = Modifier.height(topSpacerHeight.dp))
     Text(
         text = text,
+        color = colorScheme.primary,
         style = typography.titleSmall,
         modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp)
     )

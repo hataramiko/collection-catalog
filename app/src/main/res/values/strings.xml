@@ -273,4 +273,13 @@
     <string name="measurement_weight">Weight</string>
     <string name="measurement_width">Width</string>
     <string name="measurement_height">Height</string>
+    <string name="settings_general">General</string>
+    <string name="help_import_dates" translatable="false">Dates</string>
+    <string name="help_import_currencies" translatable="false">Currencies</string>
+    <string name="help_import_measurements" translatable="false">Measurements</string>
+    <string name="help_import_measurements_p1" translatable="false">The behavior of measurement values depends on the unit in use.</string>
+    <string name="help_import_measurements_mm_p1" translatable="false">Millimeters and grams (mm, g) treat the entered value as an integer, without any decimals or punctuation, e.g.</string>
+    <string name="help_import_measurements_mm_p2" translatable="false">1 as 1\n12 as 12\n123 as 123\n0,5 as 5\n20.5 as 205\n520 as 520</string>
+    <string name="help_import_measurements_in_p1" translatable="false">Inches and ounces (in, oz) treat the last digit of the entered value as a decimal, regardless of punctuation, e.g.</string>
+    <string name="help_import_measurements_in_p2" translatable="false">1 as 0.1\n12 as 1.2\n123 as 12.3\n0,5 as 0.5\n20.5 as 20.5\n520 as 52.0</string>
 </resources>

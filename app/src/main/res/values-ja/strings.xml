@@ -226,4 +226,5 @@
     <string name="measurement_weight">重さ</string>
     <string name="measurement_width">長さ、横</string>
     <string name="measurement_height">長さ、縦</string>
+    <string name="settings_general">全般</string>
 </resources>

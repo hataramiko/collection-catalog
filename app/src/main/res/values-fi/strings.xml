@@ -230,4 +230,5 @@
     <string name="measurement_weight">Paino</string>
     <string name="measurement_width">Leveys</string>
     <string name="measurement_height">Korkeus</string>
+    <string name="settings_general">Yleiset</string>
 </resources>
