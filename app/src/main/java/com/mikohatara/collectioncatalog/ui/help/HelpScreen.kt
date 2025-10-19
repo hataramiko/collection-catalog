@@ -280,9 +280,17 @@ private fun ImportPage(
     HelpPageSubheader(stringResource(R.string.help_import_measurements))
     HelpPageParagraph(stringResource(R.string.help_import_measurements_p1))
     HelpPageParagraph(stringResource(R.string.help_import_measurements_mm_p1))
-    HelpPageParagraph(stringResource(R.string.help_import_measurements_mm_p2))
+    HelpPageValueList(
+        values = stringResource(R.string.help_import_measurements_mm_p2),
+        buttonTextShow = stringResource(R.string.show_examples, "mm, g"),
+        buttonTextHide = stringResource(R.string.hide_examples, "mm, g")
+    )
     HelpPageParagraph(stringResource(R.string.help_import_measurements_in_p1))
-    HelpPageParagraph(stringResource(R.string.help_import_measurements_in_p2))
+    HelpPageValueList(
+        values = stringResource(R.string.help_import_measurements_in_p2),
+        buttonTextShow = stringResource(R.string.show_examples, "in, oz"),
+        buttonTextHide = stringResource(R.string.hide_examples, "in, oz")
+    )
     //HelpPageParagraph(stringResource(R.string.help_import_other_numerals))
     EndOfList()
 }
