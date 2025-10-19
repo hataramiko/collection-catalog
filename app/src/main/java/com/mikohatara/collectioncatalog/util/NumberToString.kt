@@ -19,7 +19,12 @@ fun Long.toCurrencyString(countryCode: String): String {
         this.currency = currency
     }
     val fractions = currency.defaultFractionDigits
-    val displayAmount = if (fractions > 0) this / 100.0 else this
+    val displayAmount = when (fractions) {
+        3 -> this / 1000.0
+        2 -> this / 100.0
+        1 -> this / 10.0
+        else -> this
+    }
 
     return format.format(displayAmount)
 }

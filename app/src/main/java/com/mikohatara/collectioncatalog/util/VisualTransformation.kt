@@ -75,7 +75,12 @@ private class CurrencyVisualTransformation(localeCode: String) : VisualTransform
         }
 
         val longValue = originalText.toLongOrNull() ?: 0L
-        val displayAmount = if (fractions > 0) (longValue / 100.0) else longValue
+        val displayAmount = when (fractions) {
+            3 -> longValue / 1000.0
+            2 -> longValue / 100.0
+            1 -> longValue / 10.0
+            else -> longValue
+        }
         val formattedText = numberFormatter.format(displayAmount)
 
         return TransformedText(
