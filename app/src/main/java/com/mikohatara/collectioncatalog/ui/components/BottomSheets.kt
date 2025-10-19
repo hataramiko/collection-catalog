@@ -3,6 +3,7 @@ package com.mikohatara.collectioncatalog.ui.components
 import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.util.MeasureUnit
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -1031,20 +1032,15 @@ private fun FilterFooter(
                     modifier = Modifier.weight(1f),
                     badge = {
                         if (filterCount > 0) {
-                            Box(
-                                contentAlignment = Alignment.TopEnd,
-                                modifier = Modifier.fillMaxWidth().padding(end = 16.dp)
-                            ) {
-                                Badge {
-                                    Text(filterCount.toString())
-                                }
+                            Badge(modifier = Modifier.offset(x = (-16).dp)) {
+                                Text(filterCount.toString())
                             }
                         }
                     }
                 ) {
                     Button(
                         onClick = onApply,
-                        modifier = Modifier.fillMaxWidth()//.weight(1f)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(stringResource(R.string.filter_apply))
                     }

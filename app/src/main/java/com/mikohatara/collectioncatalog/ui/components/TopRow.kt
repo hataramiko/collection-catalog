@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
@@ -108,22 +109,15 @@ fun TopRow(
                         modifier = Modifier.weight(1f),
                         badge = {
                             if (filterCount > 0) {
-                                Box(
-                                    contentAlignment = Alignment.TopEnd,
-                                    modifier = Modifier.fillMaxWidth().padding(end = 16.dp)
-                                ) {
-                                    Badge {
-                                        Text(filterCount.toString())
-                                    }
+                                Badge(modifier = Modifier.offset(x = (-16).dp)) {
+                                    Text(filterCount.toString())
                                 }
                             }
                         }
                     ) {
                         OutlinedButton(
                             onClick = { onFilterClick() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                            //.weight(1f)
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.rounded_filter),
