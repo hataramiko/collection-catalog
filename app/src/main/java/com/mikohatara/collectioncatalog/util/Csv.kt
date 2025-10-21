@@ -24,7 +24,13 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.util.Calendar
 
-fun exportItemDetailsToCsv(writer: OutputStreamWriter, itemDetailsList: List<ItemDetails>) {
+fun exportItemDetailsToCsv(
+    writer: OutputStreamWriter,
+    itemDetailsList: List<ItemDetails>,
+    currencyFractions: Int,
+    lengthUnitFractions: Int,
+    weightUnitFractions: Int
+) {
     val csvItemDetailsList = itemDetailsList.map { itemDetails ->
         CsvPlate(
             //id = itemDetails.id ?: 0, not used for export
@@ -43,13 +49,13 @@ fun exportItemDetailsToCsv(writer: OutputStreamWriter, itemDetailsList: List<Ite
             notes = itemDetails.notes,
             vehicle = itemDetails.vehicle,
             date = itemDetails.date,
-            cost = itemDetails.cost,
-            value = itemDetails.value,
+            cost = itemDetails.cost.toExportNumeralString(currencyFractions, true),
+            value = itemDetails.value.toExportNumeralString(currencyFractions, true),
             status = itemDetails.status,
             // Size
-            width = itemDetails.width,
-            height = itemDetails.height,
-            weight = itemDetails.weight,
+            width = itemDetails.width.toExportNumeralString(lengthUnitFractions),
+            height = itemDetails.height.toExportNumeralString(lengthUnitFractions),
+            weight = itemDetails.weight.toExportNumeralString(weightUnitFractions),
             // Color
             colorMain = itemDetails.colorMain,
             colorSecondary = itemDetails.colorSecondary,
@@ -62,7 +68,7 @@ fun exportItemDetailsToCsv(writer: OutputStreamWriter, itemDetailsList: List<Ite
             // ArchivalDetails
             archivalDate = itemDetails.archivalDate,
             archivalType = itemDetails.archivalType,
-            price = itemDetails.price,
+            price = itemDetails.price.toExportNumeralString(currencyFractions, true),
             recipientName = itemDetails.recipientName,
             recipientAlias = itemDetails.recipientAlias,
             recipientCountry = itemDetails.recipientCountry,
@@ -100,7 +106,8 @@ fun exportItemDetailsToCsv(writer: OutputStreamWriter, itemDetailsList: List<Ite
     }
 }
 
-fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) { //TODO remove
+//TODO remove, no longer necessary. Used in the earlier Home/Wishlist/Archive trinity
+/*fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) {
     val csvPlateList = plates.map { plate ->
         CsvPlate(
             //id = plate.id ?: 0,
@@ -176,7 +183,7 @@ fun exportPlatesToCsv(writer: OutputStreamWriter, plates: List<Plate>) { //TODO 
     }
 }
 
-fun exportWantedPlatesToCsv(writer: OutputStreamWriter, wantedPlates: List<WantedPlate>) { //TODO remove
+fun exportWantedPlatesToCsv(writer: OutputStreamWriter, wantedPlates: List<WantedPlate>) {
     val csvPlateList = wantedPlates.map { wantedPlate ->
         CsvPlate(
             //id = wantedPlate.id ?: 0,
@@ -252,7 +259,7 @@ fun exportWantedPlatesToCsv(writer: OutputStreamWriter, wantedPlates: List<Wante
     }
 }
 
-fun exportFormerPlatesToCsv(writer: OutputStreamWriter, formerPlates: List<FormerPlate>) { //TODO remove
+fun exportFormerPlatesToCsv(writer: OutputStreamWriter, formerPlates: List<FormerPlate>) {
     val csvPlateList = formerPlates.map { formerPlate ->
         CsvPlate(
             //id = formerPlate.id ?: 0,
@@ -326,7 +333,7 @@ fun exportFormerPlatesToCsv(writer: OutputStreamWriter, formerPlates: List<Forme
     } catch (e: IOException) {
         Log.e("CSV export", "Error writing to file", e)
     }
-}
+}*/
 
 fun importPlatesFromCsv(context: Context, uri: Uri): List<Plate>? {
     try {
@@ -365,14 +372,14 @@ fun importPlatesFromCsv(context: Context, uri: Uri): List<Plate>? {
                     notes = csvPlate.notes?.takeIf { it.isNotBlank() },
                     vehicle = csvPlate.vehicle?.takeIf { it.isNotBlank() },
                     date = csvPlate.date?.takeIf { it.isNotBlank() },
-                    cost = csvPlate.cost,
-                    value = csvPlate.value,
+                    cost = csvPlate.cost?.toCurrencyLongOrNull(),
+                    value = csvPlate.value?.toCurrencyLongOrNull(),
                     status = csvPlate.status?.takeIf { it.isNotBlank() }
                 ),
                 size = Size(
-                    width = csvPlate.width,
-                    height = csvPlate.height,
-                    weight = csvPlate.weight
+                    width = csvPlate.width?.toMeasurementIntOrNull(),
+                    height = csvPlate.height?.toMeasurementIntOrNull(),
+                    weight = csvPlate.weight?.toMeasurementIntOrNull()
                 ),
                 color = Color(
                     main = csvPlate.colorMain?.takeIf { it.isNotBlank() },
@@ -429,9 +436,9 @@ fun importWantedPlatesFromCsv(context: Context, uri: Uri): List<WantedPlate>? {
                     year = csvPlate.year?.takeIf { it.isValidYear() }
                 ),
                 size = Size(
-                    width = csvPlate.width,
-                    height = csvPlate.height,
-                    weight = csvPlate.weight
+                    width = csvPlate.width?.toMeasurementIntOrNull(),
+                    height = csvPlate.height?.toMeasurementIntOrNull(),
+                    weight = csvPlate.weight?.toMeasurementIntOrNull()
                 ),
                 color = Color(
                     main = csvPlate.colorMain?.takeIf { it.isNotBlank() },
@@ -483,14 +490,14 @@ fun importFormerPlatesFromCsv(context: Context, uri: Uri): List<FormerPlate>? {
                     notes = csvPlate.notes?.takeIf { it.isNotBlank() },
                     vehicle = csvPlate.vehicle?.takeIf { it.isNotBlank() },
                     date = csvPlate.date?.takeIf { it.isNotBlank() },
-                    cost = csvPlate.cost,
+                    cost = csvPlate.cost?.toCurrencyLongOrNull(),
                     value = null,
                     status = null
                 ),
                 size = Size(
-                    width = csvPlate.width,
-                    height = csvPlate.height,
-                    weight = csvPlate.weight
+                    width = csvPlate.width?.toMeasurementIntOrNull(),
+                    height = csvPlate.height?.toMeasurementIntOrNull(),
+                    weight = csvPlate.weight?.toMeasurementIntOrNull()
                 ),
                 color = Color(
                     main = csvPlate.colorMain?.takeIf { it.isNotBlank() },
@@ -509,7 +516,7 @@ fun importFormerPlatesFromCsv(context: Context, uri: Uri): List<FormerPlate>? {
                     recipientAlias = csvPlate.recipientAlias?.takeIf { it.isNotBlank() },
                     archivalReason = csvPlate.archivalType?.takeIf { it.isNotBlank() },
                     archivalDetails = csvPlate.archivalDetails?.takeIf { it.isNotBlank() },
-                    price = csvPlate.price,
+                    price = csvPlate.price?.toCurrencyLongOrNull(),
                     recipientCountry = csvPlate.recipientCountry?.takeIf { it.isNotBlank() }
                 )
             )
@@ -538,12 +545,12 @@ fun mapRowToCsvPlate(row: Array<String>, headerRow: List<String>): CsvPlate {
         notes = data.getOrNull(headerRow.indexOf("notes")),
         vehicle = data.getOrNull(headerRow.indexOf("vehicle")),
         date = data.getOrNull(headerRow.indexOf("date")),
-        cost = data.getOrNull(headerRow.indexOf("cost"))?.toCurrencyLongOrNull(),
-        value = data.getOrNull(headerRow.indexOf("value"))?.toCurrencyLongOrNull(),
+        cost = data.getOrNull(headerRow.indexOf("cost")),
+        value = data.getOrNull(headerRow.indexOf("value")),
         status = data.getOrNull(headerRow.indexOf("status")),
-        width = data.getOrNull(headerRow.indexOf("width"))?.toMeasurementIntOrNull(),
-        height = data.getOrNull(headerRow.indexOf("height"))?.toMeasurementIntOrNull(),
-        weight = data.getOrNull(headerRow.indexOf("weight"))?.toMeasurementIntOrNull(),
+        width = data.getOrNull(headerRow.indexOf("width")),
+        height = data.getOrNull(headerRow.indexOf("height")),
+        weight = data.getOrNull(headerRow.indexOf("weight")),
         colorMain = data.getOrNull(headerRow.indexOf("color_main")),
         colorSecondary = data.getOrNull(headerRow.indexOf("color_secondary")),
         sourceName = data.getOrNull(headerRow.indexOf("source_name")),
@@ -553,7 +560,7 @@ fun mapRowToCsvPlate(row: Array<String>, headerRow: List<String>): CsvPlate {
         sourceDetails = data.getOrNull(headerRow.indexOf("source_details")),
         archivalDate = data.getOrNull(headerRow.indexOf("archival_date")),
         archivalType = data.getOrNull(headerRow.indexOf("archival_type")),
-        price = data.getOrNull(headerRow.indexOf("price"))?.toCurrencyLongOrNull(),
+        price = data.getOrNull(headerRow.indexOf("price")),
         recipientName = data.getOrNull(headerRow.indexOf("recipient_name")),
         recipientAlias = data.getOrNull(headerRow.indexOf("recipient_alias")),
         recipientCountry = data.getOrNull(headerRow.indexOf("recipient_country")),
@@ -628,13 +635,13 @@ data class CsvPlate(
     @CsvBindByName(column = "notes") val notes: String? = null,
     @CsvBindByName(column = "vehicle") val vehicle: String? = null,
     @CsvBindByName(column = "date") val date: String? = null,
-    @CsvBindByName(column = "cost") val cost: Long? = null,
-    @CsvBindByName(column = "value") val value: Long? = null,
+    @CsvBindByName(column = "cost") val cost: String? = null,
+    @CsvBindByName(column = "value") val value: String? = null,
     @CsvBindByName(column = "status") val status: String? = null,
         // Size
-    @CsvBindByName(column = "width") val width: Int? = null,
-    @CsvBindByName(column = "height") val height: Int? = null,
-    @CsvBindByName(column = "weight") val weight: Int? = null,
+    @CsvBindByName(column = "width") val width: String? = null,
+    @CsvBindByName(column = "height") val height: String? = null,
+    @CsvBindByName(column = "weight") val weight: String? = null,
         // Color
     @CsvBindByName(column = "color_main") val colorMain: String? = null,
     @CsvBindByName(column = "color_secondary") val colorSecondary: String? = null,
@@ -647,7 +654,7 @@ data class CsvPlate(
         // ArchivalDetails
     @CsvBindByName(column = "archival_date") val archivalDate: String? = null,
     @CsvBindByName(column = "archival_reason") val archivalType: String? = null,
-    @CsvBindByName(column = "price") val price: Long? = null,
+    @CsvBindByName(column = "price") val price: String? = null,
     @CsvBindByName(column = "recipient_name") val recipientName: String? = null,
     @CsvBindByName(column = "recipient_alias") val recipientAlias: String? = null,
     @CsvBindByName(column = "recipient_country") val recipientCountry: String? = null,

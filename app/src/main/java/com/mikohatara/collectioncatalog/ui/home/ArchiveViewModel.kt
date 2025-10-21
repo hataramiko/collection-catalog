@@ -16,7 +16,7 @@ import com.mikohatara.collectioncatalog.ui.catalog.ExportResult
 import com.mikohatara.collectioncatalog.ui.catalog.FilterData
 import com.mikohatara.collectioncatalog.ui.catalog.ImportResult
 import com.mikohatara.collectioncatalog.ui.catalog.SortBy
-import com.mikohatara.collectioncatalog.util.exportFormerPlatesToCsv
+//import com.mikohatara.collectioncatalog.util.exportFormerPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.importFormerPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
@@ -464,11 +464,11 @@ class ArchiveViewModel @Inject constructor(
             try {
                 val items = uiState.value.items
                 val contentResolver = context.contentResolver
-                contentResolver.openOutputStream(uri)?.use { outputStream ->
+                /*contentResolver.openOutputStream(uri)?.use { outputStream ->
                     OutputStreamWriter(outputStream).use { writer ->
                         exportFormerPlatesToCsv(writer, items)
                     }
-                }
+                }*/
                 _uiState.update { it.copy(
                     isExporting = false,
                     exportResult = ExportResult.Success(getExportMessage(true, context))

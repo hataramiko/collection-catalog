@@ -3,7 +3,9 @@ package com.mikohatara.collectioncatalog.util
 import android.icu.text.NumberFormat
 import android.icu.util.Currency
 import android.icu.util.MeasureUnit
+import android.util.Log
 import java.util.Locale
+import kotlin.math.pow
 
 fun Int.toFormattedString(countryCode: String): String {
     val locale = Locale(countryCode, countryCode)
@@ -75,4 +77,27 @@ fun getMeasurementUnitSymbol(unit: MeasureUnit): String {
         MeasureUnit.OUNCE -> "oz"
         else -> ""
     }
+}
+
+fun Long?.toExportNumeralString(fractions: Int, isCurrency: Boolean = false): String? {
+    // If the numeral value is null, or less than or equal to zero, return a null string.
+    // However, when dealing with currency values, zero is a valid output.
+    if (this == null || !isCurrency && this <= 0) return null
+
+    // In case of no fractions, do a simple string conversion.
+    if (fractions <= 0) return this.toString()
+
+    // Otherwise, calculate and format the correct value based on the number of fractions.
+    // Fallback to a string value stating error if something goes wrong.
+    try {
+        val displayAmount = this / 10.0.pow(fractions)
+        return "%.${fractions}f".format(Locale.ROOT, displayAmount)
+    } catch (e: Exception) {
+        Log.e("Long?.toExportNumeralString", e.message, e)
+        return "EXPORT-ERROR" //TODO localized error output?
+    }
+}
+
+fun Int?.toExportNumeralString(fractions: Int, isCurrency: Boolean = false): String? {
+    return this?.toLong().toExportNumeralString(fractions, isCurrency)
 }

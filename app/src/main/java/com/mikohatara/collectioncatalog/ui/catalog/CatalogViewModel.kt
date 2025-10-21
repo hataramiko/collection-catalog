@@ -21,7 +21,9 @@ import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.util.exportItemDetailsToCsv
+import com.mikohatara.collectioncatalog.util.getCurrencyFractions
 import com.mikohatara.collectioncatalog.util.getCurrentYear
+import com.mikohatara.collectioncatalog.util.getMeasurementUnitFractions
 import com.mikohatara.collectioncatalog.util.importFormerPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.importPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.importWantedPlatesFromCsv
@@ -624,6 +626,18 @@ class CatalogViewModel @Inject constructor(
     fun exportItems(context: Context, uri: Uri) {
         _uiState.update { it.copy(isExporting = true, exportResult = null) }
 
+        /*  Get fractions for the currency and measurement units based on user preferences.
+        *
+        *   exportItemDetailsToCsv() uses these fractions to convert stored Long/Int values
+        *   to String for export, by passing them to Long/Int.toExportNumeralString(),
+        *   which handles the formatting of the String output for export.
+        *
+        * */
+        val preferences = userPreferences.value
+        val currencyFractions = getCurrencyFractions(preferences.userCountry)
+        val lengthFractions = getMeasurementUnitFractions(preferences.lengthUnit)
+        val weightFractions = getMeasurementUnitFractions(preferences.weightUnit)
+
         viewModelScope.launch {
             try {
                 val items = uiState.value.items
@@ -631,7 +645,13 @@ class CatalogViewModel @Inject constructor(
                 val contentResolver = context.contentResolver
                 contentResolver.openOutputStream(uri)?.use { outputStream ->
                     OutputStreamWriter(outputStream).use { writer ->
-                        exportItemDetailsToCsv(writer, itemsAsItemDetails)
+                        exportItemDetailsToCsv(
+                            writer = writer,
+                            itemDetailsList = itemsAsItemDetails,
+                            currencyFractions = currencyFractions,
+                            lengthUnitFractions = lengthFractions,
+                            weightUnitFractions = weightFractions
+                        )
                     }
                 }
                 _uiState.update { it.copy(

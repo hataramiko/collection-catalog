@@ -22,7 +22,7 @@ import com.mikohatara.collectioncatalog.ui.catalog.FilterData
 import com.mikohatara.collectioncatalog.ui.catalog.ImportResult
 import com.mikohatara.collectioncatalog.ui.catalog.SortBy
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
-import com.mikohatara.collectioncatalog.util.exportPlatesToCsv
+//import com.mikohatara.collectioncatalog.util.exportPlatesToCsv
 import com.mikohatara.collectioncatalog.util.getCurrentYear
 import com.mikohatara.collectioncatalog.util.importPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.normalizeString
@@ -477,11 +477,11 @@ class HomeViewModel @Inject constructor(
             try {
                 val items = _uiState.value.items
                 val contentResolver = context.contentResolver
-                contentResolver.openOutputStream(uri)?.use { outputStream ->
+                /*contentResolver.openOutputStream(uri)?.use { outputStream ->
                     OutputStreamWriter(outputStream).use { writer ->
                         exportPlatesToCsv(writer, items)
                     }
-                }
+                }*/
                 _uiState.update { it.copy(
                     isExporting = false,
                     exportResult = ExportResult.Success(getExportMessage(true, context))
