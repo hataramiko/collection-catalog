@@ -200,11 +200,11 @@
     <string name="import_download_template" translatable="false">Download template</string>
     <string name="import_show_first_row" translatable="false">Show values</string>
     <string name="attention">Pay attention</string>
-    <string name="info_date_format" translatable="false">Dates have to be entered in the \"YYYY-MM-DD\" format, e.g. <xliff:g name="date_example" example="1917-12-06">%s</xliff:g></string>
+    <string name="info_date_format" translatable="false">Dates have to be entered in the \"YYYY-MM-DD\" format, e.g. today as \"<xliff:g name="date_example" example="1917-12-06">%s</xliff:g>\".</string>
     <string name="info_width">Width is used to determine the display size of plates in the catalog view.</string>
-    <string name="help_import_currency" translatable="false">Currency values should be entered in their smallest respective unit, without any decimal or thousands separators, e.g.</string>
-    <string name="help_import_currency_with_decimal" translatable="false">USD, with cents as a subunit\n$1.00 as 100\n$1,400.99 as 140099</string>
-    <string name="help_import_currency_non_decimal" translatable="false">JPY, without a subunit\n¥1 as 1\n¥12,500 as 12500</string>
+    <string name="help_import_currency" translatable="false">Currency values expect any potential subunits (e.g. cents) to be accounted for, by having the appropriate amount of decimals in place.</string>
+    <string name="help_import_currency_with_decimal" translatable="false">1 is $0.01\n100 is $1.00\n1.00 is $1.00\n100.00 is $100.00</string>
+    <string name="help_import_currency_non_decimal" translatable="false">1 is ¥1\n100 is ¥100\n1.00 is ¥100\n100.00 is ¥10,000</string>
     <string name="help_import_other_numerals" translatable="false">Other numeral values – such as measurements like width – should also be entered as integers only, without any decimals or punctuation.</string>
     <string name="help_import_first_row" translatable="false">First row</string>
     <string name="help_import_next_rows" translatable="false">Subsequent rows</string>
@@ -277,11 +277,22 @@
     <string name="help_import_dates" translatable="false">Dates</string>
     <string name="help_import_currencies" translatable="false">Currencies</string>
     <string name="help_import_measurements" translatable="false">Measurements</string>
-    <string name="help_import_measurements_p1" translatable="false">The behavior of measurement values depends on the unit in use.</string>
-    <string name="help_import_measurements_mm_p1" translatable="false">Millimeters and grams (mm, g) treat the entered value as an integer, without any decimals or punctuation.</string>
-    <string name="help_import_measurements_mm_p2" translatable="false">1 as 1\n12 as 12\n123 as 123\n0,5 as 5\n20.5 as 205\n520 as 520</string>
+    <string name="help_import_measurements_p1" translatable="false">The behavior of measurement values depends on the unit in use. Truncating any decimals as required by the unit will lead to incorrectly imported values.</string>
+    <string name="help_import_measurements_mm_p1" translatable="false">Millimeters and grams (mm, g) treat the entered value as an integer only, dismissing any potential decimals or punctuation.</string>
+    <string name="help_import_measurements_mm_p2" translatable="false">1 becomes 1\n12 becomes 12\n123 becomes 123\n0,5 becomes 5\n20.5 becomes 205\n520 becomes 520</string>
     <string name="help_import_measurements_in_p1" translatable="false">Inches and ounces (in, oz) treat the last digit of the entered value as a decimal, regardless of punctuation.</string>
-    <string name="help_import_measurements_in_p2" translatable="false">1 as 0.1\n12 as 1.2\n123 as 12.3\n0,5 as 0.5\n20.5 as 20.5\n520 as 52.0</string>
+    <string name="help_import_measurements_in_p2" translatable="false">1 becomes 0.1\n12 becomes 1.2\n123 becomes 12.3\n0,5 becomes 0.5\n20.5 becomes 20.5\n520 becomes 52.0</string>
     <string name="show_examples" translatable="false">Show examples (<xliff:g name="unit" example="mm">%s</xliff:g>)</string>
     <string name="hide_examples" translatable="false">Hide examples (<xliff:g name="unit" example="mm">%s</xliff:g>)</string>
+    <string name="help_import_currencies_and_measurements" translatable="false">Currencies and measurements</string>
+    <string name="help_import_currencies_and_measurements_p1" translatable="false">The behavior of currency and measurement values depends on the unit in use.</string>
+    <string name="help_import_currencies_and_measurement_end" translatable="false">Truncating any decimals as required by the unit will lead to incorrectly imported values.</string>
+    <string name="help_import_measurements_in_warning" translatable="false">Truncating the decimal will lead to an incorrectly imported measurement.</string>
+    <string name="help_import_currencies_warning" translatable="false">Truncating any decimals will result in incorrectly imported values.</string>
+    <string name="help_import_currency_current" translatable="false">Your current currency requires <xliff:g name="fractions" example="2">%s</xliff:g> decimals.</string>
+    <string name="help_import_currency_p2" translatable="false">For most currencies this means using two decimals. The last two digits of the value are always treated as the subunit, regardless of punctuation.</string>
+    <string name="help_import_currency_p3" translatable="false">Some currencies have no decimals at all, while some might require three.</string>
+    <string name="help_import_currency_two_decimals" translatable="false">1 becomes 0.01\n100 becomes 1.00\n0.50 becomes 0.50\n10.99 becomes 10.99</string>
+    <string name="help_import_currency_no_decimals" translatable="false">1 becomes 1\n100 becomes 100\n0.50 becomes 50\n10.99 becomes 1099</string>
+    <string name="help_import_currency_three_decimals" translatable="false">1 becomes 0.001\n100 becomes 0.100\n0.50 becomes 0.050\n10.99 becomes 1.099\n1.234 becomes 1.234</string>
 </resources>

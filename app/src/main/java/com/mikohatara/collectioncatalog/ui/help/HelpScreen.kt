@@ -275,10 +275,39 @@ private fun ImportPage(
     HelpPageParagraph(stringResource(R.string.info_date_format, getDateExample()))
     HelpPageSubheader(stringResource(R.string.help_import_currencies))
     HelpPageParagraph(stringResource(R.string.help_import_currency))
-    HelpPageParagraph(stringResource(R.string.help_import_currency_with_decimal))
-    HelpPageParagraph(stringResource(R.string.help_import_currency_non_decimal))
+    HelpPageParagraph(stringResource(R.string.help_import_currency_p2))
+    HelpPageValueList(
+        values = stringResource(R.string.help_import_currency_two_decimals),
+        buttonTextShow = stringResource(R.string.show_examples, "2 decimals"),
+        buttonTextHide = stringResource(R.string.hide_examples, "2 decimals")
+    )
+    HelpPageParagraph(stringResource(R.string.help_import_currency_p3))
+    //HelpPageParagraph(stringResource(R.string.help_import_currency_current))
+    HelpPageValueList(
+        values = stringResource(R.string.help_import_currency_no_decimals),
+        buttonTextShow = stringResource(R.string.show_examples, "0 decimals"),
+        buttonTextHide = stringResource(R.string.hide_examples, "0 decimals")
+    )
+    HelpPageValueList(
+        values = stringResource(R.string.help_import_currency_three_decimals),
+        buttonTextShow = stringResource(R.string.show_examples, "3 decimals"),
+        buttonTextHide = stringResource(R.string.hide_examples, "3 decimals")
+    )
+    HelpPageParagraph(stringResource(R.string.help_import_currencies_warning))
+    /*HelpPageValueList(
+        values = stringResource(R.string.help_import_measurements_mm_p2),
+        buttonTextShow = stringResource(R.string.show_examples, "2 decimals"),
+        buttonTextHide = stringResource(R.string.hide_examples, "2 decimals")
+    )
+    HelpPageValueList(
+        values = stringResource(R.string.help_import_measurements_mm_p2),
+        buttonTextShow = stringResource(R.string.show_examples, "3 decimals"),
+        buttonTextHide = stringResource(R.string.hide_examples, "3 decimals")
+    )*/
+    //HelpPageParagraph(stringResource(R.string.help_import_currency_with_decimal))
+    //HelpPageParagraph(stringResource(R.string.help_import_currency_non_decimal))
     HelpPageSubheader(stringResource(R.string.help_import_measurements))
-    HelpPageParagraph(stringResource(R.string.help_import_measurements_p1))
+    //HelpPageParagraph(stringResource(R.string.help_import_measurements_p1))
     HelpPageParagraph(stringResource(R.string.help_import_measurements_mm_p1))
     HelpPageValueList(
         values = stringResource(R.string.help_import_measurements_mm_p2),
@@ -286,12 +315,12 @@ private fun ImportPage(
         buttonTextHide = stringResource(R.string.hide_examples, "mm, g")
     )
     HelpPageParagraph(stringResource(R.string.help_import_measurements_in_p1))
+    HelpPageParagraph(stringResource(R.string.help_import_measurements_in_warning))
     HelpPageValueList(
         values = stringResource(R.string.help_import_measurements_in_p2),
         buttonTextShow = stringResource(R.string.show_examples, "in, oz"),
         buttonTextHide = stringResource(R.string.hide_examples, "in, oz")
     )
-    //HelpPageParagraph(stringResource(R.string.help_import_other_numerals))
     EndOfList()
 }
 
