@@ -270,6 +270,7 @@ private fun ItemSummaryScreenContent(
         )
         PhysicalAttributesCard(
             itemDetails = itemDetails,
+            localeCode = userPreferences.userCountry,
             lengthUnit = userPreferences.lengthUnit,
             weightUnit = userPreferences.weightUnit
         )
@@ -541,6 +542,7 @@ private fun UniqueDetailsCard(
 @Composable
 private fun PhysicalAttributesCard(
     itemDetails: ItemDetails,
+    localeCode: String,
     lengthUnit: MeasureUnit,
     weightUnit: MeasureUnit
 ) {
@@ -563,7 +565,7 @@ private fun PhysicalAttributesCard(
                 ) {
                     DataFieldContent(
                         label = stringResource(R.string.width),
-                        value = it.toMeasurementString(lengthUnit),
+                        value = it.toMeasurementString(lengthUnit, localeCode),
                         isSingleLine = itemDetails.height == null
                     )
                 }
@@ -577,7 +579,7 @@ private fun PhysicalAttributesCard(
                 ) {
                     DataFieldContent(
                         label = stringResource(R.string.height),
-                        value = it.toMeasurementString(lengthUnit),
+                        value = it.toMeasurementString(lengthUnit, localeCode),
                         isSingleLine = itemDetails.width == null
                     )
                 }
@@ -587,7 +589,7 @@ private fun PhysicalAttributesCard(
             DataFieldBackground {
                 DataFieldContent(
                     label = stringResource(R.string.weight),
-                    value = it.toMeasurementString(weightUnit)
+                    value = it.toMeasurementString(weightUnit, localeCode)
                 )
             }
         }

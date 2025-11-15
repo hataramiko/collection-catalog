@@ -1,7 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
-import android.icu.util.Currency
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -80,6 +79,7 @@ import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
+import com.mikohatara.collectioncatalog.util.getCurrencySymbol
 import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
@@ -458,7 +458,8 @@ private fun ItemEntryScreenContent(
                         },
                         keyboardType = KeyboardType.Number,
                         isMeasurement = true,
-                        measurementUnit = lengthUnit
+                        measurementUnit = lengthUnit,
+                        localeCode = localeCode
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
@@ -475,7 +476,8 @@ private fun ItemEntryScreenContent(
                         },
                         keyboardType = KeyboardType.Number,
                         isMeasurement = true,
-                        measurementUnit = lengthUnit
+                        measurementUnit = lengthUnit,
+                        localeCode = localeCode
                     )
                 }
             }
@@ -492,7 +494,8 @@ private fun ItemEntryScreenContent(
                     },
                     keyboardType = KeyboardType.Number,
                     isMeasurement = true,
-                    measurementUnit = weightUnit
+                    measurementUnit = weightUnit,
+                    localeCode = localeCode
                 )
             }
             EntryFieldBackground {
@@ -825,7 +828,7 @@ private fun EntryField(
     val visualTransformation = if (isCurrency) {
         rememberCurrencyVisualTransformation(localeCode)
     } else if (isMeasurement) {
-        rememberMeasurementVisualTransformation(measurementUnit)
+        rememberMeasurementVisualTransformation(measurementUnit, localeCode)
     } else VisualTransformation.None
 
     Row(
@@ -1028,11 +1031,4 @@ private enum class EntrySectionType {
     UNIQUE_DETAILS,
     COLLECTIONS,
     GENERAL
-}
-
-private fun getCurrencySymbol(countryCode: String): String {
-    val locale = Locale(countryCode, countryCode)
-    val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
-
-    return currency.getSymbol(locale)
 }

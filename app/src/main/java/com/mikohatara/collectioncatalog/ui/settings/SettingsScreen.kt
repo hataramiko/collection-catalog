@@ -78,6 +78,7 @@ private fun SettingsScreen(
     var showRedirectDialog by rememberSaveable { mutableStateOf(false) }
     var showLengthUnitDialog by rememberSaveable { mutableStateOf(false) }
     var showWeightUnitDialog by rememberSaveable { mutableStateOf(false) }
+    val excludedCountryCodes = setOf("XA", "XB", "001", "150", "419")
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -99,25 +100,13 @@ private fun SettingsScreen(
         }
     )
     if (showCountryDialog) {
-        /*SettingsDialog(
-            label = stringResource(R.string.user_country),
-            options = Locale.getAvailableLocales()
-                .map { it.displayCountry }
-                .distinct()
-                .filter { it.isNotEmpty() }
-                .sorted(),
-            selectedOption = uiState.userCountry.toDisplayCountry(),
-            onToggleSelection = { viewModel.setUserCountry(it) },
-            onDismiss = { showCountryDialog = false },
-            infoText = stringResource(R.string.user_country_info)
-        )*/
         SettingsBottomSheet(
             label = stringResource(R.string.user_country),
             context = context,
             options = Locale.getAvailableLocales()
+                .filter { it.country.isNotEmpty() && it.country !in excludedCountryCodes }
                 .map { it.displayCountry }
                 .distinct()
-                .filter { it.isNotEmpty() }
                 .sorted(),
             selectedOption = uiState.userCountry.toDisplayCountry(),
             onToggleSelection = { viewModel.setUserCountry(it) },

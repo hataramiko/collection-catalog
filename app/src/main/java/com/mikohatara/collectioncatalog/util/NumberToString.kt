@@ -8,14 +8,14 @@ import java.util.Locale
 import kotlin.math.pow
 
 fun Int.toFormattedString(countryCode: String): String {
-    val locale = Locale(countryCode, countryCode)
+    val locale = getLocale(countryCode)
     val format = NumberFormat.getInstance(locale)
 
     return format.format(this)
 }
 
 fun Long.toCurrencyString(countryCode: String): String {
-    val locale = Locale(countryCode, countryCode)
+    val locale = getLocale(countryCode)
     val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
     val format = NumberFormat.getCurrencyInstance(locale).apply {
         this.currency = currency
@@ -32,7 +32,7 @@ fun Long.toCurrencyString(countryCode: String): String {
 }
 
 fun Float.toPercentage(countryCode: String): String {
-    val locale = Locale(countryCode, countryCode)
+    val locale = getLocale(countryCode)
     val format = NumberFormat.getPercentInstance(locale).apply {
         maximumFractionDigits = 2
         minimumFractionDigits = 2
@@ -45,18 +45,19 @@ fun Float.toPercentage(countryCode: String): String {
     }
 }
 
-fun Int.toMeasurementString(unit: MeasureUnit): String {
+fun Int.toMeasurementString(unit: MeasureUnit, countryCode: String): String {
     return when (unit) {
-        MeasureUnit.MILLIMETER -> "$this mm"
-        MeasureUnit.GRAM -> "$this g"
+        MeasureUnit.MILLIMETER -> "${this.toFormattedString(countryCode)} mm"
+        MeasureUnit.GRAM -> "${this.toFormattedString(countryCode)} g"
         MeasureUnit.INCH, MeasureUnit.OUNCE -> {
             val symbol = if (unit == MeasureUnit.INCH) " in" else " oz"
 
             if (this % 10 == 0) {
                 "${this / 10}$symbol"
             } else {
-                val numberFormatter = NumberFormat.getNumberInstance(Locale.ROOT).apply {
-                    isGroupingUsed = false
+                val locale = getLocale(countryCode)
+                val numberFormatter = NumberFormat.getNumberInstance(locale).apply {
+                    isGroupingUsed = true
                     minimumFractionDigits = 1
                     maximumFractionDigits = 1
                 }
@@ -65,8 +66,15 @@ fun Int.toMeasurementString(unit: MeasureUnit): String {
                 "$formattedValue$symbol"
             }
         }
-        else -> this.toString()
+        else -> this.toFormattedString(countryCode)
     }
+}
+
+fun getCurrencySymbol(countryCode: String): String {
+    val locale = getLocale(countryCode)
+    val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
+
+    return currency.getSymbol(locale)
 }
 
 fun getMeasurementUnitSymbol(unit: MeasureUnit): String {

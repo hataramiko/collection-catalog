@@ -427,7 +427,7 @@ fun FilterBottomSheet(
                             activeFilters = emptySet(),
                             isExpanded = isWidthExpanded,
                             onExpand = { isWidthExpanded = !isWidthExpanded },
-                            value = "${minValue.toMeasurementString(lengthUnit)} – ${maxValue.toMeasurementString(lengthUnit)}",
+                            value = "${minValue.toMeasurementString(lengthUnit, localeCode)} – ${maxValue.toMeasurementString(lengthUnit, localeCode)}",
                             isSliderActive = widthSliderPosition != widthSliderRange.start..widthSliderRange.endInclusive
                         )
                     }

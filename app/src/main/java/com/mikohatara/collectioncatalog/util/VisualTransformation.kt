@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.util
 
 import android.icu.text.NumberFormat
 import android.icu.util.Currency
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -10,7 +11,6 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.core.text.isDigitsOnly
-import java.util.Locale
 
 class VisualTransformationOffsetMapping(
     originalText: String, formattedText: String
@@ -49,17 +49,9 @@ class VisualTransformationOffsetMapping(
     }
 }
 
-private class CurrencyVisualTransformation(localeCode: String) : VisualTransformation {
+private class CurrencyVisualTransformation(countryCode: String) : VisualTransformation {
 
-    private val locale = Locale(localeCode, localeCode)
-    /* TODO replace Locale(language, country)
-    *
-    *  Using getLocale from util won't work – while the currency will be correctly set based on
-    *  "localeCode", numbers will still be formatted based on the current language, leaving room
-    *  for discrepancies, e.g. "1 200,50 $" instead of the desired "$1,200.50" for an effective
-    *  locale of "fi_US" when localeCode is "US" and the app language is Finnish.
-    *
-    * */
+    private val locale = getLocale(countryCode)
     private val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
     private val fractions = currency.defaultFractionDigits
 
@@ -102,12 +94,20 @@ fun rememberCurrencyVisualTransformation(localeCode: String): VisualTransformati
     }
 }
 
-private class MeasurementVisualTransformation(unit: String) : VisualTransformation {
+private class MeasurementVisualTransformation(
+    unit: String,
+    countryCode: String
+) : VisualTransformation {
 
     private val measurementUnit = unit
+    private val locale = getLocale(countryCode)
 
-    private val numberFormatter = NumberFormat.getNumberInstance(Locale.ROOT).apply {
-        isGroupingUsed = false
+    private val integerFormatter = NumberFormat.getNumberInstance(locale).apply {
+        isGroupingUsed = true
+        maximumFractionDigits = 0
+    }
+    private val decimalFormatter = NumberFormat.getNumberInstance(locale).apply {
+        isGroupingUsed = true
         minimumFractionDigits = 1
         maximumFractionDigits = 1
     }
@@ -123,9 +123,11 @@ private class MeasurementVisualTransformation(unit: String) : VisualTransformati
         val formattedValue = when (measurementUnit) {
             "in", "oz" -> {
                 val decimalValue = intValue / 10.0
-                numberFormatter.format(decimalValue)
+                decimalFormatter.format(decimalValue)
             }
-            else -> intValue.toString()
+            else -> {
+                integerFormatter.format(intValue)
+            }
         }
         val formattedText = "$formattedValue $measurementUnit"
 
@@ -137,13 +139,16 @@ private class MeasurementVisualTransformation(unit: String) : VisualTransformati
 }
 
 @Composable
-fun rememberMeasurementVisualTransformation(unit: String): VisualTransformation {
+fun rememberMeasurementVisualTransformation(
+    unit: String,
+    localeCode: String
+): VisualTransformation {
     val inspectionMode = LocalInspectionMode.current
-    return remember(unit) {
+    return remember(unit, localeCode) {
         if (inspectionMode) {
             VisualTransformation.None
         } else {
-            MeasurementVisualTransformation(unit)
+            MeasurementVisualTransformation(unit, localeCode)
         }
     }
 }
