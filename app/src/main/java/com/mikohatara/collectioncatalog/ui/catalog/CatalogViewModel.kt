@@ -173,6 +173,7 @@ class CatalogViewModel @Inject constructor(
                         details.year ?: details.periodStart
                     }
                     .thenBy(nullsLast()) { it.toItemDetails().regNo }
+                    .thenBy { it.toItemDetails().id }
             SortBy.COUNTRY_AND_TYPE_DESC ->
                 compareByDescending<Item, String?>(nullsFirst()) { it.toItemDetails().country }
                     .thenByDescending(nullsLast()) { it.toItemDetails().region1st }
@@ -182,6 +183,7 @@ class CatalogViewModel @Inject constructor(
                         details.year ?: details.periodStart
                     }
                     .thenByDescending(nullsFirst()) { it.toItemDetails().regNo }
+                    .thenBy { it.toItemDetails().id }
             SortBy.AGE_ASC ->
                 if (_itemType != ItemType.WANTED_PLATE) {
                     compareBy<Item, Int?>(nullsLast()) {
@@ -192,6 +194,7 @@ class CatalogViewModel @Inject constructor(
                         .thenBy(nullsFirst()) { it.toItemDetails().region1st }
                         .thenBy { it.toItemDetails().type }
                         .thenBy { it.toItemDetails().regNo }
+                        .thenBy { it.toItemDetails().id }
                 } else null
             SortBy.AGE_DESC ->
                 if (_itemType != ItemType.WANTED_PLATE) {
@@ -203,12 +206,13 @@ class CatalogViewModel @Inject constructor(
                         .thenByDescending(nullsLast()) { it.toItemDetails().region1st }
                         .thenByDescending(nullsFirst()) { it.toItemDetails().type }
                         .thenByDescending(nullsFirst()) { it.toItemDetails().regNo }
+                        .thenBy { it.toItemDetails().id }
                 } else null
             SortBy.START_DATE_NEWEST ->
                 if (_itemType == ItemType.PLATE) {
                     compareByDescending<Item, String?>(nullsLast()) {
                         it.toItemDetails().date
-                    }.thenByDescending { it.toItemDetails().id }
+                    }.thenBy { it.toItemDetails().id }
                 } else null
             SortBy.START_DATE_OLDEST ->
                 if (_itemType == ItemType.PLATE) {
@@ -220,7 +224,7 @@ class CatalogViewModel @Inject constructor(
                 if (_itemType == ItemType.FORMER_PLATE) {
                     compareByDescending<Item, String?>(nullsLast()) {
                         it.toItemDetails().archivalDate
-                    }.thenByDescending { it.toItemDetails().id }
+                    }.thenBy { it.toItemDetails().id }
                 } else null
             SortBy.END_DATE_OLDEST ->
                 if (_itemType == ItemType.FORMER_PLATE) {

@@ -3,7 +3,6 @@ package com.mikohatara.collectioncatalog.ui.components
 import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.util.MeasureUnit
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -257,8 +256,9 @@ fun FilterBottomSheet(
                             activeFilters = emptySet(),
                             isExpanded = isPeriodExpanded,
                             onExpand = { isPeriodExpanded = !isPeriodExpanded },
-                            value = "$minValue – $maxValue",
-                            isSliderActive = periodSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
+                            value = "$minValue–$maxValue",
+                            isSliderActive = periodSliderPosition != yearSliderRange.start
+                                ..yearSliderRange.endInclusive
                         )
                     }
                     item {
@@ -283,8 +283,9 @@ fun FilterBottomSheet(
                             activeFilters = emptySet(),
                             isExpanded = isYearExpanded,
                             onExpand = { isYearExpanded = !isYearExpanded },
-                            value = "$minValue – $maxValue",
-                            isSliderActive = yearSliderPosition != yearSliderRange.start..yearSliderRange.endInclusive
+                            value = "$minValue–$maxValue",
+                            isSliderActive = yearSliderPosition != yearSliderRange.start
+                                ..yearSliderRange.endInclusive
                         )
                     }
                     item {
@@ -315,18 +316,25 @@ fun FilterBottomSheet(
                             val maxValue = dateSliderPosition.endInclusive.roundToLong()
                             val minValueString = minValue
                                 .toDateString()
-                                .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                                .toFormattedDate(
+                                    localeCode,
+                                    SimpleDateFormat.SHORT
+                                )
                             val maxValueString = maxValue
                                 .toDateString()
-                                .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                                .toFormattedDate(
+                                    localeCode,
+                                    SimpleDateFormat.SHORT
+                                )
 
                             FilterListLabel(
                                 label = stringResource(R.string.date),
                                 activeFilters = emptySet(),
                                 isExpanded = isDateExpanded,
                                 onExpand = { isDateExpanded = !isDateExpanded },
-                                value = "$minValueString – $maxValueString",
-                                isSliderActive = dateSliderPosition != dateSliderRange.start..dateSliderRange.endInclusive
+                                value = "$minValueString–\n$maxValueString",
+                                isSliderActive = dateSliderPosition != dateSliderRange.start
+                                    ..dateSliderRange.endInclusive
                             )
                         }
                         item {
@@ -351,8 +359,10 @@ fun FilterBottomSheet(
                                 activeFilters = emptySet(),
                                 isExpanded = isCostExpanded,
                                 onExpand = { isCostExpanded = !isCostExpanded },
-                                value = "${minValue.toCurrencyString(localeCode)} – ${maxValue.toCurrencyString(localeCode)}",
-                                isSliderActive = costSliderPosition != costSliderRange.start..costSliderRange.endInclusive
+                                value = minValue.toCurrencyString(localeCode) +
+                                    "–${maxValue.toCurrencyString(localeCode)}",
+                                isSliderActive = costSliderPosition != costSliderRange.start
+                                    ..costSliderRange.endInclusive
                             )
                         }
                         item {
@@ -379,8 +389,10 @@ fun FilterBottomSheet(
                                 activeFilters = emptySet(),
                                 isExpanded = isValueExpanded,
                                 onExpand = { isValueExpanded = !isValueExpanded },
-                                value = "${minValue.toCurrencyString(localeCode)} – ${maxValue.toCurrencyString(localeCode)}",
-                                isSliderActive = valueSliderPosition != valueSliderRange.start..valueSliderRange.endInclusive
+                                value = minValue.toCurrencyString(localeCode) +
+                                    "–${maxValue.toCurrencyString(localeCode)}",
+                                isSliderActive = valueSliderPosition != valueSliderRange.start
+                                    ..valueSliderRange.endInclusive
                             )
                         }
                         item {
@@ -427,8 +439,10 @@ fun FilterBottomSheet(
                             activeFilters = emptySet(),
                             isExpanded = isWidthExpanded,
                             onExpand = { isWidthExpanded = !isWidthExpanded },
-                            value = "${minValue.toMeasurementString(lengthUnit, localeCode)} – ${maxValue.toMeasurementString(lengthUnit, localeCode)}",
-                            isSliderActive = widthSliderPosition != widthSliderRange.start..widthSliderRange.endInclusive
+                            value = minValue.toMeasurementString(lengthUnit, localeCode) +
+                                "–${maxValue.toMeasurementString(lengthUnit, localeCode)}",
+                            isSliderActive = widthSliderPosition != widthSliderRange.start
+                                ..widthSliderRange.endInclusive
                         )
                     }
                     item {
@@ -528,18 +542,26 @@ fun FilterBottomSheet(
                             val maxValue = archivalDateSliderPosition.endInclusive.roundToLong()
                             val minValueString = minValue
                                 .toDateString()
-                                .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                                .toFormattedDate(
+                                    localeCode,
+                                    SimpleDateFormat.SHORT
+                                )
                             val maxValueString = maxValue
                                 .toDateString()
-                                .toFormattedDate(localeCode, SimpleDateFormat.SHORT)
+                                .toFormattedDate(
+                                    localeCode,
+                                    SimpleDateFormat.SHORT
+                                )
 
                             FilterListLabel(
                                 label = stringResource(R.string.archival_date),
                                 activeFilters = emptySet(),
                                 isExpanded = isArchivalDateExpanded,
                                 onExpand = { isArchivalDateExpanded = !isArchivalDateExpanded },
-                                value = "$minValueString – $maxValueString",
-                                isSliderActive =archivalDateSliderPosition != archivalDateSliderRange.start..archivalDateSliderRange.endInclusive
+                                value = "$minValueString–\n$maxValueString",
+                                isSliderActive = archivalDateSliderPosition !=
+                                    archivalDateSliderRange.start
+                                    ..archivalDateSliderRange.endInclusive
                             )
                         }
                         item {
@@ -640,7 +662,12 @@ fun SettingsBottomSheet(
                     option.toColor(context)
                 } else null
                 val radioButtonColors = if (color != null) {
-                    RadioButtonDefaults.colors(color, color, color, color)
+                    RadioButtonDefaults.colors(
+                        color,
+                        color,
+                        color,
+                        color
+                    )
                 } else {
                     RadioButtonDefaults.colors()
                 }

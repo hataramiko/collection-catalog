@@ -394,7 +394,7 @@ private fun CommonDetailsCard(
     val secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
     val period: String? = (itemDetails.periodStart != null || itemDetails.periodEnd != null)
         .takeIf { it }?.let {
-            "${itemDetails.periodStart ?: ""} – ${itemDetails.periodEnd ?: ""}"
+            "${itemDetails.periodStart ?: ""}–${itemDetails.periodEnd ?: ""}"
         }
 
     Card(

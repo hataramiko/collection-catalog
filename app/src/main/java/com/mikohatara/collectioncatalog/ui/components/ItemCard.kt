@@ -186,7 +186,7 @@ private fun WishlistCard(
     val period = if (periodStart.isNullOrBlank() && periodEnd.isNullOrBlank()) {
         null
     } else {
-        "${periodStart ?: ""} – ${periodEnd ?: ""}"
+        "${periodStart ?: ""}–${periodEnd ?: ""}"
     }
 
     val secondaryText = listOfNotNull(type, period, year)
