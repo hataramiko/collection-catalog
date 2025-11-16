@@ -2,6 +2,10 @@ package com.mikohatara.collectioncatalog.util
 
 import java.util.Locale
 
+/*  getLocale() is intended to be used for formatting numeral values,
+*   the formatting of which should conform to the user's region of choice,
+*   as opposed to the app's current language.
+* */
 fun getLocale(countryCode: String): Locale {
     val appRegionLanguage = countryCodeToLanguageMap[countryCode] ?: "en"
 
@@ -11,6 +15,22 @@ fun getLocale(countryCode: String): Locale {
         .build()
 
     return currentLocale
+}
+
+/*  As opposed to getLocale(), getCalendarLocale() is intended to provide a Locale for
+*   formatting date values, which should be displayed in the app's current language,
+*   supplemented by the user's region of choice.
+* */
+fun getCalendarLocale(countryCode: String): Locale {
+    val appLocale = Locale.getDefault()
+    val appLanguage = appLocale.language
+
+    val calendarLocale = Locale.Builder()
+        .setLanguage(appLanguage)
+        .setRegion(countryCode)
+        .build()
+
+    return calendarLocale
 }
 
 private val countryCodeToLanguageMap = mapOf(

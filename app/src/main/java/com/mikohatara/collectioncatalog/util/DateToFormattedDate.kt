@@ -6,12 +6,13 @@ import java.util.Locale
 import java.util.TimeZone
 
 fun String.toFormattedDate(
-    localeCode: String,
+    countryCode: String,
     dateInstanceStyle: Int = SimpleDateFormat.LONG
 ): String {
-    val locale = Locale.getDefault() //TODO Locale(localeCode)
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd", locale)
-    val outputFormat = SimpleDateFormat.getDateInstance(dateInstanceStyle, locale)
+    val calendarLocale = getCalendarLocale(countryCode)
+
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd", calendarLocale)
+    val outputFormat = SimpleDateFormat.getDateInstance(dateInstanceStyle, calendarLocale)
 
     return try {
         val date = inputFormat.parse(this)

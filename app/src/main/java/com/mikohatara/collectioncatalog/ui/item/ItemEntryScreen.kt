@@ -79,6 +79,7 @@ import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
+import com.mikohatara.collectioncatalog.util.getCalendarLocale
 import com.mikohatara.collectioncatalog.util.getCurrencySymbol
 import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
@@ -89,7 +90,6 @@ import com.mikohatara.collectioncatalog.util.toFormattedDate
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun ItemEntryScreen(
@@ -387,7 +387,7 @@ private fun ItemEntryScreenContent(
                             label = stringResource(R.string.date),
                             dateValue = uiState.itemDetails.date ?: "",
                             onDateSelected = { onValueChange(uiState.itemDetails.copy(date = it)) },
-                            localeCode = localeCode
+                            userCountry = localeCode
                         )
                     }
                     Row {
@@ -565,7 +565,7 @@ private fun ItemEntryScreenContent(
                         onDateSelected = {
                             onValueChange(uiState.itemDetails.copy(archivalDate = it))
                         },
-                        localeCode = localeCode
+                        userCountry = localeCode
                     )
                 }
                 EntryFieldBackground {
@@ -907,18 +907,17 @@ fun DatePickerField(
     label: String,
     dateValue: String,
     onDateSelected: (String) -> Unit,
+    userCountry: String,
     modifier: Modifier = Modifier,
-    localeCode: String = "FI" //TODO apply locale by referring to user preferences
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val focusManager = LocalFocusManager.current
 
-    val displayValue = dateValue.toFormattedDate(localeCode)
-    val locale = Locale.getDefault() //TODO Locale(localeCode)
+    val displayValue = dateValue.toFormattedDate(userCountry)
+    val locale = getCalendarLocale(userCountry)
     val inputFormat = remember(locale) { SimpleDateFormat("yyyy-MM-dd", locale) }
-    //val outputFormat = DateFormat.getDateInstance(DateFormat.LONG, locale)
 
     val initialSelectedDateMillis = remember(dateValue) {
         if (dateValue.isNotBlank()) {
@@ -998,7 +997,6 @@ fun DatePickerField(
         ) {
             DatePicker(
                 state = datePickerState,
-                //dateFormatter = datePickerFormatter,
                 showModeToggle = false
             )
         }
