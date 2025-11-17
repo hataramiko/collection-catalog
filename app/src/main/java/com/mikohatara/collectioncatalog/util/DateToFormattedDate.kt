@@ -22,13 +22,17 @@ fun String.toFormattedDate(
     }
 }
 
-fun String.toTimestamp(): Long {
+fun String.toTimestamp(timeModifier: Long = 0): Long {
+    // There is some discrepancy between the timestamps of "minDates" and
+    // the intended date for display, e.g. "2000-01-01" displays as "1999-12-31".
+    // The timeModifier is a temporary solution to circumvent this.
+    // TODO implement a better solution for the "minDate" to display value discrepancy
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
     dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
     return try {
         val date = dateFormat.parse(this)
-        date?.time ?: 0L
+        (date?.time?.plus(timeModifier)) ?: 0L
     } catch (e: Exception) {
         0L
     }

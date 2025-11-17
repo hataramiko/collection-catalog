@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.catalog
 
 import android.content.Context
 import android.icu.util.Calendar
+import android.icu.util.TimeZone
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -212,7 +213,7 @@ class CatalogViewModel @Inject constructor(
                 if (_itemType == ItemType.PLATE) {
                     compareByDescending<Item, String?>(nullsLast()) {
                         it.toItemDetails().date
-                    }.thenBy { it.toItemDetails().id }
+                    }.thenByDescending { it.toItemDetails().id }
                 } else null
             SortBy.START_DATE_OLDEST ->
                 if (_itemType == ItemType.PLATE) {
@@ -224,7 +225,7 @@ class CatalogViewModel @Inject constructor(
                 if (_itemType == ItemType.FORMER_PLATE) {
                     compareByDescending<Item, String?>(nullsLast()) {
                         it.toItemDetails().archivalDate
-                    }.thenBy { it.toItemDetails().id }
+                    }.thenByDescending { it.toItemDetails().id }
                 } else null
             SortBy.END_DATE_OLDEST ->
                 if (_itemType == ItemType.FORMER_PLATE) {
@@ -1010,7 +1011,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun getMinDate(): Float {
-        val fallback = "1900-01-02".toTimestamp().toFloat()
+        val fallback = "1900-01-01".toTimestamp(1000000L).toFloat()
         if (_allItems.isEmpty()) return fallback
 
         val allDates = _allItems.mapNotNull { item ->
@@ -1019,7 +1020,7 @@ class CatalogViewModel @Inject constructor(
 
             if (date != null) {
                 try {
-                    date.toTimestamp()
+                    date.toTimestamp(1000000L)
                 } catch (e: Exception) {
                     null
                 }
@@ -1032,7 +1033,13 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun getMaxDate(): Float {
-        val today = Calendar.getInstance().timeInMillis.toFloat()
+        val today = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            set(Calendar.HOUR_OF_DAY, 12)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis.toFloat()
+
         if (_allItems.isEmpty()) return today
 
         val allDates = _allItems.mapNotNull { item ->
@@ -1117,46 +1124,52 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun getMinArchivalDate(): Float {
-        val fallback = "1900-01-02".toTimestamp().toFloat()
+        val fallback = "1900-01-01".toTimestamp(1000000L).toFloat()
         if (_allItems.isEmpty()) return fallback
 
-        val allDates = _allItems.mapNotNull { item ->
+        val allArchivalDates = _allItems.mapNotNull { item ->
             val details = item.toItemDetails()
-            val date = details.archivalDate
+            val archivalDate = details.archivalDate
 
-            if (date != null) {
+            if (archivalDate != null) {
                 try {
-                    date.toTimestamp()
+                    archivalDate.toTimestamp(1000000L)
                 } catch (e: Exception) {
                     null
                 }
             } else null
         }
 
-        val minDate = allDates.minOrNull()?.toFloat() ?: return fallback
+        val minArchivalDate = allArchivalDates.minOrNull()?.toFloat() ?: return fallback
         val maxDate = getMaxDate()
-        return if (minDate < maxDate) minDate else fallback
+        return if (minArchivalDate < maxDate) minArchivalDate else fallback
     }
 
     private fun getMaxArchivalDate(): Float {
-        val today = Calendar.getInstance().timeInMillis.toFloat()
+        val today = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            set(Calendar.HOUR_OF_DAY, 12)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis.toFloat()
+
         if (_allItems.isEmpty()) return today
 
-        val allDates = _allItems.mapNotNull { item ->
+        val allArchivalDates = _allItems.mapNotNull { item ->
             val details = item.toItemDetails()
-            val date = details.archivalDate
+            val archivalDate = details.archivalDate
 
-            if (date != null) {
+            if (archivalDate != null) {
                 try {
-                    date.toTimestamp()
+                    archivalDate.toTimestamp()
                 } catch (e: Exception) {
                     null
                 }
             } else null
         }
 
-        val maxDate = allDates.maxOrNull()?.toFloat() ?: return today
-        return listOf(today, maxDate).maxOf { it }
+        val maxArchivalDate = allArchivalDates.maxOrNull()?.toFloat() ?: return today
+        return listOf(today, maxArchivalDate).maxOf { it }
     }
 
     private fun getExportMessage(isSuccess: Boolean, context: Context): String {
