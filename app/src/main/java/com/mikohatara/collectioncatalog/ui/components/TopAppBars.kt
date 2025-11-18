@@ -194,6 +194,7 @@ fun ItemSummaryTopAppBar(
     onEdit: (Item) -> Unit,
     onDelete: () -> Unit,
     onCopy: (() -> Unit)? = null,
+    onCheckWishlist: (() -> Unit)? = null,
     onTransfer: (() -> Unit)? = null,
     transferButtonText: String = "",
     transferButtonPainter: Painter = painterResource(R.drawable.rounded_question_mark)
@@ -244,6 +245,16 @@ fun ItemSummaryTopAppBar(
                     enabled = onCopy != null
                 )
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                onCheckWishlist?.let {
+                    ModifiedDropdownMenuItem(
+                        onClick = {
+                            it()
+                            isMenuExpanded = false
+                        },
+                        painterResource = painterResource(R.drawable.rounded_check_24),
+                        text = stringResource(R.string.check_wishlist_button),
+                    )
+                }
                 onTransfer?.let {
                     ModifiedDropdownMenuItem(
                         onClick = {

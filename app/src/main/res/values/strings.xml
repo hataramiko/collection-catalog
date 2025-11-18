@@ -127,11 +127,11 @@
     <string name="empty_list_wishlist_msg">Wishlist is empty</string>
     <string name="sort_by_country_and_age_asc">Country &amp; Age, ascending</string>
     <string name="sort_by_country_and_age_desc">Country &amp;  Age, descending</string>
-    <string name="transfer_from_wishlist_dialog_title">Mark as complete?</string>
-    <string name="transfer_from_wishlist_dialog_text">A new plate will be created based on this wishlist entry, and this entry will in turn be deleted.</string>
+    <string name="transfer_from_wishlist_dialog_title">Create a plate &amp; delete wishlist entry?</string>
+    <string name="transfer_from_wishlist_dialog_text">A new plate will be created based on this wishlist entry. This entry will in turn be deleted from the wishlist.</string>
     <string name="transfer_from_plates_dialog_title">Archive <xliff:g name="reg_no" example="ABC-123">%s</xliff:g>?</string>
     <string name="transfer_from_plates_dialog_text">A copy of this plate will be added to the archive, and the plate will be deleted.</string>
-    <string name="transfer_from_wishlist_button">Mark as complete</string>
+    <string name="transfer_from_wishlist_button">Create plate &amp; delete</string>
     <string name="transfer_from_plates_button">Archive</string>
     <plurals name="plates_list_size">
         <item quantity="one">%d plate</item>
@@ -295,4 +295,7 @@
     <string name="help_import_currency_two_decimals" translatable="false">1 becomes 0.01\n100 becomes 1.00\n0.50 becomes 0.50\n10.99 becomes 10.99</string>
     <string name="help_import_currency_no_decimals" translatable="false">1 becomes 1\n100 becomes 100\n0.50 becomes 50\n10.99 becomes 1099</string>
     <string name="help_import_currency_three_decimals" translatable="false">1 becomes 0.001\n100 becomes 0.100\n0.50 becomes 0.050\n10.99 becomes 1.099\n1.234 becomes 1.234</string>
+    <string name="check_wishlist_dialog_title">Create a plate?</string>
+    <string name="check_wishlist_dialog_text">A new plate will be created based on this wishlist entry.</string>
+    <string name="check_wishlist_button">Create plate</string>
 </resources>

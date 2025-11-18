@@ -120,11 +120,11 @@
     <string name="empty_list_archive_desc">プレートをアーカイブして、過去に持っていた物を管理できます。</string>
     <string name="sort_by_country_and_age_asc">国家や期間の昇順</string>
     <string name="sort_by_country_and_age_desc">国家や期間の降順</string>
-    <string name="transfer_from_wishlist_dialog_text">この欲しい物に基づいて新規プレートを作成して、欲しい物が削除されます。</string>
+    <string name="transfer_from_wishlist_dialog_text">この欲しい物に基づいて新規プレートが作成されます。その代わりに、欲しい物は削除されます。</string>
     <string name="transfer_from_plates_dialog_title">｢<xliff:g name="reg_no" example="ABC-123">%s</xliff:g>｣ をアーカイブしますか？</string>
     <string name="transfer_from_plates_dialog_text">アーカイブにコピーを作成して、プレートが削除されます。</string>
-    <string name="transfer_from_wishlist_dialog_title">完了にしますか？</string>
-    <string name="transfer_from_wishlist_button">完了にする</string>
+    <string name="transfer_from_wishlist_dialog_title">プレートを作成して欲しい物を削除しますか？</string>
+    <string name="transfer_from_wishlist_button">プレート作成と削除</string>
     <string name="transfer_from_plates_button">アーカイブ</string>
     <plurals name="plates_list_size">
         <item quantity="other">%d枚のプレート</item>
@@ -227,4 +227,7 @@
     <string name="measurement_width">長さ、横</string>
     <string name="measurement_height">長さ、縦</string>
     <string name="settings_general">全般</string>
+    <string name="check_wishlist_dialog_text">この欲しい物に基づいて新規プレートが作成されます。</string>
+    <string name="check_wishlist_button">プレート作成</string>
+    <string name="check_wishlist_dialog_title">プレートを作成しますか？</string>
 </resources>

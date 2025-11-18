@@ -523,6 +523,7 @@ class CatalogViewModel @Inject constructor(
             yearSliderPosition = getYearSliderRange(),
             dateSliderPosition = getDateSliderRange(),
             costSliderPosition = getCostSliderRange(),
+            valueSliderPosition = getValueSliderRange(),
             widthSliderPosition = getWidthSliderRange(),
             archivalDateSliderPosition = getArchivalDateSliderRange()
         ) }

@@ -87,7 +87,7 @@ fun DiscardDialog(
 fun TransferDialog(
     title: String,
     text: String,
-    confirmButtonText: String,
+    confirmButtonText: String = stringResource(R.string.ok_text),
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {

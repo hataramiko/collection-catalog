@@ -114,13 +114,18 @@ private fun ItemSummaryScreen(
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
     var showCopyDialog by rememberSaveable { mutableStateOf(false) }
+    var showCheckWishlistDialog by rememberSaveable { mutableStateOf(false) }
     var showTransferDialog by rememberSaveable { mutableStateOf(false) }
+
     val onBackBehavior = { if (isInspectingImage) isInspectingImage = false else onBack() }
+    val onCheckWishlistLambda = { showCheckWishlistDialog = true }
+        .takeIf { uiState.itemType == ItemType.WANTED_PLATE }
     val onTransferLambda = { showTransferDialog = true }
         .takeIf { uiState.itemType != ItemType.FORMER_PLATE }
+
     val (transferButtonText, transferButtonPainter) = when (uiState.item) {
         is Item.WantedPlateItem -> stringResource(R.string.transfer_from_wishlist_button) to
-            painterResource(R.drawable.rounded_task_alt_24)
+            painterResource(R.drawable.rounded_done_all_24)
         is Item.PlateItem -> stringResource(R.string.transfer_from_plates_button) to
             painterResource(R.drawable.rounded_archive)
         else -> "" to painterResource(R.drawable.rounded_question_mark)
@@ -134,14 +139,21 @@ private fun ItemSummaryScreen(
         ) to stringResource(R.string.transfer_from_plates_dialog_text)
         else -> "" to ""
     }
+
     val copyToast = stringResource(R.string.copied)
     val deletionToast = if (uiState.item is Item.WantedPlateItem) {
         stringResource(R.string.deletion_message_wishlist)
-    } else stringResource(R.string.deletion_message_plate, uiState.itemDetails.regNo ?: "")
+    } else {
+        stringResource(
+            R.string.deletion_message_plate,
+            uiState.itemDetails.regNo ?: ""
+        )
+    }
     val transferToast = when (uiState.item) {
         is Item.WantedPlateItem -> stringResource(R.string.transferred_from_wishlist_message)
         is Item.PlateItem -> stringResource(
-            R.string.transferred_from_plates_message, uiState.itemDetails.regNo ?: ""
+            R.string.transferred_from_plates_message,
+            uiState.itemDetails.regNo ?: ""
         )
         else -> ""
     }
@@ -167,14 +179,8 @@ private fun ItemSummaryScreen(
                 onCopy = {
                     viewModel.copyItemDetails()
                     viewModel.showToast(context, copyToast)
-                    /*
-                    viewModel.copyItemDetailsToClipboard(context, uiState.itemDetails)
-                    // From API 33 (TIRAMISU) onwards an automatic standard confirmation is shown.
-                    // Show a manual toast for older versions.
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                        viewModel.showToast(context, copyToast)
-                    }*/
                 },
+                onCheckWishlist = onCheckWishlistLambda,
                 onTransfer = onTransferLambda,
                 transferButtonText = transferButtonText,
                 transferButtonPainter = transferButtonPainter
@@ -218,11 +224,24 @@ private fun ItemSummaryScreen(
             onCancel = { showCopyDialog = false }
         )
     }
+    if (showCheckWishlistDialog) {
+        TransferDialog(
+            title = stringResource(R.string.check_wishlist_dialog_title),
+            text = stringResource(R.string.check_wishlist_dialog_text),
+            onConfirm = {
+                showCheckWishlistDialog = false
+                coroutineScope.launch {
+                    viewModel.transferItem()
+                    viewModel.showToast(context, transferToast)
+                }
+            },
+            onCancel = { showCheckWishlistDialog = false }
+        )
+    }
     if (showTransferDialog) {
         TransferDialog(
             title = transferDialogTitle,
             text = transferDialogText,
-            confirmButtonText = stringResource(R.string.ok_text),
             onConfirm = {
                 showTransferDialog = false
                 coroutineScope.launch {
