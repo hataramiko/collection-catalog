@@ -1,6 +1,7 @@
 package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -69,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
@@ -78,6 +80,7 @@ import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
+import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.util.getCalendarLocale
 import com.mikohatara.collectioncatalog.util.getCurrencySymbol
@@ -96,65 +99,101 @@ fun ItemEntryScreen(
     viewModel: ItemEntryViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+    val isPasteEnabled by viewModel.canPasteFromInternalClipboard.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.deleteUnusedImages(context)
     }
 
     ItemEntryScreen(
-        viewModel,
-        userPreferences,
-        uiState,
-        context,
+        userPreferences = userPreferences,
+        itemDetails = uiState.itemDetails,
+        itemType = uiState.itemType,
+        temporaryImageUri = uiState.temporaryImageUri,
+        getCollections = viewModel::getCollections,
+        selectedCollections = uiState.selectedCollections,
+        isLoading = uiState.isLoading,
+        isNew = uiState.isNew,
+        isValidEntry = uiState.isValidEntry,
+        isPasteEnabled = isPasteEnabled,
+        hasUnsavedChanges = uiState.hasUnsavedChanges,
+        showToast = viewModel::showToast,
+        onBack = onBack,
+        onCopy = viewModel::copyItemDetails,
+        onPaste = viewModel::pasteItemDetails,
         onValueChange = viewModel::updateUiState,
-        onBack
+        onImagePicked = viewModel::handlePickedImage,
+        onImageRemoved = viewModel::clearImagePath,
+        onToggleCollection = viewModel::toggleCollectionSelection,
+        onSave = {
+            val toast = if (uiState.itemType == ItemType.WANTED_PLATE) {
+                if (uiState.isNew) context.getString(R.string.saved_to_wishlist)
+                else context.getString(R.string.saved_generic)
+            } else {
+                val regNo = uiState.itemDetails.regNo ?: ""
+                if (uiState.isNew) {
+                    context.getString(R.string.saved_new_item, regNo)
+                } else {
+                    context.getString(R.string.saved_old_item, regNo)
+                }
+            }
+            viewModel.saveEntry(context)
+            viewModel.showToast(context, toast)
+            onBack()
+        }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemEntryScreen(
-    viewModel: ItemEntryViewModel,
+    context: Context = LocalContext.current,
     userPreferences: UserPreferences,
-    uiState: ItemEntryUiState,
-    context: Context,
-    onValueChange: (ItemDetails) -> Unit,
+    itemDetails: ItemDetails,
+    itemType: ItemType,
+    temporaryImageUri: Uri?,
+    getCollections: () -> List<Collection>,
+    selectedCollections: List<Collection>,
+    isLoading: Boolean,
+    isNew: Boolean,
+    isValidEntry: Boolean,
+    isPasteEnabled: Boolean,
+    hasUnsavedChanges: Boolean,
+    showToast: (Context, String) -> Unit,
     onBack: () -> Unit,
+    onCopy: () -> Unit,
+    onPaste: () -> Unit,
+    onValueChange: (ItemDetails) -> Unit,
+    onImagePicked: (Uri?) -> Unit,
+    onImageRemoved: () -> Unit,
+    onToggleCollection: (Collection) -> Unit,
+    onSave: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
-    val (saveButtonText, saveButtonIcon) = when (uiState.isNew) {
-        true -> stringResource(R.string.save_added_item, uiState.itemDetails.regNo ?: "") to
+
+    val (saveButtonText, saveButtonIcon) = if (isNew) {
+        stringResource(R.string.save_added_item, itemDetails.regNo ?: "") to
                 painterResource(R.drawable.rounded_save)
-        false -> stringResource(R.string.save_edited_item, uiState.itemDetails.regNo ?: "") to
+    } else {
+        stringResource(R.string.save_edited_item, itemDetails.regNo ?: "") to
                 painterResource(R.drawable.rounded_save_as)
     }
-    val topBarTitle = if (!uiState.isNew) {
-        stringResource(R.string.edit_item_title, uiState.itemDetails.regNo ?: "")
+    val topBarTitle = if (!isNew) {
+        stringResource(R.string.edit_item_title, itemDetails.regNo ?: "")
     } else {
         stringResource(R.string.add_item_title)
     }
-    val saveToast = if (uiState.itemType == ItemType.WANTED_PLATE) {
-        if (uiState.isNew) stringResource(R.string.saved_to_wishlist)
-        else stringResource(R.string.saved_generic)
-    } else {
-        if (uiState.isNew) stringResource(R.string.saved_new_item, uiState.itemDetails.regNo ?: "")
-        else stringResource(R.string.saved_old_item, uiState.itemDetails.regNo ?: "")
-    }
+
     val copyToast = stringResource(R.string.copied)
     val pasteToast = stringResource(R.string.pasted)
-    val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
-    val onSaveBehavior = {
-        viewModel.saveEntry(context); viewModel.showToast(context, saveToast); onBack()
-    }
-    val isPasteEnabled = viewModel.canPasteFromInternalClipboard.collectAsState()
-    BackHandler(enabled = true) {
-        onBackBehavior()
-    }
+    val onBackBehavior = { if (hasUnsavedChanges) showDiscardDialog = true else onBack() }
+
+    BackHandler(enabled = true) { onBackBehavior() }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -162,36 +201,41 @@ private fun ItemEntryScreen(
             ItemEntryTopAppBar(
                 title = topBarTitle,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    containerColor = colorScheme.surfaceContainerHighest,
+                    scrolledContainerColor = colorScheme.surfaceContainerHigh,
                 ),
                 scrollBehavior = scrollBehavior,
                 onBack = onBackBehavior,
-                onSave = onSaveBehavior,
+                onSave = onSave,
                 saveIcon = saveButtonIcon,
-                isSaveEnabled = uiState.isValidEntry,
-                onCopy = {
-                    viewModel.copyItemDetails()
-                    viewModel.showToast(context, copyToast)
-                },
-                onPaste = {
-                    viewModel.pasteItemDetails()
-                    viewModel.showToast(context, pasteToast)
-                },
-                isPasteEnabled = isPasteEnabled.value
+                isSaveEnabled = isValidEntry,
+                onCopy = { onCopy(); showToast(context, copyToast) },
+                onPaste = { onPaste(); showToast(context, pasteToast) },
+                isPasteEnabled = isPasteEnabled
             )
         },
         content = { innerPadding ->
-            ItemEntryScreenContent(
-                viewModel,
-                userPreferences,
-                uiState,
-                saveButtonText,
-                saveButtonIcon,
-                modifier = Modifier.padding(innerPadding),
-                onValueChange,
-                onSave = onSaveBehavior
-            )
+            if (isLoading) {
+                Loading()
+            } else {
+                ItemEntryScreenContent(
+                    userPreferences = userPreferences,
+                    itemDetails = itemDetails,
+                    itemType = itemType,
+                    temporaryImageUri = temporaryImageUri,
+                    getCollections = getCollections,
+                    selectedCollections = selectedCollections,
+                    saveButtonText = saveButtonText,
+                    saveButtonIcon = saveButtonIcon,
+                    isValidEntry = isValidEntry,
+                    onValueChange = onValueChange,
+                    onImagePicked = onImagePicked,
+                    onImageRemoved = onImageRemoved,
+                    onToggleCollection = onToggleCollection,
+                    onSave = onSave,
+                    modifier = Modifier.padding(innerPadding)
+                )
+            }
         }
     )
     if (showDiscardDialog) {
@@ -207,16 +251,23 @@ private fun ItemEntryScreen(
 
 @Composable
 private fun ItemEntryScreenContent(
-    viewModel: ItemEntryViewModel,
     userPreferences: UserPreferences,
-    uiState: ItemEntryUiState,
+    itemDetails: ItemDetails,
+    itemType: ItemType,
+    temporaryImageUri: Uri?,
+    getCollections: () -> List<Collection>,
+    selectedCollections: List<Collection>,
     saveButtonText: String,
     saveButtonIcon: Painter,
-    modifier: Modifier,
-    onValueChange: (ItemDetails) -> Unit = {},
-    onSave: () -> Unit
+    isValidEntry: Boolean,
+    onValueChange: (ItemDetails) -> Unit,
+    onImagePicked: (Uri?) -> Unit,
+    onImageRemoved: () -> Unit,
+    onToggleCollection: (Collection) -> Unit,
+    onSave: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val collections = viewModel.getCollections()
+    val collections = getCollections()
     val localeCode = userPreferences.userCountry
     val lengthUnit = getMeasurementUnitSymbol(userPreferences.lengthUnit)
     val weightUnit = getMeasurementUnitSymbol(userPreferences.weightUnit)
@@ -226,13 +277,21 @@ private fun ItemEntryScreenContent(
     ) {
         EntrySection(
             type = EntrySectionType.COMMON_DETAILS,
-            image = { EntryFormImage(viewModel, uiState, Modifier.padding(10.dp)) }
+            image = {
+                EntryFormImage(
+                    existingImagePath = itemDetails.imagePath,
+                    tempImagePath = temporaryImageUri,
+                    onPick = onImagePicked,
+                    onRemove = onImageRemoved,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
         ) {
             Row {
                 EntryField(
                     label = stringResource(R.string.reg_no),
-                    value = uiState.itemDetails.regNo ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(regNo = it)) },
+                    value = itemDetails.regNo ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(regNo = it)) },
                     modifier = Modifier.weight(1f),
                     capitalization = KeyboardCapitalization.Characters,
                 )
@@ -256,13 +315,13 @@ private fun ItemEntryScreenContent(
 
             EntryField(
                 label = stringResource(R.string.country),
-                value = uiState.itemDetails.country ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(country = it)) }
+                value = itemDetails.country ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(country = it)) }
             )
             EntryField(
                 label = stringResource(R.string.subdivision),
-                value = uiState.itemDetails.region1st ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(region1st = it)) }
+                value = itemDetails.region1st ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(region1st = it)) }
             )
             InfoField(
                 text = stringResource(R.string.info_region_1st),
@@ -270,30 +329,31 @@ private fun ItemEntryScreenContent(
             )
             EntryField(
                 label = stringResource(R.string.region),
-                value = uiState.itemDetails.region2nd ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(region2nd = it)) }
+                value = itemDetails.region2nd ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(region2nd = it)) }
             )
             EntryField(
                 label = stringResource(R.string.region_second),
-                value = uiState.itemDetails.region3rd ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(region3rd = it)) }
+                value = itemDetails.region3rd ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(region3rd = it)) }
             )
             ItemEntryVerticalSpacer()
 
             EntryField(
                 label = stringResource(R.string.type),
-                value = uiState.itemDetails.type ?: "",
-                onValueChange = { onValueChange(uiState.itemDetails.copy(type = it)) }
+                value = itemDetails.type ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(type = it)) }
             )
             Row {
                 EntryField(
                     label = stringResource(R.string.period_start),
-                    value = uiState.itemDetails.periodStart?.toString() ?: "",
+                    value = itemDetails.periodStart?.toString() ?: "",
                     onValueChange = { newValue ->
                         onValueChange(
-                            uiState.itemDetails.copy(
+                            itemDetails.copy(
                                 periodStart = if (newValue.isValidYear()) newValue.toInt()
-                                else null)
+                                else null
+                            )
                         )
                     },
                     modifier = Modifier.weight(1f),
@@ -302,12 +362,12 @@ private fun ItemEntryScreenContent(
                 Spacer(modifier = Modifier.width(10.dp))
                 EntryField(
                     label = stringResource(R.string.period_end),
-                    value = uiState.itemDetails.periodEnd?.toString() ?: "",
+                    value = itemDetails.periodEnd?.toString() ?: "",
                     onValueChange = { newValue ->
                         onValueChange(
-                            uiState.itemDetails.copy(
-                                periodEnd = if (newValue.isValidYear()) newValue.toInt()
-                                else null)
+                            itemDetails.copy(
+                                periodEnd = if (newValue.isValidYear()) newValue.toInt() else null
+                            )
                         )
                     },
                     modifier = Modifier.weight(1f),
@@ -316,30 +376,32 @@ private fun ItemEntryScreenContent(
             }
             EntryField(
                 label = stringResource(R.string.year),
-                value = uiState.itemDetails.year?.toString() ?: "",
+                value = itemDetails.year?.toString() ?: "",
                 onValueChange = { newValue ->
                     onValueChange(
-                        uiState.itemDetails.copy(
-                            year = if (newValue.isValidYear()) newValue.toInt() else null)
+                        itemDetails
+                            .copy(year = if (newValue.isValidYear()) newValue.toInt() else null)
                     )
                 },
                 keyboardType = KeyboardType.Number
             )
             ItemEntryVerticalSpacer()
         }
-        if (uiState.itemType == ItemType.PLATE && collections.isNotEmpty()) {
+        if (itemType == ItemType.PLATE && collections.isNotEmpty()) {
             EntrySection(
-                type = EntrySectionType.COLLECTIONS,
+                type = EntrySectionType.COLLECTIONS
             ) {
                 collections.forEach { collection ->
                     FilterChip(
-                        selected = uiState.selectedCollections.any { it == collection },
-                        onClick = { viewModel.toggleCollectionSelection(collection) },
-                        label = { Text(
-                            text = collection.name,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        ) },
+                        selected = selectedCollections.any { it.id == collection.id },
+                        onClick = { onToggleCollection(collection) },
+                        label = {
+                            Text(
+                                text = collection.name,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
                         leadingIcon = {
                             if (!collection.emoji.isNullOrBlank()) {
                                 Box(
@@ -349,9 +411,7 @@ private fun ItemEntryScreenContent(
                                     Text(collection.emoji)
                                 }
                             } else {
-                                IconCollectionLabel(
-                                    color = collection.color.color
-                                )
+                                IconCollectionLabel(color = collection.color.color)
                             }
                         }
                     )
@@ -367,26 +427,26 @@ private fun ItemEntryScreenContent(
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.notes),
-                        value = uiState.itemDetails.notes ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(notes = it)) },
+                        value = itemDetails.notes ?: "",
+                        onValueChange = { onValueChange(itemDetails.copy(notes = it)) },
                         singleLine = false,
                         hasEntryDialog = true
                     )
-                    if (uiState.itemType != ItemType.WANTED_PLATE) {
+                    if (itemType != ItemType.WANTED_PLATE) {
                         EntryField(
                             label = stringResource(R.string.vehicle),
-                            value = uiState.itemDetails.vehicle ?: "",
-                            onValueChange = { onValueChange(uiState.itemDetails.copy(vehicle = it)) },
+                            value = itemDetails.vehicle ?: "",
+                            onValueChange = { onValueChange(itemDetails.copy(vehicle = it)) },
                             singleLine = false
                         )
                     }
                 }
-                if (uiState.itemType != ItemType.WANTED_PLATE) {
+                if (itemType != ItemType.WANTED_PLATE) {
                     EntryFieldBackground {
                         DatePickerField(
                             label = stringResource(R.string.date),
-                            dateValue = uiState.itemDetails.date ?: "",
-                            onDateSelected = { onValueChange(uiState.itemDetails.copy(date = it)) },
+                            dateValue = itemDetails.date ?: "",
+                            onDateSelected = { onValueChange(itemDetails.copy(date = it)) },
                             userCountry = localeCode
                         )
                     }
@@ -394,10 +454,12 @@ private fun ItemEntryScreenContent(
                         EntryFieldBackground(modifier = Modifier.weight(1f)) {
                             EntryField(
                                 label = stringResource(R.string.cost),
-                                placeholder = { Text(getCurrencySymbol(localeCode)) },
-                                value = uiState.itemDetails.cost?.toString() ?: "",
+                                placeholder = {
+                                    Text(getCurrencySymbol(localeCode))
+                                },
+                                value = itemDetails.cost?.toString() ?: "",
                                 onValueChange = { onValueChange(
-                                    uiState.itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
+                                    itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
                                 },
                                 keyboardType = KeyboardType.Number,
                                 isCurrency = true,
@@ -405,16 +467,18 @@ private fun ItemEntryScreenContent(
                             )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
-                        if (uiState.itemType == ItemType.FORMER_PLATE) {
+                        if (itemType == ItemType.FORMER_PLATE) {
                             Spacer(modifier = Modifier.weight(1f))
                         } else {
                             EntryFieldBackground(modifier = Modifier.weight(1f)) {
                                 EntryField(
                                     label = stringResource(R.string.value),
-                                    placeholder = { Text(getCurrencySymbol(localeCode)) },
-                                    value = uiState.itemDetails.value?.toString() ?: "",
+                                    placeholder = {
+                                        Text(getCurrencySymbol(localeCode))
+                                    },
+                                    value = itemDetails.value?.toString() ?: "",
                                     onValueChange = { newValue ->
-                                        onValueChange(uiState.itemDetails.copy(
+                                        onValueChange(itemDetails.copy(
                                             value = if (newValue.isBlankOrZero()) null
                                             else newValue.toLongOrNull())
                                         )
@@ -426,13 +490,13 @@ private fun ItemEntryScreenContent(
                             }
                         }
                     }
-                    if (uiState.itemType == ItemType.PLATE) {
+                    if (itemType == ItemType.PLATE) {
                         EntryFieldBackground {
                             EntryField(
                                 label = stringResource(R.string.location),
-                                value = uiState.itemDetails.status ?: "",
+                                value = itemDetails.status ?: "",
                                 onValueChange = {
-                                    onValueChange(uiState.itemDetails.copy(status = it))
+                                    onValueChange(itemDetails.copy(status = it))
                                 }
                             )
                         }
@@ -449,9 +513,9 @@ private fun ItemEntryScreenContent(
                     EntryField(
                         label = stringResource(R.string.width),
                         placeholder = { Text(lengthUnit) },
-                        value = uiState.itemDetails.width?.toString() ?: "",
+                        value = itemDetails.width?.toString() ?: "",
                         onValueChange = { newValue ->
-                            onValueChange(uiState.itemDetails.copy(
+                            onValueChange(itemDetails.copy(
                                 width = if (newValue.isBlankOrZero()) null
                                 else newValue.toIntOrNull())
                             )
@@ -467,9 +531,9 @@ private fun ItemEntryScreenContent(
                     EntryField(
                         label = stringResource(R.string.height),
                         placeholder = { Text(lengthUnit) },
-                        value = uiState.itemDetails.height?.toString() ?: "",
+                        value = itemDetails.height?.toString() ?: "",
                         onValueChange = { newValue ->
-                            onValueChange(uiState.itemDetails.copy(
+                            onValueChange(itemDetails.copy(
                                 height = if (newValue.isBlankOrZero()) null
                                 else newValue.toIntOrNull())
                             )
@@ -485,9 +549,9 @@ private fun ItemEntryScreenContent(
                 EntryField(
                     label = stringResource(R.string.weight),
                     placeholder = { Text(weightUnit) },
-                    value = uiState.itemDetails.weight?.toString() ?: "",
+                    value = itemDetails.weight?.toString() ?: "",
                     onValueChange = { newValue ->
-                        onValueChange(uiState.itemDetails.copy(
+                        onValueChange(itemDetails.copy(
                             weight = if (newValue.isBlankOrZero()) null
                             else newValue.toIntOrNull())
                         )
@@ -501,69 +565,69 @@ private fun ItemEntryScreenContent(
             EntryFieldBackground {
                 EntryField(
                     label = stringResource(R.string.color_main),
-                    value = uiState.itemDetails.colorMain ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(colorMain = it)) }
+                    value = itemDetails.colorMain ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(colorMain = it)) }
                 )
                 EntryField(
                     label = stringResource(R.string.color_secondary),
-                    value = uiState.itemDetails.colorSecondary ?: "",
-                    onValueChange = { onValueChange(uiState.itemDetails.copy(colorSecondary = it)) },
-                    imeAction = if (uiState.itemType == ItemType.WANTED_PLATE) ImeAction.Done
+                    value = itemDetails.colorSecondary ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(colorSecondary = it)) },
+                    imeAction = if (itemType == ItemType.WANTED_PLATE) ImeAction.Done
                     else ImeAction.Next
                 )
             }
         }
-        if (uiState.itemType != ItemType.WANTED_PLATE) {
+        if (itemType != ItemType.WANTED_PLATE) {
             EntrySection(
                 label = stringResource(R.string.source)
             ) {
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.source_name),
-                        value = uiState.itemDetails.sourceName ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceName = it)) }
+                        value = itemDetails.sourceName ?: "",
+                        onValueChange = { onValueChange(itemDetails.copy(sourceName = it)) }
                     )
                     EntryField(
                         label = stringResource(R.string.source_alias),
-                        value = uiState.itemDetails.sourceAlias ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceAlias = it)) }
+                        value = itemDetails.sourceAlias ?: "",
+                        onValueChange = { onValueChange(itemDetails.copy(sourceAlias = it)) }
                     )
                 }
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.source_type),
-                        value = uiState.itemDetails.sourceType ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceType = it)) }
+                        value = itemDetails.sourceType ?: "",
+                        onValueChange = { onValueChange(itemDetails.copy(sourceType = it)) }
                     )
                 }
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.source_country),
-                        value = uiState.itemDetails.sourceCountry ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceCountry = it)) }
+                        value = itemDetails.sourceCountry ?: "",
+                        onValueChange = { onValueChange(itemDetails.copy(sourceCountry = it)) }
                     )
                 }
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.source_details),
-                        value = uiState.itemDetails.sourceDetails ?: "",
-                        onValueChange = { onValueChange(uiState.itemDetails.copy(sourceDetails = it)) },
-                        imeAction = if (uiState.itemType != ItemType.FORMER_PLATE) ImeAction.Done
+                        value = itemDetails.sourceDetails ?: "",
+                        onValueChange = { onValueChange(itemDetails.copy(sourceDetails = it)) },
+                        imeAction = if (itemType != ItemType.FORMER_PLATE) ImeAction.Done
                         else ImeAction.Next
                     )
                 }
             }
         }
-        if (uiState.itemType == ItemType.FORMER_PLATE) {
+        if (itemType == ItemType.FORMER_PLATE) {
             EntrySection(
                 label = stringResource(R.string.archival)
             ) {
                 EntryFieldBackground {
                     DatePickerField(
                         label = stringResource(R.string.archival_date),
-                        dateValue = uiState.itemDetails.archivalDate ?: "",
+                        dateValue = itemDetails.archivalDate ?: "",
                         onDateSelected = {
-                            onValueChange(uiState.itemDetails.copy(archivalDate = it))
+                            onValueChange(itemDetails.copy(archivalDate = it))
                         },
                         userCountry = localeCode
                     )
@@ -571,17 +635,17 @@ private fun ItemEntryScreenContent(
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.archival_reason),
-                        value = uiState.itemDetails.archivalType ?: "",
+                        value = itemDetails.archivalType ?: "",
                         onValueChange = {
-                            onValueChange(uiState.itemDetails.copy(archivalType = it))
+                            onValueChange(itemDetails.copy(archivalType = it))
                         }
                     )
                     EntryField(
                         label = stringResource(R.string.sold_price),
                         placeholder = { Text(getCurrencySymbol(localeCode)) },
-                        value = uiState.itemDetails.price?.toString() ?: "",
+                        value = itemDetails.price?.toString() ?: "",
                         onValueChange = { newValue ->
-                            onValueChange(uiState.itemDetails.copy(
+                            onValueChange(itemDetails.copy(
                                 price = if (newValue.isBlankOrZero()) null
                                 else newValue.toLongOrNull())
                             )
@@ -594,32 +658,32 @@ private fun ItemEntryScreenContent(
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.recipient_name),
-                        value = uiState.itemDetails.recipientName ?: "",
+                        value = itemDetails.recipientName ?: "",
                         onValueChange = {
-                            onValueChange(uiState.itemDetails.copy(recipientName = it))
+                            onValueChange(itemDetails.copy(recipientName = it))
                         }
                     )
                     EntryField(
                         label = stringResource(R.string.recipient_alias),
-                        value = uiState.itemDetails.recipientAlias ?: "",
+                        value = itemDetails.recipientAlias ?: "",
                         onValueChange = {
-                            onValueChange(uiState.itemDetails.copy(recipientAlias = it))
+                            onValueChange(itemDetails.copy(recipientAlias = it))
                         }
                     )
                     EntryField(
                         label = stringResource(R.string.recipient_country),
-                        value = uiState.itemDetails.recipientCountry ?: "",
+                        value = itemDetails.recipientCountry ?: "",
                         onValueChange = {
-                            onValueChange(uiState.itemDetails.copy(recipientCountry = it))
+                            onValueChange(itemDetails.copy(recipientCountry = it))
                         }
                     )
                 }
                 EntryFieldBackground {
                     EntryField(
                         label = stringResource(R.string.archival_details),
-                        value = uiState.itemDetails.archivalDetails ?: "",
+                        value = itemDetails.archivalDetails ?: "",
                         onValueChange = {
-                            onValueChange(uiState.itemDetails.copy(archivalDetails = it))
+                            onValueChange(itemDetails.copy(archivalDetails = it))
                         },
                         imeAction = ImeAction.Done
                     )
@@ -628,7 +692,7 @@ private fun ItemEntryScreenContent(
         }
         Button(
             onClick = onSave,
-            enabled = uiState.isValidEntry,
+            enabled = isValidEntry,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 32.dp)
@@ -648,16 +712,18 @@ private fun ItemEntryScreenContent(
 
 @Composable
 private fun EntryFormImage(
-    viewModel: ItemEntryViewModel,
-    uiState: ItemEntryUiState,
+    existingImagePath: String?,
+    tempImagePath: Uri?,
+    onPick: (Uri?) -> Unit,
+    onRemove: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     pickItemImage(
-        existingImagePath = uiState.itemDetails.imagePath,
+        existingImagePath = existingImagePath,
         modifier = modifier,
-        temporaryImageUri = uiState.temporaryImageUri,
-        onPick = viewModel::handlePickedImage,
-        onRemove = viewModel::clearImagePath
+        temporaryImageUri = tempImagePath,
+        onPick = onPick,
+        onRemove = onRemove
     )
 }
 

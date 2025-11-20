@@ -1,13 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -30,6 +28,8 @@ import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toPlate
 import com.mikohatara.collectioncatalog.util.toWantedPlate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,11 +39,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@Immutable
 data class ItemEntryUiState(
+    val isLoading: Boolean = false,
     val item: Item? = null,
     val itemType: ItemType = ItemType.PLATE,
     val itemDetails: ItemDetails = ItemDetails(),
@@ -86,58 +87,55 @@ class ItemEntryViewModel @Inject constructor(
     val uiState: StateFlow<ItemEntryUiState> = _uiState.asStateFlow()
 
     init {
+        _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            if (itemId != null) {
-                loadItem(itemType, itemId)
-            } else {
-                _uiState.update { it.copy(
-                    itemType = itemType, isValidEntry = false, isNew = true
-                ) }
+
+            launch {
+                collectionRepository.getAllCollectionsStream().collect {
+                    _allCollections.clear()
+                    _allCollections.addAll(it)
+                }
             }
-            collectionRepository.getAllCollectionsStream().collect {
-                _allCollections.clear()
-                _allCollections.addAll(it)
+
+            try {
+                if (itemId != null) {
+                    withContext(Dispatchers.IO) {
+                        loadItem(itemType, itemId)
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(itemType = itemType, isValidEntry = false, isNew = true)
+                    }
+                }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
-    fun updateUiState(itemDetails: ItemDetails) {
-        val item = uiState.value.item
-        val temporaryImageUri = uiState.value.temporaryImageUri
-        val selectedCollections = uiState.value.selectedCollections
-        val isValidEntry = itemType == ItemType.WANTED_PLATE ||
-                !(itemDetails.regNo.isNullOrBlank() ||
-                itemDetails.country.isNullOrBlank() ||
-                itemDetails.type.isNullOrBlank())
-        val isNew = uiState.value.isNew
-        val hasUnsavedChanges = uiState.value.hasUnsavedChanges
-        val initialDetails = if (isNew) ItemDetails() else when (item) {
-            is Item.PlateItem -> item.plate.toItemDetails()
-            is Item.WantedPlateItem -> item.wantedPlate.toItemDetails()
-            is Item.FormerPlateItem -> item.formerPlate.toItemDetails()
-            else -> ItemDetails()
-        }
+    fun updateUiState(newItemDetails: ItemDetails) {
+        _uiState.update { state ->
+            val initialDetails = if (state.isNew) {
+                ItemDetails()
+            } else {
+                when (val item = state.item) {
+                    is Item.PlateItem -> item.plate.toItemDetails()
+                    is Item.WantedPlateItem -> item.wantedPlate.toItemDetails()
+                    is Item.FormerPlateItem -> item.formerPlate.toItemDetails()
+                    else -> ItemDetails()
+                }
+            }
+            val hasUnsavedChanges = newItemDetails != initialDetails ||
+                    state.temporaryImageUri != null || state.hasUnsavedChanges
+            val isValidEntry = itemType == ItemType.WANTED_PLATE ||
+                    !(newItemDetails.regNo.isNullOrBlank() ||
+                    newItemDetails.country.isNullOrBlank() ||
+                    newItemDetails.type.isNullOrBlank())
 
-        _uiState.value = if (itemDetails != initialDetails || hasUnsavedChanges) {
-            ItemEntryUiState(
-                item = item,
-                itemType = itemType,
-                itemDetails = itemDetails,
-                temporaryImageUri = temporaryImageUri,
-                selectedCollections = selectedCollections,
+            state.copy(
+                itemDetails = newItemDetails,
                 isValidEntry = isValidEntry,
-                isNew = isNew,
-                hasUnsavedChanges = true
-            )
-        } else {
-            ItemEntryUiState(
-                item = item,
-                itemType = itemType,
-                itemDetails = itemDetails,
-                temporaryImageUri = temporaryImageUri,
-                selectedCollections = selectedCollections,
-                isValidEntry = isValidEntry,
-                isNew = isNew
+                hasUnsavedChanges = hasUnsavedChanges
             )
         }
     }
@@ -150,7 +148,7 @@ class ItemEntryViewModel @Inject constructor(
     }
 
     fun handlePickedImage(uri: Uri?) {
-        _uiState.update { it.copy(temporaryImageUri = uri) }
+        _uiState.update { it.copy(temporaryImageUri = uri, hasUnsavedChanges = true) }
     }
 
     fun saveImageToInternalStorage(context: Context) {
@@ -162,17 +160,22 @@ class ItemEntryViewModel @Inject constructor(
     }
 
     fun clearImagePath() {
-        val newItemDetails = uiState.value.itemDetails.copy(imagePath = null)
-        updateUiState(newItemDetails)
-        _uiState.update { it.copy(temporaryImageUri = null) }
+        _uiState.update { state ->
+            val newItemDetails = state.itemDetails.copy(imagePath = null)
+            state.copy(
+                itemDetails = newItemDetails,
+                temporaryImageUri = null,
+                hasUnsavedChanges = true
+            )
+        }
     }
 
-    fun deleteUnusedImages(context: Context) {
+    fun deleteUnusedImages(context: Context) = viewModelScope.launch {
         val directory = context.filesDir
-        val files = directory.listFiles()
-        val imagesInUse: List<String> = getImagesInUse()
-        files?.forEach {
-            if (!imagesInUse.contains(it.absolutePath)) it.delete()
+        val files = directory.listFiles() ?: return@launch
+        val imagesInUse = getImagesInUse()
+        files.forEach { file ->
+            if (!imagesInUse.contains(file.absolutePath)) file.delete()
         }
     }
 
@@ -191,13 +194,6 @@ class ItemEntryViewModel @Inject constructor(
         _uiState.update { it.copy(selectedCollections = newSelections, hasUnsavedChanges = true) }
     }
 
-    fun copyItemDetailsToClipboard(context: Context, itemDetails: ItemDetails) {
-        val jsonString = Json.encodeToString(itemDetails)
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("ItemDetails", jsonString)
-        clipboard.setPrimaryClip(clip)
-    }
-
     fun copyItemDetails() {
         val itemDetails = _uiState.value.itemDetails
         internalClipboardManager.copyItemDetails(itemDetails)
@@ -210,28 +206,6 @@ class ItemEntryViewModel @Inject constructor(
             updateUiState(newItemDetails)
         } ?: run {
             //TODO nothing to paste, internal clipboard was empty
-        }
-    }
-
-    fun pasteItemDetailsFromClipboard(context: Context) {
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData = clipboard.primaryClip
-        if (clipData != null && clipData.itemCount > 0) {
-            val clipText = clipData.getItemAt(0).text
-            if (clipText != null) {
-                try {
-                    val copiedItemDetails = Json.decodeFromString<ItemDetails>(clipText.toString())
-                    /*_uiState.update {
-                        it.copy(itemDetails = it.itemDetails.pasteItemDetails(copiedItemDetails))
-                    }*/
-                    val newItemDetails = _uiState.value.itemDetails.pasteItemDetails(copiedItemDetails)
-                    updateUiState(newItemDetails)
-                } catch (e: Exception) {
-                    // TODO something
-                    // Handle invalid JSON
-                    Log.e("ItemEntryViewModel", "Error pasting ItemDetails", e)
-                }
-            }
         }
     }
 
@@ -271,51 +245,62 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 
-    private fun loadItem(itemType: ItemType, itemId: Int) = viewModelScope.launch {
+    private suspend fun loadItem(itemType: ItemType, itemId: Int) {
         when (itemType) {
             ItemType.PLATE -> {
-                plateRepository.getPlateWithCollectionsStream(itemId).let {
-                    _uiState.value = ItemEntryUiState(
-                        item = it.firstOrNull()?.let { Item.PlateItem(it.plate) },
-                        itemType = itemType,
-                        itemDetails = it.firstOrNull()?.plate?.toItemDetails() ?: ItemDetails(),
-                        selectedCollections = it.firstOrNull()?.collections ?: emptyList(),
-                        isNew = false
-                    )
+                plateRepository.getPlateWithCollectionsStream(itemId).firstOrNull()?.let { item ->
+                    _uiState.update {
+                        it.copy(
+                            item = Item.PlateItem(item.plate),
+                            itemType = itemType,
+                            itemDetails = item.plate.toItemDetails(),
+                            selectedCollections = item.collections,
+                            isNew = false
+                        )
+                    }
                 }
             }
             ItemType.WANTED_PLATE -> {
-                plateRepository.getWantedPlateStream(itemId).let {
-                    _uiState.value = ItemEntryUiState(
-                        item = it.firstOrNull()?.let { Item.WantedPlateItem(it) },
-                        itemType = itemType,
-                        itemDetails = it.firstOrNull()?.toItemDetails() ?: ItemDetails(),
-                        isNew = false
-                    )
+                plateRepository.getWantedPlateStream(itemId).firstOrNull()?.let { item ->
+                    _uiState.update {
+                        it.copy(
+                            item = Item.WantedPlateItem(item),
+                            itemType = itemType,
+                            itemDetails = item.toItemDetails(),
+                            isNew = false
+                        )
+                    }
                 }
             }
             ItemType.FORMER_PLATE -> {
-                plateRepository.getFormerPlateStream(itemId).let {
-                    _uiState.value = ItemEntryUiState(
-                        item = it.firstOrNull()?.let { Item.FormerPlateItem(it) },
-                        itemType = itemType,
-                        itemDetails = it.firstOrNull()?.toItemDetails() ?: ItemDetails(),
-                        isNew = false
-                    )
+                plateRepository.getFormerPlateStream(itemId).firstOrNull()?.let { item ->
+                    _uiState.update {
+                        it.copy(
+                            item = Item.FormerPlateItem(item),
+                            itemType = itemType,
+                            itemDetails = item.toItemDetails(),
+                            isNew = false
+                        )
+                    }
                 }
             }
         }
     }
 
-    private fun getImagesInUse(): List<String> = runBlocking {
-        val plates = plateRepository.getAllPlatesStream().firstOrNull() ?: emptyList()
-        val wantedPlates = plateRepository.getAllWantedPlatesStream().firstOrNull() ?: emptyList()
-        val formerPlates = plateRepository.getAllFormerPlatesStream().firstOrNull() ?: emptyList()
+    private suspend fun getImagesInUse(): List<String> {
+        val platesAsync = viewModelScope
+            .async { plateRepository.getAllPlatesStream().firstOrNull() ?: emptyList() }
+        val wantedPlatesAsync = viewModelScope
+            .async { plateRepository.getAllWantedPlatesStream().firstOrNull() ?: emptyList() }
+        val formerPlatesAsync = viewModelScope
+            .async { plateRepository.getAllFormerPlatesStream().firstOrNull() ?: emptyList() }
 
-        val result = plates.mapNotNull { it.uniqueDetails.imagePath }
-            .plus(wantedPlates.mapNotNull { it.imagePath })
-            .plus(formerPlates.mapNotNull { it.uniqueDetails.imagePath })
+        val plates = platesAsync.await()
+        val wantedPlates = wantedPlatesAsync.await()
+        val formerPlates = formerPlatesAsync.await()
 
-        return@runBlocking result
+        return plates.mapNotNull { it.uniqueDetails.imagePath } +
+                wantedPlates.mapNotNull { it.imagePath } +
+                formerPlates.mapNotNull { it.uniqueDetails.imagePath }
     }
 }
