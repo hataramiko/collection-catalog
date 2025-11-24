@@ -25,9 +25,6 @@ import com.mikohatara.collectioncatalog.ui.collection.CollectionListScreen
 import com.mikohatara.collectioncatalog.ui.components.ModalMenuDrawer
 import com.mikohatara.collectioncatalog.ui.help.HelpPage
 import com.mikohatara.collectioncatalog.ui.help.HelpScreen
-import com.mikohatara.collectioncatalog.ui.home.ArchiveScreen
-import com.mikohatara.collectioncatalog.ui.home.HomeScreen
-import com.mikohatara.collectioncatalog.ui.home.WishlistScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemEntryScreen
 import com.mikohatara.collectioncatalog.ui.item.ItemSummaryScreen
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
@@ -199,103 +196,6 @@ fun CollectionCatalogNavGraph(
                             val itemId = item.formerPlate.id
                             navActions.navigateToItemSummaryScreen(ItemType.FORMER_PLATE, itemId)
                         }
-                    },
-                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
-                )
-            }
-        }
-        composable( //TODO remove
-            route = HOME_DEFAULT_ROUTE
-        ) {
-            ModalMenuDrawer(
-                drawerState,
-                currentRoute,
-                navActions,
-                collectionList,
-                onEditCollections,
-                onAddCollection,
-                currentNavBackStackEntry
-            ) {
-                HomeScreen(
-                    onAddItem = {
-                        navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
-                    },
-                    onItemClick = {
-                        navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
-                    },
-                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
-                )
-            }
-        }
-        composable( //TODO remove
-            route = HOME_COLLECTION_ROUTE,
-            arguments = listOf(navArgument(COLLECTION_ID) { type = NavType.IntType })
-        ) {
-            ModalMenuDrawer(
-                drawerState,
-                currentRoute,
-                navActions,
-                collectionList,
-                onEditCollections,
-                onAddCollection,
-                currentNavBackStackEntry
-            ) {
-                HomeScreen(
-                    onAddItem = {
-                        /*navActions.navigateToItemEntryScreen(ItemType.PLATE, null)*/
-                    },
-                    onItemClick = {
-                        navActions.navigateToItemSummaryScreen(ItemType.PLATE, it.id)
-                    },
-                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
-                )
-            }
-        }
-        composable( //TODO remove
-            route = WISHLIST_ROUTE
-        ) {
-            ModalMenuDrawer(
-                drawerState,
-                currentRoute,
-                navActions,
-                collectionList,
-                onEditCollections,
-                onAddCollection,
-                currentNavBackStackEntry
-            ) {
-                WishlistScreen(
-                    onAddItem = {
-                        navActions.navigateToItemEntryScreen(ItemType.WANTED_PLATE, null)
-                    },
-                    onItemClick = {
-                        navActions.navigateToItemSummaryScreen(ItemType.WANTED_PLATE, it.id)
-                    },
-                    onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
-                )
-            }
-        }
-        composable( //TODO remove
-            route = ARCHIVE_ROUTE
-        ) {
-            ModalMenuDrawer(
-                drawerState,
-                currentRoute,
-                navActions,
-                collectionList,
-                onEditCollections,
-                onAddCollection,
-                currentNavBackStackEntry
-            ) {
-                ArchiveScreen(
-                    onAddItem = {
-                        navActions.navigateToItemEntryScreen(ItemType.FORMER_PLATE, null)
-                    },
-                    onItemClick = {
-                        navActions.navigateToItemSummaryScreen(ItemType.FORMER_PLATE, it.id)
                     },
                     onOpenDrawer = { coroutineScope.launch { drawerState.open() } },
                     onImportHelp = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
