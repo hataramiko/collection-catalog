@@ -107,7 +107,7 @@ private fun ItemCard(
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val onClick = remember { Modifier.clickable { onCardClick() } }
+    val onClick = remember(onCardClick) { Modifier.clickable { onCardClick() } }
     val screenWidth = remember { configuration.screenWidthDp }
 
     val maxWidthAsFloat = remember(maxWidth) { if (maxWidth > 0) maxWidth.toFloat() else 1f }
@@ -129,35 +129,9 @@ private fun ItemCard(
                     .crossfade(true)
                     .build()
             )
-            val painterState = painter.state
-
-            when (painterState) {
-                is AsyncImagePainter.State.Empty,
-                is AsyncImagePainter.State.Loading -> {
-                    ItemCardContentLoading(
-                        title = title,
-                        imageWidth = imageWidth.dp
-                    )
-                }
-                is AsyncImagePainter.State.Success -> {
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = modifier.width(imageWidth.dp),
-                        contentScale = ContentScale.FillWidth,
-                    )
-                }
-                is AsyncImagePainter.State.Error -> {
-                    ItemCardContentError(
-                        title = title,
-                        imageWidth = imageWidth.dp
-                    )
-                }
-            }
+            ItemCardContentImage(painter = painter, title = title, imageWidth = imageWidth.dp)
         } else {
-            ItemCardContentNoImage(
-                title = title
-            )
+            ItemCardContentNoImage(title = title)
         }
     }
 }
@@ -336,6 +310,38 @@ private fun WishlistCard(
                     overflow = TextOverflow.Ellipsis
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ItemCardContentImage(
+    painter: AsyncImagePainter,
+    title: String,
+    imageWidth: Dp,
+    modifier: Modifier = Modifier
+) {
+    when (painter.state) {
+        is AsyncImagePainter.State.Empty,
+        is AsyncImagePainter.State.Loading -> {
+            ItemCardContentLoading(
+                title = title,
+                imageWidth = imageWidth
+            )
+        }
+        is AsyncImagePainter.State.Success -> {
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = modifier.width(imageWidth),
+                contentScale = ContentScale.FillWidth,
+            )
+        }
+        is AsyncImagePainter.State.Error -> {
+            ItemCardContentError(
+                title = title,
+                imageWidth = imageWidth
+            )
         }
     }
 }

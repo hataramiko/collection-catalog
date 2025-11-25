@@ -65,7 +65,7 @@ fun EntryDialog(
                         enabled = value.isNotEmpty(),
                         modifier = Modifier
                             .height(40.dp)
-                            .offset(y = 10.dp)
+                            .offset(x = 12.dp, y = 10.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.clear),

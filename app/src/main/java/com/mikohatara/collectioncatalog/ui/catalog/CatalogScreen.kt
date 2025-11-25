@@ -172,6 +172,25 @@ private fun CatalogScreen(
         }
     }
 
+    val countries by remember(uiState.items) { mutableStateOf(viewModel
+        .getCountries()) }
+    val types by remember(uiState.items) { mutableStateOf(viewModel
+        .getTypes()) }
+    val locations by remember(uiState.items) { mutableStateOf(viewModel
+        .getLocations()) }
+    val colorsMain by remember(uiState.items) { mutableStateOf(viewModel
+        .getColorsMain()) }
+    val colorsSecondary by remember(uiState.items) { mutableStateOf(viewModel
+        .getColorsSecondary()) }
+    val sourceTypes by remember(uiState.items) { mutableStateOf(viewModel
+        .getSourceTypes()) }
+    val sourceCountries by remember(uiState.items) { mutableStateOf(viewModel
+        .getSourceCountries()) }
+    val archivalReasons by remember(uiState.items) { mutableStateOf(viewModel
+        .getArchivalReasons()) }
+    val recipientCountries by remember(uiState.items) { mutableStateOf(viewModel
+        .getRecipientCountries()) }
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -238,9 +257,9 @@ private fun CatalogScreen(
                     onReset = { viewModel.resetFilter() },
                     localeCode = userPreferences.userCountry,
                     lengthUnit = userPreferences.lengthUnit,
-                    countries = viewModel.getCountries(),
+                    countries = countries,
                     toggleCountry = { viewModel.toggleCountryFilter(it) },
-                    types = viewModel.getTypes(),
+                    types = types,
                     toggleType = { viewModel.toggleTypeFilter(it) },
                     periodSliderPosition = uiState.periodSliderPosition,
                     onPeriodSliderChange = { newPosition ->
@@ -268,29 +287,29 @@ private fun CatalogScreen(
                     onValueSliderChange = { newPosition ->
                         viewModel.updateValueSliderPosition(newPosition)
                     },
-                    locations = viewModel.getLocations(),
+                    locations = locations,
                     toggleLocation = { viewModel.toggleLocationFilter(it) },
                     widthSliderRange = viewModel.getWidthSliderRange(),
                     widthSliderPosition = uiState.widthSliderPosition,
                     onWidthSliderChange = { newPosition ->
                         viewModel.updateWidthSliderPosition(newPosition)
                     },
-                    colorsMain = viewModel.getColorsMain(),
+                    colorsMain = colorsMain,
                     toggleColorMain = { viewModel.toggleColorMainFilter(it) },
-                    colorsSecondary = viewModel.getColorsSecondary(),
+                    colorsSecondary = colorsSecondary,
                     toggleColorSecondary = { viewModel.toggleColorSecondaryFilter(it) },
-                    sourceTypes = viewModel.getSourceTypes(),
+                    sourceTypes = sourceTypes,
                     toggleSourceType = { viewModel.toggleSourceTypeFilter(it) },
-                    sourceCountries = viewModel.getSourceCountries(),
+                    sourceCountries = sourceCountries,
                     toggleSourceCountry = { viewModel.toggleSourceCountryFilter(it) },
                     archivalDateSliderRange = viewModel.getArchivalDateSliderRange(),
                     archivalDateSliderPosition = uiState.archivalDateSliderPosition,
                     onArchivalDateSliderChange = { newPosition ->
                         viewModel.updateArchivalDateSliderPosition(newPosition)
                     },
-                    archivalReasons = viewModel.getArchivalReasons(),
+                    archivalReasons = archivalReasons,
                     toggleArchivalReason = { viewModel.toggleArchivalReasonFilter(it) },
-                    recipientCountries = viewModel.getRecipientCountries(),
+                    recipientCountries = recipientCountries,
                     toggleRecipientCountry = { viewModel.toggleRecipientCountryFilter(it) }
                 )
             }

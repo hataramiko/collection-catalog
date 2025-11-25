@@ -111,6 +111,13 @@ class CatalogViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CatalogUiState())
     val uiState: StateFlow<CatalogUiState> = _uiState.asStateFlow()
 
+    private var _yearSliderRange: ClosedRange<Float>? = null
+    private var _dateSliderRange: ClosedRange<Float>? = null
+    private var _costSliderRange: ClosedRange<Float>? = null
+    private var _valueSliderRange: ClosedRange<Float>? = null
+    private var _widthSliderRange: ClosedRange<Float>? = null
+    private var _archivalDateSliderRange: ClosedRange<Float>? = null
+
     init {
         _uiState.update { it.copy(itemType = _itemType) }
 
@@ -269,12 +276,12 @@ class CatalogViewModel @Inject constructor(
         val archivalReasonSize = filters.archivalReason.size
         val recipientCountrySize = filters.recipientCountry.size
 
-        val yearSliderRange = getYearSliderRange()
-        val dateSliderRange = getDateSliderRange()
-        val costSliderRange = getCostSliderRange()
-        val valueSliderRange = getValueSliderRange()
-        val widthSliderRange = getWidthSliderRange()
-        val archivalDateSliderRange = getArchivalDateSliderRange()
+        val yearSliderRange = _yearSliderRange ?: getYearSliderRange()
+        val dateSliderRange = _dateSliderRange ?: getDateSliderRange()
+        val costSliderRange = _costSliderRange ?: getCostSliderRange()
+        val valueSliderRange = _valueSliderRange ?: getValueSliderRange()
+        val widthSliderRange = _widthSliderRange ?: getWidthSliderRange()
+        val archivalDateSliderRange = _archivalDateSliderRange ?: getArchivalDateSliderRange()
 
         val periodSize = if (
             isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
@@ -594,27 +601,27 @@ class CatalogViewModel @Inject constructor(
     }
 
     fun getYearSliderRange(): ClosedRange<Float> {
-        return getMinYear().toFloat()..getMaxYear().toFloat()
+        return _yearSliderRange ?: getMinYear().toFloat()..getMaxYear().toFloat()
     }
 
     fun getDateSliderRange(): ClosedRange<Float> {
-        return getMinDate()..getMaxDate()
+        return _dateSliderRange ?: getMinDate()..getMaxDate()
     }
 
     fun getCostSliderRange(): ClosedRange<Float> {
-        return getMinCost().toFloat()..getMaxCost().toFloat()
+        return _costSliderRange ?: getMinCost().toFloat()..getMaxCost().toFloat()
     }
 
     fun getValueSliderRange(): ClosedRange<Float> {
-        return getMinValue().toFloat()..getMaxValue().toFloat()
+        return _valueSliderRange ?: getMinValue().toFloat()..getMaxValue().toFloat()
     }
 
     fun getWidthSliderRange(): ClosedRange<Float> {
-        return getMinWidth().toFloat()..getMaxWidth().toFloat()
+        return _widthSliderRange ?: getMinWidth().toFloat()..getMaxWidth().toFloat()
     }
 
     fun getArchivalDateSliderRange(): ClosedRange<Float> {
-        return getMinArchivalDate()..getMaxArchivalDate()
+        return _archivalDateSliderRange ?: getMinArchivalDate()..getMaxArchivalDate()
     }
 
     fun getCollectionName(): String? {
@@ -802,6 +809,15 @@ class CatalogViewModel @Inject constructor(
         }
     }
 
+    private fun cacheFilterSliderRanges() {
+        _yearSliderRange = getYearSliderRange()
+        _dateSliderRange = getDateSliderRange()
+        _costSliderRange = getCostSliderRange()
+        _valueSliderRange = getValueSliderRange()
+        _widthSliderRange = getWidthSliderRange()
+        _archivalDateSliderRange = getArchivalDateSliderRange()
+    }
+
     private fun setFilterSliderStartPositions() {
         if (uiState.value.periodSliderPosition == null) {
             _uiState.update { it.copy(
@@ -932,9 +948,8 @@ class CatalogViewModel @Inject constructor(
                                 _allItems.clear()
                                 if (collectionPlates != null) {
                                     _allItems.addAll(items)
-                                    _uiState.update {
-                                        it.copy(items = items, isLoading = false)
-                                    }
+                                    cacheFilterSliderRanges()
+                                    _uiState.update { it.copy(items = items, isLoading = false) }
                                 }
                                 setFilter()
                             }
@@ -943,6 +958,7 @@ class CatalogViewModel @Inject constructor(
                             val items = plates.map { Item.PlateItem(it) }
                             _allItems.clear()
                             _allItems.addAll(items)
+                            cacheFilterSliderRanges()
                             _uiState.update { it.copy(items = items, isLoading = false) }
                             setFilter()
                         }
@@ -953,6 +969,7 @@ class CatalogViewModel @Inject constructor(
                         val items = wantedPlates.map { Item.WantedPlateItem(it) }
                         _allItems.clear()
                         _allItems.addAll(items)
+                        cacheFilterSliderRanges()
                         _uiState.update { it.copy(items = items, isLoading = false) }
                         setFilter()
                     }
@@ -962,6 +979,7 @@ class CatalogViewModel @Inject constructor(
                         val items = formerPlates.map { Item.FormerPlateItem(it) }
                         _allItems.clear()
                         _allItems.addAll(items)
+                        cacheFilterSliderRanges()
                         _uiState.update { it.copy(items = items, isLoading = false) }
                         setFilter()
                     }

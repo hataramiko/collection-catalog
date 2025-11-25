@@ -919,6 +919,7 @@ private fun FilterListSlider(
     sliderRange: ClosedRange<Float>,
     sliderPosition: ClosedRange<Float>,
     onSliderChange: (ClosedRange<Float>) -> Unit,
+    onSliderChangeFinished: () -> Unit = {},
     isExpanded: Boolean,
     independentLabel: String? = null
 ) {
@@ -946,7 +947,7 @@ private fun FilterListSlider(
                 onValueChange = { newSliderPosition ->
                     onSliderChange(newSliderPosition)
                 },
-                onValueChangeFinished = { onSliderChange(sliderPosition) },
+                onValueChangeFinished = { onSliderChangeFinished() },
                 modifier = Modifier.height(32.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
