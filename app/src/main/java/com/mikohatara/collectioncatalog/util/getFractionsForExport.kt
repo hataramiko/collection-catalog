@@ -2,10 +2,9 @@ package com.mikohatara.collectioncatalog.util
 
 import android.icu.util.Currency
 import android.icu.util.MeasureUnit
-import java.util.Locale
 
 fun getCurrencyFractions(countryCode: String): Int {
-    val locale = Locale(countryCode, countryCode)
+    val locale = getLocale(countryCode)
     val currency = Currency.getInstance(locale) ?: "USD".let { Currency.getInstance(it) }
     return currency.defaultFractionDigits
 }

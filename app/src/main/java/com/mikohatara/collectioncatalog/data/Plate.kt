@@ -38,18 +38,18 @@ data class FormerPlate(
 )
 
 data class CommonDetails(
-    @ColumnInfo(name = "country") val country: String,
+    @ColumnInfo(name = "country") val country: String?,
     @ColumnInfo(name = "region_1st") val region1st: String?,
     @ColumnInfo(name = "region_2nd") val region2nd: String?,
     @ColumnInfo(name = "region_3rd") val region3rd: String?,
-    @ColumnInfo(name = "type") val type: String,
+    @ColumnInfo(name = "type") val type: String?,
     @ColumnInfo(name = "period_start") val periodStart: Int?,
     @ColumnInfo(name = "period_end") val periodEnd: Int?,
     @ColumnInfo(name = "year") val year: Int?
 )
 
 data class UniqueDetails(
-    @ColumnInfo(name = "reg_no") val regNo: String,
+    @ColumnInfo(name = "reg_no") val regNo: String?,
     @ColumnInfo(name = "image_path") val imagePath: String?,
     @ColumnInfo(name = "notes") val notes: String?,
     @ColumnInfo(name = "vehicle") val vehicle: String?,

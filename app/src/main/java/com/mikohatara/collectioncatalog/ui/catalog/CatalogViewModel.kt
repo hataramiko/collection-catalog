@@ -1041,6 +1041,7 @@ class CatalogViewModel @Inject constructor(
                 try {
                     date.toTimestamp(1000000L)
                 } catch (e: Exception) {
+                    Log.e("getMinDate", e.message, e)
                     null
                 }
             } else null
@@ -1069,6 +1070,7 @@ class CatalogViewModel @Inject constructor(
                 try {
                     date.toTimestamp()
                 } catch (e: Exception) {
+                    Log.e("getMaxDate", e.message, e)
                     null
                 }
             } else null
@@ -1154,6 +1156,7 @@ class CatalogViewModel @Inject constructor(
                 try {
                     archivalDate.toTimestamp(1000000L)
                 } catch (e: Exception) {
+                    Log.e("getMinArchivalDate", e.message, e)
                     null
                 }
             } else null
@@ -1182,6 +1185,7 @@ class CatalogViewModel @Inject constructor(
                 try {
                     archivalDate.toTimestamp()
                 } catch (e: Exception) {
+                    Log.e("getMaxArchivalDate", e.message, e)
                     null
                 }
             } else null

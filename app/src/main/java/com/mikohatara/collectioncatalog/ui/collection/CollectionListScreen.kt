@@ -53,8 +53,6 @@ fun CollectionListScreen(
 
     CollectionListScreen(
         collectionList = uiState.collectionList,
-        uiState = uiState,
-        viewModel = viewModel,
         onAddNew = onAddNew,
         onCollectionClick = onCollectionClick,
         onBack = onBack
@@ -65,8 +63,6 @@ fun CollectionListScreen(
 @Composable
 private fun CollectionListScreen(
     collectionList: List<Collection>,
-    uiState: CollectionListUiState,
-    viewModel: CollectionListViewModel,
     onAddNew: () -> Unit,
     onCollectionClick: (Collection) -> Unit,
     onBack: () -> Unit,
@@ -84,8 +80,6 @@ private fun CollectionListScreen(
         },
         content = { innerPadding ->
             CollectionListScreenContent(
-                uiState = uiState,
-                viewModel = viewModel,
                 collectionList = collectionList,
                 onAddNew = onAddNew,
                 onCollectionClick = onCollectionClick,
@@ -98,8 +92,6 @@ private fun CollectionListScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CollectionListScreenContent(
-    uiState: CollectionListUiState,
-    viewModel: CollectionListViewModel,
     collectionList: List<Collection>,
     onAddNew: () -> Unit,
     onCollectionClick: (Collection) -> Unit,

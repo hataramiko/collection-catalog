@@ -50,11 +50,11 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
+import com.mikohatara.collectioncatalog.ui.components.CatalogTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.ExportDialog
 import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
-import com.mikohatara.collectioncatalog.ui.components.HomeTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.ImportDialog
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.Loading
@@ -194,7 +194,7 @@ private fun CatalogScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            HomeTopAppBar(
+            CatalogTopAppBar(
                 title = topBarTitle,
                 onOpenDrawer = onOpenDrawer,
                 onToggleSearch = onToggleSearch,
@@ -447,11 +447,11 @@ private fun CatalogScreenContent(
 
                 if (uiState.itemType == ItemType.WANTED_PLATE) {
                     WishlistCard(
-                        country = details.country ?: "",
+                        country = details.country,
                         region1st = details.region1st,
                         region2nd = details.region2nd,
                         region3rd = details.region3rd,
-                        type = details.type ?: "",
+                        type = details.type,
                         periodStart = details.periodStart,
                         periodEnd = details.periodEnd,
                         year = details.year,

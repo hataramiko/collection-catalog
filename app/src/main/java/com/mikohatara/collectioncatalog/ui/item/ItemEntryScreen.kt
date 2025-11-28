@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -33,7 +34,6 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
@@ -79,7 +79,6 @@ import com.mikohatara.collectioncatalog.ui.components.EntryDialog
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
-import com.mikohatara.collectioncatalog.ui.components.ItemEntryVerticalSpacer
 import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.util.getCalendarLocale
@@ -311,7 +310,7 @@ private fun ItemEntryScreenContent(
                 enabled = false,
                 singleLine = false
             )*/
-            ItemEntryVerticalSpacer()
+            Spacer(modifier = Modifier.height(24.dp))
 
             EntryField(
                 label = stringResource(R.string.country),
@@ -337,7 +336,7 @@ private fun ItemEntryScreenContent(
                 value = itemDetails.region3rd ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(region3rd = it)) }
             )
-            ItemEntryVerticalSpacer()
+            Spacer(modifier = Modifier.height(24.dp))
 
             EntryField(
                 label = stringResource(R.string.type),
@@ -385,7 +384,7 @@ private fun ItemEntryScreenContent(
                 },
                 keyboardType = KeyboardType.Number
             )
-            ItemEntryVerticalSpacer()
+            Spacer(modifier = Modifier.height(24.dp))
         }
         if (itemType == ItemType.PLATE && collections.isNotEmpty()) {
             EntrySection(
@@ -777,7 +776,7 @@ private fun EntryCardUniqueDetails(
             .padding(horizontal = 8.dp, vertical = 16.dp)
     ) {
         Card(
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            border = BorderStroke(1.dp, colorScheme.outline),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             shape = RoundedCornerShape(20.dp)
         ) {
@@ -840,7 +839,7 @@ private fun EntryCardGeneral(
 @Composable
 private fun EntryFieldBackground(
     modifier: Modifier = Modifier,
-    colors: CardColors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer),
+    colors: CardColors = CardDefaults.cardColors(colorScheme.surfaceContainer),
     content: @Composable () -> Unit
 ) {
     Card(
@@ -990,6 +989,7 @@ fun DatePickerField(
             try {
                 inputFormat.parse(dateValue)?.time
             } catch (e: Exception) {
+                Log.e("DatePickerField", "Error parsing date: $dateValue", e)
                 Calendar.getInstance().timeInMillis
             }
         } else {

@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -67,11 +68,11 @@ fun ItemCard(
 
 @Composable
 fun WishlistCard(
-    country: String,
+    country: String?,
     region1st: String?,
     region2nd: String?,
     region3rd: String?,
-    type: String,
+    type: String?,
     periodStart: Int?,
     periodEnd: Int?,
     year: Int?,
@@ -89,7 +90,7 @@ fun WishlistCard(
         region1st = region1st,
         region2nd = region2nd,
         region3rd = region3rd,
-        type = type.ifBlank { null },
+        type = type,
         periodStart = periodStart?.toString(),
         periodEnd = periodEnd?.toString(),
         year = year?.toString()
@@ -138,12 +139,12 @@ private fun ItemCard(
 
 @Composable
 private fun WishlistCard(
-    country: String,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier,
     imagePath: String? = null,
     regNo: String? = null,
     notes: String? = null,
+    country: String? = null,
     region1st: String? = null,
     region2nd: String? = null,
     region3rd: String? = null,
@@ -155,14 +156,15 @@ private fun WishlistCard(
     val context = LocalContext.current
     val onClick = remember { Modifier.clickable { onCardClick() } }
 
-    val regions = listOfNotNull(region1st, region2nd, region3rd).filterNot { it.isBlank() }
-    val primaryText = listOf(country).plus(regions).joinToString(", ")
     val period = if (periodStart.isNullOrBlank() && periodEnd.isNullOrBlank()) {
         null
     } else {
         "${periodStart ?: ""}–${periodEnd ?: ""}"
     }
 
+    val primaryText = listOfNotNull(country, region1st, region2nd, region3rd)
+        .filterNot { it.isBlank() }
+        .joinToString(", ")
     val secondaryText = listOfNotNull(type, period, year)
         .filterNot { it.isBlank() }
         .joinToString("・")
@@ -187,7 +189,7 @@ private fun WishlistCard(
             val result = try {
                 imageLoader.execute(imageRequest)
             } catch (e: Exception) {
-                //TODO add error message
+                Log.e("WishlistCard", "Error loading image: ${e.message}", e)
                 null
             }
 

@@ -108,19 +108,6 @@ private fun MenuDrawerContent(
                             onCloseDrawer()
                         }
                     )
-                    /* //TODO remove
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.all_plates)) },
-                        icon = { Icon(
-                            painter = painterResource(R.drawable.rounded_newsstand),
-                            contentDescription = null
-                        ) },
-                        selected = currentRoute == HOME_DEFAULT_ROUTE,
-                        onClick = {
-                            navActions.navigateToHomeScreen()
-                            onCloseDrawer()
-                        }
-                    )*/
                 }
                 DrawerDivider(hasHorizontalPadding = true)
             }
@@ -178,40 +165,6 @@ private fun MenuDrawerContent(
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
             }
-            /* //TODO remove
-            items(items = collectionList, key = { it.id }) { collection ->
-                val selected = currentRoute == HOME_COLLECTION_ROUTE &&
-                        collectionIdArg == collection.id
-
-                NavigationDrawerItem(
-                    label = { Text(
-                        text = collection.name,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    ) },
-                    icon = {
-                        if (collection.emoji != null) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.size(24.dp)
-                            ) {
-                                Text(
-                                    text = collection.emoji,
-                                    modifier = Modifier.offset(y = (-1.5).dp)
-                                )
-                            }
-                        } else {
-                            IconCollectionLabel(color = collection.color.color)
-                        }
-                    },
-                    selected = selected,
-                    onClick = {
-                        navActions.navigateToHomeScreen(collection.id)
-                        onCloseDrawer()
-                    },
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
-            }*/
             item {
                 NavigationDrawerItem(
                     label = { Text(stringResource(R.string.create_collection)) },
@@ -253,31 +206,6 @@ private fun MenuDrawerContent(
                             onCloseDrawer()
                         }
                     )
-                    /* //TODO remove
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.wishlist)) },
-                        icon = { Icon(
-                            painter = painterResource(R.drawable.rounded_heart),
-                            contentDescription = null
-                        ) },
-                        selected = currentRoute == WISHLIST_ROUTE,
-                        onClick = {
-                            navActions.navigateToWishlistScreen()
-                            onCloseDrawer()
-                        }
-                    )
-                    NavigationDrawerItem(
-                        label = { Text(stringResource(R.string.archive)) },
-                        icon = { Icon(
-                            painter = painterResource(R.drawable.rounded_archive),
-                            contentDescription = null
-                        ) },
-                        selected = currentRoute == ARCHIVE_ROUTE,
-                        onClick = {
-                            navActions.navigateToArchiveScreen()
-                            onCloseDrawer()
-                        }
-                    )*/
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.statistics)) },
                         icon = { Icon(
@@ -332,10 +260,6 @@ private fun DrawerHeader() {
             )
             Spacer(modifier = Modifier.weight(1.5f))
         }
-        /*Text(
-            text = stringResource(R.string.app_name),
-            modifier = Modifier.padding(horizontal = 32.dp, vertical = 24.dp)
-        )*/
     }
 }
 

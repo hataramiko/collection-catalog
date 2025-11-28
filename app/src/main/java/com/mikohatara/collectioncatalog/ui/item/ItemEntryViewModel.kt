@@ -128,9 +128,7 @@ class ItemEntryViewModel @Inject constructor(
             val hasUnsavedChanges = newItemDetails != initialDetails ||
                     state.temporaryImageUri != null || state.hasUnsavedChanges
             val isValidEntry = itemType == ItemType.WANTED_PLATE ||
-                    !(newItemDetails.regNo.isNullOrBlank() ||
-                    newItemDetails.country.isNullOrBlank() ||
-                    newItemDetails.type.isNullOrBlank())
+                    !(newItemDetails.regNo.isNullOrBlank())
 
             state.copy(
                 itemDetails = newItemDetails,

@@ -87,6 +87,61 @@ class DatabaseModule {
         }
     }
 
+    // Written on 27.11.2025 while in version 0.7.0_13
+    // Converting "reg_no", "country" and "type" from String to String?
+    private val MIGRATION_18_19 = object : Migration(18, 19) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE `plates_new` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`country` TEXT, `region_1st` TEXT, `region_2nd` TEXT, " +
+                        "`region_3rd` TEXT, `type` TEXT, " +
+                        "`period_start` INTEGER, `period_end` INTEGER, `year` INTEGER, " +
+                        "`reg_no` TEXT, `image_path` TEXT, `notes` TEXT, `vehicle` TEXT, " +
+                        "`date` TEXT, `cost` INTEGER, `value` INTEGER, `status` TEXT, " +
+                        "`width` INTEGER, `height` INTEGER, `weight` INTEGER, " +
+                        "`color_main` TEXT, `color_secondary` TEXT, " +
+                        "`source_name` TEXT, `source_alias` TEXT, " +
+                        "`source_type` TEXT, `source_details` TEXT, `source_country` TEXT)"
+            )
+            db.execSQL("INSERT INTO `plates_new` SELECT * FROM plates")
+            db.execSQL("DROP TABLE `plates`")
+            db.execSQL("ALTER TABLE `plates_new` RENAME TO `plates`")
+            db.execSQL(
+                "CREATE TABLE `wishlist_new` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`reg_no` TEXT, `image_path` TEXT, `notes` TEXT, " +
+                        "`country` TEXT, `region_1st` TEXT, `region_2nd` TEXT, " +
+                        "`region_3rd` TEXT, `type` TEXT, " +
+                        "`period_start` INTEGER, `period_end` INTEGER, `year` INTEGER, " +
+                        "`width` INTEGER, `height` INTEGER, `weight` INTEGER, " +
+                        "`color_main` TEXT, `color_secondary` TEXT)"
+            )
+            db.execSQL("INSERT INTO `wishlist_new` SELECT * FROM wishlist")
+            db.execSQL("DROP TABLE `wishlist`")
+            db.execSQL("ALTER TABLE `wishlist_new` RENAME TO `wishlist`")
+            db.execSQL(
+                "CREATE TABLE `archive_new` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`country` TEXT, `region_1st` TEXT, `region_2nd` TEXT, " +
+                        "`region_3rd` TEXT, `type` TEXT, " +
+                        "`period_start` INTEGER, `period_end` INTEGER, `year` INTEGER, " +
+                        "`reg_no` TEXT, `image_path` TEXT, `notes` TEXT, `vehicle` TEXT, " +
+                        "`date` TEXT, `cost` INTEGER, `value` INTEGER, `status` TEXT, " +
+                        "`width` INTEGER, `height` INTEGER, `weight` INTEGER, " +
+                        "`color_main` TEXT, `color_secondary` TEXT, " +
+                        "`source_name` TEXT, `source_alias` TEXT, " +
+                        "`source_type` TEXT, `source_details` TEXT, `source_country` TEXT, " +
+                        "`archival_date` TEXT, `recipient_name` TEXT, `recipient_alias` TEXT, " +
+                        "`archival_reason` TEXT, `archival_details` TEXT, `price` INTEGER, " +
+                        "`recipient_country` TEXT)"
+            )
+            db.execSQL("INSERT INTO `archive_new` SELECT * FROM archive")
+            db.execSQL("DROP TABLE `archive`")
+            db.execSQL("ALTER TABLE `archive_new` RENAME TO `archive`")
+        }
+    }
+
     @Provides
     fun providePlateDao(plateDatabase: PlateDatabase): PlateDao {
         return plateDatabase.plateDao()
@@ -105,7 +160,7 @@ class DatabaseModule {
             PlateDatabase::class.java,
             "Plate"
         )
-            .addMigrations(MIGRATION_17_18)
+            .addMigrations(MIGRATION_17_18, MIGRATION_18_19)
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }

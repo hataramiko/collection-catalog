@@ -15,17 +15,17 @@ import com.mikohatara.collectioncatalog.data.WantedPlate
 fun ItemDetails.toPlate(): Plate = Plate(
     id ?: 0,
     CommonDetails(
-        country ?: "",
+        country?.takeIf { it.isNotBlank() },
         region1st?.takeIf { it.isNotBlank() },
         region2nd?.takeIf { it.isNotBlank() },
         region3rd?.takeIf { it.isNotBlank() },
-        type ?: "",
+        type?.takeIf { it.isNotBlank() },
         periodStart?.takeIf { it.isValidYear() },
         periodEnd?.takeIf { it.isValidYear() },
         year?.takeIf { it.isValidYear() }
     ),
     UniqueDetails(
-        regNo ?: "",
+        regNo?.takeIf { it.isNotBlank() },
         imagePath,
         notes?.takeIf { it.isNotBlank() },
         vehicle?.takeIf { it.isNotBlank() },
@@ -58,11 +58,11 @@ fun ItemDetails.toWantedPlate(): WantedPlate = WantedPlate(
     imagePath?.takeIf { it.isNotBlank() },
     notes?.takeIf { it.isNotBlank() },
     CommonDetails(
-        country ?: "",
+        country?.takeIf { it.isNotBlank() },
         region1st?.takeIf { it.isNotBlank() },
         region2nd?.takeIf { it.isNotBlank() },
         region3rd?.takeIf { it.isNotBlank() },
-        type ?: "",
+        type?.takeIf { it.isNotBlank() },
         periodStart?.takeIf { it.isValidYear() },
         periodEnd?.takeIf { it.isValidYear() },
         year?.takeIf { it.isValidYear() }
@@ -81,17 +81,17 @@ fun ItemDetails.toWantedPlate(): WantedPlate = WantedPlate(
 fun ItemDetails.toFormerPlate(): FormerPlate = FormerPlate(
     id ?: 0,
     CommonDetails(
-        country ?: "",
+        country?.takeIf { it.isNotBlank() },
         region1st?.takeIf { it.isNotBlank() },
         region2nd?.takeIf { it.isNotBlank() },
         region3rd?.takeIf { it.isNotBlank() },
-        type ?: "",
+        type?.takeIf { it.isNotBlank() },
         periodStart?.takeIf { it.isValidYear() },
         periodEnd?.takeIf { it.isValidYear() },
         year?.takeIf { it.isValidYear() }
     ),
     UniqueDetails(
-        regNo ?: "",
+        regNo?.takeIf { it.isNotBlank() },
         imagePath,
         notes?.takeIf { it.isNotBlank() },
         vehicle?.takeIf { it.isNotBlank() },

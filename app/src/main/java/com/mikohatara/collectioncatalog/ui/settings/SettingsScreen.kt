@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.ui.components.ItemScreenModifiers
 import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.components.SettingsBottomSheet
@@ -221,7 +220,7 @@ private fun SettingsButton(
                 painter = painter,
                 contentDescription = null,
                 tint = colorScheme.onSurfaceVariant,
-                modifier = ItemScreenModifiers.icon
+                modifier = Modifier.padding(20.dp)
             )
         } else Spacer(modifier = Modifier.size(64.dp))
         Column {

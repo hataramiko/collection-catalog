@@ -7,30 +7,21 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.HELP_PAGE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.ARCHIVE_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.COLLECTION_LIST_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HELP_DEFAULT_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.HOME_DEFAULT_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.SETTINGS_ROUTE
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.STATS_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinations.WISHLIST_ROUTE
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ARCHIVE_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.CATALOG_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.COLLECTION_ENTRY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.COLLECTION_LIST_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HELP_SCREEN
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.HOME_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_ENTRY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.ITEM_SUMMARY_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.SETTINGS_SCREEN
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.STATS_SCREEN
-import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.WISHLIST_SCREEN
 
 object CollectionCatalogScreens {
     const val CATALOG_SCREEN = "catalog"
-    const val HOME_SCREEN = "home"  //TODO remove
-    const val WISHLIST_SCREEN = "wishlist"  //TODO remove
-    const val ARCHIVE_SCREEN = "archive"  //TODO remove
     const val STATS_SCREEN = "stats"
     const val SETTINGS_SCREEN = "settings"
     const val HELP_SCREEN = "help"
@@ -52,10 +43,6 @@ object CollectionCatalogDestinations {
     const val CATALOG_COLLECTION_ROUTE = "$CATALOG_SCREEN/a/{$ITEM_TYPE}/{$COLLECTION_ID}"
     const val CATALOG_WISHLIST_ROUTE = "$CATALOG_SCREEN/b/{$ITEM_TYPE}"
     const val CATALOG_ARCHIVE_ROUTE = "$CATALOG_SCREEN/c/{$ITEM_TYPE}"
-    const val HOME_DEFAULT_ROUTE = HOME_SCREEN  //TODO remove
-    const val HOME_COLLECTION_ROUTE = "$HOME_SCREEN/{$COLLECTION_ID}"  //TODO remove
-    const val WISHLIST_ROUTE = WISHLIST_SCREEN  //TODO remove
-    const val ARCHIVE_ROUTE = ARCHIVE_SCREEN  //TODO remove
     const val STATS_ROUTE = STATS_SCREEN
     const val SETTINGS_ROUTE = SETTINGS_SCREEN
     const val HELP_DEFAULT_ROUTE = HELP_SCREEN
@@ -79,24 +66,6 @@ class CollectionCatalogNavigationActions(private val navController: NavHostContr
             else -> "$CATALOG_SCREEN/a/${itemType.name}"
         }
         navController.navigate(route)
-    }
-
-    fun navigateToHomeScreen(collectionId: Int? = null) { //TODO remove
-        navController.navigate(
-            if (collectionId != null) {
-                "$HOME_SCREEN/$collectionId"
-            } else {
-                HOME_DEFAULT_ROUTE
-            }
-        )
-    }
-
-    fun navigateToWishlistScreen() { //TODO remove
-        navController.navigate(WISHLIST_ROUTE)
-    }
-
-    fun navigateToArchiveScreen() { //TODO remove
-        navController.navigate(ARCHIVE_ROUTE)
     }
 
     fun navigateToStatsScreen() {

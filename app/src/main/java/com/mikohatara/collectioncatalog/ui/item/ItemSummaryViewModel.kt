@@ -1,7 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -29,7 +27,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 data class ItemSummaryUiState(
@@ -115,13 +112,6 @@ class ItemSummaryViewModel @Inject constructor(
         }
     }
 
-    fun copyItemDetailsToClipboard(context: Context, itemDetails: ItemDetails) {
-        val jsonString = Json.encodeToString(itemDetails)
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("ItemDetails", jsonString)
-        clipboard.setPrimaryClip(clip)
-    }
-
     fun copyItemDetails() {
         val itemDetails = _uiState.value.itemDetails
         internalClipboardManager.copyItemDetails(itemDetails)
@@ -141,15 +131,17 @@ class ItemSummaryViewModel @Inject constructor(
 
         plateRepository.addPlate(uiState.value.itemDetails.copy(
             id = null,
-            regNo = regNo ?: "–",
-            country = country ?: "–",
-            type = type ?: "–"
+            regNo = regNo,
+            country = country,
+            type = type
         ).toPlate())
     }
 
     private suspend fun addNewFormerPlate() {
         plateRepository.addFormerPlate(uiState.value.itemDetails.copy(
             id = null,
+            // FormerPlate doesn't use "value" or "status",
+            // but they're still part of CommonDetails, hence the need to nullify them.
             value = null,
             status = null
         ).toFormerPlate())

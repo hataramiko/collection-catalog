@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.util
 
+import android.util.Log
 import java.util.Currency
 import java.util.Locale
 
@@ -20,6 +21,7 @@ fun getCurrencyCompound(currencyCode: String, countryCode: String): String {
             "$currencyCode ($currencySymbol)・$currencyDisplayName"
         }
     } catch (e: Exception) {
+        Log.e("getCurrencyCompound", e.message, e)
         currencyCode
     }
 }

@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.util
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -18,6 +19,7 @@ fun String.toFormattedDate(
         val date = inputFormat.parse(this)
         date?.let { outputFormat.format(it) } ?: this
     } catch (e: Exception) {
+        Log.e("String.toFormattedDate", e.message, e)
         this
     }
 }
@@ -34,6 +36,7 @@ fun String.toTimestamp(timeModifier: Long = 0): Long {
         val date = dateFormat.parse(this)
         (date?.time?.plus(timeModifier)) ?: 0L
     } catch (e: Exception) {
+        Log.e("String.toTimestamp", e.message, e)
         0L
     }
 }
@@ -48,6 +51,7 @@ fun Long.toDateString(): String {
     return try {
         dateFormat.format(calendar.time)
     } catch (e: Exception) {
+        Log.e("Long.toDateString", e.message, e)
         ""
     }
 }

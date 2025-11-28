@@ -44,8 +44,8 @@ data class StatsUiState(
     val collectionPercentage: Float = 0f,
     val userCountry: String = "FI",
     // Sets for tables
-    val countries: Set<String> = emptySet(),
-    val types: Set<String> = emptySet(),
+    val countries: Set<String?> = emptySet(),
+    val types: Set<String?> = emptySet(),
     val years: Set<Int> = emptySet(), // used by both periodAmounts and yearAmounts
     val periodAmounts: Map<Int, Int> = emptyMap(),
     val yearAmounts: Map<Int, Int> = emptyMap(),
@@ -212,14 +212,14 @@ class StatsViewModel @Inject constructor(
         }
     }
 
-    fun getCountries(activeItems: List<Item>): Set<String> {
+    fun getCountries(activeItems: List<Item>): Set<String?> {
         return activeItems.map { item ->
             when (item) {
                 is Item.PlateItem -> item.plate.commonDetails.country
                 is Item.WantedPlateItem -> item.wantedPlate.commonDetails.country
                 is Item.FormerPlateItem -> item.formerPlate.commonDetails.country
             }
-        }.sortedWith(compareByDescending<String> { country ->
+        }.sortedWith(compareByDescending<String?> { country ->
                 activeItems.count { item ->
                     when (item) {
                         is Item.PlateItem -> item.plate.commonDetails.country == country
@@ -230,14 +230,14 @@ class StatsViewModel @Inject constructor(
             }.thenBy { it }).toSet()
     }
 
-    fun getTypes(activeItems: List<Item>): Set<String> {
+    fun getTypes(activeItems: List<Item>): Set<String?> {
         return activeItems.map { item ->
             when (item) {
                 is Item.PlateItem -> item.plate.commonDetails.type
                 is Item.WantedPlateItem -> item.wantedPlate.commonDetails.type
                 is Item.FormerPlateItem -> item.formerPlate.commonDetails.type
             }
-        }.sortedWith(compareByDescending<String> { type ->
+        }.sortedWith(compareByDescending<String?> { type ->
             activeItems.count { item ->
                 when (item) {
                     is Item.PlateItem -> item.plate.commonDetails.type == type

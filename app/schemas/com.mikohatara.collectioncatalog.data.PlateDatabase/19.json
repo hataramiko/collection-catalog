@@ -1,0 +1,519 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 19,
+    "identityHash": "ab44e5006e4313c4d1160c7c4be86675",
+    "entities": [
+      {
+        "tableName": "plates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `country` TEXT, `region_1st` TEXT, `region_2nd` TEXT, `region_3rd` TEXT, `type` TEXT, `period_start` INTEGER, `period_end` INTEGER, `year` INTEGER, `reg_no` TEXT, `image_path` TEXT, `notes` TEXT, `vehicle` TEXT, `date` TEXT, `cost` INTEGER, `value` INTEGER, `status` TEXT, `width` INTEGER, `height` INTEGER, `weight` INTEGER, `color_main` TEXT, `color_secondary` TEXT, `source_name` TEXT, `source_alias` TEXT, `source_type` TEXT, `source_details` TEXT, `source_country` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "commonDetails.country",
+            "columnName": "country",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region1st",
+            "columnName": "region_1st",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region2nd",
+            "columnName": "region_2nd",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region3rd",
+            "columnName": "region_3rd",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.type",
+            "columnName": "type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.periodStart",
+            "columnName": "period_start",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "commonDetails.periodEnd",
+            "columnName": "period_end",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "commonDetails.year",
+            "columnName": "year",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "uniqueDetails.regNo",
+            "columnName": "reg_no",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.imagePath",
+            "columnName": "image_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.vehicle",
+            "columnName": "vehicle",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.date",
+            "columnName": "date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.cost",
+            "columnName": "cost",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "uniqueDetails.value",
+            "columnName": "value",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "uniqueDetails.status",
+            "columnName": "status",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "size.width",
+            "columnName": "width",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "size.height",
+            "columnName": "height",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "size.weight",
+            "columnName": "weight",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "color.main",
+            "columnName": "color_main",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "color.secondary",
+            "columnName": "color_secondary",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.name",
+            "columnName": "source_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.alias",
+            "columnName": "source_alias",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.type",
+            "columnName": "source_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.details",
+            "columnName": "source_details",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.country",
+            "columnName": "source_country",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "wishlist",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `reg_no` TEXT, `image_path` TEXT, `notes` TEXT, `country` TEXT, `region_1st` TEXT, `region_2nd` TEXT, `region_3rd` TEXT, `type` TEXT, `period_start` INTEGER, `period_end` INTEGER, `year` INTEGER, `width` INTEGER, `height` INTEGER, `weight` INTEGER, `color_main` TEXT, `color_secondary` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "regNo",
+            "columnName": "reg_no",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imagePath",
+            "columnName": "image_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.country",
+            "columnName": "country",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region1st",
+            "columnName": "region_1st",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region2nd",
+            "columnName": "region_2nd",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region3rd",
+            "columnName": "region_3rd",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.type",
+            "columnName": "type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.periodStart",
+            "columnName": "period_start",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "commonDetails.periodEnd",
+            "columnName": "period_end",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "commonDetails.year",
+            "columnName": "year",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "size.width",
+            "columnName": "width",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "size.height",
+            "columnName": "height",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "size.weight",
+            "columnName": "weight",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "color.main",
+            "columnName": "color_main",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "color.secondary",
+            "columnName": "color_secondary",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "archive",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `country` TEXT, `region_1st` TEXT, `region_2nd` TEXT, `region_3rd` TEXT, `type` TEXT, `period_start` INTEGER, `period_end` INTEGER, `year` INTEGER, `reg_no` TEXT, `image_path` TEXT, `notes` TEXT, `vehicle` TEXT, `date` TEXT, `cost` INTEGER, `value` INTEGER, `status` TEXT, `width` INTEGER, `height` INTEGER, `weight` INTEGER, `color_main` TEXT, `color_secondary` TEXT, `source_name` TEXT, `source_alias` TEXT, `source_type` TEXT, `source_details` TEXT, `source_country` TEXT, `archival_date` TEXT, `recipient_name` TEXT, `recipient_alias` TEXT, `archival_reason` TEXT, `archival_details` TEXT, `price` INTEGER, `recipient_country` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "commonDetails.country",
+            "columnName": "country",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region1st",
+            "columnName": "region_1st",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region2nd",
+            "columnName": "region_2nd",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.region3rd",
+            "columnName": "region_3rd",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.type",
+            "columnName": "type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "commonDetails.periodStart",
+            "columnName": "period_start",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "commonDetails.periodEnd",
+            "columnName": "period_end",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "commonDetails.year",
+            "columnName": "year",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "uniqueDetails.regNo",
+            "columnName": "reg_no",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.imagePath",
+            "columnName": "image_path",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.vehicle",
+            "columnName": "vehicle",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.date",
+            "columnName": "date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uniqueDetails.cost",
+            "columnName": "cost",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "uniqueDetails.value",
+            "columnName": "value",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "uniqueDetails.status",
+            "columnName": "status",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "size.width",
+            "columnName": "width",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "size.height",
+            "columnName": "height",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "size.weight",
+            "columnName": "weight",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "color.main",
+            "columnName": "color_main",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "color.secondary",
+            "columnName": "color_secondary",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.name",
+            "columnName": "source_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.alias",
+            "columnName": "source_alias",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.type",
+            "columnName": "source_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.details",
+            "columnName": "source_details",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source.country",
+            "columnName": "source_country",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "archivalDetails.archivalDate",
+            "columnName": "archival_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "archivalDetails.recipientName",
+            "columnName": "recipient_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "archivalDetails.recipientAlias",
+            "columnName": "recipient_alias",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "archivalDetails.archivalReason",
+            "columnName": "archival_reason",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "archivalDetails.archivalDetails",
+            "columnName": "archival_details",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "archivalDetails.price",
+            "columnName": "price",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "archivalDetails.recipientCountry",
+            "columnName": "recipient_country",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "collections",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `emoji` TEXT, `name` TEXT NOT NULL, `color` TEXT NOT NULL, `order` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "emoji",
+            "columnName": "emoji",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "plate_collection_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`plate_id` INTEGER NOT NULL, `collection_id` INTEGER NOT NULL, PRIMARY KEY(`plate_id`, `collection_id`))",
+        "fields": [
+          {
+            "fieldPath": "plateId",
+            "columnName": "plate_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collectionId",
+            "columnName": "collection_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "plate_id",
+            "collection_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_plate_collection_cross_ref_collection_id",
+            "unique": false,
+            "columnNames": [
+              "collection_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_plate_collection_cross_ref_collection_id` ON `${TABLE_NAME}` (`collection_id`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ab44e5006e4313c4d1160c7c4be86675')"
+    ]
+  }
+}

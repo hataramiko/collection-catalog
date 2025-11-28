@@ -42,7 +42,7 @@ import com.mikohatara.collectioncatalog.data.Item
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopAppBar(
+fun CatalogTopAppBar(
     title: String,
     onOpenDrawer: () -> Unit,
     onToggleSearch: (() -> Unit)? = null,
