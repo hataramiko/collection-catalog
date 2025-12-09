@@ -45,6 +45,7 @@ android {
             )
         }
         debug {
+            applicationIdSuffix = ".debug"
             isDebuggable = true
             isMinifyEnabled = false
         }
@@ -55,6 +56,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.7"

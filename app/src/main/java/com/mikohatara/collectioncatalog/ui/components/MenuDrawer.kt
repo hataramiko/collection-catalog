@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
+import com.mikohatara.collectioncatalog.BuildConfig
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.ItemType
@@ -250,7 +251,10 @@ private fun MenuDrawerContent(
 private fun DrawerHeader() {
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.height(10.dp))
-        Row(modifier = Modifier.padding(horizontal = 28.dp, vertical = 16.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 28.dp, vertical = 16.dp)
+        ) {
             Image(
                 painter = painterResource(R.drawable.rekkary_logo_512_slim),
                 contentDescription = null,
@@ -258,6 +262,13 @@ private fun DrawerHeader() {
                     .ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
                 modifier = Modifier.weight(1f)
             )
+            if (BuildConfig.DEBUG) {
+                Text(
+                    text = "DEBUG",
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
             Spacer(modifier = Modifier.weight(1.5f))
         }
     }

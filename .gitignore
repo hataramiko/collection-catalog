@@ -23,8 +23,8 @@ captures/
 output.json
 
 # Build output
-debug/
-release/
+app/debug/
+app/release/
 
 # Some Android Studio auto-generated thing
 .DS_Store
