@@ -108,6 +108,7 @@ fun ItemEntryScreen(
     }
 
     ItemEntryScreen(
+        context = context,
         userPreferences = userPreferences,
         itemDetails = uiState.itemDetails,
         itemType = uiState.itemType,
@@ -121,35 +122,20 @@ fun ItemEntryScreen(
         hasUnsavedChanges = uiState.hasUnsavedChanges,
         showToast = viewModel::showToast,
         onBack = onBack,
+        onSave = viewModel::saveEntry,
         onCopy = viewModel::copyItemDetails,
         onPaste = viewModel::pasteItemDetails,
         onValueChange = viewModel::updateUiState,
         onImagePicked = viewModel::handlePickedImage,
         onImageRemoved = viewModel::clearImagePath,
-        onToggleCollection = viewModel::toggleCollectionSelection,
-        onSave = {
-            val toast = if (uiState.itemType == ItemType.WANTED_PLATE) {
-                if (uiState.isNew) context.getString(R.string.saved_to_wishlist)
-                else context.getString(R.string.saved_generic)
-            } else {
-                val regNo = uiState.itemDetails.regNo ?: ""
-                if (uiState.isNew) {
-                    context.getString(R.string.saved_new_item, regNo)
-                } else {
-                    context.getString(R.string.saved_old_item, regNo)
-                }
-            }
-            viewModel.saveEntry(context)
-            viewModel.showToast(context, toast)
-            onBack()
-        }
+        onToggleCollection = viewModel::toggleCollectionSelection
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemEntryScreen(
-    context: Context = LocalContext.current,
+    context: Context,// = LocalContext.current,
     userPreferences: UserPreferences,
     itemDetails: ItemDetails,
     itemType: ItemType,
@@ -163,17 +149,18 @@ private fun ItemEntryScreen(
     hasUnsavedChanges: Boolean,
     showToast: (Context, String) -> Unit,
     onBack: () -> Unit,
+    onSave: (Context) -> Unit,
     onCopy: () -> Unit,
     onPaste: () -> Unit,
     onValueChange: (ItemDetails) -> Unit,
     onImagePicked: (Uri?) -> Unit,
     onImageRemoved: () -> Unit,
     onToggleCollection: (Collection) -> Unit,
-    onSave: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
+    val onDismissDiscardDialog = { showDiscardDialog = false }
 
     val (saveButtonText, saveButtonIcon) = if (isNew) {
         stringResource(R.string.save_added_item, itemDetails.regNo ?: "") to
@@ -190,6 +177,18 @@ private fun ItemEntryScreen(
 
     val copyToast = stringResource(R.string.copied)
     val pasteToast = stringResource(R.string.pasted)
+    val saveToast = if (itemType == ItemType.WANTED_PLATE) {
+        if (isNew) stringResource(R.string.saved_to_wishlist)
+        else stringResource(R.string.saved_generic)
+    } else {
+        val regNo = itemDetails.regNo ?: ""
+        if (isNew) {
+            stringResource(R.string.saved_new_item, regNo)
+        } else {
+            stringResource(R.string.saved_old_item, regNo)
+        }
+    }
+
     val onBackBehavior = { if (hasUnsavedChanges) showDiscardDialog = true else onBack() }
 
     BackHandler(enabled = true) { onBackBehavior() }
@@ -205,7 +204,7 @@ private fun ItemEntryScreen(
                 ),
                 scrollBehavior = scrollBehavior,
                 onBack = onBackBehavior,
-                onSave = onSave,
+                onSave = { onSave(context); showToast(context, saveToast); onBack() },
                 saveIcon = saveButtonIcon,
                 isSaveEnabled = isValidEntry,
                 onCopy = { onCopy(); showToast(context, copyToast) },
@@ -231,7 +230,7 @@ private fun ItemEntryScreen(
                     onImagePicked = onImagePicked,
                     onImageRemoved = onImageRemoved,
                     onToggleCollection = onToggleCollection,
-                    onSave = onSave,
+                    onSave = { onSave(context); showToast(context, saveToast); onBack() },
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -240,10 +239,10 @@ private fun ItemEntryScreen(
     if (showDiscardDialog) {
         DiscardDialog(
             onConfirm = {
-                showDiscardDialog = false
+                onDismissDiscardDialog()
                 onBack()
             },
-            onCancel = { showDiscardDialog = false }
+            onCancel = onDismissDiscardDialog
         )
     }
 }
@@ -292,7 +291,7 @@ private fun ItemEntryScreenContent(
                     value = itemDetails.regNo ?: "",
                     onValueChange = { onValueChange(itemDetails.copy(regNo = it)) },
                     modifier = Modifier.weight(1f),
-                    capitalization = KeyboardCapitalization.Characters,
+                    capitalization = KeyboardCapitalization.Characters
                 )
                 Spacer(modifier = Modifier.weight(0.33f))//.width(10.dp))
                 /*EntryField(
@@ -506,7 +505,6 @@ private fun ItemEntryScreenContent(
         EntrySection(
             label = stringResource(R.string.physical_attributes)
         ) {
-            InfoField(stringResource(R.string.info_width))
             Row {
                 EntryFieldBackground(modifier = Modifier.weight(1f)) {
                     EntryField(
@@ -544,6 +542,7 @@ private fun ItemEntryScreenContent(
                     )
                 }
             }
+            InfoField(stringResource(R.string.info_width))
             EntryFieldBackground {
                 EntryField(
                     label = stringResource(R.string.weight),

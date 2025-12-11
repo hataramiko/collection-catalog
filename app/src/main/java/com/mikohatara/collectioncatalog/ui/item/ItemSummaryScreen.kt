@@ -22,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -54,12 +53,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
-import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
-import com.mikohatara.collectioncatalog.ui.components.CopyItemDetailsDialog
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
@@ -113,10 +110,13 @@ private fun ItemSummaryScreen(
 
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
-    var showCopyDialog by rememberSaveable { mutableStateOf(false) }
+    //var showCopyDialog by rememberSaveable { mutableStateOf(false) }
     var showCheckWishlistDialog by rememberSaveable { mutableStateOf(false) }
     var showTransferDialog by rememberSaveable { mutableStateOf(false) }
-
+    val onDismissDeletionDialog = { showDeletionDialog = false }
+    //val onDismissCopyDialog = { showCopyDialog = false }
+    val onDismissCheckWishlistDialog = { showCheckWishlistDialog = false }
+    val onDismissTransferDialog = { showTransferDialog = false }
     val onBackBehavior = { if (isInspectingImage) isInspectingImage = false else onBack() }
     val onCheckWishlistLambda = { showCheckWishlistDialog = true }
         .takeIf { uiState.itemType == ItemType.WANTED_PLATE }
@@ -205,37 +205,37 @@ private fun ItemSummaryScreen(
     if (showDeletionDialog) {
         DeletionDialog(
             onConfirm = {
-                showDeletionDialog = false
+                onDismissDeletionDialog()
                 coroutineScope.launch {
                     viewModel.deleteItem()
                     viewModel.showToast(context, deletionToast)
                     onBack()
                 }
             },
-            onCancel = { showDeletionDialog = false }
+            onCancel = onDismissDeletionDialog
         )
     }
-    if (showCopyDialog) {
+    /*if (showCopyDialog) { //TODO implement selective copying
         CopyItemDetailsDialog(
             itemDetails = itemDetails,
             onConfirm = {
-                showCopyDialog = false
+                onDismissCopyDialog()
             },
-            onCancel = { showCopyDialog = false }
+            onCancel = onDismissCopyDialog
         )
-    }
+    }*/
     if (showCheckWishlistDialog) {
         TransferDialog(
             title = stringResource(R.string.check_wishlist_dialog_title),
             text = stringResource(R.string.check_wishlist_dialog_text),
             onConfirm = {
-                showCheckWishlistDialog = false
+                onDismissCheckWishlistDialog()
                 coroutineScope.launch {
                     viewModel.transferItem()
                     viewModel.showToast(context, transferToast)
                 }
             },
-            onCancel = { showCheckWishlistDialog = false }
+            onCancel = onDismissCheckWishlistDialog
         )
     }
     if (showTransferDialog) {
@@ -243,7 +243,7 @@ private fun ItemSummaryScreen(
             title = transferDialogTitle,
             text = transferDialogText,
             onConfirm = {
-                showTransferDialog = false
+                onDismissTransferDialog()
                 coroutineScope.launch {
                     viewModel.transferItem()
                     viewModel.deleteItem()
@@ -251,7 +251,7 @@ private fun ItemSummaryScreen(
                     onBack()
                 }
             },
-            onCancel = { showTransferDialog = false }
+            onCancel = onDismissTransferDialog
         )
     }
 }
@@ -313,12 +313,13 @@ private fun Collections(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         sortedCollections.forEach { collection ->
-            val chipColors = if (collection.color != CollectionColor.DEFAULT) {
+            //TODO remove if not needed, might still be necessary
+            /*val chipColors = if (collection.color != CollectionColor.DEFAULT) {
                 AssistChipDefaults.assistChipColors(
                     containerColor = collection.color.color.copy(alpha = 0.1f),
                     disabledContainerColor = collection.color.color.copy(alpha = 0.1f)
                 )
-            } else AssistChipDefaults.assistChipColors()
+            } else AssistChipDefaults.assistChipColors()*/
 
             AssistChip(
                 onClick = {},

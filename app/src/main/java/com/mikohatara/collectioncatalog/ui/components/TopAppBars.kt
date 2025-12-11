@@ -55,6 +55,9 @@ fun CatalogTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+    val onToggleMenu = { isMenuExpanded = !isMenuExpanded }
+    val onDismissMenu = { isMenuExpanded = false }
+
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -111,7 +114,7 @@ fun CatalogTopAppBar(
         TopAppBar(
             title = {
                 Text(
-                    title,
+                    text = title,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -135,7 +138,7 @@ fun CatalogTopAppBar(
                     )
                 }
                 IconButton(
-                    onClick = { isMenuExpanded = !isMenuExpanded },
+                    onClick = onToggleMenu,
                     enabled = onExport != null || onImport != null
                 ) {
                     Icon(
@@ -144,9 +147,10 @@ fun CatalogTopAppBar(
                     )
                     DropdownMenu(
                         expanded = isMenuExpanded,
-                        onDismissRequest = { isMenuExpanded = false },
+                        onDismissRequest = onDismissMenu,
                         shape = RoundedCornerShape(12.dp)
                     ) {
+                        // Example of an item which shouldn't be visible if the action is null
                         /*onImport?.let {
                             ModifiedDropdownMenuItem(
                                 onClick = {
@@ -160,7 +164,7 @@ fun CatalogTopAppBar(
                         ModifiedDropdownMenuItem(
                             onClick = {
                                 onImport?.let { it() }
-                                isMenuExpanded = false
+                                onDismissMenu()
                             },
                             painterResource = painterResource(R.drawable.rounded_download_24),
                             text = stringResource(R.string.import_text),
@@ -169,7 +173,7 @@ fun CatalogTopAppBar(
                         ModifiedDropdownMenuItem(
                             onClick = {
                                 onExport?.let { it() }
-                                isMenuExpanded = false
+                                onDismissMenu()
                             },
                             painterResource = painterResource(R.drawable.rounded_file_export_24),
                             text = stringResource(R.string.export_text),
@@ -200,17 +204,19 @@ fun ItemSummaryTopAppBar(
     transferButtonPainter: Painter = painterResource(R.drawable.rounded_question_mark)
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+    val onToggleMenu = { isMenuExpanded = !isMenuExpanded }
+    val onDismissMenu = { isMenuExpanded = false }
 
     MediumTopAppBar(
         title = {
             Text(
-                title,
+                text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onBack() }) {
+            IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
@@ -224,7 +230,7 @@ fun ItemSummaryTopAppBar(
                     contentDescription = "Edit"
                 )
             }
-            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+            IconButton(onClick = onToggleMenu) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_more_vert_24),
                     contentDescription = null
@@ -232,7 +238,7 @@ fun ItemSummaryTopAppBar(
             }
             DropdownMenu(
                 expanded = isMenuExpanded,
-                onDismissRequest = { isMenuExpanded = false },
+                onDismissRequest = onDismissMenu,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 ModifiedDropdownMenuItem(
@@ -249,7 +255,7 @@ fun ItemSummaryTopAppBar(
                     ModifiedDropdownMenuItem(
                         onClick = {
                             it()
-                            isMenuExpanded = false
+                            onDismissMenu()
                         },
                         painterResource = painterResource(R.drawable.rounded_check_24),
                         text = stringResource(R.string.check_wishlist_button),
@@ -259,7 +265,7 @@ fun ItemSummaryTopAppBar(
                     ModifiedDropdownMenuItem(
                         onClick = {
                             it()
-                            isMenuExpanded = false
+                            onDismissMenu()
                         },
                         painterResource = transferButtonPainter,
                         text = transferButtonText,
@@ -268,7 +274,7 @@ fun ItemSummaryTopAppBar(
                 ModifiedDropdownMenuItem(
                     onClick = {
                         onDelete()
-                        isMenuExpanded = false
+                        onDismissMenu()
                     },
                     painterResource = painterResource(R.drawable.rounded_delete_forever),
                     text = stringResource(R.string.delete)
@@ -295,17 +301,19 @@ fun ItemEntryTopAppBar(
     isPasteEnabled: Boolean = false
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+    val onToggleMenu = { isMenuExpanded = !isMenuExpanded }
+    val onDismissMenu = { isMenuExpanded = false }
 
     TopAppBar(
         title = {
             Text(
-                title,
+                text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onBack() }) {
+            IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
@@ -314,7 +322,7 @@ fun ItemEntryTopAppBar(
         },
         actions = {
             FilledIconButton(
-                onClick = { onSave() },
+                onClick = onSave,
                 enabled = isSaveEnabled
             ) {
                 Icon(
@@ -322,7 +330,7 @@ fun ItemEntryTopAppBar(
                     contentDescription = null
                 )
             }
-            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+            IconButton(onClick = onToggleMenu) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_more_vert_24),
                     contentDescription = null
@@ -330,13 +338,13 @@ fun ItemEntryTopAppBar(
             }
             DropdownMenu(
                 expanded = isMenuExpanded,
-                onDismissRequest = { isMenuExpanded = false },
+                onDismissRequest = onDismissMenu,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 ModifiedDropdownMenuItem(
                     onClick = {
                         onCopy?.let { it() }
-                        isMenuExpanded = false
+                        onDismissMenu()
                     },
                     painterResource = painterResource(R.drawable.rounded_content_copy),
                     text = stringResource(R.string.copy),
@@ -345,7 +353,7 @@ fun ItemEntryTopAppBar(
                 ModifiedDropdownMenuItem(
                     onClick = {
                         onPaste?.let { it() }
-                        isMenuExpanded = false
+                        onDismissMenu()
                     },
                     painterResource = painterResource(R.drawable.rounded_content_paste),
                     text = stringResource(R.string.paste),
@@ -368,13 +376,13 @@ fun CollectionListTopAppBar(
     TopAppBar(
         title = {
             Text(
-                title,
+                text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onBack() }) {
+            IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
@@ -394,17 +402,19 @@ fun CollectionEntryTopAppBar(
     colors: TopAppBarColors
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
+    val onToggleMenu = { isMenuExpanded = !isMenuExpanded }
+    val onDismissMenu = { isMenuExpanded = false }
 
     TopAppBar(
         title = {
             Text(
-                title,
+                text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onBack() }) {
+            IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
@@ -412,7 +422,7 @@ fun CollectionEntryTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+            IconButton(onClick = onToggleMenu) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_more_vert_24),
                     contentDescription = null
@@ -420,13 +430,13 @@ fun CollectionEntryTopAppBar(
             }
             DropdownMenu(
                 expanded = isMenuExpanded,
-                onDismissRequest = { isMenuExpanded = false },
+                onDismissRequest = onDismissMenu,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 ModifiedDropdownMenuItem(
                     onClick = {
                         onDelete()
-                        isMenuExpanded = false
+                        onDismissMenu()
                     },
                     painterResource = painterResource(R.drawable.rounded_delete_forever),
                     text = stringResource(R.string.delete)
@@ -444,7 +454,7 @@ fun StatsTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     LargeTopAppBar(
-        title = { Text(stringResource(R.string.statistics)) },
+        title = { Text(text = stringResource(R.string.statistics)) },
         navigationIcon = {
             IconButton(onClick = onOpenDrawer) {
                 Icon(
@@ -464,9 +474,9 @@ fun SettingsTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     LargeTopAppBar(
-        title = { Text(stringResource(R.string.settings)) },
+        title = { Text(text = stringResource(R.string.settings)) },
         navigationIcon = {
-            IconButton(onClick = { onBack() }) {
+            IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = "Back"
@@ -485,9 +495,9 @@ fun HelpTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     LargeTopAppBar(
-        title = { Text(title) },
+        title = { Text(text = title) },
         navigationIcon = {
-            IconButton(onClick = { onBack() }) {
+            IconButton(onClick = onBack) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_arrow_back_24),
                     contentDescription = null

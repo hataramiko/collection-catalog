@@ -80,6 +80,9 @@ private fun CollectionEntryScreen(
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
     var showColorDialog by rememberSaveable { mutableStateOf(false) }
+    val onDismissDiscardDialog = { showDiscardDialog = false }
+    val onDismissDeletionDialog = { showDeletionDialog = false }
+    val onDismissColorDialog = { showColorDialog = false }
     val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
     val topAppBarColors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -138,31 +141,31 @@ private fun CollectionEntryScreen(
             options = CollectionColor.entries.map { getCollectionColor(it, context) },
             selectedOption = getCollectionColor(uiState.collectionDetails.color, context),
             onToggleSelection = { viewModel.updateCollectionColor(it, context) },
-            onDismiss = { showColorDialog = false },
+            onDismiss = onDismissColorDialog,
             skipPartiallyExpanded = true
         )
     }
     if (showDiscardDialog) {
         DiscardDialog(
             onConfirm = {
-                showDiscardDialog = false
+                onDismissDiscardDialog()
                 onBack()
             },
-            onCancel = { showDiscardDialog = false }
+            onCancel = onDismissDiscardDialog
         )
     }
     if (showDeletionDialog) {
         DeletionDialog(
             message = stringResource(R.string.deletion_dialog_collection),
             onConfirm = {
-                showDeletionDialog = false
+                onDismissDeletionDialog()
                 coroutineScope.launch {
                     viewModel.deleteCollection()
                     viewModel.showToast(context, deletionToast)
                     onBack()
                 }
             },
-            onCancel = { showDeletionDialog = false }
+            onCancel = onDismissDeletionDialog
         )
     }
 }

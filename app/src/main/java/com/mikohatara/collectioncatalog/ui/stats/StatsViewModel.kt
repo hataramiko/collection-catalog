@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.stats
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -109,6 +110,7 @@ class StatsViewModel @Inject constructor(
                     _allCollections.clear()
                     _allCollections.addAll(collections)
                 } catch (e: Exception) {
+                    Log.e("StatsViewModel", "init, collectionsJob: ${e.message}")
                     _allCollections.clear()
                 }
             }
@@ -455,9 +457,9 @@ class StatsViewModel @Inject constructor(
 
     fun getCombinedCost(isNet: Boolean = false, isPerPlate: Boolean = false): String {
         val countryCode = _uiState.value.userCountry
-        val platesCost = _uiState.value.allPlates.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
-        val archiveCost = _uiState.value.archive.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
-        val archivePrice = _uiState.value.archive.sumOf { it.archivalDetails.price?.toLong() ?: 0 }
+        val platesCost = _uiState.value.allPlates.sumOf { it.uniqueDetails.cost ?: 0 }
+        val archiveCost = _uiState.value.archive.sumOf { it.uniqueDetails.cost ?: 0 }
+        val archivePrice = _uiState.value.archive.sumOf { it.archivalDetails.price ?: 0 }
         val combinedCost = if (isNet) {
             platesCost + archiveCost - archivePrice
         } else platesCost + archiveCost
@@ -485,7 +487,7 @@ class StatsViewModel @Inject constructor(
         val itemType = _uiState.value.activeItemType
 
         if (itemType == ItemType.FORMER_PLATE) {
-            val cost = _uiState.value.archive.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
+            val cost = _uiState.value.archive.sumOf { it.uniqueDetails.cost ?: 0 }
 
             if (isPerPlate) {
                 val size = _uiState.value.archive.size
@@ -499,8 +501,7 @@ class StatsViewModel @Inject constructor(
             } else return cost.toCurrencyString(countryCode)
 
         } else if (itemType == ItemType.PLATE && _uiState.value.collectionPlates.isNotEmpty()) {
-            val cost = _uiState.value.collectionPlates
-                .sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
+            val cost = _uiState.value.collectionPlates.sumOf { it.uniqueDetails.cost ?: 0 }
 
             if (isPerPlate) {
                 val size = _uiState.value.collectionPlates.size
@@ -514,7 +515,7 @@ class StatsViewModel @Inject constructor(
             } else return cost.toCurrencyString(countryCode)
 
         } else if (itemType == ItemType.PLATE) {
-            val cost = _uiState.value.allPlates.sumOf { it.uniqueDetails.cost?.toLong() ?: 0 }
+            val cost = _uiState.value.allPlates.sumOf { it.uniqueDetails.cost ?: 0 }
 
             if (isPerPlate) {
                 val size = _uiState.value.allPlates.size
@@ -537,8 +538,7 @@ class StatsViewModel @Inject constructor(
         val itemType = _uiState.value.activeItemType
 
         if (itemType == ItemType.PLATE && _uiState.value.collectionPlates.isNotEmpty()) {
-            val value = _uiState.value.collectionPlates
-                .sumOf { it.uniqueDetails.value?.toLong() ?: 0 }
+            val value = _uiState.value.collectionPlates.sumOf { it.uniqueDetails.value ?: 0 }
 
             if (isPerPlate) {
                 val size = _uiState.value.collectionPlates.size
@@ -552,7 +552,7 @@ class StatsViewModel @Inject constructor(
             } else return value.toCurrencyString(countryCode)
 
         } else if (itemType == ItemType.PLATE) {
-            val value = _uiState.value.allPlates.sumOf { it.uniqueDetails.value?.toLong() ?: 0 }
+            val value = _uiState.value.allPlates.sumOf { it.uniqueDetails.value ?: 0 }
 
             if (isPerPlate) {
                 val size = _uiState.value.allPlates.size
@@ -575,7 +575,7 @@ class StatsViewModel @Inject constructor(
         val itemType = _uiState.value.activeItemType
 
         if (itemType == ItemType.FORMER_PLATE) {
-            val sum = _uiState.value.archive.sumOf { it.archivalDetails.price?.toLong() ?: 0 }
+            val sum = _uiState.value.archive.sumOf { it.archivalDetails.price ?: 0 }
             return sum.toCurrencyString(countryCode)
         }
         return "–"
@@ -592,8 +592,8 @@ class StatsViewModel @Inject constructor(
             collectionRepository.getCollectionWithPlatesStream(collection.id).collect {
                 val collectionPlates = it?.plates ?: emptyList()
                 val collectionSize = collectionPlates.size.toFloat()
-                _uiState.update {
-                    it.copy(
+                _uiState.update { state ->
+                    state.copy(
                         collection = collection,
                         collectionPlates = collectionPlates,
                         collectionPercentage = getPercentageOfAllPlates(collectionSize)

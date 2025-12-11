@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.components
 
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -88,7 +89,7 @@ fun ItemImage(
             val result = try {
                 imageLoader.execute(imageRequest)
             } catch (e: Exception) {
-                //TODO add error message
+                Log.e("ItemImage", e.message, e)
                 null
             }
 
@@ -182,56 +183,57 @@ fun pickItemImage(
     onPick: (Uri?) -> Unit = {},
     onRemove: () -> Unit = {}
 ): String? {
-    var removeTemporaryImage by remember { mutableStateOf(false) }
+    var isRemoveIntent by remember { mutableStateOf(false) }
+    val toggleRemoveIntent = { isRemoveIntent = !isRemoveIntent }
     val photoPicker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()) { uri ->
             onPick(uri)
     }
     val launchPicker = { photoPicker.launch(PickVisualMediaRequest(
         mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)) }
-    val toggleRemove = { removeTemporaryImage = true }
+    val itemImageModifier = Modifier.padding(4.dp)
 
-    if (removeTemporaryImage) {
+    if (isRemoveIntent) {
         onRemove()
-        removeTemporaryImage = false
+        toggleRemoveIntent()
     }
 
     if (temporaryImageUri != null) {
         ItemEntryImageFrame(
-            toggleRemove,
-            modifier
+            onRemove = toggleRemoveIntent,
+            modifier = modifier
         ) {
             ItemImage(
-                onClick = { launchPicker() },
+                onClick = launchPicker,
                 imageUri = temporaryImageUri,
-                modifier = Modifier.padding(4.dp)
+                modifier = itemImageModifier
             )
         }
         return null
 
     } else if (existingImagePath != null) {
         ItemEntryImageFrame(
-            toggleRemove,
-            modifier
+            onRemove = toggleRemoveIntent,
+            modifier = modifier
         ) {
             ItemImage(
-                onClick = { launchPicker() },
+                onClick = launchPicker,
                 imagePath = existingImagePath,
-                modifier = Modifier.padding(4.dp)
+                modifier = itemImageModifier
             )
         }
         return existingImagePath
 
     } else {
         ItemEntryImageFrame(
-            toggleRemove,
-            modifier,
+            onRemove = toggleRemoveIntent,
+            modifier = modifier,
             hasExistingImage = false
         ) {
             ItemImage(
-                onClick = { launchPicker() },
+                onClick = launchPicker,
                 isEditMode = true,
-                modifier = Modifier.padding(4.dp)
+                modifier = itemImageModifier
             )
         }
         return null

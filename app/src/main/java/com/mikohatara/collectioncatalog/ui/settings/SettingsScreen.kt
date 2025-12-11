@@ -77,6 +77,10 @@ private fun SettingsScreen(
     var showRedirectDialog by rememberSaveable { mutableStateOf(false) }
     var showLengthUnitDialog by rememberSaveable { mutableStateOf(false) }
     var showWeightUnitDialog by rememberSaveable { mutableStateOf(false) }
+    val onDismissCountryDialog = { showCountryDialog = false }
+    val onDismissRedirectDialog = { showRedirectDialog = false }
+    val onDismissLengthUnitDialog = { showLengthUnitDialog = false }
+    val onDismissWeightUnitDialog = { showWeightUnitDialog = false }
     val excludedCountryCodes = setOf("XA", "XB", "001", "150", "419")
 
     Scaffold(
@@ -109,7 +113,7 @@ private fun SettingsScreen(
                 .sorted(),
             selectedOption = uiState.userCountry.toDisplayCountry(),
             onToggleSelection = { viewModel.setUserCountry(it) },
-            onDismiss = { showCountryDialog = false },
+            onDismiss = onDismissCountryDialog,
             infoText = stringResource(R.string.user_country_info)
         )
     }
@@ -117,12 +121,12 @@ private fun SettingsScreen(
         RedirectDialog(
             message = stringResource(R.string.language_redirect_text),
             onConfirm = {
-                showRedirectDialog = false
+                onDismissRedirectDialog()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     viewModel.redirectToLanguageSettings(context)
                 }
             },
-            onCancel = { showRedirectDialog = false }
+            onCancel = onDismissRedirectDialog
         )
     }
     if (showLengthUnitDialog) {
@@ -132,7 +136,7 @@ private fun SettingsScreen(
             options = listOf("mm", "in"),
             selectedOption = getMeasurementUnitSymbol(uiState.lengthUnit),
             onToggleSelection = { viewModel.setLengthUnit(it) },
-            onDismiss = { showLengthUnitDialog = false }
+            onDismiss = onDismissLengthUnitDialog
         )
     }
     if (showWeightUnitDialog) {
@@ -142,7 +146,7 @@ private fun SettingsScreen(
             options = listOf("g", "oz"),
             selectedOption = getMeasurementUnitSymbol(uiState.weightUnit),
             onToggleSelection = { viewModel.setWeightUnit(it) },
-            onDismiss = { showWeightUnitDialog = false }
+            onDismiss = onDismissWeightUnitDialog
         )
     }
 }

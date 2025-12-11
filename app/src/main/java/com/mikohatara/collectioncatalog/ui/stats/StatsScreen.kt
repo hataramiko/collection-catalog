@@ -118,6 +118,7 @@ private fun StatsScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var showCollectionBottomSheet by rememberSaveable { mutableStateOf(false) }
+    val onDismissCollectionBottomSheet = { showCollectionBottomSheet = false }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -143,9 +144,9 @@ private fun StatsScreen(
             selectedCollection = uiState.collection?.name ?: "",
             onSelect = {
                 viewModel.setCollection(it)
-                showCollectionBottomSheet = false
+                onDismissCollectionBottomSheet()
             },
-            onDismiss = { showCollectionBottomSheet = false }
+            onDismiss = onDismissCollectionBottomSheet
         )
     }
 }

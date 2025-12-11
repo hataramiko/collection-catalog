@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -86,7 +87,10 @@ private fun MenuDrawerContent(
     val collectionIdArg = navBackStackEntry?.arguments?.getInt(COLLECTION_ID)
     val itemTypeArg = navBackStackEntry?.arguments?.getString(ITEM_TYPE)
     val catalogItemType = itemTypeArg?.let {
-        try { ItemType.valueOf(it) } catch (e: IllegalArgumentException) { null }
+        try { ItemType.valueOf(it) } catch (e: IllegalArgumentException) {
+            Log.e("MenuDrawer", "Invalid itemTypeArg: $itemTypeArg", e)
+            null
+        }
     }
 
     ModalDrawerSheet {

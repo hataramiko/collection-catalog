@@ -486,6 +486,7 @@ private fun LandingPageLink(
     painter: Painter = painterResource(R.drawable.rounded_help)
 ) {
     var showRedirectDialog by rememberSaveable { mutableStateOf(false) }
+    val onDismissRedirectDialog = { showRedirectDialog = false }
     val openUrlErrorMessage = stringResource(R.string.open_url_error)
     val openUrl: (Context, String) -> Unit = { context, url ->
         try {
@@ -512,19 +513,19 @@ private fun LandingPageLink(
             RedirectDialog(
                 message = dialogMessage,
                 onConfirm = {
-                    showRedirectDialog = false
+                    onDismissRedirectDialog()
                     openUrl(context, url)
                 },
-                onCancel = { showRedirectDialog = false }
+                onCancel = onDismissRedirectDialog
             )
         } else {
             OpenUrlDialog(
                 title = text,
                 onConfirm = {
-                    showRedirectDialog = false
+                    onDismissRedirectDialog()
                     openUrl(context, url)
                 },
-                onCancel = { showRedirectDialog = false }
+                onCancel = onDismissRedirectDialog
             )
         }
     }

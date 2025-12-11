@@ -125,6 +125,8 @@ private fun CatalogScreen(
 
     var showImportDialog by rememberSaveable { mutableStateOf(false) }
     var showExportDialog by rememberSaveable { mutableStateOf(false) }
+    val onDismissImportDialog = { showImportDialog = false }
+    val onDismissExportDialog = { showExportDialog = false }
     val onImport = if (!uiState.isCollection) { { showImportDialog = true } } else null
     val onToggleSearch = if (uiState.itemType != ItemType.WANTED_PLATE) {
         { viewModel.toggleSearch() }
@@ -318,14 +320,14 @@ private fun CatalogScreen(
     if (showImportDialog) {
         ImportDialog(
             onConfirm = {
-                showImportDialog = false
+                onDismissImportDialog()
                 pickCsvForImport.launch(arrayOf( //TODO "*/*" should be removed
                     "text/csv", "application/csv", "application/vnd.ms-excel", "*/*"
                 ))
             },
-            onCancel = { showImportDialog = false },
+            onCancel = onDismissImportDialog,
             onHelp = {
-                showImportDialog = false
+                onDismissImportDialog()
                 onImportHelp()
             }
         )
@@ -333,11 +335,11 @@ private fun CatalogScreen(
     if (showExportDialog) {
         ExportDialog(
             onConfirm = {
-                showExportDialog = false
+                onDismissExportDialog()
                 val fileName = getFileNameForExport(topBarTitle)
                 createCsvForExport.launch(fileName)
             },
-            onCancel = { showExportDialog = false }
+            onCancel = onDismissExportDialog
         )
     }
 }
