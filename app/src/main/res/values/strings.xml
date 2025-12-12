@@ -16,27 +16,27 @@
     <string name="source">Source</string>
     <string name="period">Period</string>
     <string name="year">Year</string>
-    <string name="reg_no">Reg. No.</string>
+    <string name="reg_no">Reg. no.</string>
     <string name="date">Date</string>
     <string name="value">Value</string>
     <string name="type">Type</string>
     <string name="plates">Plates</string>
-    <string name="sort_by">Sort By</string>
+    <string name="sort_by">Sort by</string>
     <string name="filter">Filter</string>
     <string name="cancel">Cancel</string>
     <string name="cost">Cost</string>
-    <string name="image_loading">Image loading...</string>
-    <string name="loading">Loading...</string>
+    <string name="image_loading">Image loading…</string>
+    <string name="loading">Loading…</string>
     <string name="country">Country</string>
     <string name="region">Region</string>
     <string name="area">Area</string>
     <string name="subdivision">Subdivision</string>
-    <string name="sort_by_date_newest">Most recent date</string>
-    <string name="sort_by_date_oldest">Earliest date</string>
-    <string name="sort_by_country_asc">Country &amp; Region, ascending</string>
-    <string name="sort_by_country_desc">Country &amp; Region, descending</string>
-    <string name="sort_by_country_and_type_asc">Country &amp; Type, ascending</string>
-    <string name="sort_by_country_and_type_desc">Country &amp; Type, descending</string>
+    <string name="sort_by_date_newest">Newest date</string>
+    <string name="sort_by_date_oldest">Oldest date</string>
+    <string name="sort_by_country_asc">Country &amp; region, ascending</string>
+    <string name="sort_by_country_desc">Country &amp; region, descending</string>
+    <string name="sort_by_country_and_type_asc">Country &amp; type, ascending</string>
+    <string name="sort_by_country_and_type_desc">Country &amp; type, descending</string>
     <string name="reset">Reset</string>
     <string name="filter_apply">Apply</string>
     <string name="statistics">Statistics</string>
@@ -67,12 +67,12 @@
     <string name="region_1st">Region, 1st</string>
     <string name="region_2nd">Region, 2nd</string>
     <string name="region_3rd">Region, 3rd</string>
-    <string name="region_second">Region, Second</string>
-    <string name="period_start">Period, Start</string>
-    <string name="period_end">Period, End</string>
+    <string name="region_second">Region, second</string>
+    <string name="period_start">Period, start</string>
+    <string name="period_end">Period, end</string>
     <string name="color">Color</string>
-    <string name="color_main">Color, Base</string>
-    <string name="color_secondary">Color, Characters</string>
+    <string name="color_main">Color, base</string>
+    <string name="color_secondary">Color, characters</string>
     <string name="collections">Collections</string>
     <string name="create_collection">Create new collection</string>
     <string name="edit_collections">Edit collections</string>
@@ -125,8 +125,8 @@
     <string name="empty_list_archive_msg">Archive is empty</string>
     <string name="empty_list_archive_desc">Keep track of plates no longer in your possession. You can archive existing plates, or add new entries manually.</string>
     <string name="empty_list_wishlist_msg">Wishlist is empty</string>
-    <string name="sort_by_country_and_age_asc">Country &amp; Age, ascending</string>
-    <string name="sort_by_country_and_age_desc">Country &amp;  Age, descending</string>
+    <string name="sort_by_country_and_age_asc">Country &amp; age, ascending</string>
+    <string name="sort_by_country_and_age_desc">Country &amp;  age, descending</string>
     <string name="transfer_from_wishlist_dialog_title">Create a plate &amp; delete wishlist entry?</string>
     <string name="transfer_from_wishlist_dialog_text">A new plate will be created based on this wishlist entry. This entry will in turn be deleted from the wishlist.</string>
     <string name="transfer_from_plates_dialog_title">Archive <xliff:g name="reg_no" example="ABC-123">%s</xliff:g>?</string>
@@ -183,10 +183,10 @@
     <string name="select_collection">Select collection</string>
     <string name="percentage_of_plates"><xliff:g name="percentage" example="100 %">%s</xliff:g> of all plates</string>
     <string name="total">Total</string>
-    <string name="sort_by_age_asc">Period &amp; Year, ascending</string>
-    <string name="sort_by_age_desc">Period &amp; Year, descending</string>
-    <string name="sort_by_archival_oldest">Earliest archival</string>
-    <string name="sort_by_archival_newest">Most recent archival</string>
+    <string name="sort_by_age_asc">Period &amp; year, ascending</string>
+    <string name="sort_by_age_desc">Period &amp; year, descending</string>
+    <string name="sort_by_archival_oldest">Oldest archival</string>
+    <string name="sort_by_archival_newest">Newest archival</string>
     <string name="help_page_not_translated">" "</string>
     <string name="help_import_a_p1" translatable="false">You can add multiple plates at once by importing a CSV file.</string>
     <string name="help_import_a_p2" translatable="false">In order for the import to succeed, the file needs to follow a specific format and guidelines.</string>
@@ -298,4 +298,6 @@
     <string name="check_wishlist_dialog_title">Create a plate?</string>
     <string name="check_wishlist_dialog_text">A new plate will be created based on this wishlist entry.</string>
     <string name="check_wishlist_button">Create plate</string>
+    <string name="color_base">Base</string>
+    <string name="color_characters">Characters</string>
 </resources>

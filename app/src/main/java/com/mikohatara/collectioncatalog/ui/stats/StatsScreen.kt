@@ -60,6 +60,8 @@ import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
+import com.mikohatara.collectioncatalog.ui.components.CardGroup
+import com.mikohatara.collectioncatalog.ui.components.CardGroupSpacer
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.ExpandableStatsCard
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
@@ -67,30 +69,9 @@ import com.mikohatara.collectioncatalog.ui.components.InfoDialog
 import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.SelectCollectionBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.StatsTopAppBar
+import com.mikohatara.collectioncatalog.ui.theme.RekkaryTheme
 import com.mikohatara.collectioncatalog.util.toFormattedString
 import com.mikohatara.collectioncatalog.util.toPercentage
-
-// Temporary solution to manage card shapes within StatsScreen
-// TODO implement unified app-wide approach in theme etc.
-private object RoundedCorners {
-    val AllRound = RoundedCornerShape(20.dp)
-
-    val AllSharp = RoundedCornerShape(8.dp)
-
-    val BottomSharp = RoundedCornerShape(
-        topStart = 20.dp,
-        topEnd = 20.dp,
-        bottomStart = 8.dp,
-        bottomEnd = 8.dp
-    )
-
-    val TopSharp = RoundedCornerShape(
-        topStart = 8.dp,
-        topEnd = 8.dp,
-        bottomStart = 20.dp,
-        bottomEnd = 20.dp
-    )
-}
 
 @Composable
 fun StatsScreen(
@@ -234,203 +215,141 @@ private fun StatsScreenContent(
                 }
             }
             item {
-                ExpandableStatsCard(
-                    label = stringResource(R.string.countries),
-                    shape = RoundedCorners.BottomSharp,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                ) {
-                    if (uiState.countries.isNotEmpty()) {
-                        SumRow(uiState.countries.size)
-                        Table(
-                            userPreferences = userPreferences,
-                            rows = uiState.countries,
-                            items = uiState.activeItems,
-                            propertyExtractor = propertyExtractorCountry
-                        )
-                    } else NoData()
-                }
-            }
-            item {
-                ExpandableStatsCard(
-                    label = stringResource(R.string.types),
-                    shape = RoundedCorners.AllSharp,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                ) {
-                    if (uiState.types.isNotEmpty()) {
-                        SumRow(uiState.types.size)
-                        Table(
-                            userPreferences = userPreferences,
-                            rows = uiState.types,
-                            items = uiState.activeItems,
-                            propertyExtractor = propertyExtractorType
-                        )
-                    } else NoData()
-                }
-            }
-            item {
-                ExpandableStatsCard(
-                    label = stringResource(R.string.period),
-                    shape = RoundedCorners.AllSharp,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                ) {
-                    if (uiState.periodAmounts.isNotEmpty() && uiState.years.isNotEmpty()) {
-                        Graph(
-                            verticalValues = uiState.periodAmounts,
-                            horizontalValues = uiState.years
-                        )
-                    } else NoData()
-                }
-            }
-            item {
-                ExpandableStatsCard(
-                    label = stringResource(R.string.year),
-                    shape = RoundedCorners.TopSharp,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                ) {
-                    if (uiState.yearAmounts.isNotEmpty() && uiState.years.isNotEmpty()) {
-                        Graph(
-                            verticalValues = uiState.yearAmounts,
-                            horizontalValues = uiState.years
-                        )
-                    } else NoData()
-                }
-            }
-            if (uiState.activeItemType != ItemType.WANTED_PLATE) {
-                val (costShape, costPadding) = if (uiState.activeItemType == ItemType.PLATE) {
-                    RoundedCorners.AllSharp to 4.dp
-                } else RoundedCorners.TopSharp to 16.dp
-
-                item {
-                    ExpandableStatsCard(
-                        label = stringResource(R.string.date),
-                        shape = RoundedCorners.BottomSharp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    ) {
-                        if (uiState.activeItems.isNotEmpty()) {
+                CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                    ExpandableStatsCard(label = stringResource(R.string.countries)) {
+                        if (uiState.countries.isNotEmpty()) {
+                            SumRow(uiState.countries.size)
                             Table(
                                 userPreferences = userPreferences,
-                                rows = uiState.startDateYears,
+                                rows = uiState.countries,
                                 items = uiState.activeItems,
-                                propertyExtractor = propertyExtractorStartDateYear
+                                propertyExtractor = propertyExtractorCountry
+                            )
+                        } else NoData()
+                    }
+                    CardGroupSpacer()
+                    ExpandableStatsCard(label = stringResource(R.string.types)) {
+                        if (uiState.types.isNotEmpty()) {
+                            SumRow(uiState.types.size)
+                            Table(
+                                userPreferences = userPreferences,
+                                rows = uiState.types,
+                                items = uiState.activeItems,
+                                propertyExtractor = propertyExtractorType
+                            )
+                        } else NoData()
+                    }
+                    CardGroupSpacer()
+                    ExpandableStatsCard(label = stringResource(R.string.period)) {
+                        if (uiState.periodAmounts.isNotEmpty() && uiState.years.isNotEmpty()) {
+                            Graph(
+                                verticalValues = uiState.periodAmounts,
+                                horizontalValues = uiState.years
+                            )
+                        } else NoData()
+                    }
+                    CardGroupSpacer()
+                    ExpandableStatsCard(label = stringResource(R.string.year)) {
+                        if (uiState.yearAmounts.isNotEmpty() && uiState.years.isNotEmpty()) {
+                            Graph(
+                                verticalValues = uiState.yearAmounts,
+                                horizontalValues = uiState.years
                             )
                         } else NoData()
                     }
                 }
+            }
+            if (uiState.activeItemType != ItemType.WANTED_PLATE) {
                 item {
-                    ExpandableStatsCard(
-                        label = stringResource(R.string.cost),
-                        shape = costShape,
-                        modifier = Modifier.padding(bottom = costPadding)
-                    ) {
-                        CostCardContent(uiState)
-                    }
-                }
-                if (uiState.activeItemType == ItemType.PLATE) {
-                    item {
-                        ExpandableStatsCard(
-                            label = stringResource(R.string.value),
-                            shape = RoundedCorners.AllSharp,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        ) {
-                            ValueCardContent(uiState)
-                        }
-                    }
-                    item {
-                        ExpandableStatsCard(
-                            label = stringResource(R.string.location),
-                            shape = RoundedCorners.TopSharp,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        ) {
-                            if (uiState.locations.isNotEmpty()) {
+                    CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                        ExpandableStatsCard(label = stringResource(R.string.date)) {
+                            if (uiState.activeItems.isNotEmpty()) {
                                 Table(
                                     userPreferences = userPreferences,
-                                    rows = uiState.locations,
+                                    rows = uiState.startDateYears,
                                     items = uiState.activeItems,
-                                    propertyExtractor = propertyExtractorLocation
+                                    propertyExtractor = propertyExtractorStartDateYear
                                 )
                             } else NoData()
                         }
+                        CardGroupSpacer()
+                        ExpandableStatsCard(label = stringResource(R.string.cost)) {
+                            CostCardContent(uiState)
+                        }
+                        if (uiState.activeItemType == ItemType.PLATE) {
+                            CardGroupSpacer()
+                            ExpandableStatsCard(label = stringResource(R.string.value)) {
+                                ValueCardContent(uiState)
+                            }
+                            CardGroupSpacer()
+                            ExpandableStatsCard(label = stringResource(R.string.location)) {
+                                if (uiState.locations.isNotEmpty()) {
+                                    Table(
+                                        userPreferences = userPreferences,
+                                        rows = uiState.locations,
+                                        items = uiState.activeItems,
+                                        propertyExtractor = propertyExtractorLocation
+                                    )
+                                } else NoData()
+                            }
+                        }
                     }
                 }
-                item { Subheader(stringResource(R.string.source)) }
                 item {
-                    ExpandableStatsCard(
-                        label = stringResource(R.string.source_type),
-                        shape = RoundedCorners.BottomSharp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    ) {
-                        SourceTypeContent(
-                            uiState,
-                            userPreferences,
-                            propertyExtractorSourceType
-                        )
-                    }
-                }
-                item {
-                    ExpandableStatsCard(
-                        label = stringResource(R.string.source_country),
-                        shape = RoundedCorners.TopSharp,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    ) {
-                        SourceCountryContent(
-                            uiState,
-                            userPreferences,
-                            propertyExtractorSourceCountry
-                        )
+                    Subheader(stringResource(R.string.source))
+                    CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                        ExpandableStatsCard(label = stringResource(R.string.source_type)) {
+                            SourceTypeContent(
+                                uiState,
+                                userPreferences,
+                                propertyExtractorSourceType
+                            )
+                        }
+                        CardGroupSpacer()
+                        ExpandableStatsCard(label = stringResource(R.string.source_country)) {
+                            SourceCountryContent(
+                                uiState,
+                                userPreferences,
+                                propertyExtractorSourceCountry
+                            )
+                        }
                     }
                 }
             }
             if (uiState.activeItemType == ItemType.FORMER_PLATE) {
-                item { Subheader(stringResource(R.string.archival)) }
                 item {
-                    ExpandableStatsCard(
-                        label = stringResource(R.string.archival_date),
-                        shape = RoundedCorners.BottomSharp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    ) {
-                        if (uiState.activeItems.isNotEmpty()) {
-                            Table(
-                                userPreferences = userPreferences,
-                                rows = uiState.endDateYears,
-                                items = uiState.activeItems,
-                                propertyExtractor = propertyExtractorEndDateYear
+                    Subheader(stringResource(R.string.archival))
+                    CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                        ExpandableStatsCard(label = stringResource(R.string.archival_date)) {
+                            if (uiState.activeItems.isNotEmpty()) {
+                                Table(
+                                    userPreferences = userPreferences,
+                                    rows = uiState.endDateYears,
+                                    items = uiState.activeItems,
+                                    propertyExtractor = propertyExtractorEndDateYear
+                                )
+                            } else NoData()
+                        }
+                        CardGroupSpacer()
+                        ExpandableStatsCard(label = stringResource(R.string.archival_reason)) {
+                            ArchivalReasonContent(
+                                uiState,
+                                userPreferences,
+                                propertyExtractorArchivalReason
                             )
-                        } else NoData()
-                    }
-                }
-                item {
-                    ExpandableStatsCard(
-                        label = stringResource(R.string.archival_reason),
-                        shape = RoundedCorners.AllSharp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    ) {
-                        ArchivalReasonContent(
-                            uiState,
-                            userPreferences,
-                            propertyExtractorArchivalReason
-                        )
-                    }
-                }
-                item {
-                    ExpandableStatsCard(
-                        label = stringResource(R.string.sold_price),
-                        shape = RoundedCorners.AllSharp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    ) {
-                        ArchivalPriceContent(uiState)
-                    }
-                }
-                item {
-                    ExpandableStatsCard(
-                        label = stringResource(R.string.recipient_country),
-                        shape = RoundedCorners.TopSharp,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    ) {
-                        RecipientCountryContent(
-                            uiState,
-                            userPreferences,
-                            propertyExtractorRecipientCountry
-                        )
+                        }
+                        CardGroupSpacer()
+                        ExpandableStatsCard(label = stringResource(R.string.sold_price)) {
+                            ArchivalPriceContent(uiState)
+                        }
+                        CardGroupSpacer()
+                        ExpandableStatsCard(label = stringResource(R.string.recipient_country)) {
+                            RecipientCountryContent(
+                                uiState,
+                                userPreferences,
+                                propertyExtractorRecipientCountry
+                            )
+                        }
                     }
                 }
             }
@@ -467,7 +386,7 @@ private fun StatsHeaderCard(
     }
 
     Card(
-        shape = RoundedCornerShape(20.dp),
+        shape = RekkaryTheme.shapes.card20,
         colors = CardDefaults.cardColors(containerColor = cardColor),
         modifier = modifier
             .fillMaxWidth()
@@ -537,7 +456,7 @@ private fun CollectionCard(
     }
 
     Card(
-        shape = RoundedCornerShape(20.dp),
+        shape = RekkaryTheme.shapes.card20,
         colors = CardDefaults.cardColors(containerColor = cardColor),
         modifier = modifier
             .animateContentSize()

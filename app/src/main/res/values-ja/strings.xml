@@ -24,8 +24,8 @@
     <string name="filter">絞り込み</string>
     <string name="cancel">キャンセル</string>
     <string name="cost">費用</string>
-    <string name="image_loading">画像ロード中...</string>
-    <string name="loading">ロード中...</string>
+    <string name="image_loading">画像ロード中…</string>
+    <string name="loading">ロード中…</string>
     <string name="country">国家</string>
     <string name="region">地域</string>
     <string name="area">地域</string>
@@ -230,4 +230,6 @@
     <string name="check_wishlist_dialog_text">この欲しい物に基づいて新規プレートが作成されます。</string>
     <string name="check_wishlist_button">プレート作成</string>
     <string name="check_wishlist_dialog_title">プレートを作成しますか？</string>
+    <string name="color_base">地</string>
+    <string name="color_characters">字</string>
 </resources>

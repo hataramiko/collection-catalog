@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.ui.theme.RekkaryTheme
 
 @Composable
 fun ExpandableCard(
@@ -72,7 +73,7 @@ fun ExpandableCard(
 fun ExpandableStatsCard(
     label: String,
     modifier: Modifier = Modifier,
-    shape: RoundedCornerShape = RoundedCornerShape(20.dp),
+    shape: RoundedCornerShape = RekkaryTheme.shapes.card8,
     content: @Composable () -> Unit
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }

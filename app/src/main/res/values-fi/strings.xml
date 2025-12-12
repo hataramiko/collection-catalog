@@ -24,8 +24,8 @@
     <string name="filter">Rajaa</string>
     <string name="cancel">Peruuta</string>
     <string name="cost">Menot</string>
-    <string name="image_loading">Kuvaa ladataan...</string>
-    <string name="loading">Ladataan...</string>
+    <string name="image_loading">Kuvaa ladataan…</string>
+    <string name="loading">Ladataan…</string>
     <string name="country">Valtio</string>
     <string name="region">Alue</string>
     <string name="area">Alue</string>
@@ -234,4 +234,6 @@
     <string name="check_wishlist_dialog_title">Luo kilpi?</string>
     <string name="check_wishlist_dialog_text">Tämän listauksen pohjalta luodaan uusi kilpi.</string>
     <string name="check_wishlist_button">Luo kilpi</string>
+    <string name="color_base">Pohja</string>
+    <string name="color_characters">Merkit</string>
 </resources>
