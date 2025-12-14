@@ -26,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -296,8 +295,10 @@ private fun StatsScreenContent(
                     }
                 }
                 item {
-                    Subheader(stringResource(R.string.source))
-                    CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                    CardGroup(
+                        label = stringResource(R.string.source),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    ) {
                         ExpandableStatsCard(label = stringResource(R.string.source_type)) {
                             SourceTypeContent(
                                 uiState,
@@ -318,8 +319,10 @@ private fun StatsScreenContent(
             }
             if (uiState.activeItemType == ItemType.FORMER_PLATE) {
                 item {
-                    Subheader(stringResource(R.string.archival))
-                    CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                    CardGroup(
+                        label = stringResource(R.string.archival),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    ) {
                         ExpandableStatsCard(label = stringResource(R.string.archival_date)) {
                             if (uiState.activeItems.isNotEmpty()) {
                                 Table(
@@ -755,16 +758,6 @@ private fun RecipientCountryContent(
             propertyExtractor = propertyExtractorRecipientCountry
         )
     } else NoData()
-}
-
-@Composable
-private fun Subheader(text: String) {
-    Text(
-        text = text,
-        color = colorScheme.secondary,
-        style = typography.titleSmall,
-        modifier = Modifier.padding(16.dp)
-    )
 }
 
 @Composable

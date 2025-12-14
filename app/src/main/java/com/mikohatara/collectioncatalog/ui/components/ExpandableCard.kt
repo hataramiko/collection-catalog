@@ -107,7 +107,7 @@ fun ExpandableStatsCard(
                 painter = if (isExpanded) painterResource(R.drawable.rounded_keyboard_arrow_up_24)
                 else painterResource(R.drawable.rounded_keyboard_arrow_down_24),
                 contentDescription = null,
-                tint = colorScheme.onSurfaceVariant,
+                tint = colorScheme.outline,
                 modifier = Modifier.padding(16.dp)
             )
         }

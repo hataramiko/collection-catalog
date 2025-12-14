@@ -14,17 +14,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -51,13 +46,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.ui.components.CardButton
+import com.mikohatara.collectioncatalog.ui.components.CardGroup
+import com.mikohatara.collectioncatalog.ui.components.CardGroupSpacer
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.HelpTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
@@ -169,41 +165,43 @@ private fun LandingPage(
     context: Context,
     modifier: Modifier = Modifier
 ) {
-    Spacer(modifier = Modifier.height(16.dp))
-    LandingPageButton(
-        text = stringResource(R.string.import_dialog_title),
-        painter = painterResource(R.drawable.rounded_download_24),
-        onClick = { navActions.navigateToHelpScreen(HelpPage.IMPORT) },
-        modifier = modifier
-    )
-    HelpPageHorizontalDivider()
-    LandingPageLink(
-        text = stringResource(R.string.send_feedback),
-        dialogMessage = stringResource(R.string.url_redirect_to_feedback),
-        painter = painterResource(R.drawable.rounded_forward_to_inbox_24),
-        url = Url.SEND_FEEDBACK,
-        context = context,
-        modifier = modifier,
-        viewModel = viewModel
-    )
-    LandingPageLink(
-        text = stringResource(R.string.rate),
-        dialogMessage = stringResource(R.string.url_redirect_to_rating),
-        painter = painterResource(R.drawable.rounded_reviews_24),
-        url = Url.RATE,
-        context = context,
-        modifier = modifier,
-        viewModel = viewModel
-    )
-    HelpPageHorizontalDivider()
-    LandingPageLink(
-        text = stringResource(R.string.privacy_policy),
-        painter = painterResource(R.drawable.rounded_privacy_tip_24),
-        url = Url.PRIVACY_POLICY,
-        context = context,
-        modifier = modifier,
-        viewModel = viewModel
-    )
+    Column(modifier = modifier.padding(16.dp)) {
+        CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+            LandingPageButton(
+                text = stringResource(R.string.import_dialog_title),
+                painter = painterResource(R.drawable.rounded_download_24),
+                onClick = { navActions.navigateToHelpScreen(HelpPage.IMPORT) }
+            )
+        }
+        CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+            LandingPageLink(
+                text = stringResource(R.string.send_feedback),
+                dialogMessage = stringResource(R.string.url_redirect_to_feedback),
+                painter = painterResource(R.drawable.rounded_forward_to_inbox_24),
+                url = Url.SEND_FEEDBACK,
+                context = context,
+                viewModel = viewModel
+            )
+            CardGroupSpacer()
+            LandingPageLink(
+                text = stringResource(R.string.rate),
+                dialogMessage = stringResource(R.string.url_redirect_to_rating),
+                painter = painterResource(R.drawable.rounded_reviews_24),
+                url = Url.RATE,
+                context = context,
+                viewModel = viewModel
+            )
+        }
+        CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+            LandingPageLink(
+                text = stringResource(R.string.privacy_policy),
+                painter = painterResource(R.drawable.rounded_privacy_tip_24),
+                url = Url.PRIVACY_POLICY,
+                context = context,
+                viewModel = viewModel
+            )
+        }
+    }
 }
 
 @Composable
@@ -467,11 +465,12 @@ private fun LandingPageButton(
     modifier: Modifier = Modifier,
     painter: Painter = painterResource(R.drawable.rounded_help)
 ) {
-    HelpPageButton(
-        text = text,
+    CardButton(
+        label = text,
         onClick = onClick,
         modifier = modifier,
-        mainIconPainter = painter
+        mainIconPainter = painter,
+        trailingIconPainter = painterResource(R.drawable.rounded_chevron_forward)
     )
 }
 
@@ -498,8 +497,8 @@ private fun LandingPageLink(
         }
     }
 
-    HelpPageButton(
-        text = text,
+    CardButton(
+        label = text,
         onClick = { showRedirectDialog = true },
         modifier = modifier,
         mainIconPainter = painter,
@@ -529,67 +528,4 @@ private fun LandingPageLink(
             )
         }
     }
-}
-
-@Composable
-private fun HelpPageButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    mainIconPainter: Painter = painterResource(R.drawable.rounded_help),
-    trailingIconPainter: Painter = painterResource(R.drawable.rounded_chevron_forward),
-    isMainIconColorTertiary: Boolean = false,
-    isMainIconColorSecondary: Boolean = false
-) {
-    val (mainIconContainerColor, mainIconColor) = if (isMainIconColorTertiary) {
-        colorScheme.tertiaryContainer to colorScheme.onTertiaryContainer
-    } else if (isMainIconColorSecondary) {
-        colorScheme.secondaryContainer to colorScheme.onSecondaryContainer
-    } else {
-        colorScheme.primaryContainer to colorScheme.onPrimaryContainer
-    }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 20.dp, vertical = 12.dp)
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(mainIconContainerColor),
-            modifier = Modifier.size(40.dp)
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Icon(
-                    painter = mainIconPainter,
-                    contentDescription = null,
-                    tint = mainIconColor
-                )
-            }
-        }
-        Text(
-            text = text,
-            fontSize = 18.sp,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 2,
-            modifier = Modifier.padding(horizontal = 16.dp).weight(1f)
-        )
-        Icon(
-            painter = trailingIconPainter,
-            contentDescription = null,
-            tint = colorScheme.outline
-        )
-    }
-}
-
-@Composable
-private fun HelpPageHorizontalDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(
-        color = colorScheme.outlineVariant,
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-    )
 }
