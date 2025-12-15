@@ -367,9 +367,7 @@ private fun CatalogScreenContent(
     val itemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
     val topBarCollapsedFraction = remember { derivedStateOf { topBarState.collapsedFraction } }
     val isTopRowHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
-    val (contentPadding, verticalSpace) = if (uiState.itemType == ItemType.WANTED_PLATE) {
-        PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp) to 12.dp
-    } else PaddingValues(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 8.dp) to 8.dp
+    val contentPadding = PaddingValues(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 8.dp)
 
     // Use itemIndex and topBarCollapsedFraction to update TopRow visibility in viewModel
     LaunchedEffect(itemIndex.value, topBarCollapsedFraction.value) {
@@ -380,7 +378,7 @@ private fun CatalogScreenContent(
         state = listState,
         contentPadding = contentPadding,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(verticalSpace),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
@@ -476,7 +474,7 @@ private fun CatalogScreenContent(
             }
             item {
                 EndOfList(
-                    hasCircle = uiState.itemType != ItemType.WANTED_PLATE,
+                    hasCircle = true,
                     text = if (uiState.itemType == ItemType.WANTED_PLATE) {
                         pluralStringResource(R.plurals.wishlist_list_size, itemList.size, itemList.size)
                     } else {

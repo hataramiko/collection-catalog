@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikohatara.collectioncatalog.ui.theme.RekkaryTheme
@@ -36,10 +37,18 @@ fun CardButton(
     isMainIconColorTertiary: Boolean = false,
     isMainIconColorSecondary: Boolean = false
 ) {
-    val (labelColor, valueColor) = if (enabled) {
-        colorScheme.onBackground to colorScheme.onSurfaceVariant
+    val (containerColor, labelColor, valueColor) = if (enabled) {
+        Triple(
+            colorScheme.surfaceContainer,
+            colorScheme.onBackground,
+            colorScheme.onSurfaceVariant
+        )
     } else {
-        colorScheme.outline to colorScheme.outline
+        Triple(
+            colorScheme.surfaceContainerLow,
+            colorScheme.outline,
+            colorScheme.outline
+        )
     }
     val (mainIconContainerColor, mainIconColor) = if (isMainIconColorTertiary) {
         colorScheme.tertiaryContainer to colorScheme.onTertiaryContainer
@@ -51,7 +60,7 @@ fun CardButton(
 
     Card(
         shape = RekkaryTheme.shapes.card8,
-        colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainer),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
         modifier = modifier
             .fillMaxWidth()
             .clickable(enabled = enabled) { onClick() }
@@ -83,14 +92,16 @@ fun CardButton(
                 Text(
                     text = label,
                     color = labelColor,
-                    fontSize = 18.sp,
-                    /*overflow = TextOverflow.Ellipsis,
-                    maxLines = 2*/
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2
                 )
                 value?.let {
                     Text(
                         text = value,
-                        color = valueColor
+                        color = valueColor,
+                        fontSize = 14.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
                     )
                 }
             }

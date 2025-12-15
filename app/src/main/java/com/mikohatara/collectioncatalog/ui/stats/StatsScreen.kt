@@ -198,7 +198,7 @@ private fun StatsScreenContent(
                             viewModel.clearCollection()
                         }
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     StatsHeaderCard(
                         isSelected = uiState.activeItemType == ItemType.FORMER_PLATE,
                         message = stringResource(R.string.archive),
@@ -393,7 +393,7 @@ private fun StatsHeaderCard(
         colors = CardDefaults.cardColors(containerColor = cardColor),
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
+            .padding(bottom = 8.dp)
     ) {
         // A Box to hold the onClick instead of the Card for better visualization
         Box(modifier = Modifier.fillMaxSize().then(onClick)) {
@@ -464,7 +464,7 @@ private fun CollectionCard(
         modifier = modifier
             .animateContentSize()
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
+            .padding(bottom = 8.dp)
     ) {
         // A Box to hold the onClick instead of the Card for better visualization
         Box(modifier = Modifier.fillMaxSize().then(onClick)) {
