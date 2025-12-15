@@ -2,8 +2,8 @@ package com.mikohatara.collectioncatalog.ui.settings
 
 import android.content.Context
 import android.os.Build
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
@@ -77,7 +77,7 @@ private fun SettingsScreen(
         topBar = {
             SettingsTopAppBar(
                 onBack = onBack,
-                scrollBehavior
+                scrollBehavior = scrollBehavior
             )
         },
         content = { innerPadding ->
@@ -153,49 +153,55 @@ private fun SettingsScreenContent(
     val currentLocale = getLocale(userCountry)
     val displayCountry = currentLocale.getDisplayCountry(Locale.getDefault())
 
-    Column(modifier = modifier.padding(16.dp)) {
-        CardGroup(
-            label = stringResource(R.string.settings_general),
-            modifier = Modifier.padding(bottom = 16.dp)
-        ) {
-            CardButton(
-                label = stringResource(R.string.user_country),
-                onClick = onClickCountry,
-                value = displayCountry,
-                mainIconPainter = painterResource(R.drawable.rounded_globe)
-            )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    LazyColumn(modifier = modifier.padding(16.dp)) {
+        item {
+            CardGroup(
+                label = stringResource(R.string.settings_general),
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                CardButton(
+                    label = stringResource(R.string.user_country),
+                    onClick = onClickCountry,
+                    value = displayCountry,
+                    mainIconPainter = painterResource(R.drawable.rounded_globe)
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    CardGroupSpacer()
+                    CardButton(
+                        label = stringResource(R.string.language),
+                        onClick = onClickLanguage,
+                        value = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() },
+                        mainIconPainter = painterResource(R.drawable.rounded_language)
+                    )
+                }
+            }
+        }
+        item {
+            CardGroup(
+                label = stringResource(R.string.measurement_units),
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                CardButton(
+                    label = stringResource(R.string.measurement_length),
+                    onClick = onClickLengthUnit,
+                    value = getMeasurementUnitSymbol(uiState.lengthUnit),
+                    mainIconPainter = painterResource(R.drawable.rounded_ruler),
+                    isMainIconColorSecondary = true
+                )
                 CardGroupSpacer()
                 CardButton(
-                    label = stringResource(R.string.language),
-                    onClick = onClickLanguage,
-                    value = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() },
-                    mainIconPainter = painterResource(R.drawable.rounded_language)
+                    label = stringResource(R.string.measurement_weight),
+                    onClick = onClickWeightUnit,
+                    value = getMeasurementUnitSymbol(uiState.weightUnit),
+                    mainIconPainter = painterResource(R.drawable.rounded_weight),
+                    isMainIconColorSecondary = true
                 )
             }
         }
-        CardGroup(
-            label = stringResource(R.string.measurement_units),
-            modifier = Modifier.padding(bottom = 16.dp)
-        ) {
-            CardButton(
-                label = stringResource(R.string.measurement_length),
-                onClick = onClickLengthUnit,
-                value = getMeasurementUnitSymbol(uiState.lengthUnit),
-                mainIconPainter = painterResource(R.drawable.rounded_ruler),
-                isMainIconColorSecondary = true
-            )
-            CardGroupSpacer()
-            CardButton(
-                label = stringResource(R.string.measurement_weight),
-                onClick = onClickWeightUnit,
-                value = getMeasurementUnitSymbol(uiState.weightUnit),
-                mainIconPainter = painterResource(R.drawable.rounded_weight),
-                isMainIconColorSecondary = true
-            )
-        }
-        CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
-            Version()
+        item {
+            CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                Version()
+            }
         }
     }
 }
