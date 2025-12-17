@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -133,29 +135,31 @@ private fun ItemCardImageLoading(
     imageWidth: Dp
 ) {
     Card(
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(colorScheme.surfaceContainerLow),
         modifier = Modifier
             .width(imageWidth)
-            .height(88.dp)
+            .height(96.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 4.dp, end = 8.dp)
         ) {
             Icon(
                 painter = painterResource(R.drawable.rounded_hourglass_24),
                 contentDescription = null,
-                tint = colorScheme.outlineVariant,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                tint = colorScheme.outlineVariant
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "$title…",
                 color = colorScheme.outlineVariant,
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -169,28 +173,30 @@ private fun ItemCardNoImage(
 ) {
     // New centered implementation for testing
     Card(
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(colorScheme.surfaceContainerHigh),
         modifier = modifier
             .width(width)
-            .height(88.dp)
+            .height(96.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 8.dp, end = 12.dp)
         ) {
             Icon(
                 painter = painterResource(R.drawable.rounded_no_image),
                 contentDescription = null,
-                tint = colorScheme.secondary,
-                modifier = modifier.padding(horizontal = 8.dp)
+                tint = colorScheme.primary
             )
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = title,
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -259,23 +265,26 @@ private fun ItemCardImageError(
     modifier: Modifier = Modifier
 ) {
     Card(
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(colorScheme.surfaceContainer),
         modifier = modifier
             .width(imageWidth)
-            .height(88.dp)
+            .height(96.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 8.dp, end = 12.dp)
         ) {
             Icon(
                 painter = painterResource(R.drawable.rounded_broken_image_24),
                 contentDescription = null,
-                tint = colorScheme.outlineVariant,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                tint = colorScheme.outlineVariant
             )
-            Column(modifier = Modifier.padding(horizontal = 4.dp)) {
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
                 Text(
                     text = title,
                     softWrap = false,

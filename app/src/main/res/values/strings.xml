@@ -91,13 +91,13 @@
     <string name="source_name">Name</string>
     <string name="source_alias">Alias</string>
     <string name="source_type">Method</string>
-    <string name="source_details">Details</string>
+    <string name="source_details">Notes</string>
     <string name="source_country">Country</string>
     <string name="archival">Archival</string>
     <string name="archival_date">Date</string>
     <string name="archival_reason">Reason</string>
     <string name="sold_price">Price</string>
-    <string name="archival_details">Details</string>
+    <string name="archival_details">Notes</string>
     <string name="recipient_name">Recipient name</string>
     <string name="recipient_alias">Alias</string>
     <string name="recipient_country">Destination country</string>
@@ -300,4 +300,8 @@
     <string name="check_wishlist_button">Create plate</string>
     <string name="color_base">Base</string>
     <string name="color_characters">Characters</string>
+    <string name="common_details_label">Basic information</string>
+    <string name="size_and_color">Size &amp; color</string>
+    <string name="unique_details_label">Details</string>
+    <string name="size">Size</string>
 </resources>

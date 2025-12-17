@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -152,11 +153,13 @@ private fun SettingsScreenContent(
     val userCountry = uiState.userCountry
     val currentLocale = getLocale(userCountry)
     val displayCountry = currentLocale.getDisplayCountry(Locale.getDefault())
+    val cardGroupLabelColor = colorScheme.onSurfaceVariant
 
     LazyColumn(modifier = modifier.padding(16.dp)) {
         item {
             CardGroup(
                 label = stringResource(R.string.settings_general),
+                labelColor = cardGroupLabelColor,
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 CardButton(
@@ -179,6 +182,7 @@ private fun SettingsScreenContent(
         item {
             CardGroup(
                 label = stringResource(R.string.measurement_units),
+                labelColor = cardGroupLabelColor,
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 CardButton(

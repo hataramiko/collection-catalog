@@ -236,4 +236,8 @@
     <string name="check_wishlist_button">Luo kilpi</string>
     <string name="color_base">Pohja</string>
     <string name="color_characters">Merkit</string>
+    <string name="common_details_label">Perustiedot</string>
+    <string name="size_and_color">Koko ja väri</string>
+    <string name="unique_details_label">Yksityiskohdat</string>
+    <string name="size">Koko</string>
 </resources>

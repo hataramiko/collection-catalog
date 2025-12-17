@@ -227,7 +227,7 @@ private fun WishlistCardNoImage(modifier: Modifier = Modifier) {
         Icon(
             painter = painterResource(R.drawable.rounded_no_image),
             contentDescription = null,
-            tint = colorScheme.secondary
+            tint = colorScheme.primary
         )
     }
 }

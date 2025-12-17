@@ -60,7 +60,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -214,6 +213,12 @@ fun FilterBottomSheet(
         ) {
             LazyColumn {
                 stickyHeader {
+                    FilterSubheader(
+                        text = stringResource(R.string.common_details_label),
+                        isFirst = true
+                    )
+                }
+                stickyHeader {
                     FilterListLabel(
                         label = stringResource(R.string.country),
                         activeFilters = filters.country,
@@ -298,6 +303,9 @@ fun FilterBottomSheet(
                             }
                         )
                     }
+                }
+                stickyHeader {
+                    FilterSubheader(text = stringResource(R.string.unique_details_label))
                 }
                 if (itemType != ItemType.WANTED_PLATE && toggleVehicleSwitch != null) {
                     stickyHeader {
@@ -426,7 +434,9 @@ fun FilterBottomSheet(
                     }
                 }
                 if (colorsMain != null || colorsSecondary != null) {
-                    stickyHeader { FilterSubheader(text = stringResource(R.string.physical_attributes)) }
+                    stickyHeader {
+                        FilterSubheader(text = stringResource(R.string.size_and_color))
+                    }
                 }
                 if (widthSliderRange != null && widthSliderPosition != null &&
                     onWidthSliderChange != null) {
@@ -493,7 +503,9 @@ fun FilterBottomSheet(
                     }
                 }
                 if (itemType != ItemType.WANTED_PLATE) {
-                    stickyHeader { FilterSubheader(text = stringResource(R.string.source)) }
+                    stickyHeader {
+                        FilterSubheader(text = stringResource(R.string.source))
+                    }
                     if (sourceTypes != null && toggleSourceType != null) {
                         stickyHeader {
                             FilterListLabel(
@@ -534,7 +546,9 @@ fun FilterBottomSheet(
                     }
                 }
                 if (itemType == ItemType.FORMER_PLATE) {
-                    stickyHeader { FilterSubheader(text = stringResource(R.string.archival)) }
+                    stickyHeader {
+                        FilterSubheader(text = stringResource(R.string.archival))
+                    }
                     if (archivalDateSliderRange != null && archivalDateSliderPosition != null &&
                         onArchivalDateSliderChange != null) {
                         stickyHeader {
@@ -1006,12 +1020,13 @@ private fun FilterHorizontalDivider(
 }
 
 @Composable
-private fun FilterSubheader(text: String) {
-    Spacer(modifier = Modifier.height(24.dp))
+private fun FilterSubheader(text: String, isFirst: Boolean = false) {
+    val spacerHeight = if (isFirst) 8.dp else 24.dp
+
+    Spacer(modifier = Modifier.height(spacerHeight))
     Text(
         text = text,
-        color = colorScheme.primary,
-        fontWeight = FontWeight.Bold,
+        color = colorScheme.outline,
         style = typography.labelLarge,
         modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
     )

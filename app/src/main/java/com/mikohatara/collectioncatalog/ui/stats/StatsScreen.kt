@@ -139,6 +139,8 @@ private fun StatsScreenContent(
     onShowCollectionBottomSheet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardGroupLabelColor = colorScheme.outline
+
     val propertyExtractorCountry = remember(uiState.activeItemType) { viewModel
         .getPropertyExtractor("country") }
     val propertyExtractorType = remember(uiState.activeItemType) { viewModel
@@ -185,7 +187,7 @@ private fun StatsScreenContent(
                         .toPercentage(userPreferences.userCountry),
                     onClick = { onShowCollectionBottomSheet() }
                 )
-                Row(modifier = Modifier.padding(bottom = 40.dp)) {
+                Row(modifier = Modifier.padding(bottom = 24.dp)) {
                     StatsHeaderCard(
                         isSelected = uiState.activeItemType == ItemType.WANTED_PLATE,
                         message = stringResource(R.string.wishlist),
@@ -198,7 +200,7 @@ private fun StatsScreenContent(
                             viewModel.clearCollection()
                         }
                     )
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     StatsHeaderCard(
                         isSelected = uiState.activeItemType == ItemType.FORMER_PLATE,
                         message = stringResource(R.string.archive),
@@ -214,7 +216,11 @@ private fun StatsScreenContent(
                 }
             }
             item {
-                CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                CardGroup(
+                    label = stringResource(R.string.common_details_label),
+                    labelColor = cardGroupLabelColor,
+                    modifier = Modifier.padding(bottom = 32.dp)
+                ) {
                     ExpandableStatsCard(label = stringResource(R.string.countries)) {
                         if (uiState.countries.isNotEmpty()) {
                             SumRow(uiState.countries.size)
@@ -260,7 +266,11 @@ private fun StatsScreenContent(
             }
             if (uiState.activeItemType != ItemType.WANTED_PLATE) {
                 item {
-                    CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
+                    CardGroup(
+                        label = stringResource(R.string.unique_details_label),
+                        labelColor = cardGroupLabelColor,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    ) {
                         ExpandableStatsCard(label = stringResource(R.string.date)) {
                             if (uiState.activeItems.isNotEmpty()) {
                                 Table(
@@ -297,7 +307,8 @@ private fun StatsScreenContent(
                 item {
                     CardGroup(
                         label = stringResource(R.string.source),
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        labelColor = cardGroupLabelColor,
+                        modifier = Modifier.padding(bottom = 24.dp)
                     ) {
                         ExpandableStatsCard(label = stringResource(R.string.source_type)) {
                             SourceTypeContent(
@@ -321,7 +332,8 @@ private fun StatsScreenContent(
                 item {
                     CardGroup(
                         label = stringResource(R.string.archival),
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        labelColor = cardGroupLabelColor,
+                        modifier = Modifier.padding(bottom = 12.dp)
                     ) {
                         ExpandableStatsCard(label = stringResource(R.string.archival_date)) {
                             if (uiState.activeItems.isNotEmpty()) {
@@ -393,7 +405,7 @@ private fun StatsHeaderCard(
         colors = CardDefaults.cardColors(containerColor = cardColor),
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
+            .padding(bottom = 12.dp)
     ) {
         // A Box to hold the onClick instead of the Card for better visualization
         Box(modifier = Modifier.fillMaxSize().then(onClick)) {
@@ -464,7 +476,7 @@ private fun CollectionCard(
         modifier = modifier
             .animateContentSize()
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
+            .padding(bottom = 12.dp)
     ) {
         // A Box to hold the onClick instead of the Card for better visualization
         Box(modifier = Modifier.fillMaxSize().then(onClick)) {

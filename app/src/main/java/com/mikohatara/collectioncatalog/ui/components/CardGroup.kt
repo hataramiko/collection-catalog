@@ -5,12 +5,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.ui.theme.RekkaryTheme
 
@@ -18,14 +19,15 @@ import com.mikohatara.collectioncatalog.ui.theme.RekkaryTheme
 fun CardGroup(
     modifier: Modifier = Modifier,
     label: String? = null,
+    labelColor: Color = LocalContentColor.current,
     shape: RoundedCornerShape = RekkaryTheme.shapes.card20,
     content: @Composable () -> Unit
 ) {
     label?.let {
         Text(
             text = label,
-            color = colorScheme.primary,
-            style = typography.titleSmall,
+            color = labelColor,
+            style = typography.labelLarge,
             modifier = Modifier.padding(12.dp)
         )
     }

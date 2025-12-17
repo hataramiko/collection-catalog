@@ -53,7 +53,7 @@
     <string name="condition">状態</string>
     <string name="location">位置</string>
     <string name="vehicle">車両</string>
-    <string name="notes">詳細</string>
+    <string name="notes">メモ</string>
     <string name="labels">ラベル</string>
     <string name="edit">編集</string>
     <string name="create_label">新しいラベルを作成</string>
@@ -90,13 +90,13 @@
     <string name="source_name">名称</string>
     <string name="source_alias">通称</string>
     <string name="source_type">方法</string>
-    <string name="source_details">詳細</string>
+    <string name="source_details">メモ</string>
     <string name="source_country">原産国</string>
     <string name="archival">アーカイバル</string>
     <string name="archival_date">日付</string>
     <string name="archival_reason">理由</string>
     <string name="sold_price">価格</string>
-    <string name="archival_details">詳細</string>
+    <string name="archival_details">メモ</string>
     <string name="recipient_name">送り先</string>
     <string name="recipient_alias">通称</string>
     <string name="recipient_country">送り先の国</string>
@@ -232,4 +232,8 @@
     <string name="check_wishlist_dialog_title">プレートを作成しますか？</string>
     <string name="color_base">地</string>
     <string name="color_characters">字</string>
+    <string name="common_details_label">基本情報</string>
+    <string name="size_and_color">サイズと配色</string>
+    <string name="unique_details_label">詳細</string>
+    <string name="size">サイズ</string>
 </resources>

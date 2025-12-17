@@ -17,22 +17,25 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
-import com.mikohatara.collectioncatalog.BuildConfig
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.ItemType
@@ -93,6 +96,12 @@ private fun MenuDrawerContent(
         }
     }
 
+    val customColors = NavigationDrawerItemDefaults.colors(
+        selectedIconColor = colorScheme.primary,
+        unselectedTextColor = colorScheme.onSurface,
+        selectedTextColor = colorScheme.onPrimaryContainer
+    )
+
     ModalDrawerSheet {
         LazyColumn {
             item {
@@ -111,7 +120,8 @@ private fun MenuDrawerContent(
                         onClick = {
                             navActions.navigateToCatalogScreen(ItemType.PLATE)
                             onCloseDrawer()
-                        }
+                        },
+                        colors = customColors
                     )
                 }
                 DrawerDivider(hasHorizontalPadding = true)
@@ -123,7 +133,8 @@ private fun MenuDrawerContent(
                 ) {
                     Text(
                         text = stringResource(R.string.collections),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = colorScheme.onSurfaceVariant,
+                        style = typography.labelLarge,
                         modifier = Modifier.padding(horizontal = 28.dp)
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -133,7 +144,10 @@ private fun MenuDrawerContent(
                             .padding(end = 16.dp)
                             .requiredHeight(36.dp)
                     ) {
-                        Text(stringResource(R.string.edit))
+                        Text(
+                            text = stringResource(R.string.edit),
+                            style = typography.labelMedium
+                        )
                     }
                 }
             }
@@ -167,6 +181,7 @@ private fun MenuDrawerContent(
                         navActions.navigateToCatalogScreen(ItemType.PLATE, collection.id)
                         onCloseDrawer()
                     },
+                    colors = customColors,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
             }
@@ -179,6 +194,7 @@ private fun MenuDrawerContent(
                     ) },
                     selected = false,
                     onClick = { onAddCollection() },
+                    colors = customColors,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
                 DrawerDivider(hasHorizontalPadding = true)
@@ -196,7 +212,8 @@ private fun MenuDrawerContent(
                         onClick = {
                             navActions.navigateToCatalogScreen(ItemType.WANTED_PLATE)
                             onCloseDrawer()
-                        }
+                        },
+                        colors = customColors
                     )
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.archive)) },
@@ -209,7 +226,8 @@ private fun MenuDrawerContent(
                         onClick = {
                             navActions.navigateToCatalogScreen(ItemType.FORMER_PLATE)
                             onCloseDrawer()
-                        }
+                        },
+                        colors = customColors
                     )
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.statistics)) },
@@ -221,7 +239,8 @@ private fun MenuDrawerContent(
                         onClick = {
                             navActions.navigateToStatsScreen()
                             onCloseDrawer()
-                        }
+                        },
+                        colors = customColors
                     )
                 }
                 DrawerDivider()
@@ -233,7 +252,8 @@ private fun MenuDrawerContent(
                             contentDescription = null
                         ) },
                         selected = false,
-                        onClick = { navActions.navigateToSettingsScreen() }
+                        onClick = { navActions.navigateToSettingsScreen() },
+                        colors = customColors
                     )
                     NavigationDrawerItem(
                         label = { Text(stringResource(R.string.help_and_feedback)) },
@@ -242,7 +262,8 @@ private fun MenuDrawerContent(
                             contentDescription = null
                         ) },
                         selected = false,
-                        onClick = { navActions.navigateToHelpScreen() }
+                        onClick = { navActions.navigateToHelpScreen() },
+                        colors = customColors
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -252,7 +273,7 @@ private fun MenuDrawerContent(
 }
 
 @Composable
-private fun DrawerHeader() {
+private fun DrawerHeader(color: Color = colorScheme.outline) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.height(10.dp))
         Row(
@@ -262,17 +283,9 @@ private fun DrawerHeader() {
             Image(
                 painter = painterResource(R.drawable.rekkary_logo_512_slim),
                 contentDescription = null,
-                colorFilter = androidx.compose.ui.graphics
-                    .ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
+                colorFilter = ColorFilter.tint(color),
                 modifier = Modifier.weight(1f)
             )
-            if (BuildConfig.DEBUG) {
-                Text(
-                    text = "DEBUG",
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
             Spacer(modifier = Modifier.weight(1.5f))
         }
     }

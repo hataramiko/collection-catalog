@@ -4,6 +4,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -218,6 +219,9 @@ fun CollectionCatalogNavGraph(
         composable(
             route = SETTINGS_ROUTE
         ) {
+            LaunchedEffect(route) {
+                drawerState.close()
+            }
             SettingsScreen(
                 onBack = { onBack() }
             )
@@ -225,6 +229,9 @@ fun CollectionCatalogNavGraph(
         composable(
             route = HELP_DEFAULT_ROUTE
         ) {
+            LaunchedEffect(route) {
+                drawerState.close()
+            }
             HelpScreen(
                 navActions = navActions,
                 onBack = { onBack() }
