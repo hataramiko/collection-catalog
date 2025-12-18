@@ -122,10 +122,9 @@ fun ItemImage(
     Card(
         onClick = onClick,
         enabled = (isEditMode || imageUri != null || imagePath != null),
+        shape = RoundedCornerShape(16.dp),
         colors = colors,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         if (imageUri != null || imagePath != null) {
             AsyncImage(
@@ -191,7 +190,7 @@ fun pickItemImage(
     }
     val launchPicker = { photoPicker.launch(PickVisualMediaRequest(
         mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)) }
-    val itemImageModifier = Modifier.padding(4.dp)
+    val itemImageModifier = Modifier.padding(12.dp)
 
     if (isRemoveIntent) {
         onRemove()
@@ -330,8 +329,8 @@ private fun ItemEntryImageFrame(
         modifier = modifier.padding(top = 4.dp)
     ) {
         Card(
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(Color(0, 0, 0, 0)),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(Color.Transparent),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             modifier = Modifier.fillMaxWidth()
         ) {

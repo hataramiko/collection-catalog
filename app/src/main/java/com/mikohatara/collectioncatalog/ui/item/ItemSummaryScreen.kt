@@ -110,11 +110,9 @@ private fun ItemSummaryScreen(
 
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
-    //var showCopyDialog by rememberSaveable { mutableStateOf(false) }
     var showCheckWishlistDialog by rememberSaveable { mutableStateOf(false) }
     var showTransferDialog by rememberSaveable { mutableStateOf(false) }
     val onDismissDeletionDialog = { showDeletionDialog = false }
-    //val onDismissCopyDialog = { showCopyDialog = false }
     val onDismissCheckWishlistDialog = { showCheckWishlistDialog = false }
     val onDismissTransferDialog = { showTransferDialog = false }
     val onBackBehavior = { if (isInspectingImage) isInspectingImage = false else onBack() }
@@ -215,15 +213,6 @@ private fun ItemSummaryScreen(
             onCancel = onDismissDeletionDialog
         )
     }
-    /*if (showCopyDialog) { //TODO implement selective copying
-        CopyItemDetailsDialog(
-            itemDetails = itemDetails,
-            onConfirm = {
-                onDismissCopyDialog()
-            },
-            onCancel = onDismissCopyDialog
-        )
-    }*/
     if (showCheckWishlistDialog) {
         TransferDialog(
             title = stringResource(R.string.check_wishlist_dialog_title),
@@ -274,7 +263,8 @@ private fun ItemSummaryScreenContent(
             image = {
                 ItemImage(
                     onClick = onInspectImage,
-                    imagePath = itemDetails.imagePath
+                    imagePath = itemDetails.imagePath,
+                    modifier = Modifier.padding(8.dp)
                 )
             }
         )

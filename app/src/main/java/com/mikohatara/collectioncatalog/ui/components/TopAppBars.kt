@@ -13,12 +13,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -105,6 +106,7 @@ fun CatalogTopAppBar(
                     )
                 }
             },
+            colors = CustomTopAppBarColors(),
             scrollBehavior = scrollBehavior
         )
         LaunchedEffect(Unit) {
@@ -182,6 +184,7 @@ fun CatalogTopAppBar(
                     }
                 }
             },
+            colors = CustomTopAppBarColors(),
             scrollBehavior = scrollBehavior
         )
     }
@@ -207,7 +210,7 @@ fun ItemSummaryTopAppBar(
     val onToggleMenu = { isMenuExpanded = !isMenuExpanded }
     val onDismissMenu = { isMenuExpanded = false }
 
-    MediumTopAppBar(
+    LargeTopAppBar(
         title = {
             Text(
                 text = title,
@@ -281,7 +284,8 @@ fun ItemSummaryTopAppBar(
                 )
             }
         },
-        colors = colors,
+        colors = colors
+            .copy(navigationIconContentColor = CustomTopAppBarColors().navigationIconContentColor),
         scrollBehavior = scrollBehavior
     )
 }
@@ -361,7 +365,8 @@ fun ItemEntryTopAppBar(
                 )
             }
         },
-        colors = colors,
+        colors = colors
+            .copy(navigationIconContentColor = CustomTopAppBarColors().navigationIconContentColor),
         scrollBehavior = scrollBehavior
     )
 }
@@ -390,6 +395,7 @@ fun CollectionListTopAppBar(
             }
         },
         colors = colors
+            .copy(navigationIconContentColor = CustomTopAppBarColors().navigationIconContentColor)
     )
 }
 
@@ -444,6 +450,7 @@ fun CollectionEntryTopAppBar(
             }
         },
         colors = colors
+            .copy(navigationIconContentColor = CustomTopAppBarColors().navigationIconContentColor)
     )
 }
 
@@ -463,6 +470,7 @@ fun StatsTopAppBar(
                 )
             }
         },
+        colors = CustomTopAppBarColors(),
         scrollBehavior = scrollBehavior
     )
 }
@@ -483,6 +491,7 @@ fun SettingsTopAppBar(
                 )
             }
         },
+        colors = CustomTopAppBarColors(),
         scrollBehavior = scrollBehavior
     )
 }
@@ -504,6 +513,7 @@ fun HelpTopAppBar(
                 )
             }
         },
+        colors = CustomTopAppBarColors(),
         scrollBehavior = scrollBehavior
     )
 }
@@ -533,3 +543,8 @@ private fun ModifiedDropdownMenuItem(
         enabled = enabled
     )
 }
+
+@Composable
+private fun CustomTopAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+    navigationIconContentColor = colorScheme.onSurfaceVariant
+)
