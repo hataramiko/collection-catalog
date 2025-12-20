@@ -4,34 +4,29 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -54,7 +49,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -66,6 +60,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,11 +68,9 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
-import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
 import com.mikohatara.collectioncatalog.ui.components.EntryDialog
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
-import com.mikohatara.collectioncatalog.ui.components.IconQuotationMark
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
@@ -109,12 +102,14 @@ fun ItemEntryScreen(
 
     ItemEntryScreen(
         context = context,
-        userPreferences = userPreferences,
         itemDetails = uiState.itemDetails,
         itemType = uiState.itemType,
         temporaryImageUri = uiState.temporaryImageUri,
-        getCollections = viewModel::getCollections,
+        allCollections = viewModel.getCollections(),
         selectedCollections = uiState.selectedCollections,
+        localeCode = userPreferences.userCountry,
+        lengthUnit = getMeasurementUnitSymbol(userPreferences.lengthUnit),
+        weightUnit = getMeasurementUnitSymbol(userPreferences.weightUnit),
         isLoading = uiState.isLoading,
         isNew = uiState.isNew,
         isValidEntry = uiState.isValidEntry,
@@ -135,13 +130,15 @@ fun ItemEntryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemEntryScreen(
-    context: Context,// = LocalContext.current,
-    userPreferences: UserPreferences,
+    context: Context,
     itemDetails: ItemDetails,
     itemType: ItemType,
     temporaryImageUri: Uri?,
-    getCollections: () -> List<Collection>,
+    allCollections: List<Collection>,
     selectedCollections: List<Collection>,
+    localeCode: String,
+    lengthUnit: String,
+    weightUnit: String,
     isLoading: Boolean,
     isNew: Boolean,
     isValidEntry: Boolean,
@@ -190,7 +187,6 @@ private fun ItemEntryScreen(
     }
 
     val onBackBehavior = { if (hasUnsavedChanges) showDiscardDialog = true else onBack() }
-
     BackHandler(enabled = true) { onBackBehavior() }
 
     Scaffold(
@@ -199,8 +195,8 @@ private fun ItemEntryScreen(
             ItemEntryTopAppBar(
                 title = topBarTitle,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorScheme.surfaceContainerHighest,
-                    scrolledContainerColor = colorScheme.surfaceContainerHigh,
+                    containerColor = colorScheme.surface,
+                    scrolledContainerColor = colorScheme.surfaceVariant
                 ),
                 scrollBehavior = scrollBehavior,
                 onBack = onBackBehavior,
@@ -217,12 +213,14 @@ private fun ItemEntryScreen(
                 Loading()
             } else {
                 ItemEntryScreenContent(
-                    userPreferences = userPreferences,
                     itemDetails = itemDetails,
                     itemType = itemType,
                     temporaryImageUri = temporaryImageUri,
-                    getCollections = getCollections,
+                    allCollections = allCollections,
                     selectedCollections = selectedCollections,
+                    localeCode = localeCode,
+                    lengthUnit = lengthUnit,
+                    weightUnit = weightUnit,
                     saveButtonText = saveButtonText,
                     saveButtonIcon = saveButtonIcon,
                     isValidEntry = isValidEntry,
@@ -249,12 +247,14 @@ private fun ItemEntryScreen(
 
 @Composable
 private fun ItemEntryScreenContent(
-    userPreferences: UserPreferences,
     itemDetails: ItemDetails,
     itemType: ItemType,
     temporaryImageUri: Uri?,
-    getCollections: () -> List<Collection>,
+    allCollections: List<Collection>,
     selectedCollections: List<Collection>,
+    localeCode: String,
+    lengthUnit: String,
+    weightUnit: String,
     saveButtonText: String,
     saveButtonIcon: Painter,
     isValidEntry: Boolean,
@@ -265,52 +265,27 @@ private fun ItemEntryScreenContent(
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val collections = getCollections()
-    val localeCode = userPreferences.userCountry
-    val lengthUnit = getMeasurementUnitSymbol(userPreferences.lengthUnit)
-    val weightUnit = getMeasurementUnitSymbol(userPreferences.weightUnit)
-
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
-        EntrySection(
-            type = EntrySectionType.COMMON_DETAILS,
-            image = {
-                EntryFormImage(
-                    existingImagePath = itemDetails.imagePath,
-                    tempImagePath = temporaryImageUri,
-                    onPick = onImagePicked,
-                    onRemove = onImageRemoved,
-                    modifier = Modifier.padding(10.dp)
-                )
-            }
+        EntryFormImage(
+            existingImagePath = itemDetails.imagePath,
+            tempImagePath = temporaryImageUri,
+            onPick = onImagePicked,
+            onRemove = onImageRemoved,
+            modifier = Modifier.padding(16.dp)//10.dp)
+        )
+        EntryFormSection(
+            label = stringResource(R.string.common_details_label),
+            isFirst = true
         ) {
-            Row {
-                EntryField(
-                    label = stringResource(R.string.reg_no),
-                    value = itemDetails.regNo ?: "",
-                    onValueChange = { onValueChange(itemDetails.copy(regNo = it)) },
-                    modifier = Modifier.weight(1f),
-                    capitalization = KeyboardCapitalization.Characters
-                )
-                Spacer(modifier = Modifier.weight(0.33f))//.width(10.dp))
-                /*EntryField(
-                    label = "id debug",
-                    value = uiState.itemDetails.id.toString(),
-                    onValueChange = { /*NULL*/ },
-                    modifier = Modifier.weight(0.5f),
-                    enabled = false
-                )*/
-            }
-            /*EntryField(
-                label = "imagePath debug",
-                value = uiState.itemDetails.imagePath.toString(),
-                onValueChange = { /*NULL*/ },
-                enabled = false,
-                singleLine = false
-            )*/
-            Spacer(modifier = Modifier.height(24.dp))
-
+            EntryField(
+                label = stringResource(R.string.reg_no),
+                value = itemDetails.regNo ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(regNo = it)) },
+                capitalization = KeyboardCapitalization.Characters
+            )
+            EntryFormHorizontalSpacer()
             EntryField(
                 label = stringResource(R.string.country),
                 value = itemDetails.country ?: "",
@@ -321,10 +296,7 @@ private fun ItemEntryScreenContent(
                 value = itemDetails.region1st ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(region1st = it)) }
             )
-            InfoField(
-                text = stringResource(R.string.info_region_1st),
-                modifier = Modifier.padding(top = 4.dp)
-            )
+            InfoField(text = stringResource(R.string.info_region_1st))
             EntryField(
                 label = stringResource(R.string.region),
                 value = itemDetails.region2nd ?: "",
@@ -335,8 +307,7 @@ private fun ItemEntryScreenContent(
                 value = itemDetails.region3rd ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(region3rd = it)) }
             )
-            Spacer(modifier = Modifier.height(24.dp))
-
+            EntryFormHorizontalSpacer()
             EntryField(
                 label = stringResource(R.string.type),
                 value = itemDetails.type ?: "",
@@ -354,10 +325,10 @@ private fun ItemEntryScreenContent(
                             )
                         )
                     },
+                    keyboardType = KeyboardType.Number,
                     modifier = Modifier.weight(1f),
-                    keyboardType = KeyboardType.Number
                 )
-                Spacer(modifier = Modifier.width(10.dp))
+                EntryFormVerticalSpacer()
                 EntryField(
                     label = stringResource(R.string.period_end),
                     value = itemDetails.periodEnd?.toString() ?: "",
@@ -368,8 +339,8 @@ private fun ItemEntryScreenContent(
                             )
                         )
                     },
-                    modifier = Modifier.weight(1f),
-                    keyboardType = KeyboardType.Number
+                    keyboardType = KeyboardType.Number,
+                    modifier = Modifier.weight(1f)
                 )
             }
             EntryField(
@@ -383,327 +354,293 @@ private fun ItemEntryScreenContent(
                 },
                 keyboardType = KeyboardType.Number
             )
-            Spacer(modifier = Modifier.height(24.dp))
         }
-        if (itemType == ItemType.PLATE && collections.isNotEmpty()) {
-            EntrySection(
-                type = EntrySectionType.COLLECTIONS
-            ) {
-                collections.forEach { collection ->
-                    FilterChip(
-                        selected = selectedCollections.any { it.id == collection.id },
-                        onClick = { onToggleCollection(collection) },
-                        label = {
-                            Text(
-                                text = collection.name,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        leadingIcon = {
-                            if (!collection.emoji.isNullOrBlank()) {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier.size(24.dp)
-                                ) {
-                                    Text(collection.emoji)
-                                }
-                            } else {
-                                IconCollectionLabel(color = collection.color.color)
-                            }
-                        }
-                    )
-                }
-            }
-        } else {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        EntrySection(
-            type = EntrySectionType.UNIQUE_DETAILS
-        ) {
-            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp)) {
-                EntryFieldBackground {
-                    EntryField(
-                        label = stringResource(R.string.notes),
-                        value = itemDetails.notes ?: "",
-                        onValueChange = { onValueChange(itemDetails.copy(notes = it)) },
-                        singleLine = false,
-                        hasEntryDialog = true
-                    )
-                    if (itemType != ItemType.WANTED_PLATE) {
-                        EntryField(
-                            label = stringResource(R.string.vehicle),
-                            value = itemDetails.vehicle ?: "",
-                            onValueChange = { onValueChange(itemDetails.copy(vehicle = it)) },
-                            singleLine = false
-                        )
-                    }
-                }
-                if (itemType != ItemType.WANTED_PLATE) {
-                    EntryFieldBackground {
-                        DatePickerField(
-                            label = stringResource(R.string.date),
-                            dateValue = itemDetails.date ?: "",
-                            onDateSelected = { onValueChange(itemDetails.copy(date = it)) },
-                            userCountry = localeCode
-                        )
-                    }
-                    Row {
-                        EntryFieldBackground(modifier = Modifier.weight(1f)) {
-                            EntryField(
-                                label = stringResource(R.string.cost),
-                                placeholder = {
-                                    Text(getCurrencySymbol(localeCode))
-                                },
-                                value = itemDetails.cost?.toString() ?: "",
-                                onValueChange = { onValueChange(
-                                    itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
-                                },
-                                keyboardType = KeyboardType.Number,
-                                isCurrency = true,
-                                localeCode = localeCode
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        if (itemType == ItemType.FORMER_PLATE) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        } else {
-                            EntryFieldBackground(modifier = Modifier.weight(1f)) {
-                                EntryField(
-                                    label = stringResource(R.string.value),
-                                    placeholder = {
-                                        Text(getCurrencySymbol(localeCode))
-                                    },
-                                    value = itemDetails.value?.toString() ?: "",
-                                    onValueChange = { newValue ->
-                                        onValueChange(itemDetails.copy(
-                                            value = if (newValue.isBlankOrZero()) null
-                                            else newValue.toLongOrNull())
-                                        )
-                                    },
-                                    keyboardType = KeyboardType.Number,
-                                    isCurrency = true,
-                                    localeCode = localeCode
+        if (itemType == ItemType.PLATE && allCollections.isNotEmpty()) {
+            EntryFormSection(label = stringResource(R.string.collections)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    allCollections.forEach { collection ->
+                        FilterChip(
+                            selected = selectedCollections.any { it.id == collection.id },
+                            onClick = { onToggleCollection(collection) },
+                            label = {
+                                Text(
+                                    text = collection.name,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
-                            }
-                        }
-                    }
-                    if (itemType == ItemType.PLATE) {
-                        EntryFieldBackground {
-                            EntryField(
-                                label = stringResource(R.string.location),
-                                value = itemDetails.status ?: "",
-                                onValueChange = {
-                                    onValueChange(itemDetails.copy(status = it))
+                            },
+                            leadingIcon = {
+                                if (!collection.emoji.isNullOrBlank()) {
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier.size(24.dp)
+                                    ) {
+                                        Text(collection.emoji)
+                                    }
+                                } else {
+                                    IconCollectionLabel(color = collection.color.color)
                                 }
-                            )
-                        }
+                            }
+                        )
                     }
                 }
             }
         }
-        EntrySection(
-            label = stringResource(R.string.physical_attributes)
-        ) {
-            Row {
-                EntryFieldBackground(modifier = Modifier.weight(1f)) {
+        EntryFormSection(label = stringResource(R.string.unique_details_label)) {
+            EntryField(
+                label = stringResource(R.string.notes),
+                value = itemDetails.notes ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(notes = it)) },
+                singleLine = false,
+                hasEntryDialog = true
+            )
+            if (itemType != ItemType.WANTED_PLATE) {
+                EntryField(
+                    label = stringResource(R.string.vehicle),
+                    value = itemDetails.vehicle ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(vehicle = it)) },
+                    singleLine = false
+                )
+                EntryFormHorizontalSpacer()
+                DatePickerField(
+                    label = stringResource(R.string.date),
+                    dateValue = itemDetails.date ?: "",
+                    onDateSelected = { onValueChange(itemDetails.copy(date = it)) },
+                    userCountry = localeCode
+                )
+                Row {
                     EntryField(
-                        label = stringResource(R.string.width),
-                        placeholder = { Text(lengthUnit) },
-                        value = itemDetails.width?.toString() ?: "",
-                        onValueChange = { newValue ->
-                            onValueChange(itemDetails.copy(
-                                width = if (newValue.isBlankOrZero()) null
-                                else newValue.toIntOrNull())
-                            )
+                        label = stringResource(R.string.cost),
+                        placeholder = {
+                            Text(getCurrencySymbol(localeCode))
+                        },
+                        value = itemDetails.cost?.toString() ?: "",
+                        onValueChange = { onValueChange(
+                            itemDetails.copy(cost = it.toLongOrNull() ?: 0L))
                         },
                         keyboardType = KeyboardType.Number,
-                        isMeasurement = true,
-                        measurementUnit = lengthUnit,
-                        localeCode = localeCode
+                        isCurrency = true,
+                        localeCode = localeCode,
+                        modifier = Modifier.weight(1f)
                     )
+                    EntryFormVerticalSpacer()
+                    if (itemType == ItemType.FORMER_PLATE) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    } else {
+                        EntryField(
+                            label = stringResource(R.string.value),
+                            placeholder = {
+                                Text(getCurrencySymbol(localeCode))
+                            },
+                            value = itemDetails.value?.toString() ?: "",
+                            onValueChange = { newValue ->
+                                onValueChange(itemDetails.copy(
+                                    value = if (newValue.isBlankOrZero()) null
+                                    else newValue.toLongOrNull())
+                                )
+                            },
+                            keyboardType = KeyboardType.Number,
+                            isCurrency = true,
+                            localeCode = localeCode,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.width(10.dp))
-                EntryFieldBackground(modifier = Modifier.weight(1f)) {
+                if (itemType == ItemType.PLATE) {
+                    EntryFormHorizontalSpacer()
                     EntryField(
-                        label = stringResource(R.string.height),
-                        placeholder = { Text(lengthUnit) },
-                        value = itemDetails.height?.toString() ?: "",
-                        onValueChange = { newValue ->
-                            onValueChange(itemDetails.copy(
-                                height = if (newValue.isBlankOrZero()) null
-                                else newValue.toIntOrNull())
-                            )
-                        },
-                        keyboardType = KeyboardType.Number,
-                        isMeasurement = true,
-                        measurementUnit = lengthUnit,
-                        localeCode = localeCode
+                        label = stringResource(R.string.location),
+                        value = itemDetails.status ?: "",
+                        onValueChange = {
+                            onValueChange(itemDetails.copy(status = it))
+                        }
                     )
                 }
             }
-            InfoField(stringResource(R.string.info_width))
-            EntryFieldBackground {
+        }
+        EntryFormSection(label = stringResource(R.string.size)) {
+            Row {
                 EntryField(
-                    label = stringResource(R.string.weight),
-                    placeholder = { Text(weightUnit) },
-                    value = itemDetails.weight?.toString() ?: "",
+                    label = stringResource(R.string.width),
+                    placeholder = { Text(lengthUnit) },
+                    value = itemDetails.width?.toString() ?: "",
                     onValueChange = { newValue ->
                         onValueChange(itemDetails.copy(
-                            weight = if (newValue.isBlankOrZero()) null
+                            width = if (newValue.isBlankOrZero()) null
                             else newValue.toIntOrNull())
                         )
                     },
                     keyboardType = KeyboardType.Number,
                     isMeasurement = true,
-                    measurementUnit = weightUnit,
-                    localeCode = localeCode
+                    measurementUnit = lengthUnit,
+                    localeCode = localeCode,
+                    modifier = Modifier.weight(1f)
+                )
+                EntryFormVerticalSpacer()
+                EntryField(
+                    label = stringResource(R.string.height),
+                    placeholder = { Text(lengthUnit) },
+                    value = itemDetails.height?.toString() ?: "",
+                    onValueChange = { newValue ->
+                        onValueChange(itemDetails.copy(
+                            height = if (newValue.isBlankOrZero()) null
+                            else newValue.toIntOrNull())
+                        )
+                    },
+                    keyboardType = KeyboardType.Number,
+                    isMeasurement = true,
+                    measurementUnit = lengthUnit,
+                    localeCode = localeCode,
+                    modifier = Modifier.weight(1f)
                 )
             }
-            EntryFieldBackground {
+            InfoField(stringResource(R.string.info_width))
+            EntryField(
+                label = stringResource(R.string.weight),
+                placeholder = { Text(weightUnit) },
+                value = itemDetails.weight?.toString() ?: "",
+                onValueChange = { newValue ->
+                    onValueChange(itemDetails.copy(
+                        weight = if (newValue.isBlankOrZero()) null
+                        else newValue.toIntOrNull())
+                    )
+                },
+                keyboardType = KeyboardType.Number,
+                isMeasurement = true,
+                measurementUnit = weightUnit,
+                localeCode = localeCode
+            )
+            EntryFormSectionLabel(
+                label = stringResource(R.string.color),
+                modifier = Modifier.padding(top = 24.dp)
+            )
+            EntryField(
+                label = stringResource(R.string.color_base),
+                value = itemDetails.colorMain ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(colorMain = it)) }
+            )
+            EntryField(
+                label = stringResource(R.string.color_characters),
+                value = itemDetails.colorSecondary ?: "",
+                onValueChange = { onValueChange(itemDetails.copy(colorSecondary = it)) },
+                imeAction = if (itemType == ItemType.WANTED_PLATE) ImeAction.Done
+                else ImeAction.Next
+            )
+        }
+        if (itemType != ItemType.WANTED_PLATE) {
+            EntryFormSection(label = stringResource(R.string.source)) {
                 EntryField(
-                    label = stringResource(R.string.color_main),
-                    value = itemDetails.colorMain ?: "",
-                    onValueChange = { onValueChange(itemDetails.copy(colorMain = it)) }
+                    label = stringResource(R.string.source_name),
+                    value = itemDetails.sourceName ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(sourceName = it)) }
                 )
                 EntryField(
-                    label = stringResource(R.string.color_secondary),
-                    value = itemDetails.colorSecondary ?: "",
-                    onValueChange = { onValueChange(itemDetails.copy(colorSecondary = it)) },
-                    imeAction = if (itemType == ItemType.WANTED_PLATE) ImeAction.Done
+                    label = stringResource(R.string.source_alias),
+                    value = itemDetails.sourceAlias ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(sourceAlias = it)) }
+                )
+                EntryFormHorizontalSpacer()
+                EntryField(
+                    label = stringResource(R.string.source_type),
+                    value = itemDetails.sourceType ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(sourceType = it)) }
+                )
+                EntryField(
+                    label = stringResource(R.string.source_country),
+                    value = itemDetails.sourceCountry ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(sourceCountry = it)) }
+                )
+                EntryFormHorizontalSpacer()
+                EntryField(
+                    label = stringResource(R.string.source_details),
+                    value = itemDetails.sourceDetails ?: "",
+                    onValueChange = { onValueChange(itemDetails.copy(sourceDetails = it)) },
+                    imeAction = if (itemType != ItemType.FORMER_PLATE) ImeAction.Done
                     else ImeAction.Next
                 )
             }
         }
-        if (itemType != ItemType.WANTED_PLATE) {
-            EntrySection(
-                label = stringResource(R.string.source)
-            ) {
-                EntryFieldBackground {
-                    EntryField(
-                        label = stringResource(R.string.source_name),
-                        value = itemDetails.sourceName ?: "",
-                        onValueChange = { onValueChange(itemDetails.copy(sourceName = it)) }
-                    )
-                    EntryField(
-                        label = stringResource(R.string.source_alias),
-                        value = itemDetails.sourceAlias ?: "",
-                        onValueChange = { onValueChange(itemDetails.copy(sourceAlias = it)) }
-                    )
-                }
-                EntryFieldBackground {
-                    EntryField(
-                        label = stringResource(R.string.source_type),
-                        value = itemDetails.sourceType ?: "",
-                        onValueChange = { onValueChange(itemDetails.copy(sourceType = it)) }
-                    )
-                }
-                EntryFieldBackground {
-                    EntryField(
-                        label = stringResource(R.string.source_country),
-                        value = itemDetails.sourceCountry ?: "",
-                        onValueChange = { onValueChange(itemDetails.copy(sourceCountry = it)) }
-                    )
-                }
-                EntryFieldBackground {
-                    EntryField(
-                        label = stringResource(R.string.source_details),
-                        value = itemDetails.sourceDetails ?: "",
-                        onValueChange = { onValueChange(itemDetails.copy(sourceDetails = it)) },
-                        imeAction = if (itemType != ItemType.FORMER_PLATE) ImeAction.Done
-                        else ImeAction.Next
-                    )
-                }
-            }
-        }
         if (itemType == ItemType.FORMER_PLATE) {
-            EntrySection(
-                label = stringResource(R.string.archival)
-            ) {
-                EntryFieldBackground {
-                    DatePickerField(
-                        label = stringResource(R.string.archival_date),
-                        dateValue = itemDetails.archivalDate ?: "",
-                        onDateSelected = {
-                            onValueChange(itemDetails.copy(archivalDate = it))
-                        },
-                        userCountry = localeCode
-                    )
-                }
-                EntryFieldBackground {
-                    EntryField(
-                        label = stringResource(R.string.archival_reason),
-                        value = itemDetails.archivalType ?: "",
-                        onValueChange = {
-                            onValueChange(itemDetails.copy(archivalType = it))
-                        }
-                    )
-                    EntryField(
-                        label = stringResource(R.string.sold_price),
-                        placeholder = { Text(getCurrencySymbol(localeCode)) },
-                        value = itemDetails.price?.toString() ?: "",
-                        onValueChange = { newValue ->
-                            onValueChange(itemDetails.copy(
-                                price = if (newValue.isBlankOrZero()) null
-                                else newValue.toLongOrNull())
-                            )
-                        },
-                        keyboardType = KeyboardType.Number,
-                        isCurrency = true,
-                        localeCode = localeCode
-                    )
-                }
-                EntryFieldBackground {
-                    EntryField(
-                        label = stringResource(R.string.recipient_name),
-                        value = itemDetails.recipientName ?: "",
-                        onValueChange = {
-                            onValueChange(itemDetails.copy(recipientName = it))
-                        }
-                    )
-                    EntryField(
-                        label = stringResource(R.string.recipient_alias),
-                        value = itemDetails.recipientAlias ?: "",
-                        onValueChange = {
-                            onValueChange(itemDetails.copy(recipientAlias = it))
-                        }
-                    )
-                    EntryField(
-                        label = stringResource(R.string.recipient_country),
-                        value = itemDetails.recipientCountry ?: "",
-                        onValueChange = {
-                            onValueChange(itemDetails.copy(recipientCountry = it))
-                        }
-                    )
-                }
-                EntryFieldBackground {
-                    EntryField(
-                        label = stringResource(R.string.archival_details),
-                        value = itemDetails.archivalDetails ?: "",
-                        onValueChange = {
-                            onValueChange(itemDetails.copy(archivalDetails = it))
-                        },
-                        imeAction = ImeAction.Done
-                    )
-                }
+            EntryFormSection(label = stringResource(R.string.archival)) {
+                DatePickerField(
+                    label = stringResource(R.string.archival_date),
+                    dateValue = itemDetails.archivalDate ?: "",
+                    onDateSelected = {
+                        onValueChange(itemDetails.copy(archivalDate = it))
+                    },
+                    userCountry = localeCode
+                )
+                EntryField(
+                    label = stringResource(R.string.archival_reason),
+                    value = itemDetails.archivalType ?: "",
+                    onValueChange = {
+                        onValueChange(itemDetails.copy(archivalType = it))
+                    }
+                )
+                EntryField(
+                    label = stringResource(R.string.sold_price),
+                    placeholder = { Text(getCurrencySymbol(localeCode)) },
+                    value = itemDetails.price?.toString() ?: "",
+                    onValueChange = { newValue ->
+                        onValueChange(itemDetails.copy(
+                            price = if (newValue.isBlankOrZero()) null
+                            else newValue.toLongOrNull())
+                        )
+                    },
+                    keyboardType = KeyboardType.Number,
+                    isCurrency = true,
+                    localeCode = localeCode
+                )
+                EntryFormHorizontalSpacer()
+                EntryField(
+                    label = stringResource(R.string.recipient_name),
+                    value = itemDetails.recipientName ?: "",
+                    onValueChange = {
+                        onValueChange(itemDetails.copy(recipientName = it))
+                    }
+                )
+                EntryField(
+                    label = stringResource(R.string.recipient_alias),
+                    value = itemDetails.recipientAlias ?: "",
+                    onValueChange = {
+                        onValueChange(itemDetails.copy(recipientAlias = it))
+                    }
+                )
+                EntryField(
+                    label = stringResource(R.string.recipient_country),
+                    value = itemDetails.recipientCountry ?: "",
+                    onValueChange = {
+                        onValueChange(itemDetails.copy(recipientCountry = it))
+                    }
+                )
+                EntryFormHorizontalSpacer()
+                EntryField(
+                    label = stringResource(R.string.archival_details),
+                    value = itemDetails.archivalDetails ?: "",
+                    onValueChange = {
+                        onValueChange(itemDetails.copy(archivalDetails = it))
+                    },
+                    imeAction = ImeAction.Done
+                )
             }
         }
-        Button(
-            onClick = onSave,
-            enabled = isValidEntry,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 32.dp)
+        Box(
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 48.dp, bottom = 32.dp)
         ) {
-            Icon(
-                painter = saveButtonIcon,
-                contentDescription = null,
-                modifier = Modifier.padding(2.dp)
-            )
-            Text(
-                text = saveButtonText,
-                modifier = Modifier.padding(start = 8.dp)
-            )
+            Button(
+                onClick = onSave,
+                enabled = isValidEntry,
+                modifier = Modifier.fillMaxWidth().height(64.dp)
+            ) {
+                Icon(
+                    painter = saveButtonIcon,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(text = saveButtonText)
+            }
         }
     }
 }
@@ -726,133 +663,40 @@ private fun EntryFormImage(
 }
 
 @Composable
-private fun EntrySection(
-    type: EntrySectionType = EntrySectionType.GENERAL,
-    label: String? = null,
-    image: (@Composable () -> Unit)? = null,
+private fun EntryFormSection(
+    label: String,
+    isFirst: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    when (type) {
-        EntrySectionType.COMMON_DETAILS ->
-            EntryCardCommonDetails(image = image!!, content = content)
-        EntrySectionType.UNIQUE_DETAILS ->
-            EntryCardUniqueDetails(content = content)
-        EntrySectionType.COLLECTIONS ->
-            EntryCardCollections(content = content)
-        EntrySectionType.GENERAL ->
-            EntryCardGeneral(label = label, content = content)
-    }
-}
-
-@Composable
-private fun EntryCardCommonDetails(
-    image: @Composable () -> Unit,
-    content: @Composable () -> Unit
-) {
-    Card(
-        shape = RoundedCornerShape(
-            topStart = 0.dp,
-            topEnd = 0.dp,
-            bottomStart = 24.dp,
-            bottomEnd = 24.dp
-        ),
-        modifier = Modifier.padding(bottom = 0.dp)
-    ) {
-        image()
-        Column(modifier = Modifier.padding(horizontal = 28.dp)) {
-            content()
-        }
-    }
-}
-
-@Composable
-private fun EntryCardUniqueDetails(
-    content: @Composable () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp, vertical = 16.dp)
-    ) {
-        Card(
-            border = BorderStroke(1.dp, colorScheme.outline),
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-            shape = RoundedCornerShape(20.dp)
-        ) {
-            content()
-        }
-        IconQuotationMark(
-            size = 56.dp,
-            isFlipped = true,
-            modifier = Modifier.offset(x = 24.dp, y = (-32).dp)
-        )
-        Box(
-            contentAlignment = Alignment.BottomEnd,
-            modifier = Modifier.matchParentSize()
-        ) {
-            IconQuotationMark(
-                size = 56.dp,
-                modifier = Modifier.offset(x = (-24).dp, y = 32.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun EntryCardCollections(
-    content: @Composable () -> Unit
-) {
+    if (!isFirst) HorizontalDivider(modifier = Modifier.padding(16.dp))
+    Spacer(modifier = Modifier.height(8.dp))
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+        modifier = Modifier.padding(horizontal = 32.dp)
     ) {
+        EntryFormSectionLabel(label)
         content()
     }
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
-private fun EntryCardGeneral(
-    label: String? = null,
-    content: @Composable () -> Unit
-) {
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            label?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-            }
-            content()
-        }
-    }
+private fun EntryFormSectionLabel(label: String, modifier: Modifier = Modifier) {
+    Text(
+        text = label,
+        color = colorScheme.primary,
+        style = typography.titleMedium,
+        modifier = modifier.padding(8.dp)
+    )
 }
 
 @Composable
-private fun EntryFieldBackground(
-    modifier: Modifier = Modifier,
-    colors: CardColors = CardDefaults.cardColors(colorScheme.surfaceContainer),
-    content: @Composable () -> Unit
-) {
-    Card(
-        colors = colors,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
-        ) {
-            content()
-        }
-    }
+private fun EntryFormHorizontalSpacer(height: Dp = 24.dp) {
+    Spacer(modifier = Modifier.height(height))
+}
+
+@Composable
+private fun EntryFormVerticalSpacer(width: Dp = 12.dp) {
+    Spacer(modifier = Modifier.width(width))
 }
 
 @Composable
@@ -1070,6 +914,7 @@ fun DatePickerField(
 
 @Composable
 private fun InfoField(text: String, modifier: Modifier = Modifier) {
+    Spacer(modifier = Modifier.height(2.dp))
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
@@ -1087,11 +932,4 @@ private fun InfoField(text: String, modifier: Modifier = Modifier) {
             style = typography.bodySmall
         )
     }
-}
-
-private enum class EntrySectionType {
-    COMMON_DETAILS,
-    UNIQUE_DETAILS,
-    COLLECTIONS,
-    GENERAL
 }

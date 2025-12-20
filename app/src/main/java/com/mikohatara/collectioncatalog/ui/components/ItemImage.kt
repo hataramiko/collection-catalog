@@ -8,6 +8,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.key.Key
@@ -63,8 +65,8 @@ import java.io.File
 
 @Composable
 fun ItemImage(
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
     imageUri: Uri? = null,
     imagePath: String? = null,
     isEditMode: Boolean = false
@@ -115,13 +117,14 @@ fun ItemImage(
         )
     } else {
         CardDefaults.cardColors(
-            containerColor = containerColor
+            containerColor = containerColor,
+            disabledContainerColor = containerColor
         )
     }
 
     Card(
-        onClick = onClick,
-        enabled = (isEditMode || imageUri != null || imagePath != null),
+        onClick = onClick ?: {},
+        enabled = ((onClick != null) && (isEditMode || imageUri != null || imagePath != null)),
         shape = RoundedCornerShape(16.dp),
         colors = colors,
         modifier = modifier.fillMaxWidth()
@@ -155,6 +158,7 @@ fun ItemImage(
                     )
                     Text(
                         text = stringResource(R.string.add_image),
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 } else {
@@ -188,9 +192,11 @@ fun pickItemImage(
         ActivityResultContracts.PickVisualMedia()) { uri ->
             onPick(uri)
     }
-    val launchPicker = { photoPicker.launch(PickVisualMediaRequest(
-        mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)) }
-    val itemImageModifier = Modifier.padding(12.dp)
+    val onLaunchPicker = {
+        photoPicker.launch(PickVisualMediaRequest(
+            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+        ))
+    }
 
     if (isRemoveIntent) {
         onRemove()
@@ -199,41 +205,32 @@ fun pickItemImage(
 
     if (temporaryImageUri != null) {
         ItemEntryImageFrame(
+            onLaunchPicker = onLaunchPicker,
             onRemove = toggleRemoveIntent,
             modifier = modifier
         ) {
-            ItemImage(
-                onClick = launchPicker,
-                imageUri = temporaryImageUri,
-                modifier = itemImageModifier
-            )
+            ItemImage(imageUri = temporaryImageUri, isEditMode = true)
         }
         return null
 
     } else if (existingImagePath != null) {
         ItemEntryImageFrame(
+            onLaunchPicker = onLaunchPicker,
             onRemove = toggleRemoveIntent,
             modifier = modifier
         ) {
-            ItemImage(
-                onClick = launchPicker,
-                imagePath = existingImagePath,
-                modifier = itemImageModifier
-            )
+            ItemImage(imagePath = existingImagePath, isEditMode = true)
         }
         return existingImagePath
 
     } else {
         ItemEntryImageFrame(
+            onLaunchPicker = onLaunchPicker,
             onRemove = toggleRemoveIntent,
             modifier = modifier,
             hasExistingImage = false
         ) {
-            ItemImage(
-                onClick = launchPicker,
-                isEditMode = true,
-                modifier = itemImageModifier
-            )
+            ItemImage(isEditMode = true)
         }
         return null
     }
@@ -320,22 +317,33 @@ private fun ZoomableImage(
 
 @Composable
 private fun ItemEntryImageFrame(
+    onLaunchPicker: () -> Unit,
     onRemove: () -> Unit,
     modifier: Modifier = Modifier,
     hasExistingImage: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    Box(
+    Box( // A Box to hold the entire construction...
         modifier = modifier.padding(top = 4.dp)
     ) {
-        Card(
+        Card( // ...a Card to hold the visual elements...
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(Color.Transparent),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             modifier = Modifier.fillMaxWidth()
         ) {
-            content()
+            // ...a Box within the Card to apply padding to the actual image content...
+            Box(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+                content()
+            }
         }
+        Box( // ...a Box rendered on top of the Card to hold the onClick for visualization...
+            modifier = Modifier
+                .matchParentSize()
+                .clip(RoundedCornerShape(24.dp))
+                .clickable(onClick = onLaunchPicker)
+        )
+        // ...and finally a button on top of it all to allow for removal of an existing image.
         RemovalButton(onRemove, hasExistingImage)
     }
 }
@@ -350,7 +358,7 @@ private fun RemovalButton(
             contentAlignment = Alignment.TopEnd,
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(x = (-2).dp, y = (-8).dp)
+                .offset(x = 4.dp, y = (-8).dp)
         ) {
             FilledTonalIconButton(
                 onClick = onClick,
