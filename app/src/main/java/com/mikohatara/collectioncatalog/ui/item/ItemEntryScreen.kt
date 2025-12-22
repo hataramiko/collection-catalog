@@ -557,6 +557,7 @@ private fun ItemEntryScreenContent(
                     label = stringResource(R.string.source_details),
                     value = itemDetails.sourceDetails ?: "",
                     onValueChange = { onValueChange(itemDetails.copy(sourceDetails = it)) },
+                    hasEntryDialog = true,
                     imeAction = if (itemType != ItemType.FORMER_PLATE) ImeAction.Done
                     else ImeAction.Next
                 )
@@ -622,6 +623,7 @@ private fun ItemEntryScreenContent(
                     onValueChange = {
                         onValueChange(itemDetails.copy(archivalDetails = it))
                     },
+                    hasEntryDialog = true,
                     imeAction = ImeAction.Done
                 )
             }
@@ -802,8 +804,7 @@ private fun EntryField(
             onDismiss = { showEntryDialog = false },
             onConfirm = {
                 showEntryDialog = false
-
-                focusManager.moveFocus(FocusDirection.Next)
+                if (imeAction == ImeAction.Next) focusManager.moveFocus(FocusDirection.Next)
             }
         )
     }
