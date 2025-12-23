@@ -160,7 +160,7 @@ private fun ItemSummaryScreen(
                 item = item,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = colorScheme.surfaceContainerHighest,
-                    scrolledContainerColor = colorScheme.surfaceContainerHigh,
+                    scrolledContainerColor = colorScheme.surfaceContainer,
                 ),
                 scrollBehavior = scrollBehavior,
                 onBack = onBack,
@@ -261,7 +261,7 @@ private fun ItemSummaryScreenContent(
         if (collections.isNotEmpty()) {
             Collections(collections = collections)
         } else {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
         }
         Column(modifier = Modifier.padding(horizontal = 12.dp)) {
             UniqueDetailsCard(
@@ -285,6 +285,7 @@ private fun ItemSummaryScreenContent(
                 localeCode = userPreferences.userCountry
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
