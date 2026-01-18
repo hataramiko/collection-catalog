@@ -86,7 +86,7 @@ private fun ItemCardContent(
             val painter = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(context)
                     .data(imageUri)
-                    .size(imageWidth.toInt() * 2)
+                    .size((imageWidth.toInt() * 2).coerceAtLeast(1))
                     .crossfade(true)
                     .build()
             )
