@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -25,11 +26,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -55,13 +58,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,6 +83,9 @@ import com.mikohatara.collectioncatalog.util.toMeasurementString
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
+
+@Composable
+private fun testColor() = colorScheme.surfaceContainerHigh
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -211,7 +217,9 @@ fun FilterBottomSheet(
         Box(
             modifier = Modifier.weight(1f)
         ) {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
                 stickyHeader {
                     FilterSubheader(
                         text = stringResource(R.string.common_details_label),
@@ -223,7 +231,8 @@ fun FilterBottomSheet(
                         label = stringResource(R.string.country),
                         activeFilters = filters.country,
                         isExpanded = isCountriesExpanded,
-                        onExpand = { isCountriesExpanded = !isCountriesExpanded }
+                        onExpand = { isCountriesExpanded = !isCountriesExpanded },
+                        topCornerRadius = 20.dp
                     )
                 }
                 item {
@@ -233,6 +242,9 @@ fun FilterBottomSheet(
                         isExpanded = isCountriesExpanded,
                         onToggleFilter = { toggleCountry(it) }
                     )
+                }
+                stickyHeader {
+                    FilterListBottomExtension(isExpanded = isCountriesExpanded)
                 }
                 stickyHeader {
                     FilterListLabel(
@@ -249,6 +261,9 @@ fun FilterBottomSheet(
                         isExpanded = isTypesExpanded,
                         onToggleFilter = { toggleType(it) }
                     )
+                }
+                stickyHeader {
+                    FilterListBottomExtension(isExpanded = isTypesExpanded)
                 }
                 if (yearSliderRange != null && periodSliderPosition != null &&
                     onPeriodSliderChange != null) {
@@ -276,6 +291,9 @@ fun FilterBottomSheet(
                             }
                         )
                     }
+                    stickyHeader {
+                        FilterListBottomExtension(isExpanded = isPeriodExpanded)
+                    }
                 }
                 if (yearSliderRange != null && yearSliderPosition != null &&
                     onYearSliderChange != null) {
@@ -290,7 +308,8 @@ fun FilterBottomSheet(
                             onExpand = { isYearExpanded = !isYearExpanded },
                             value = "$minValue–$maxValue",
                             isSliderActive = yearSliderPosition != yearSliderRange.start
-                                ..yearSliderRange.endInclusive
+                                ..yearSliderRange.endInclusive,
+                            bottomCornerRadius = 20.dp
                         )
                     }
                     item {
@@ -303,16 +322,25 @@ fun FilterBottomSheet(
                             }
                         )
                     }
+                    stickyHeader {
+                        FilterListBottomExtension(
+                            isExpanded = isYearExpanded,
+                            bottomCornerRadius = 20.dp
+                        )
+                    }
                 }
-                stickyHeader {
-                    FilterSubheader(text = stringResource(R.string.unique_details_label))
+                if (itemType != ItemType.WANTED_PLATE) {
+                    stickyHeader {
+                        FilterSubheader(text = stringResource(R.string.unique_details_label))
+                    }
                 }
                 if (itemType != ItemType.WANTED_PLATE && toggleVehicleSwitch != null) {
                     stickyHeader {
                         FilterListSwitch(
                             label = stringResource(R.string.vehicle),
                             isFilterActive = hasVehicle,
-                            onToggle = toggleVehicleSwitch
+                            onToggle = toggleVehicleSwitch,
+                            topCornerRadius = 20.dp
                         )
                     }
                 }
@@ -355,9 +383,18 @@ fun FilterBottomSheet(
                                 }
                             )
                         }
+                        stickyHeader {
+                            FilterListBottomExtension(isExpanded = isDateExpanded)
+                        }
                     }
                     if (costSliderRange != null && costSliderPosition != null &&
                         onCostSliderChange != null) {
+                        val bottomCornerRadius = if (itemType == ItemType.FORMER_PLATE) {
+                            20.dp
+                        } else {
+                            8.dp
+                        }
+
                         stickyHeader {
                             val minValue = costSliderPosition.start.roundToLong()
                             val maxValue = costSliderPosition.endInclusive.roundToLong()
@@ -370,7 +407,8 @@ fun FilterBottomSheet(
                                 value = minValue.toCurrencyString(localeCode) +
                                     "–${maxValue.toCurrencyString(localeCode)}",
                                 isSliderActive = costSliderPosition != costSliderRange.start
-                                    ..costSliderRange.endInclusive
+                                    ..costSliderRange.endInclusive,
+                                bottomCornerRadius = bottomCornerRadius
                             )
                         }
                         item {
@@ -381,6 +419,12 @@ fun FilterBottomSheet(
                                 onSliderChange = { newSliderPosition ->
                                     onCostSliderChange(newSliderPosition)
                                 }
+                            )
+                        }
+                        stickyHeader {
+                            FilterListBottomExtension(
+                                isExpanded = isCostExpanded,
+                                bottomCornerRadius = bottomCornerRadius
                             )
                         }
                     }
@@ -413,6 +457,9 @@ fun FilterBottomSheet(
                                 }
                             )
                         }
+                        stickyHeader {
+                            FilterListBottomExtension(isExpanded = isValueExpanded)
+                        }
                     }
                     if (locations != null && toggleLocation != null) {
                         stickyHeader {
@@ -420,7 +467,8 @@ fun FilterBottomSheet(
                                 label = stringResource(R.string.location),
                                 activeFilters = filters.location,
                                 isExpanded = isLocationsExpanded,
-                                onExpand = { isLocationsExpanded = !isLocationsExpanded }
+                                onExpand = { isLocationsExpanded = !isLocationsExpanded },
+                                bottomCornerRadius = 20.dp
                             )
                         }
                         item {
@@ -429,6 +477,12 @@ fun FilterBottomSheet(
                                 activeFilters = filters.location,
                                 isExpanded = isLocationsExpanded,
                                 onToggleFilter = { toggleLocation(it) }
+                            )
+                        }
+                        stickyHeader {
+                            FilterListBottomExtension(
+                                isExpanded = isLocationsExpanded,
+                                bottomCornerRadius = 20.dp
                             )
                         }
                     }
@@ -452,7 +506,8 @@ fun FilterBottomSheet(
                             value = minValue.toMeasurementString(lengthUnit, localeCode) +
                                 "–${maxValue.toMeasurementString(lengthUnit, localeCode)}",
                             isSliderActive = widthSliderPosition != widthSliderRange.start
-                                ..widthSliderRange.endInclusive
+                                ..widthSliderRange.endInclusive,
+                            topCornerRadius = 20.dp
                         )
                     }
                     item {
@@ -464,6 +519,9 @@ fun FilterBottomSheet(
                                 onWidthSliderChange(newSliderPosition)
                             }
                         )
+                    }
+                    stickyHeader {
+                        FilterListBottomExtension(isExpanded = isWidthExpanded)
                     }
                 }
                 if (colorsMain != null && toggleColorMain != null) {
@@ -483,6 +541,9 @@ fun FilterBottomSheet(
                             onToggleFilter = { toggleColorMain(it) }
                         )
                     }
+                    stickyHeader {
+                        FilterListBottomExtension(isExpanded = isColorsMainExpanded)
+                    }
                 }
                 if (colorsSecondary != null && toggleColorSecondary != null) {
                     stickyHeader {
@@ -490,7 +551,8 @@ fun FilterBottomSheet(
                             label = stringResource(R.string.color_secondary),
                             activeFilters = filters.colorSecondary,
                             isExpanded = isColorsSecondaryExpanded,
-                            onExpand = { isColorsSecondaryExpanded = !isColorsSecondaryExpanded }
+                            onExpand = { isColorsSecondaryExpanded = !isColorsSecondaryExpanded },
+                            bottomCornerRadius = 20.dp
                         )
                     }
                     item {
@@ -499,6 +561,12 @@ fun FilterBottomSheet(
                             activeFilters = filters.colorSecondary,
                             isExpanded = isColorsSecondaryExpanded,
                             onToggleFilter = { toggleColorSecondary(it) }
+                        )
+                    }
+                    stickyHeader {
+                        FilterListBottomExtension(
+                            isExpanded = isColorsSecondaryExpanded,
+                            bottomCornerRadius = 20.dp
                         )
                     }
                 }
@@ -512,7 +580,8 @@ fun FilterBottomSheet(
                                 label = stringResource(R.string.source_type),
                                 activeFilters = filters.sourceType,
                                 isExpanded = isSourceTypesExpanded,
-                                onExpand = { isSourceTypesExpanded = !isSourceTypesExpanded }
+                                onExpand = { isSourceTypesExpanded = !isSourceTypesExpanded },
+                                topCornerRadius = 20.dp
                             )
                         }
                         item {
@@ -523,6 +592,9 @@ fun FilterBottomSheet(
                                 onToggleFilter = { toggleSourceType(it) }
                             )
                         }
+                        stickyHeader {
+                            FilterListBottomExtension(isExpanded = isSourceTypesExpanded)
+                        }
                     }
                     if (sourceCountries != null && toggleSourceCountry != null) {
                         stickyHeader {
@@ -532,7 +604,8 @@ fun FilterBottomSheet(
                                 isExpanded = isSourceCountriesExpanded,
                                 onExpand = {
                                     isSourceCountriesExpanded = !isSourceCountriesExpanded
-                                }
+                                },
+                                bottomCornerRadius = 20.dp
                             )
                         }
                         item {
@@ -541,6 +614,12 @@ fun FilterBottomSheet(
                                 activeFilters = filters.sourceCountry,
                                 isExpanded = isSourceCountriesExpanded,
                                 onToggleFilter = { toggleSourceCountry(it) }
+                            )
+                        }
+                        stickyHeader {
+                            FilterListBottomExtension(
+                                isExpanded = isSourceCountriesExpanded,
+                                bottomCornerRadius = 20.dp
                             )
                         }
                     }
@@ -575,7 +654,8 @@ fun FilterBottomSheet(
                                 value = "$minValueString–\n$maxValueString",
                                 isSliderActive = archivalDateSliderPosition !=
                                     archivalDateSliderRange.start
-                                    ..archivalDateSliderRange.endInclusive
+                                    ..archivalDateSliderRange.endInclusive,
+                                topCornerRadius = 20.dp
                             )
                         }
                         item {
@@ -587,6 +667,9 @@ fun FilterBottomSheet(
                                     onArchivalDateSliderChange(newSliderPosition)
                                 }
                             )
+                        }
+                        stickyHeader {
+                            FilterListBottomExtension(isExpanded = isArchivalDateExpanded)
                         }
                     }
                     if (archivalReasons != null && toggleArchivalReason != null) {
@@ -608,6 +691,9 @@ fun FilterBottomSheet(
                                 onToggleFilter = { toggleArchivalReason(it) }
                             )
                         }
+                        stickyHeader {
+                            FilterListBottomExtension(isExpanded = isArchivalReasonsExpanded)
+                        }
                     }
                     if (recipientCountries != null && toggleRecipientCountry != null) {
                         stickyHeader {
@@ -617,7 +703,8 @@ fun FilterBottomSheet(
                                 isExpanded = isRecipientCountriesExpanded,
                                 onExpand = {
                                     isRecipientCountriesExpanded = !isRecipientCountriesExpanded
-                                }
+                                },
+                                bottomCornerRadius = 20.dp
                             )
                         }
                         item {
@@ -626,6 +713,12 @@ fun FilterBottomSheet(
                                 activeFilters = filters.recipientCountry,
                                 isExpanded = isRecipientCountriesExpanded,
                                 onToggleFilter = { toggleRecipientCountry(it) }
+                            )
+                        }
+                        stickyHeader {
+                            FilterListBottomExtension(
+                                isExpanded = isRecipientCountriesExpanded,
+                                bottomCornerRadius = 20.dp
                             )
                         }
                     }
@@ -830,62 +923,110 @@ private fun FilterListLabel(
     isExpanded: Boolean,
     onExpand: () -> Unit,
     value: String? = null,
-    isSliderActive: Boolean = false
+    isSliderActive: Boolean = false,
+    topCornerRadius: Dp = 8.dp,
+    bottomCornerRadius: Dp = 8.dp
 ) {
     val onClick = remember { Modifier.clickable { onExpand() } }
-    val backgroundColor = colorScheme.surfaceContainerLow.copy(alpha = 0.95f)
+    val shape = if (isExpanded) RoundedCornerShape(
+        topStart = topCornerRadius,
+        topEnd = topCornerRadius,
+        bottomStart = 0.dp,
+        bottomEnd = 0.dp
+    ) else RoundedCornerShape(
+        topStart = topCornerRadius,
+        topEnd = topCornerRadius,
+        bottomStart = bottomCornerRadius,
+        bottomEnd = bottomCornerRadius
+    )
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    FilterListLabelHorizontalSpacer()
+    Card(
+        shape = shape,
+        colors = CardDefaults.cardColors(testColor()),
         modifier = Modifier
             .fillMaxWidth()
-            .background(backgroundColor)
-            .then(onClick)
+            .background(colorScheme.surfaceContainerLow)
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
+        Box(
+            modifier = Modifier.fillMaxSize().then(onClick)
         ) {
-            Row {
-                Text(
-                    text = label,
-                    modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
-                )
-                if (activeFilters.isNotEmpty()) {
-                    Badge(
-                        modifier = Modifier.padding(start = 4.dp, top = 8.dp)
-                    ) {
-                        Text(activeFilters.size.toString())
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Row {
+                    Text(
+                        text = label,
+                        modifier = Modifier.padding(vertical = 12.dp)
+                    )
+                    if (activeFilters.isNotEmpty()) {
+                        Badge(
+                            modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+                        ) {
+                            Text(activeFilters.size.toString())
+                        }
+                    }
+                    if (isSliderActive) {
+                        Badge(
+                            modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+                        ) {
+                            Text("1")
+                        }
                     }
                 }
-                if (isSliderActive) {
-                    Badge(
-                        modifier = Modifier.padding(start = 4.dp, top = 8.dp)
-                    ) {
-                        Text("1")
-                    }
+                Spacer(modifier = Modifier.weight(1f))
+                value?.let {
+                    Text(
+                        text = it,
+                        color = colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
                 }
-            }
-            value?.let {
-                Text(
-                    text = it,
-                    color = colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                Icon(
+                    painter = if (isExpanded) {
+                        painterResource(R.drawable.rounded_keyboard_arrow_up_24)
+                    } else {
+                        painterResource(R.drawable.rounded_keyboard_arrow_down_24)
+                    },
+                    contentDescription = null
                 )
             }
         }
-        Icon(
-            painter = if (isExpanded) painterResource(R.drawable.rounded_keyboard_arrow_up_24)
-            else painterResource(R.drawable.rounded_keyboard_arrow_down_24),
-            contentDescription = null,
-            modifier = Modifier.padding(end = 32.dp)
-        )
     }
-    FilterHorizontalDivider(color = Color.Transparent)
+}
+
+@Composable
+private fun FilterListBottomExtension(
+    isExpanded: Boolean,
+    bottomCornerRadius: Dp = 8.dp
+) {
+    val shape = RoundedCornerShape(
+        topStart = 0.dp,
+        topEnd = 0.dp,
+        bottomStart = bottomCornerRadius,
+        bottomEnd = bottomCornerRadius
+    )
+
+    Card(
+        shape = shape,
+        colors = CardDefaults.cardColors(testColor()),
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
+    ) {
+        if (isExpanded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(24.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -895,8 +1036,14 @@ private fun FilterListCheckboxes(
     isExpanded: Boolean,
     onToggleFilter: (String) -> Unit
 ) {
-    Column(
-        modifier = Modifier.animateContentSize()
+    val shape = RoundedCornerShape(0.dp)
+
+    Card(
+        shape = shape,
+        colors = CardDefaults.cardColors(testColor()),
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
     ) {
         if (isExpanded) {
             filterOptions.forEach { option ->
@@ -911,21 +1058,18 @@ private fun FilterListCheckboxes(
                     Checkbox(
                         checked = activeFilters.any { it == option },
                         onCheckedChange = null,
-                        modifier = Modifier
-                            .padding(start = 32.dp, top = 12.dp, bottom = 12.dp, end = 10.dp)
+                        modifier = Modifier.padding(start = 20.dp, top = 12.dp, bottom = 12.dp)
                     )
                     Text(
                         text = option,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = false,
-                        modifier = Modifier.padding(end = 32.dp)
+                        modifier = Modifier.padding(start = 12.dp, end = 20.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
-    FilterHorizontalDivider()
 }
 
 @Composable
@@ -937,10 +1081,14 @@ private fun FilterListSlider(
     isExpanded: Boolean,
     independentLabel: String? = null
 ) {
-    Column(
+    val shape = RoundedCornerShape(0.dp)
+
+    Card(
+        shape = shape,
+        colors = CardDefaults.cardColors(testColor()),
         modifier = Modifier
+            .fillMaxWidth()
             .animateContentSize()
-            .padding(horizontal = 32.dp)
     ) {
         if (isExpanded) {
             if (independentLabel != null) {
@@ -962,75 +1110,81 @@ private fun FilterListSlider(
                     onSliderChange(newSliderPosition)
                 },
                 onValueChangeFinished = { onSliderChangeFinished() },
-                modifier = Modifier.height(32.dp)
+                modifier = Modifier.height(32.dp).padding(horizontal = 20.dp)
             )
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
-    FilterHorizontalDivider()
 }
 
 @Composable
 private fun FilterListSwitch(
     label: String,
     isFilterActive: Boolean,
-    onToggle: () -> Unit
+    onToggle: () -> Unit,
+    topCornerRadius: Dp = 8.dp,
+    bottomCornerRadius: Dp = 8.dp
 ) {
     val onClick = remember { Modifier.clickable { onToggle() } }
+    val shape = RoundedCornerShape(
+        topStart = topCornerRadius,
+        topEnd = topCornerRadius,
+        bottomStart = bottomCornerRadius,
+        bottomEnd = bottomCornerRadius
+    )
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(onClick)
+    Card(
+        shape = shape,
+        colors = CardDefaults.cardColors(testColor()),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Row {
-            Text(
-                text = label,
-                modifier = Modifier.padding(start = 32.dp, top = 12.dp, bottom = 12.dp)
-            )
-            if (isFilterActive) {
-                Badge(
-                    modifier = Modifier.padding(start = 4.dp, top = 8.dp)
-                ) {
-                    Text(text = "1")
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize().then(onClick)
+        ) {
+            Row {
+                Text(
+                    text = label,
+                    modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp)
+                )
+                if (isFilterActive) {
+                    Badge(
+                        modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+                    ) {
+                        Text(text = "1")
+                    }
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
+            Switch(
+                checked = isFilterActive,
+                onCheckedChange = null,
+                modifier = Modifier.scale(0.9f).padding(end = 8.dp)
+            )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Switch(
-            checked = isFilterActive,
-            onCheckedChange = null,
-            modifier = Modifier.scale(0.9f).padding(end = 24.dp)
-        )
     }
-    FilterHorizontalDivider()
 }
 
 @Composable
-private fun FilterHorizontalDivider(
-    color: Color = DividerDefaults.color,
-) {
-    HorizontalDivider(
-        color = color,
+private fun FilterListLabelHorizontalSpacer() {
+    Spacer(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+            .height(4.dp)
+            .background(colorScheme.surfaceContainerLow)
     )
 }
 
 @Composable
 private fun FilterSubheader(text: String, isFirst: Boolean = false) {
-    val spacerHeight = if (isFirst) 8.dp else 24.dp
+    val spacerHeight = if (isFirst) 12.dp else 20.dp
 
     Spacer(modifier = Modifier.height(spacerHeight))
     Text(
         text = text,
         color = colorScheme.outline,
         style = typography.labelLarge,
-        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
+        modifier = Modifier.padding(12.dp)
     )
-    FilterHorizontalDivider()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
