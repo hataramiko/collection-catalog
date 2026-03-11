@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -704,7 +705,7 @@ private fun EntryFormVerticalSpacer(width: Dp = 12.dp) {
 }
 
 @Composable
-private fun EntryField(
+fun EntryField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
@@ -715,6 +716,7 @@ private fun EntryField(
     capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
+    hasTrailingIcon: Boolean = true,
     hasEntryDialog: Boolean = false,
     isCurrency: Boolean = false,
     localeCode: String = "",
@@ -763,6 +765,9 @@ private fun EntryField(
                 keyboardType = keyboardType,
                 imeAction = imeAction
             ),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            ),
             label = {
                 Text(
                     text = label,
@@ -771,7 +776,7 @@ private fun EntryField(
                 )
             },
             placeholder = placeholder,
-            trailingIcon = { if (isFocused && currentValue.isNotEmpty()) {
+            trailingIcon = { if (hasTrailingIcon && isFocused && currentValue.isNotEmpty()) {
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_close_24),
@@ -797,7 +802,6 @@ private fun EntryField(
             }
         }
     }
-
     if (showEntryDialog) {
         EntryDialog(
             value = currentValue,

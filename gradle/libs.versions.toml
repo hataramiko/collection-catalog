@@ -25,6 +25,7 @@ material3 = "1.4.0"
 datastore = "1.2.0"
 appcompat = "1.7.1"
 opencsv = "5.12.0"
+foundation = "1.10.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -67,6 +68,7 @@ androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lif
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 usuiat-zoomable = { group = "net.engawapg.lib", name = "zoomable", version.ref = "zoomable" }
 opencsv-core = { group = "com.opencsv", name = "opencsv", version.ref = "opencsv" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

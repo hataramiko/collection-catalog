@@ -40,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.RangeSlider
@@ -47,8 +48,10 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,10 +61,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -73,6 +80,8 @@ import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.catalog.FilterData
 import com.mikohatara.collectioncatalog.ui.catalog.SortBy
+import com.mikohatara.collectioncatalog.ui.item.EntryField
+import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.getSortByText
 import com.mikohatara.collectioncatalog.util.isCollectionColor
 import com.mikohatara.collectioncatalog.util.toColor
@@ -282,6 +291,15 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
+                        FilterListRange(
+                            sliderRange = yearSliderRange,
+                            sliderPosition = periodSliderPosition,
+                            isExpanded = isPeriodExpanded,
+                            onValueChange = { newValue ->
+                                onPeriodSliderChange(newValue)
+                            },
+                            localeCode = localeCode
+                        )
                         FilterListSlider(
                             sliderRange = yearSliderRange,
                             sliderPosition = periodSliderPosition,
@@ -313,6 +331,15 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
+                        FilterListRange(
+                            sliderRange = yearSliderRange,
+                            sliderPosition = yearSliderPosition,
+                            isExpanded = isYearExpanded,
+                            onValueChange = { newValue ->
+                                onYearSliderChange(newValue)
+                            },
+                            localeCode = localeCode
+                        )
                         FilterListSlider(
                             sliderRange = yearSliderRange,
                             sliderPosition = yearSliderPosition,
@@ -412,6 +439,16 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
+                            FilterListRange(
+                                sliderRange = costSliderRange,
+                                sliderPosition = costSliderPosition,
+                                isExpanded = isCostExpanded,
+                                onValueChange = { newValue ->
+                                    onCostSliderChange(newValue)
+                                },
+                                isCurrency = true,
+                                localeCode = localeCode
+                            )
                             FilterListSlider(
                                 sliderRange = costSliderRange,
                                 sliderPosition = costSliderPosition,
@@ -448,6 +485,16 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
+                            FilterListRange(
+                                sliderRange = valueSliderRange,
+                                sliderPosition = valueSliderPosition,
+                                isExpanded = isValueExpanded,
+                                onValueChange = { newValue ->
+                                    onValueSliderChange(newValue)
+                                },
+                                isCurrency = true,
+                                localeCode = localeCode
+                            )
                             FilterListSlider(
                                 sliderRange = valueSliderRange,
                                 sliderPosition = valueSliderPosition,
@@ -511,6 +558,17 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
+                        FilterListRange(
+                            sliderRange = widthSliderRange,
+                            sliderPosition = widthSliderPosition,
+                            isExpanded = isWidthExpanded,
+                            onValueChange = { newValue ->
+                                onWidthSliderChange(newValue)
+                            },
+                            localeCode = localeCode,
+                            isMeasurement = true,
+                            measurementUnit = getMeasurementUnitSymbol(lengthUnit)
+                        )
                         FilterListSlider(
                             sliderRange = widthSliderRange,
                             sliderPosition = widthSliderPosition,
@@ -1112,6 +1170,100 @@ private fun FilterListSlider(
                 onValueChangeFinished = { onSliderChangeFinished() },
                 modifier = Modifier.height(32.dp).padding(horizontal = 20.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun FilterListRange(
+    sliderRange: ClosedRange<Float>,
+    sliderPosition: ClosedRange<Float>,
+    isExpanded: Boolean,
+    onValueChange: (ClosedRange<Float>) -> Unit,
+    isCurrency: Boolean = false,
+    localeCode: String = "",
+    isMeasurement: Boolean = false,
+    measurementUnit: String = ""
+) {
+    var localMinTextValue by remember { mutableStateOf("") }
+    var localMaxTextValue by remember { mutableStateOf("") }
+
+    LaunchedEffect(sliderPosition) {
+        localMinTextValue = sliderPosition.start.roundToInt().toString()
+        localMaxTextValue = sliderPosition.endInclusive.roundToInt().toString()
+    }
+
+    Card(
+        shape = RoundedCornerShape(0.dp),
+        colors = CardDefaults.cardColors(testColor()),
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
+    ) {
+        if (isExpanded) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+            ) {
+                EntryField(
+                    label = "",
+                    value = localMinTextValue,
+                    onValueChange = { localMinTextValue = it },
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next,
+                    //hasTrailingIcon = false,
+                    isCurrency = isCurrency,
+                    localeCode = localeCode,
+                    isMeasurement = isMeasurement,
+                    measurementUnit = measurementUnit,
+                    modifier = Modifier
+                        .weight(1f)
+                        .offset(y = (-4).dp)
+                        .onFocusChanged { focusState ->
+                            if (!focusState.isFocused) {
+                                val parsed = localMinTextValue
+                                    .toFloatOrNull() ?: sliderRange.start
+                                val validated = parsed
+                                    .coerceIn(sliderRange.start, sliderPosition.endInclusive)
+
+                                onValueChange(validated..sliderPosition.endInclusive)
+                                localMinTextValue = validated.roundToInt().toString()
+                            }
+                        }
+                )
+                Text(
+                    text = "–",
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+                EntryField(
+                    label = "",
+                    value = localMaxTextValue,
+                    onValueChange = { localMaxTextValue = it },
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done,
+                    //hasTrailingIcon = false,
+                    isCurrency = isCurrency,
+                    localeCode = localeCode,
+                    isMeasurement = isMeasurement,
+                    measurementUnit = measurementUnit,
+                    modifier = Modifier
+                        .weight(1f)
+                        .offset(y = (-4).dp)
+                        .onFocusChanged { focusState ->
+                            if (!focusState.isFocused) {
+                                val parsed = localMaxTextValue
+                                    .toFloatOrNull() ?: sliderRange.endInclusive
+                                val validated = parsed
+                                    .coerceIn(sliderPosition.start, sliderRange.endInclusive)
+
+                                onValueChange(sliderPosition.start..validated)
+                                localMaxTextValue = validated.roundToInt().toString()
+                            }
+                        }
+                )
+            }
         }
     }
 }
