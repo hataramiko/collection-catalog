@@ -2,10 +2,7 @@ package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,48 +15,35 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -69,23 +53,17 @@ import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
+import com.mikohatara.collectioncatalog.ui.components.DatePickerField
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
-import com.mikohatara.collectioncatalog.ui.components.EntryDialog
+import com.mikohatara.collectioncatalog.ui.components.EntryField
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
-import com.mikohatara.collectioncatalog.util.getCalendarLocale
 import com.mikohatara.collectioncatalog.util.getCurrencySymbol
 import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
-import com.mikohatara.collectioncatalog.util.rememberCurrencyVisualTransformation
-import com.mikohatara.collectioncatalog.util.rememberMeasurementVisualTransformation
-import com.mikohatara.collectioncatalog.util.toFormattedDate
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
 
 @Composable
 fun ItemEntryScreen(
@@ -702,221 +680,6 @@ private fun EntryFormHorizontalSpacer(height: Dp = 24.dp) {
 @Composable
 private fun EntryFormVerticalSpacer(width: Dp = 12.dp) {
     Spacer(modifier = Modifier.width(width))
-}
-
-@Composable
-fun EntryField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeholder: @Composable (() -> Unit)? = null,
-    enabled: Boolean = true,
-    singleLine: Boolean = true,
-    capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    imeAction: ImeAction = ImeAction.Next,
-    hasTrailingIcon: Boolean = true,
-    hasEntryDialog: Boolean = false,
-    isCurrency: Boolean = false,
-    localeCode: String = "",
-    isMeasurement: Boolean = false,
-    measurementUnit: String = ""
-) {
-    var showEntryDialog by remember { mutableStateOf(false) }
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-    val focusManager = LocalFocusManager.current
-
-    val currentValue = remember(value, isCurrency, localeCode, isMeasurement, measurementUnit) {
-        if (isCurrency && value.isNotBlank()) {
-            val longValue: Long = value.toLongOrNull() ?: 0L
-            longValue.toString()
-        } else if (isMeasurement && value.isNotBlank()) {
-            val intValue: Int = value.toIntOrNull() ?: 0
-            intValue.toString()
-        } else {
-            value
-        }
-    }
-    val visualTransformation = if (isCurrency) {
-        rememberCurrencyVisualTransformation(localeCode)
-    } else if (isMeasurement) {
-        rememberMeasurementVisualTransformation(measurementUnit, localeCode)
-    } else VisualTransformation.None
-
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(vertical = 4.dp)
-    ) {
-        OutlinedTextField(
-            value = currentValue,
-            onValueChange = { newValue ->
-                if (isCurrency || isMeasurement) {
-                    val rawValue = newValue.replace(Regex("\\D"), "")
-                    onValueChange(rawValue)
-                } else {
-                    onValueChange(newValue)
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                capitalization = capitalization,
-                keyboardType = keyboardType,
-                imeAction = imeAction
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            ),
-            label = {
-                Text(
-                    text = label,
-                    maxLines = if (singleLine) 1 else Int.MAX_VALUE,
-                    overflow = TextOverflow.Ellipsis
-                )
-            },
-            placeholder = placeholder,
-            trailingIcon = { if (hasTrailingIcon && isFocused && currentValue.isNotEmpty()) {
-                IconButton(onClick = { onValueChange("") }) {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_close_24),
-                        contentDescription = null
-                    )
-                }
-            }},
-            modifier = Modifier.fillMaxWidth().weight(1f),
-            enabled = enabled,
-            singleLine = singleLine,
-            interactionSource = interactionSource,
-            visualTransformation = visualTransformation
-        )
-        if (hasEntryDialog && isFocused) {
-            FilledTonalIconButton(
-                onClick = { showEntryDialog = !showEntryDialog  },
-                modifier = Modifier.padding(start = 10.dp, top = 8.dp, end = 2.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_edit_square),
-                    contentDescription = null
-                )
-            }
-        }
-    }
-    if (showEntryDialog) {
-        EntryDialog(
-            value = currentValue,
-            onValueChange = { onValueChange(it) },
-            label = label,
-            onDismiss = { showEntryDialog = false },
-            onConfirm = {
-                showEntryDialog = false
-                if (imeAction == ImeAction.Next) focusManager.moveFocus(FocusDirection.Next)
-            }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerField(
-    label: String,
-    dateValue: String,
-    onDateSelected: (String) -> Unit,
-    userCountry: String,
-    modifier: Modifier = Modifier,
-) {
-    var showDatePicker by remember { mutableStateOf(false) }
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-    val focusManager = LocalFocusManager.current
-
-    val displayValue = dateValue.toFormattedDate(userCountry)
-    val locale = getCalendarLocale(userCountry)
-    val inputFormat = remember(locale) { SimpleDateFormat("yyyy-MM-dd", locale) }
-
-    val initialSelectedDateMillis = remember(dateValue) {
-        if (dateValue.isNotBlank()) {
-            try {
-                inputFormat.parse(dateValue)?.time
-            } catch (e: Exception) {
-                Log.e("DatePickerField", "Error parsing date: $dateValue", e)
-                Calendar.getInstance().timeInMillis
-            }
-        } else {
-            Calendar.getInstance().timeInMillis
-        }
-    }
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialSelectedDateMillis
-    )
-
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(vertical = 4.dp)
-    ) {
-        OutlinedTextField(
-            value = displayValue,
-            onValueChange = { showDatePicker = true },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            label = { Text(label) },
-            trailingIcon = { if (isFocused && displayValue.isNotEmpty()) {
-                IconButton(onClick = { onDateSelected("") }) {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_close_24),
-                        contentDescription = null
-                    )
-                } }
-            },
-            interactionSource = interactionSource,
-            modifier = Modifier.fillMaxWidth().weight(1f)
-        )
-        if (isFocused) {
-            FilledTonalIconButton(
-                onClick = { showDatePicker = !showDatePicker  },
-                modifier = Modifier.padding(start = 10.dp, top = 8.dp, end = 2.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.rounded_event),
-                    contentDescription = null
-                )
-            }
-        }
-    }
-
-    if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDatePicker = false
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            val date = Date(millis)
-                            onDateSelected(inputFormat.format(date))
-                        }
-                        focusManager.moveFocus(FocusDirection.Next)
-                    },
-                    modifier = Modifier.padding(end = 4.dp)
-                ) {
-                    Text(stringResource(R.string.ok_text))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
-        ) {
-            DatePicker(
-                state = datePickerState,
-                showModeToggle = false
-            )
-        }
-    }
 }
 
 @Composable

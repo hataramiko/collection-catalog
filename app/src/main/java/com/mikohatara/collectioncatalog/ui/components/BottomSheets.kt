@@ -3,7 +3,9 @@ package com.mikohatara.collectioncatalog.ui.components
 import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.util.MeasureUnit
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,7 +42,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.RangeSlider
@@ -48,10 +49,8 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,14 +60,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -80,7 +76,6 @@ import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.catalog.FilterData
 import com.mikohatara.collectioncatalog.ui.catalog.SortBy
-import com.mikohatara.collectioncatalog.ui.item.EntryField
 import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.getSortByText
 import com.mikohatara.collectioncatalog.util.isCollectionColor
@@ -230,13 +225,13 @@ fun FilterBottomSheet(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 stickyHeader {
-                    FilterSubheader(
+                    FilterGroupSubheader(
                         text = stringResource(R.string.common_details_label),
                         isFirst = true
                     )
                 }
                 stickyHeader {
-                    FilterListLabel(
+                    FilterLabel(
                         label = stringResource(R.string.country),
                         activeFilters = filters.country,
                         isExpanded = isCountriesExpanded,
@@ -245,7 +240,7 @@ fun FilterBottomSheet(
                     )
                 }
                 item {
-                    FilterListCheckboxes(
+                    FilterCheckboxList(
                         filterOptions = countries,
                         activeFilters = filters.country,
                         isExpanded = isCountriesExpanded,
@@ -253,10 +248,10 @@ fun FilterBottomSheet(
                     )
                 }
                 stickyHeader {
-                    FilterListBottomExtension(isExpanded = isCountriesExpanded)
+                    FilterLabelBottomExtension(isExpanded = isCountriesExpanded)
                 }
                 stickyHeader {
-                    FilterListLabel(
+                    FilterLabel(
                         label = stringResource(R.string.type),
                         activeFilters = filters.type,
                         isExpanded = isTypesExpanded,
@@ -264,7 +259,7 @@ fun FilterBottomSheet(
                     )
                 }
                 item {
-                    FilterListCheckboxes(
+                    FilterCheckboxList(
                         filterOptions = types,
                         activeFilters = filters.type,
                         isExpanded = isTypesExpanded,
@@ -272,7 +267,7 @@ fun FilterBottomSheet(
                     )
                 }
                 stickyHeader {
-                    FilterListBottomExtension(isExpanded = isTypesExpanded)
+                    FilterLabelBottomExtension(isExpanded = isTypesExpanded)
                 }
                 if (yearSliderRange != null && periodSliderPosition != null &&
                     onPeriodSliderChange != null) {
@@ -280,7 +275,7 @@ fun FilterBottomSheet(
                         val minValue = periodSliderPosition.start.roundToInt()
                         val maxValue = periodSliderPosition.endInclusive.roundToInt()
 
-                        FilterListLabel(
+                        FilterLabel(
                             label = stringResource(R.string.period),
                             activeFilters = emptySet(),
                             isExpanded = isPeriodExpanded,
@@ -291,16 +286,17 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
-                        FilterListRange(
+                        FilterSliderRangeFields(
                             sliderRange = yearSliderRange,
                             sliderPosition = periodSliderPosition,
                             isExpanded = isPeriodExpanded,
                             onValueChange = { newValue ->
                                 onPeriodSliderChange(newValue)
                             },
+                            cardColor = testColor(),
                             localeCode = localeCode
                         )
-                        FilterListSlider(
+                        FilterSlider(
                             sliderRange = yearSliderRange,
                             sliderPosition = periodSliderPosition,
                             isExpanded = isPeriodExpanded,
@@ -310,7 +306,7 @@ fun FilterBottomSheet(
                         )
                     }
                     stickyHeader {
-                        FilterListBottomExtension(isExpanded = isPeriodExpanded)
+                        FilterLabelBottomExtension(isExpanded = isPeriodExpanded)
                     }
                 }
                 if (yearSliderRange != null && yearSliderPosition != null &&
@@ -319,7 +315,7 @@ fun FilterBottomSheet(
                         val minValue = yearSliderPosition.start.roundToInt()
                         val maxValue = yearSliderPosition.endInclusive.roundToInt()
 
-                        FilterListLabel(
+                        FilterLabel(
                             label = stringResource(R.string.year),
                             activeFilters = emptySet(),
                             isExpanded = isYearExpanded,
@@ -331,16 +327,17 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
-                        FilterListRange(
+                        FilterSliderRangeFields(
                             sliderRange = yearSliderRange,
                             sliderPosition = yearSliderPosition,
                             isExpanded = isYearExpanded,
                             onValueChange = { newValue ->
                                 onYearSliderChange(newValue)
                             },
+                            cardColor = testColor(),
                             localeCode = localeCode
                         )
-                        FilterListSlider(
+                        FilterSlider(
                             sliderRange = yearSliderRange,
                             sliderPosition = yearSliderPosition,
                             isExpanded = isYearExpanded,
@@ -350,7 +347,7 @@ fun FilterBottomSheet(
                         )
                     }
                     stickyHeader {
-                        FilterListBottomExtension(
+                        FilterLabelBottomExtension(
                             isExpanded = isYearExpanded,
                             bottomCornerRadius = 20.dp
                         )
@@ -358,12 +355,12 @@ fun FilterBottomSheet(
                 }
                 if (itemType != ItemType.WANTED_PLATE) {
                     stickyHeader {
-                        FilterSubheader(text = stringResource(R.string.unique_details_label))
+                        FilterGroupSubheader(text = stringResource(R.string.unique_details_label))
                     }
                 }
                 if (itemType != ItemType.WANTED_PLATE && toggleVehicleSwitch != null) {
                     stickyHeader {
-                        FilterListSwitch(
+                        FilterSwitch(
                             label = stringResource(R.string.vehicle),
                             isFilterActive = hasVehicle,
                             onToggle = toggleVehicleSwitch,
@@ -390,7 +387,7 @@ fun FilterBottomSheet(
                                     SimpleDateFormat.SHORT
                                 )
 
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.date),
                                 activeFilters = emptySet(),
                                 isExpanded = isDateExpanded,
@@ -401,7 +398,17 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListSlider(
+                            FilterSliderDateRangeFields(
+                                sliderRange = dateSliderRange,
+                                sliderPosition = dateSliderPosition,
+                                isExpanded = isDateExpanded,
+                                onValueChange = { newValue ->
+                                    onDateSliderChange(newValue)
+                                },
+                                cardColor = testColor(),
+                                localeCode = localeCode
+                            )
+                            FilterSlider(
                                 sliderRange = dateSliderRange,
                                 sliderPosition = dateSliderPosition,
                                 isExpanded = isDateExpanded,
@@ -411,7 +418,7 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(isExpanded = isDateExpanded)
+                            FilterLabelBottomExtension(isExpanded = isDateExpanded)
                         }
                     }
                     if (costSliderRange != null && costSliderPosition != null &&
@@ -426,7 +433,7 @@ fun FilterBottomSheet(
                             val minValue = costSliderPosition.start.roundToLong()
                             val maxValue = costSliderPosition.endInclusive.roundToLong()
 
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.cost),
                                 activeFilters = emptySet(),
                                 isExpanded = isCostExpanded,
@@ -439,17 +446,18 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListRange(
+                            FilterSliderRangeFields(
                                 sliderRange = costSliderRange,
                                 sliderPosition = costSliderPosition,
                                 isExpanded = isCostExpanded,
                                 onValueChange = { newValue ->
                                     onCostSliderChange(newValue)
                                 },
+                                cardColor = testColor(),
                                 isCurrency = true,
                                 localeCode = localeCode
                             )
-                            FilterListSlider(
+                            FilterSlider(
                                 sliderRange = costSliderRange,
                                 sliderPosition = costSliderPosition,
                                 isExpanded = isCostExpanded,
@@ -459,7 +467,7 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(
+                            FilterLabelBottomExtension(
                                 isExpanded = isCostExpanded,
                                 bottomCornerRadius = bottomCornerRadius
                             )
@@ -473,7 +481,7 @@ fun FilterBottomSheet(
                             val minValue = valueSliderPosition.start.roundToLong()
                             val maxValue = valueSliderPosition.endInclusive.roundToLong()
 
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.value),
                                 activeFilters = emptySet(),
                                 isExpanded = isValueExpanded,
@@ -485,17 +493,18 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListRange(
+                            FilterSliderRangeFields(
                                 sliderRange = valueSliderRange,
                                 sliderPosition = valueSliderPosition,
                                 isExpanded = isValueExpanded,
                                 onValueChange = { newValue ->
                                     onValueSliderChange(newValue)
                                 },
+                                cardColor = testColor(),
                                 isCurrency = true,
                                 localeCode = localeCode
                             )
-                            FilterListSlider(
+                            FilterSlider(
                                 sliderRange = valueSliderRange,
                                 sliderPosition = valueSliderPosition,
                                 isExpanded = isValueExpanded,
@@ -505,12 +514,12 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(isExpanded = isValueExpanded)
+                            FilterLabelBottomExtension(isExpanded = isValueExpanded)
                         }
                     }
                     if (locations != null && toggleLocation != null) {
                         stickyHeader {
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.location),
                                 activeFilters = filters.location,
                                 isExpanded = isLocationsExpanded,
@@ -519,7 +528,7 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListCheckboxes(
+                            FilterCheckboxList(
                                 filterOptions = locations,
                                 activeFilters = filters.location,
                                 isExpanded = isLocationsExpanded,
@@ -527,7 +536,7 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(
+                            FilterLabelBottomExtension(
                                 isExpanded = isLocationsExpanded,
                                 bottomCornerRadius = 20.dp
                             )
@@ -536,7 +545,7 @@ fun FilterBottomSheet(
                 }
                 if (colorsMain != null || colorsSecondary != null) {
                     stickyHeader {
-                        FilterSubheader(text = stringResource(R.string.size_and_color))
+                        FilterGroupSubheader(text = stringResource(R.string.size_and_color))
                     }
                 }
                 if (widthSliderRange != null && widthSliderPosition != null &&
@@ -545,7 +554,7 @@ fun FilterBottomSheet(
                         val minValue = widthSliderPosition.start.roundToInt()
                         val maxValue = widthSliderPosition.endInclusive.roundToInt()
 
-                        FilterListLabel(
+                        FilterLabel(
                             label = stringResource(R.string.width),
                             activeFilters = emptySet(),
                             isExpanded = isWidthExpanded,
@@ -558,18 +567,19 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
-                        FilterListRange(
+                        FilterSliderRangeFields(
                             sliderRange = widthSliderRange,
                             sliderPosition = widthSliderPosition,
                             isExpanded = isWidthExpanded,
                             onValueChange = { newValue ->
                                 onWidthSliderChange(newValue)
                             },
+                            cardColor = testColor(),
                             localeCode = localeCode,
                             isMeasurement = true,
                             measurementUnit = getMeasurementUnitSymbol(lengthUnit)
                         )
-                        FilterListSlider(
+                        FilterSlider(
                             sliderRange = widthSliderRange,
                             sliderPosition = widthSliderPosition,
                             isExpanded = isWidthExpanded,
@@ -579,12 +589,12 @@ fun FilterBottomSheet(
                         )
                     }
                     stickyHeader {
-                        FilterListBottomExtension(isExpanded = isWidthExpanded)
+                        FilterLabelBottomExtension(isExpanded = isWidthExpanded)
                     }
                 }
                 if (colorsMain != null && toggleColorMain != null) {
                     stickyHeader {
-                        FilterListLabel(
+                        FilterLabel(
                             label = stringResource(R.string.color_main),
                             activeFilters = filters.colorMain,
                             isExpanded = isColorsMainExpanded,
@@ -592,7 +602,7 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
-                        FilterListCheckboxes(
+                        FilterCheckboxList(
                             filterOptions = colorsMain,
                             activeFilters = filters.colorMain,
                             isExpanded = isColorsMainExpanded,
@@ -600,12 +610,12 @@ fun FilterBottomSheet(
                         )
                     }
                     stickyHeader {
-                        FilterListBottomExtension(isExpanded = isColorsMainExpanded)
+                        FilterLabelBottomExtension(isExpanded = isColorsMainExpanded)
                     }
                 }
                 if (colorsSecondary != null && toggleColorSecondary != null) {
                     stickyHeader {
-                        FilterListLabel(
+                        FilterLabel(
                             label = stringResource(R.string.color_secondary),
                             activeFilters = filters.colorSecondary,
                             isExpanded = isColorsSecondaryExpanded,
@@ -614,7 +624,7 @@ fun FilterBottomSheet(
                         )
                     }
                     item {
-                        FilterListCheckboxes(
+                        FilterCheckboxList(
                             filterOptions = colorsSecondary,
                             activeFilters = filters.colorSecondary,
                             isExpanded = isColorsSecondaryExpanded,
@@ -622,7 +632,7 @@ fun FilterBottomSheet(
                         )
                     }
                     stickyHeader {
-                        FilterListBottomExtension(
+                        FilterLabelBottomExtension(
                             isExpanded = isColorsSecondaryExpanded,
                             bottomCornerRadius = 20.dp
                         )
@@ -630,11 +640,11 @@ fun FilterBottomSheet(
                 }
                 if (itemType != ItemType.WANTED_PLATE) {
                     stickyHeader {
-                        FilterSubheader(text = stringResource(R.string.source))
+                        FilterGroupSubheader(text = stringResource(R.string.source))
                     }
                     if (sourceTypes != null && toggleSourceType != null) {
                         stickyHeader {
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.source_type),
                                 activeFilters = filters.sourceType,
                                 isExpanded = isSourceTypesExpanded,
@@ -643,7 +653,7 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListCheckboxes(
+                            FilterCheckboxList(
                                 filterOptions = sourceTypes,
                                 activeFilters = filters.sourceType,
                                 isExpanded = isSourceTypesExpanded,
@@ -651,12 +661,12 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(isExpanded = isSourceTypesExpanded)
+                            FilterLabelBottomExtension(isExpanded = isSourceTypesExpanded)
                         }
                     }
                     if (sourceCountries != null && toggleSourceCountry != null) {
                         stickyHeader {
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.source_country),
                                 activeFilters = filters.sourceCountry,
                                 isExpanded = isSourceCountriesExpanded,
@@ -667,7 +677,7 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListCheckboxes(
+                            FilterCheckboxList(
                                 filterOptions = sourceCountries,
                                 activeFilters = filters.sourceCountry,
                                 isExpanded = isSourceCountriesExpanded,
@@ -675,7 +685,7 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(
+                            FilterLabelBottomExtension(
                                 isExpanded = isSourceCountriesExpanded,
                                 bottomCornerRadius = 20.dp
                             )
@@ -684,7 +694,7 @@ fun FilterBottomSheet(
                 }
                 if (itemType == ItemType.FORMER_PLATE) {
                     stickyHeader {
-                        FilterSubheader(text = stringResource(R.string.archival))
+                        FilterGroupSubheader(text = stringResource(R.string.archival))
                     }
                     if (archivalDateSliderRange != null && archivalDateSliderPosition != null &&
                         onArchivalDateSliderChange != null) {
@@ -704,7 +714,7 @@ fun FilterBottomSheet(
                                     SimpleDateFormat.SHORT
                                 )
 
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.archival_date),
                                 activeFilters = emptySet(),
                                 isExpanded = isArchivalDateExpanded,
@@ -717,7 +727,17 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListSlider(
+                            FilterSliderDateRangeFields(
+                                sliderRange = archivalDateSliderRange,
+                                sliderPosition = archivalDateSliderPosition,
+                                isExpanded = isArchivalDateExpanded,
+                                onValueChange = { newValue ->
+                                    onArchivalDateSliderChange(newValue)
+                                },
+                                cardColor = testColor(),
+                                localeCode = localeCode
+                            )
+                            FilterSlider(
                                 sliderRange = archivalDateSliderRange,
                                 sliderPosition = archivalDateSliderPosition,
                                 isExpanded = isArchivalDateExpanded,
@@ -727,12 +747,12 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(isExpanded = isArchivalDateExpanded)
+                            FilterLabelBottomExtension(isExpanded = isArchivalDateExpanded)
                         }
                     }
                     if (archivalReasons != null && toggleArchivalReason != null) {
                         stickyHeader {
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.archival_reason),
                                 activeFilters = filters.archivalReason,
                                 isExpanded = isArchivalReasonsExpanded,
@@ -742,7 +762,7 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListCheckboxes(
+                            FilterCheckboxList(
                                 filterOptions = archivalReasons,
                                 activeFilters = filters.archivalReason,
                                 isExpanded = isArchivalReasonsExpanded,
@@ -750,12 +770,12 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(isExpanded = isArchivalReasonsExpanded)
+                            FilterLabelBottomExtension(isExpanded = isArchivalReasonsExpanded)
                         }
                     }
                     if (recipientCountries != null && toggleRecipientCountry != null) {
                         stickyHeader {
-                            FilterListLabel(
+                            FilterLabel(
                                 label = stringResource(R.string.recipient_country),
                                 activeFilters = filters.recipientCountry,
                                 isExpanded = isRecipientCountriesExpanded,
@@ -766,7 +786,7 @@ fun FilterBottomSheet(
                             )
                         }
                         item {
-                            FilterListCheckboxes(
+                            FilterCheckboxList(
                                 filterOptions = recipientCountries,
                                 activeFilters = filters.recipientCountry,
                                 isExpanded = isRecipientCountriesExpanded,
@@ -774,7 +794,7 @@ fun FilterBottomSheet(
                             )
                         }
                         stickyHeader {
-                            FilterListBottomExtension(
+                            FilterLabelBottomExtension(
                                 isExpanded = isRecipientCountriesExpanded,
                                 bottomCornerRadius = 20.dp
                             )
@@ -953,7 +973,11 @@ private fun BottomSheetHeader(
         )
         infoText?.let {
             Spacer(modifier = Modifier.width(8.dp))
-            Box(modifier = Modifier.size(32.dp).offset(y = (-2).dp)) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .offset(y = (-2).dp)
+            ) {
                 IconButton(onClick = { showInfo.value = true }) {
                     Icon(
                         painter = painterResource(R.drawable.rounded_info),
@@ -975,7 +999,7 @@ private fun BottomSheetHeader(
 }
 
 @Composable
-private fun FilterListLabel(
+private fun FilterLabel(
     label: String,
     activeFilters: Set<String>,
     isExpanded: Boolean,
@@ -986,6 +1010,11 @@ private fun FilterListLabel(
     bottomCornerRadius: Dp = 8.dp
 ) {
     val onClick = remember { Modifier.clickable { onExpand() } }
+    val valueTextColor by animateColorAsState(
+        targetValue = if (!isExpanded) colorScheme.onSurfaceVariant else Color.Transparent,
+        animationSpec = tween(durationMillis = 200),
+        label = "FilterListLabelValueTextColor"
+    )
     val shape = if (isExpanded) RoundedCornerShape(
         topStart = topCornerRadius,
         topEnd = topCornerRadius,
@@ -998,7 +1027,7 @@ private fun FilterListLabel(
         bottomEnd = bottomCornerRadius
     )
 
-    FilterListLabelHorizontalSpacer()
+    FilterLabelHorizontalSpacer()
     Card(
         shape = shape,
         colors = CardDefaults.cardColors(testColor()),
@@ -1007,7 +1036,9 @@ private fun FilterListLabel(
             .background(colorScheme.surfaceContainerLow)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().then(onClick)
+            modifier = Modifier
+                .fillMaxSize()
+                .then(onClick)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -1038,7 +1069,7 @@ private fun FilterListLabel(
                 value?.let {
                     Text(
                         text = it,
-                        color = colorScheme.onSurfaceVariant,
+                        color = valueTextColor,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.End,
@@ -1059,7 +1090,7 @@ private fun FilterListLabel(
 }
 
 @Composable
-private fun FilterListBottomExtension(
+private fun FilterLabelBottomExtension(
     isExpanded: Boolean,
     bottomCornerRadius: Dp = 8.dp
 ) {
@@ -1088,7 +1119,7 @@ private fun FilterListBottomExtension(
 }
 
 @Composable
-private fun FilterListCheckboxes(
+private fun FilterCheckboxList(
     filterOptions: Set<String>,
     activeFilters: Set<String>,
     isExpanded: Boolean,
@@ -1131,13 +1162,12 @@ private fun FilterListCheckboxes(
 }
 
 @Composable
-private fun FilterListSlider(
+private fun FilterSlider(
     sliderRange: ClosedRange<Float>,
     sliderPosition: ClosedRange<Float>,
     onSliderChange: (ClosedRange<Float>) -> Unit,
     onSliderChangeFinished: () -> Unit = {},
-    isExpanded: Boolean,
-    independentLabel: String? = null
+    isExpanded: Boolean
 ) {
     val shape = RoundedCornerShape(0.dp)
 
@@ -1149,18 +1179,7 @@ private fun FilterListSlider(
             .animateContentSize()
     ) {
         if (isExpanded) {
-            if (independentLabel != null) {
-                Column(modifier = Modifier.padding(bottom = 8.dp, top = 0.dp)) {
-                    Text(text = independentLabel)
-                    Text(
-                        text = "${sliderPosition.start.roundToInt()} – " +
-                                "${sliderPosition.endInclusive.roundToInt()}",
-                        color = colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 12.dp)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             RangeSlider(
                 value = sliderPosition as ClosedFloatingPointRange<Float>,
                 valueRange = sliderRange as ClosedFloatingPointRange<Float>,
@@ -1168,108 +1187,17 @@ private fun FilterListSlider(
                     onSliderChange(newSliderPosition)
                 },
                 onValueChangeFinished = { onSliderChangeFinished() },
-                modifier = Modifier.height(32.dp).padding(horizontal = 20.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun FilterListRange(
-    sliderRange: ClosedRange<Float>,
-    sliderPosition: ClosedRange<Float>,
-    isExpanded: Boolean,
-    onValueChange: (ClosedRange<Float>) -> Unit,
-    isCurrency: Boolean = false,
-    localeCode: String = "",
-    isMeasurement: Boolean = false,
-    measurementUnit: String = ""
-) {
-    var localMinTextValue by remember { mutableStateOf("") }
-    var localMaxTextValue by remember { mutableStateOf("") }
-
-    LaunchedEffect(sliderPosition) {
-        localMinTextValue = sliderPosition.start.roundToInt().toString()
-        localMaxTextValue = sliderPosition.endInclusive.roundToInt().toString()
-    }
-
-    Card(
-        shape = RoundedCornerShape(0.dp),
-        colors = CardDefaults.cardColors(testColor()),
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-    ) {
-        if (isExpanded) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
-            ) {
-                EntryField(
-                    label = "",
-                    value = localMinTextValue,
-                    onValueChange = { localMinTextValue = it },
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next,
-                    //hasTrailingIcon = false,
-                    isCurrency = isCurrency,
-                    localeCode = localeCode,
-                    isMeasurement = isMeasurement,
-                    measurementUnit = measurementUnit,
-                    modifier = Modifier
-                        .weight(1f)
-                        .offset(y = (-4).dp)
-                        .onFocusChanged { focusState ->
-                            if (!focusState.isFocused) {
-                                val parsed = localMinTextValue
-                                    .toFloatOrNull() ?: sliderRange.start
-                                val validated = parsed
-                                    .coerceIn(sliderRange.start, sliderPosition.endInclusive)
-
-                                onValueChange(validated..sliderPosition.endInclusive)
-                                localMinTextValue = validated.roundToInt().toString()
-                            }
-                        }
-                )
-                Text(
-                    text = "–",
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-                EntryField(
-                    label = "",
-                    value = localMaxTextValue,
-                    onValueChange = { localMaxTextValue = it },
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done,
-                    //hasTrailingIcon = false,
-                    isCurrency = isCurrency,
-                    localeCode = localeCode,
-                    isMeasurement = isMeasurement,
-                    measurementUnit = measurementUnit,
-                    modifier = Modifier
-                        .weight(1f)
-                        .offset(y = (-4).dp)
-                        .onFocusChanged { focusState ->
-                            if (!focusState.isFocused) {
-                                val parsed = localMaxTextValue
-                                    .toFloatOrNull() ?: sliderRange.endInclusive
-                                val validated = parsed
-                                    .coerceIn(sliderPosition.start, sliderRange.endInclusive)
-
-                                onValueChange(sliderPosition.start..validated)
-                                localMaxTextValue = validated.roundToInt().toString()
-                            }
-                        }
-                )
-            }
+                    .height(40.dp)
+                    .padding(horizontal = 20.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
 
 @Composable
-private fun FilterListSwitch(
+private fun FilterSwitch(
     label: String,
     isFilterActive: Boolean,
     onToggle: () -> Unit,
@@ -1291,7 +1219,9 @@ private fun FilterListSwitch(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize().then(onClick)
+            modifier = Modifier
+                .fillMaxSize()
+                .then(onClick)
         ) {
             Row {
                 Text(
@@ -1310,14 +1240,16 @@ private fun FilterListSwitch(
             Switch(
                 checked = isFilterActive,
                 onCheckedChange = null,
-                modifier = Modifier.scale(0.9f).padding(end = 8.dp)
+                modifier = Modifier
+                    .scale(0.9f)
+                    .padding(end = 8.dp)
             )
         }
     }
 }
 
 @Composable
-private fun FilterListLabelHorizontalSpacer() {
+private fun FilterLabelHorizontalSpacer() {
     Spacer(
         modifier = Modifier
             .fillMaxWidth()
@@ -1327,7 +1259,7 @@ private fun FilterListLabelHorizontalSpacer() {
 }
 
 @Composable
-private fun FilterSubheader(text: String, isFirst: Boolean = false) {
+private fun FilterGroupSubheader(text: String, isFirst: Boolean = false) {
     val spacerHeight = if (isFirst) 12.dp else 20.dp
 
     Spacer(modifier = Modifier.height(spacerHeight))
@@ -1351,8 +1283,7 @@ private fun FilterFooter(
     val backgroundColor = colorScheme.surfaceContainerLow
 
     Box(
-        modifier = Modifier
-            .offset {
+        modifier = Modifier.offset {
                 IntOffset(
                     0,
                     (sheetHeight - sheetState.requireOffset() - sheetHeight).toInt()
@@ -1360,8 +1291,7 @@ private fun FilterFooter(
             }
     ) {
         Column(
-            modifier = Modifier
-                .background(backgroundColor)
+            modifier = Modifier.background(backgroundColor)
         ) {
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
             Row(
