@@ -55,6 +55,9 @@ import com.mikohatara.collectioncatalog.ui.components.EmptyList
 import com.mikohatara.collectioncatalog.ui.components.EndOfList
 import com.mikohatara.collectioncatalog.ui.components.ExportDialog
 import com.mikohatara.collectioncatalog.ui.components.FilterBottomSheet
+import com.mikohatara.collectioncatalog.ui.components.FilterListData
+import com.mikohatara.collectioncatalog.ui.components.FilterSliderData
+import com.mikohatara.collectioncatalog.ui.components.FilterSwitchData
 import com.mikohatara.collectioncatalog.ui.components.ImportDialog
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.Loading
@@ -259,60 +262,96 @@ private fun CatalogScreen(
                     onReset = { viewModel.resetFilter() },
                     localeCode = userPreferences.userCountry,
                     lengthUnit = userPreferences.lengthUnit,
-                    countries = countries,
-                    toggleCountry = { viewModel.toggleCountryFilter(it) },
-                    types = types,
-                    toggleType = { viewModel.toggleTypeFilter(it) },
-                    periodSliderPosition = uiState.periodSliderPosition,
-                    onPeriodSliderChange = { newPosition ->
-                        viewModel.updatePeriodSliderPosition(newPosition)
-                    },
-                    yearSliderRange = viewModel.getYearSliderRange(),
-                    yearSliderPosition = uiState.yearSliderPosition,
-                    onYearSliderChange = { newPosition ->
-                        viewModel.updateYearSliderPosition(newPosition)
-                    },
-                    hasVehicle = uiState.filters.hasVehicle,
-                    toggleVehicleSwitch = { viewModel.toggleVehicleSwitch() },
-                    dateSliderRange = viewModel.getDateSliderRange(),
-                    dateSliderPosition = uiState.dateSliderPosition,
-                    onDateSliderChange = { newPosition ->
-                        viewModel.updateDateSliderPosition(newPosition)
-                    },
-                    costSliderRange = viewModel.getCostSliderRange(),
-                    costSliderPosition = uiState.costSliderPosition,
-                    onCostSliderChange = { newPosition ->
-                        viewModel.updateCostSliderPosition(newPosition)
-                    },
-                    valueSliderRange = viewModel.getValueSliderRange(),
-                    valueSliderPosition = uiState.valueSliderPosition,
-                    onValueSliderChange = { newPosition ->
-                        viewModel.updateValueSliderPosition(newPosition)
-                    },
-                    locations = locations,
-                    toggleLocation = { viewModel.toggleLocationFilter(it) },
-                    widthSliderRange = viewModel.getWidthSliderRange(),
-                    widthSliderPosition = uiState.widthSliderPosition,
-                    onWidthSliderChange = { newPosition ->
-                        viewModel.updateWidthSliderPosition(newPosition)
-                    },
-                    colorsMain = colorsMain,
-                    toggleColorMain = { viewModel.toggleColorMainFilter(it) },
-                    colorsSecondary = colorsSecondary,
-                    toggleColorSecondary = { viewModel.toggleColorSecondaryFilter(it) },
-                    sourceTypes = sourceTypes,
-                    toggleSourceType = { viewModel.toggleSourceTypeFilter(it) },
-                    sourceCountries = sourceCountries,
-                    toggleSourceCountry = { viewModel.toggleSourceCountryFilter(it) },
-                    archivalDateSliderRange = viewModel.getArchivalDateSliderRange(),
-                    archivalDateSliderPosition = uiState.archivalDateSliderPosition,
-                    onArchivalDateSliderChange = { newPosition ->
-                        viewModel.updateArchivalDateSliderPosition(newPosition)
-                    },
-                    archivalReasons = archivalReasons,
-                    toggleArchivalReason = { viewModel.toggleArchivalReasonFilter(it) },
-                    recipientCountries = recipientCountries,
-                    toggleRecipientCountry = { viewModel.toggleRecipientCountryFilter(it) }
+                    countryList = FilterListData(
+                        values = countries,
+                        onToggleValue = { viewModel.toggleCountryFilter(it) }
+                    ),
+                    typeList = FilterListData(
+                        values = types,
+                        onToggleValue = { viewModel.toggleTypeFilter(it) }
+                    ),
+                    periodSlider = FilterSliderData(
+                        range = viewModel.getYearSliderRange(),
+                        position = uiState.periodSliderPosition ?: viewModel.getYearSliderRange(),
+                        onValueChange = { newPosition ->
+                            viewModel.updatePeriodSliderPosition(newPosition)
+                        }
+                    ),
+                    yearSlider = FilterSliderData(
+                        range = viewModel.getYearSliderRange(),
+                        position = uiState.yearSliderPosition ?: viewModel.getYearSliderRange(),
+                        onValueChange = { newPosition ->
+                            viewModel.updateYearSliderPosition(newPosition)
+                        }
+                    ),
+                    vehicleSwitch = FilterSwitchData(
+                        isTrue = uiState.filters.hasVehicle,
+                        onToggleSwitch = { viewModel.toggleVehicleSwitch() }
+                    ),
+                    dateSlider = FilterSliderData(
+                        range = viewModel.getDateSliderRange(),
+                        position = uiState.dateSliderPosition ?: viewModel.getDateSliderRange(),
+                        onValueChange = { newPosition ->
+                            viewModel.updateDateSliderPosition(newPosition)
+                        }
+                    ),
+                    costSlider = FilterSliderData(
+                        range = viewModel.getCostSliderRange(),
+                        position = uiState.costSliderPosition ?: viewModel.getCostSliderRange(),
+                        onValueChange = { newPosition ->
+                            viewModel.updateCostSliderPosition(newPosition)
+                        }
+                    ),
+                    valueSlider = FilterSliderData(
+                        range = viewModel.getValueSliderRange(),
+                        position = uiState.valueSliderPosition ?: viewModel.getValueSliderRange(),
+                        onValueChange = { newPosition ->
+                            viewModel.updateValueSliderPosition(newPosition)
+                        }
+                    ),
+                    locationList = FilterListData(
+                        values = locations,
+                        onToggleValue = { viewModel.toggleLocationFilter(it) }
+                    ),
+                    widthSlider = FilterSliderData(
+                        range = viewModel.getWidthSliderRange(),
+                        position = uiState.widthSliderPosition ?: viewModel.getWidthSliderRange(),
+                        onValueChange = { newPosition ->
+                            viewModel.updateWidthSliderPosition(newPosition)
+                        }
+                    ),
+                    colorsMainList = FilterListData(
+                        values = colorsMain,
+                        onToggleValue = { viewModel.toggleColorMainFilter(it) }
+                    ),
+                    colorsSecondaryList = FilterListData(
+                        values = colorsSecondary,
+                        onToggleValue = { viewModel.toggleColorSecondaryFilter(it) }
+                    ),
+                    sourceTypeList = FilterListData(
+                        values = sourceTypes,
+                        onToggleValue = { viewModel.toggleSourceTypeFilter(it) }
+                    ),
+                    sourceCountryList = FilterListData(
+                        values = sourceCountries,
+                        onToggleValue = { viewModel.toggleSourceCountryFilter(it) }
+                    ),
+                    archivalDateSlider = FilterSliderData(
+                        range = viewModel.getArchivalDateSliderRange(),
+                        position = uiState
+                            .archivalDateSliderPosition ?: viewModel.getArchivalDateSliderRange(),
+                        onValueChange = { newPosition ->
+                            viewModel.updateArchivalDateSliderPosition(newPosition)
+                        }
+                    ),
+                    archivalReasonList = FilterListData(
+                        values = archivalReasons,
+                        onToggleValue = { viewModel.toggleArchivalReasonFilter(it) }
+                    ),
+                    recipientCountryList = FilterListData(
+                        values = recipientCountries,
+                        onToggleValue = { viewModel.toggleRecipientCountryFilter(it) }
+                    )
                 )
             }
         }
