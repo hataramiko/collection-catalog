@@ -69,7 +69,7 @@ fun EntryField(
     hasTrailingIcon: Boolean = true,
     hasEntryDialog: Boolean = false,
     isCurrency: Boolean = false,
-    localeCode: String = "",
+    countryCode: String = "",
     isMeasurement: Boolean = false,
     measurementUnit: String = ""
 ) {
@@ -78,7 +78,7 @@ fun EntryField(
     val isFocused by interactionSource.collectIsFocusedAsState()
     val focusManager = LocalFocusManager.current
 
-    val currentValue = remember(value, isCurrency, localeCode, isMeasurement, measurementUnit) {
+    val currentValue = remember(value, isCurrency, countryCode, isMeasurement, measurementUnit) {
         if (isCurrency && value.isNotBlank()) {
             val longValue: Long = value.toLongOrNull() ?: 0L
             longValue.toString()
@@ -90,9 +90,9 @@ fun EntryField(
         }
     }
     val visualTransformation = if (isCurrency) {
-        rememberCurrencyVisualTransformation(localeCode)
+        rememberCurrencyVisualTransformation(countryCode)
     } else if (isMeasurement) {
-        rememberMeasurementVisualTransformation(measurementUnit, localeCode)
+        rememberMeasurementVisualTransformation(measurementUnit, countryCode)
     } else VisualTransformation.None
 
     Row(
@@ -172,7 +172,7 @@ fun DatePickerField(
     label: String,
     dateValue: String,
     onDateSelected: (String) -> Unit,
-    userCountry: String,
+    countryCode: String,
     modifier: Modifier = Modifier,
     dateFormat: Int = SimpleDateFormat.LONG
 ) {
@@ -181,8 +181,8 @@ fun DatePickerField(
     val isFocused by interactionSource.collectIsFocusedAsState()
     val focusManager = LocalFocusManager.current
 
-    val displayValue = dateValue.toFormattedDate(userCountry, dateFormat)
-    val locale = getCalendarLocale(userCountry)
+    val displayValue = dateValue.toFormattedDate(countryCode, dateFormat)
+    val locale = getCalendarLocale(countryCode)
     val inputFormat = remember(locale) { SimpleDateFormat("yyyy-MM-dd", locale) }
 
     val initialSelectedDateMillis = remember(dateValue) {
@@ -307,7 +307,7 @@ fun FilterSliderRangeFields(
     onValueChange: (ClosedRange<Float>) -> Unit,
     cardColor: Color,
     isCurrency: Boolean = false,
-    localeCode: String = "",
+    countryCode: String = "",
     isMeasurement: Boolean = false,
     measurementUnit: String = ""
 ) {
@@ -340,7 +340,7 @@ fun FilterSliderRangeFields(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
                     isCurrency = isCurrency,
-                    localeCode = localeCode,
+                    countryCode = countryCode,
                     isMeasurement = isMeasurement,
                     measurementUnit = measurementUnit,
                     modifier = Modifier
@@ -369,7 +369,7 @@ fun FilterSliderRangeFields(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done,
                     isCurrency = isCurrency,
-                    localeCode = localeCode,
+                    countryCode = countryCode,
                     isMeasurement = isMeasurement,
                     measurementUnit = measurementUnit,
                     modifier = Modifier
@@ -399,12 +399,12 @@ fun FilterSliderDateRangeFields(
     isExpanded: Boolean,
     onValueChange: (ClosedRange<Float>) -> Unit,
     cardColor: Color,
-    localeCode: String = "",
+    countryCode: String = "",
 ) {
     var localMinTextValue by remember { mutableStateOf("") }
     var localMaxTextValue by remember { mutableStateOf("") }
 
-    val locale = getCalendarLocale(localeCode)
+    val locale = getCalendarLocale(countryCode)
     val dateFormat = remember(locale) { SimpleDateFormat("yyyy-MM-dd", locale) }
 
     LaunchedEffect(sliderPosition) {
@@ -446,7 +446,7 @@ fun FilterSliderDateRangeFields(
                             Log.e("FilterListDateRangeFields", "Parsing error", e)
                         }
                     },
-                    userCountry = localeCode,
+                    countryCode = countryCode,
                     dateFormat = SimpleDateFormat.SHORT,
                     modifier = Modifier
                         .weight(1f)
@@ -474,7 +474,7 @@ fun FilterSliderDateRangeFields(
                             Log.e("FilterListDateRangeFields", "Parsing error", e)
                         }
                     },
-                    userCountry = localeCode,
+                    countryCode = countryCode,
                     dateFormat = SimpleDateFormat.SHORT,
                     modifier = Modifier
                         .weight(1f)

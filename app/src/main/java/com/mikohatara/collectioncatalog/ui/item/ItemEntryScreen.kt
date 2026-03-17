@@ -387,7 +387,7 @@ private fun ItemEntryScreenContent(
                     label = stringResource(R.string.date),
                     dateValue = itemDetails.date ?: "",
                     onDateSelected = { onValueChange(itemDetails.copy(date = it)) },
-                    userCountry = localeCode
+                    countryCode = localeCode
                 )
                 Row {
                     EntryField(
@@ -401,7 +401,7 @@ private fun ItemEntryScreenContent(
                         },
                         keyboardType = KeyboardType.Number,
                         isCurrency = true,
-                        localeCode = localeCode,
+                        countryCode = localeCode,
                         modifier = Modifier.weight(1f)
                     )
                     EntryFormVerticalSpacer()
@@ -422,7 +422,7 @@ private fun ItemEntryScreenContent(
                             },
                             keyboardType = KeyboardType.Number,
                             isCurrency = true,
-                            localeCode = localeCode,
+                            countryCode = localeCode,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -454,7 +454,7 @@ private fun ItemEntryScreenContent(
                     keyboardType = KeyboardType.Number,
                     isMeasurement = true,
                     measurementUnit = lengthUnit,
-                    localeCode = localeCode,
+                    countryCode = localeCode,
                     modifier = Modifier.weight(1f)
                 )
                 EntryFormVerticalSpacer()
@@ -471,7 +471,7 @@ private fun ItemEntryScreenContent(
                     keyboardType = KeyboardType.Number,
                     isMeasurement = true,
                     measurementUnit = lengthUnit,
-                    localeCode = localeCode,
+                    countryCode = localeCode,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -489,7 +489,7 @@ private fun ItemEntryScreenContent(
                 keyboardType = KeyboardType.Number,
                 isMeasurement = true,
                 measurementUnit = weightUnit,
-                localeCode = localeCode
+                countryCode = localeCode
             )
             EntryFormSectionLabel(
                 label = stringResource(R.string.color),
@@ -551,7 +551,7 @@ private fun ItemEntryScreenContent(
                     onDateSelected = {
                         onValueChange(itemDetails.copy(archivalDate = it))
                     },
-                    userCountry = localeCode
+                    countryCode = localeCode
                 )
                 EntryField(
                     label = stringResource(R.string.archival_reason),
@@ -572,7 +572,7 @@ private fun ItemEntryScreenContent(
                     },
                     keyboardType = KeyboardType.Number,
                     isCurrency = true,
-                    localeCode = localeCode
+                    countryCode = localeCode
                 )
                 EntryFormHorizontalSpacer()
                 EntryField(
