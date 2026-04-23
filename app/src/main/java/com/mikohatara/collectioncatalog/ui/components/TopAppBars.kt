@@ -82,8 +82,8 @@ fun CatalogTopAppBar(
                     )
                 }
             },
-            colors = CustomTopAppBarColors(),
-            scrollBehavior = scrollBehavior
+            colors = customTopAppBarColors(),
+            //scrollBehavior = scrollBehavior
         )
     } else if (isSearchActive) {
         TopAppBar(
@@ -129,7 +129,7 @@ fun CatalogTopAppBar(
                     )
                 }
             },
-            colors = CustomTopAppBarColors(),
+            colors = customTopAppBarColors(),
             scrollBehavior = scrollBehavior
         )
         LaunchedEffect(Unit) {
@@ -207,7 +207,7 @@ fun CatalogTopAppBar(
                     }
                 }
             },
-            colors = CustomTopAppBarColors(),
+            colors = customTopAppBarColors(),
             scrollBehavior = scrollBehavior
         )
     }
@@ -308,7 +308,7 @@ fun ItemSummaryTopAppBar(
             }
         },
         colors = colors
-            .copy(navigationIconContentColor = CustomTopAppBarColors().navigationIconContentColor),
+            .copy(navigationIconContentColor = customTopAppBarColors().navigationIconContentColor),
         scrollBehavior = scrollBehavior
     )
 }
@@ -389,7 +389,7 @@ fun ItemEntryTopAppBar(
             }
         },
         colors = colors
-            .copy(navigationIconContentColor = CustomTopAppBarColors().navigationIconContentColor),
+            .copy(navigationIconContentColor = customTopAppBarColors().navigationIconContentColor),
         scrollBehavior = scrollBehavior
     )
 }
@@ -418,7 +418,7 @@ fun CollectionListTopAppBar(
             }
         },
         colors = colors
-            .copy(navigationIconContentColor = CustomTopAppBarColors().navigationIconContentColor)
+            .copy(navigationIconContentColor = customTopAppBarColors().navigationIconContentColor)
     )
 }
 
@@ -473,7 +473,7 @@ fun CollectionEntryTopAppBar(
             }
         },
         colors = colors
-            .copy(navigationIconContentColor = CustomTopAppBarColors().navigationIconContentColor)
+            .copy(navigationIconContentColor = customTopAppBarColors().navigationIconContentColor)
     )
 }
 
@@ -493,7 +493,7 @@ fun StatsTopAppBar(
                 )
             }
         },
-        colors = CustomTopAppBarColors(),
+        colors = customTopAppBarColors(),
         scrollBehavior = scrollBehavior
     )
 }
@@ -514,7 +514,7 @@ fun SettingsTopAppBar(
                 )
             }
         },
-        colors = CustomTopAppBarColors(),
+        colors = customTopAppBarColors(),
         scrollBehavior = scrollBehavior
     )
 }
@@ -536,7 +536,7 @@ fun HelpTopAppBar(
                 )
             }
         },
-        colors = CustomTopAppBarColors(),
+        colors = customTopAppBarColors(),
         scrollBehavior = scrollBehavior
     )
 }
@@ -568,6 +568,6 @@ private fun ModifiedDropdownMenuItem(
 }
 
 @Composable
-private fun CustomTopAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+private fun customTopAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
     navigationIconContentColor = colorScheme.onSurfaceVariant
 )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,23 +40,24 @@ import com.mikohatara.collectioncatalog.R
 fun TopRow(
     isHidden: Boolean,
     isAtTop: Boolean,
+    isSelectionMode: Boolean,
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit,
     filterCount: Int
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
+    val appBarColors = TopAppBarDefaults.topAppBarColors()
+
     val backgroundColor by animateColorAsState(
-        targetValue = if (isAtTop) TopAppBarDefaults.topAppBarColors().containerColor else
-            TopAppBarDefaults.topAppBarColors().scrolledContainerColor,
-        animationSpec = tween(250),
+        targetValue = if (isAtTop || isSelectionMode) {
+            appBarColors.containerColor
+        } else {
+            appBarColors.scrolledContainerColor
+        },
+        animationSpec = tween(100),
         label = "TopRowBackgroundColor"
     )
-    val buttonContentColor = colorScheme.primary
-
-    /*  The backgroundColor seems to be in sync _well enough_ with that of the TopAppBar,
-    *   but it might be worth exploring the possibility of getting the color directly off
-    *   of the TopAppBar.
-    * */
+    val buttonColors = ButtonDefaults.outlinedButtonColors(contentColor = colorScheme.primary)
 
     /*  Wrapping the AnimatedVisibility block inside a Box seems to prevent crashes when
     *   rapidly scrolling to the very top.
@@ -89,17 +91,17 @@ fun TopRow(
                 ) {
                     OutlinedButton(
                         onClick = { onSortByClick() },
+                        enabled = !isSelectionMode,
+                        colors = buttonColors,
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.rounded_swap_vert),
                             contentDescription = null,
-                            tint = buttonContentColor,
                             modifier = Modifier.padding(end = 4.dp)
                         )
                         Text(
                             text = stringResource(R.string.sort_by),
-                            color = buttonContentColor,
                             modifier = Modifier.padding(end = 4.dp)
                         )
                     }
@@ -116,17 +118,17 @@ fun TopRow(
                     ) {
                         OutlinedButton(
                             onClick = { onFilterClick() },
+                            enabled = !isSelectionMode,
+                            colors = buttonColors,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.rounded_filter),
                                 contentDescription = null,
-                                tint = buttonContentColor,
                                 modifier = Modifier.padding(end = 6.dp)
                             )
                             Text(
                                 text = stringResource(R.string.filter),
-                                color = buttonContentColor,
                                 modifier = Modifier.padding(end = 4.dp)
                             )
                         }

@@ -436,6 +436,7 @@ private fun CatalogScreenContent(
             TopRow(
                 isHidden = isTopRowHidden,
                 isAtTop = isAtTop.value,
+                isSelectionMode = uiState.isSelectionMode,
                 onSortByClick = onSortByClick,
                 onFilterClick = onFilterClick,
                 filterCount = uiState.activeFilterCount
