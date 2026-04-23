@@ -240,4 +240,11 @@
     <string name="size_and_color">Koko ja väri</string>
     <string name="unique_details_label">Yksityiskohdat</string>
     <string name="size">Koko</string>
+    <string name="hide">Piilota</string>
+    <string name="unhide">Näytä piilotetut</string>
+    <string name="hide_selected">Piilota valitut</string>
+    <string name="plates_selection_size"><xliff:g name="size" example="3">%d</xliff:g> valittu</string>
+    <string name="wishlist_selection_size"><xliff:g name="size" example="3">%d</xliff:g> valittu</string>
+    <string name="plates_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g>/<xliff:g name="full_size" example="10">%d</xliff:g> kilvestä</string>
+    <string name="wishlist_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g>/<xliff:g name="full_size" example="10">%d</xliff:g> kilvestä</string>
 </resources>

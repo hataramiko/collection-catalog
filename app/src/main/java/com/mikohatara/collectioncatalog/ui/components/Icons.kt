@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,6 +91,30 @@ fun IconCollectionColor(
                 modifier = modifier.scale(scaleX = -0.9f, scaleY = 0.9f).offset(x = (-0.3).dp)
             )
         }
+    }
+}
+
+@Composable
+fun IconSelectedCheckmark(
+    modifier: Modifier = Modifier,
+    fillColor: Color = colorScheme.primary,
+    checkmarkColor: Color = colorScheme.onPrimary
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.baseline_circle),
+            contentDescription = null,
+            tint = fillColor
+        )
+        Icon(
+            painter = painterResource(R.drawable.rounded_check_small_24),
+            contentDescription = null,
+            tint = checkmarkColor,
+            modifier = Modifier.offset(y = 0.5.dp)
+        )
     }
 }
 

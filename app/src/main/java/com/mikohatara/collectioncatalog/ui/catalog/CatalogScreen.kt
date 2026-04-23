@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -110,7 +111,13 @@ private fun CatalogScreen(
         .enterAlwaysScrollBehavior(rememberTopAppBarState())
     val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
     val topBarTitle = viewModel.getTopBarTitle(context)
-    val onBackBehavior = { if (uiState.isSearchActive) viewModel.toggleSearch() }
+    val onBackBehavior = {
+        if (uiState.isSelectionMode) {
+            viewModel.clearSelection()
+        } else if (uiState.isSearchActive) {
+            viewModel.toggleSearch()
+        }
+    }
 
     val redirectMessage = stringResource(R.string.add_plate_redirect_msg)
     val onFabClick = {
@@ -202,10 +209,13 @@ private fun CatalogScreen(
             CatalogTopAppBar(
                 title = topBarTitle,
                 onOpenDrawer = onOpenDrawer,
+                onClearSelection = viewModel::clearSelection,
                 onToggleSearch = onToggleSearch,
                 onImport = onImport,
                 onExport = { showExportDialog = true },
                 itemListSize = itemList.size,
+                isSelectionMode = uiState.isSelectionMode,
+                selectionSize = uiState.selectedItemIds.size,
                 isSearchActive = uiState.isSearchActive,
                 searchQuery = uiState.searchQuery,
                 onSearchQueryChange = { viewModel.updateSearchQuery(it) },
@@ -237,6 +247,7 @@ private fun CatalogScreen(
                 topBarState = scrollBehavior.state,
                 itemList = itemList,
                 onItemClick = onItemClick,
+                onToggleSelection = viewModel::toggleSelection,
                 onSortByClick = { viewModel.openSortByBottomSheet() },
                 onFilterClick = { viewModel.openFilterBottomSheet() },
                 modifier = modifier.padding(innerPadding),
@@ -391,6 +402,7 @@ private fun CatalogScreenContent(
     topBarState: TopAppBarState,
     itemList: List<Item>,
     onItemClick: (Item) -> Unit,
+    onToggleSelection: (Int) -> Unit,
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -478,14 +490,33 @@ private fun CatalogScreenContent(
                 }
             }
         } else {
-            item { // an effectively empty item for improved TopRow manipulation
+            item { // An effectively empty item for improved TopRow manipulation
                 Spacer(modifier = Modifier.height(0.dp))
             }
             items(items = itemList, key = { it.toItemDetails().id ?: 0 }) { item ->
                 val details = item.toItemDetails()
+                val itemId = details.id
+                // Null check for safety, the itemId should never be null.
+                val onClickModifier = if (itemId != null) {
+                    Modifier.combinedClickable(
+                        onClick = {
+                            if (uiState.isSelectionMode) {
+                                onToggleSelection(itemId)
+                            } else {
+                                onItemClick(item)
+                            }
+                        },
+                        onLongClick = {
+                            onToggleSelection(itemId)
+                        }
+                    )
+                } else { // This block should never be reached
+                    Modifier
+                }
 
                 if (uiState.itemType == ItemType.WANTED_PLATE) {
                     WishlistCard(
+                        imagePath = details.imagePath,
                         country = details.country,
                         region1st = details.region1st,
                         region2nd = details.region2nd,
@@ -495,20 +526,19 @@ private fun CatalogScreenContent(
                         periodEnd = details.periodEnd,
                         year = details.year,
                         regNo = details.regNo,
-                        imagePath = details.imagePath,
                         notes = details.notes,
-                    ) {
-                        onItemClick(item)
-                    }
+                        isSelected = itemId != null && itemId in uiState.selectedItemIds,
+                        modifier = onClickModifier
+                    )
                 } else {
                     ItemCard(
                         title = details.regNo ?: "",
                         imagePath = details.imagePath,
                         itemWidth = details.width,
-                        maxWidth = maxItemWidth
-                    ) {
-                        onItemClick(item)
-                    }
+                        maxWidth = maxItemWidth,
+                        isSelected = itemId != null && itemId in uiState.selectedItemIds,
+                        modifier = onClickModifier
+                    )
                 }
             }
             item {

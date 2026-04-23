@@ -64,6 +64,8 @@ data class CatalogUiState(
     //
     val isSearchActive: Boolean = false,
     val searchQuery: String = "",
+    val isSelectionMode: Boolean = false,
+    val selectedItemIds: Set<Int> = emptySet(),
     val isLoading: Boolean = false,
     val isExporting: Boolean = false,
     val isImporting: Boolean = false,
@@ -167,6 +169,22 @@ class CatalogViewModel @Inject constructor(
     fun toggleSearch() {
         _uiState.update { it.copy(isSearchActive = !it.isSearchActive) }
         updateSearchQuery("")
+    }
+
+    fun toggleSelection(itemId: Int) {
+        val currentSelections = _uiState.value.selectedItemIds
+        val newSelections = if (currentSelections.contains(itemId)) {
+            currentSelections - itemId
+        } else {
+            currentSelections + itemId
+        }
+        _uiState.update {
+            it.copy(selectedItemIds = newSelections, isSelectionMode = newSelections.isNotEmpty())
+        }
+    }
+
+    fun clearSelection() {
+        _uiState.update { it.copy(selectedItemIds = emptySet(), isSelectionMode = false) }
     }
 
     fun setSortBy(sortBy: SortBy) {

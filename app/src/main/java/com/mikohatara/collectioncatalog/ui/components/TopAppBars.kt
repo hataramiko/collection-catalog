@@ -46,10 +46,13 @@ import com.mikohatara.collectioncatalog.data.Item
 fun CatalogTopAppBar(
     title: String,
     onOpenDrawer: () -> Unit,
+    onClearSelection: (() -> Unit)? = null,
     onToggleSearch: (() -> Unit)? = null,
     onImport: (() -> Unit)? = null,
     onExport: (() -> Unit)? = null,
     itemListSize: Int = 0,
+    isSelectionMode: Boolean = false,
+    selectionSize: Int = 0,
     isSearchActive: Boolean = false,
     searchQuery: String = "",
     onSearchQueryChange: (String) -> Unit = {},
@@ -62,7 +65,27 @@ fun CatalogTopAppBar(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    if (isSearchActive) {
+    if (isSelectionMode) {
+        TopAppBar(
+            title = {
+                Text(
+                    text = stringResource(R.string.plates_selection_size, selectionSize),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = { onClearSelection.let { it?.invoke() } }) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_arrow_back_24),
+                        contentDescription = null
+                    )
+                }
+            },
+            colors = CustomTopAppBarColors(),
+            scrollBehavior = scrollBehavior
+        )
+    } else if (isSearchActive) {
         TopAppBar(
             title = {
                 TextField(

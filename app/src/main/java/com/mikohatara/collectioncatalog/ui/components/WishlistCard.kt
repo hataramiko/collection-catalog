@@ -6,7 +6,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,81 +48,78 @@ import java.io.File
 
 @Composable
 fun WishlistCard(
-    country: String?,
-    region1st: String?,
-    region2nd: String?,
-    region3rd: String?,
-    type: String?,
-    periodStart: Int?,
-    periodEnd: Int?,
-    year: Int?,
-    regNo: String?,
-    imagePath: String?,
-    notes: String?,
-    onClick: () -> Unit,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    imagePath: String? = null,
+    country: String? = null,
+    region1st: String? = null,
+    region2nd: String? = null,
+    region3rd: String? = null,
+    type: String? = null,
+    periodStart: Int? = null,
+    periodEnd: Int? = null,
+    year: Int? = null,
+    regNo: String? = null,
+    notes: String? = null
 ) {
     val context = LocalContext.current
-    val onClickModifier = remember(onClick) { Modifier.clickable { onClick() } }
-
     val period = if (periodStart == null && periodEnd == null) {
         null
     } else {
         "${periodStart ?: ""}–${periodEnd ?: ""}"
     }
 
-    WishlistCardContent(
-        context = context,
-        country = country,
-        onClickModifier = onClickModifier,
-        imagePath = imagePath,
-        regNo = regNo,
-        notes = notes,
-        region1st = region1st,
-        region2nd = region2nd,
-        region3rd = region3rd,
-        type = type,
-        period = period,
-        year = year?.toString()
-    )
-}
-
-@Composable
-private fun WishlistCardContent(
-    context: Context,
-    onClickModifier: Modifier,
-    modifier: Modifier = Modifier,
-    imagePath: String? = null,
-    regNo: String? = null,
-    notes: String? = null,
-    country: String? = null,
-    region1st: String? = null,
-    region2nd: String? = null,
-    region3rd: String? = null,
-    type: String? = null,
-    period: String? = null,
-    year: String? = null,
-) {
     val primaryText = listOfNotNull(country, region1st, region2nd, region3rd)
         .filterNot { it.isBlank() }
         .joinToString(", ")
-    val secondaryText = listOfNotNull(type, period, year)
+    val secondaryText = listOfNotNull(type, period, year?.toString())
         .filterNot { it.isBlank() }
         .joinToString("・")
     val tertiaryText = listOfNotNull(regNo, notes)
         .filterNot { it.isBlank() }
         .joinToString("・")
 
+    WishlistCardContent(
+        context = context,
+        primaryText = primaryText,
+        secondaryText = secondaryText,
+        tertiaryText = tertiaryText,
+        isSelected = isSelected,
+        modifier = modifier,
+        imagePath = imagePath
+    )
+}
+
+@Composable
+private fun WishlistCardContent(
+    context: Context,
+    primaryText: String,
+    secondaryText: String,
+    tertiaryText: String,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    imagePath: String? = null
+) {
+    val cardColor = if (isSelected) {
+        colorScheme.secondaryContainer
+    } else {
+        colorScheme.surfaceContainerLow
+    }
+
     Card(
-        colors = CardDefaults.cardColors(colorScheme.surfaceContainerLow),
-        modifier = modifier
+        colors = CardDefaults.cardColors(cardColor),
+        modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .then(onClickModifier)
+            .then(modifier)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(8.dp)
         ) {
+            if (isSelected) {
+                IconSelectedCheckmark(modifier = Modifier.padding(end = 8.dp))
+            }
             Card(
                 modifier = Modifier.size(80.dp)
             ) {

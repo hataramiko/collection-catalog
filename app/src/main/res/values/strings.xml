@@ -304,4 +304,11 @@
     <string name="size_and_color">Size &amp; color</string>
     <string name="unique_details_label">Details</string>
     <string name="size">Size</string>
+    <string name="hide">Hide</string>
+    <string name="unhide">Unhide</string>
+    <string name="hide_selected">Hide selected</string>
+    <string name="plates_selection_size"><xliff:g name="size" example="3">%d</xliff:g> selected</string>
+    <string name="wishlist_selection_size"><xliff:g name="size" example="3">%d</xliff:g> selected</string>
+    <string name="plates_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g> out of <xliff:g name="full_size" example="10">%d</xliff:g> plates</string>
+    <string name="wishlist_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g> out of <xliff:g name="full_size" example="10">%d</xliff:g> entries</string>
 </resources>

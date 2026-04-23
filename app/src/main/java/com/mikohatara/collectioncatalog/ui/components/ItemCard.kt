@@ -1,8 +1,11 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import android.content.Context
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -45,54 +49,63 @@ fun ItemCard(
     imagePath: String?,
     itemWidth: Int?,
     maxWidth: Int,
-    onClick: () -> Unit
+    isSelected: Boolean,
+    modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+
+    val screenWidth = remember { configuration.screenWidthDp }
+    val maxWidthAsFloat = remember(maxWidth) { if (maxWidth > 0) maxWidth.toFloat() else 1f }
+    val itemWidthAsFloat = remember(itemWidth) { itemWidth?.toFloat() ?: maxWidthAsFloat }
+    val scale = remember(screenWidth, maxWidthAsFloat) { screenWidth / maxWidthAsFloat }
+    val cardWidth = remember(scale, itemWidthAsFloat) { itemWidthAsFloat * scale }
+
     ItemCardContent(
+        context = context,
         title = title,
         imagePath = imagePath,
-        itemWidth = itemWidth,
-        maxWidth = maxWidth,
-        onCardClick = onClick
+        cardWidth = cardWidth,
+        isSelected = isSelected,
+        modifier = modifier
     )
 }
 
 @Composable
 private fun ItemCardContent(
+    context: Context,
     title: String,
     imagePath: String?,
-    itemWidth: Int?,
-    maxWidth: Int,
-    onCardClick: () -> Unit,
+    cardWidth: Float,
+    isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val onClick = remember(onCardClick) { Modifier.clickable { onCardClick() } }
-    val screenWidth = remember { configuration.screenWidthDp }
-
-    val maxWidthAsFloat = remember(maxWidth) { if (maxWidth > 0) maxWidth.toFloat() else 1f }
-    val itemWidthAsFloat = remember(itemWidth) { itemWidth?.toFloat() ?: maxWidthAsFloat }
-
-    val scale = remember(screenWidth, maxWidthAsFloat) { screenWidth / maxWidthAsFloat }
-    val imageWidth = remember(scale, itemWidthAsFloat) { itemWidthAsFloat * scale }
-
-    Box(
-        modifier = modifier
+    Box( // Apply "modifier" after "Modifier" for a more pleasant onClick visual effect
+        modifier = Modifier
             .clip(CardDefaults.shape)
-            .then(onClick)
+            .then(modifier)
     ) {
         if (imagePath != null) {
             val imageUri = remember { Uri.fromFile(File(imagePath)) }
             val painter = rememberAsyncImagePainter(
                 model = ImageRequest.Builder(context)
                     .data(imageUri)
-                    .size((imageWidth.toInt() * 2).coerceAtLeast(1))
+                    .size((cardWidth.toInt() * 2).coerceAtLeast(1))
                     .crossfade(true)
                     .build()
             )
-            ItemCardImage(painter = painter, title = title, imageWidth = imageWidth.dp)
+            ItemCardImage(painter = painter, title = title, imageWidth = cardWidth.dp)
         } else {
-            ItemCardNoImage(title = title, width = imageWidth.dp)
+            ItemCardNoImage(title = title, width = cardWidth.dp)
+        }
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.White.copy(alpha = 0.33f))
+                    .border(BorderStroke(4.dp, colorScheme.primary), CardDefaults.shape)
+            )
+            IconSelectedCheckmark(modifier = Modifier.padding(8.dp))
         }
     }
 }
