@@ -66,6 +66,7 @@ data class CatalogUiState(
     val searchQuery: String = "",
     val isSelectionMode: Boolean = false,
     val selectedItemIds: Set<Int> = emptySet(),
+    val hiddenItemIds: Set<Int> = emptySet(),
     val isLoading: Boolean = false,
     val isExporting: Boolean = false,
     val isImporting: Boolean = false,
@@ -355,9 +356,13 @@ class CatalogViewModel @Inject constructor(
         setWidthFilter()
         setArchivalDateFilter()
         val filters = _uiState.value.filters
+        val hiddenItemIds = _uiState.value.hiddenItemIds
 
         val filteredItems = _allItems.filter { item ->
             val details = item.toItemDetails()
+
+            if (hiddenItemIds.contains(details.id)) return@filter false
+
             val isWithinPeriodRange = filters.periodRange?.let { range ->
                 val periodStart = details.periodStart
                 val periodEnd = details.periodEnd
@@ -652,6 +657,18 @@ class CatalogViewModel @Inject constructor(
 
     fun getCollectionColor(): CollectionColor {
         return _collection.value?.color ?: CollectionColor.DEFAULT
+    }
+
+    fun hideSelectedItems() {
+        val selectedItemIds = _uiState.value.selectedItemIds
+        _uiState.update { it.copy(hiddenItemIds = it.hiddenItemIds + selectedItemIds) }
+        clearSelection()
+        setFilter()
+    }
+
+    fun clearHiddenItems() {
+        _uiState.update { it.copy(hiddenItemIds = emptySet()) }
+        setFilter()
     }
 
     fun exportItems(context: Context, uri: Uri) {

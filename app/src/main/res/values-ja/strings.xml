@@ -237,7 +237,7 @@
     <string name="unique_details_label">詳細</string>
     <string name="size">サイズ</string>
     <string name="hide">非表示</string>
-    <string name="unhide">非表示を解除</string>
+    <string name="unhide">再表示</string>
     <string name="hide_selected">選択を非表示</string>
     <string name="plates_selection_size"><xliff:g name="size" example="3">%d</xliff:g>枚選択中</string>
     <string name="wishlist_selection_size"><xliff:g name="size" example="3">%d</xliff:g>件選択中</string>

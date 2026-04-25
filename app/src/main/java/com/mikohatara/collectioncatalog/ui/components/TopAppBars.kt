@@ -1,10 +1,14 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,9 +52,12 @@ fun CatalogTopAppBar(
     onOpenDrawer: () -> Unit,
     onClearSelection: (() -> Unit)? = null,
     onToggleSearch: (() -> Unit)? = null,
+    onHide: (() -> Unit)? = null,
+    onUnhide: (() -> Unit)? = null,
     onImport: (() -> Unit)? = null,
     onExport: (() -> Unit)? = null,
     itemListSize: Int = 0,
+    hiddenItemsSize: Int = 0,
     isSelectionMode: Boolean = false,
     selectionSize: Int = 0,
     isSearchActive: Boolean = false,
@@ -80,6 +87,32 @@ fun CatalogTopAppBar(
                         painter = painterResource(R.drawable.rounded_arrow_back_24),
                         contentDescription = null
                     )
+                }
+            },
+            actions = {
+                IconButton(
+                    onClick = onToggleMenu,
+                    enabled = onHide != null
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.rounded_more_vert_24),
+                        contentDescription = null
+                    )
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = onDismissMenu,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        ModifiedDropdownMenuItem(
+                            onClick = {
+                                onHide?.let { it() }
+                                onDismissMenu()
+                            },
+                            painterResource = painterResource(R.drawable.rounded_do_not_disturb_on_24),
+                            text = stringResource(R.string.hide),
+                            enabled = onHide != null
+                        )
+                    }
                 }
             },
             colors = customTopAppBarColors(),
@@ -164,12 +197,16 @@ fun CatalogTopAppBar(
                 }
                 IconButton(
                     onClick = onToggleMenu,
-                    enabled = onExport != null || onImport != null
+                    enabled = onUnhide != null || onExport != null || onImport != null
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.rounded_more_vert_24),
-                        contentDescription = null
-                    )
+                    BadgedBox(
+                        badge = { if (hiddenItemsSize > 0) { Badge() } }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.rounded_more_vert_24),
+                            contentDescription = null
+                        )
+                    }
                     DropdownMenu(
                         expanded = isMenuExpanded,
                         onDismissRequest = onDismissMenu,
@@ -186,6 +223,17 @@ fun CatalogTopAppBar(
                                 text = stringResource(R.string.import_text)
                             )
                         }*/
+                        ModifiedDropdownMenuItem(
+                            onClick = {
+                                onUnhide?.let { it() }
+                                onDismissMenu()
+                            },
+                            painterResource = painterResource(R.drawable.rounded_do_not_disturb_off_24),
+                            text = stringResource(R.string.unhide),
+                            badgeNumerableSize = hiddenItemsSize,
+                            enabled = onUnhide != null && hiddenItemsSize > 0
+                        )
+                        DropdownMenuDivider()
                         ModifiedDropdownMenuItem(
                             onClick = {
                                 onImport?.let { it() }
@@ -276,7 +324,7 @@ fun ItemSummaryTopAppBar(
                     text = stringResource(R.string.copy),
                     enabled = onCopy != null
                 )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                DropdownMenuDivider()
                 onCheckWishlist?.let {
                     ModifiedDropdownMenuItem(
                         onClick = {
@@ -546,7 +594,9 @@ private fun ModifiedDropdownMenuItem(
     onClick: () -> Unit,
     painterResource: Painter,
     text: String,
-    enabled: Boolean = true
+    modifier: Modifier = Modifier,
+    badgeNumerableSize: Int = 0,
+    enabled: Boolean = true,
 ) {
     DropdownMenuItem(
         leadingIcon = {
@@ -557,14 +607,27 @@ private fun ModifiedDropdownMenuItem(
             )
         },
         text = {
-            Text(
-                text = text,
-                modifier = Modifier.padding(end = 8.dp)
-            )
+            Row {
+                Text(
+                    text = text,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                if (badgeNumerableSize > 0) {
+                    Badge(modifier = Modifier.offset(x = (-4).dp, y = (-6).dp)) {
+                        Text(badgeNumerableSize.toString())
+                    }
+                }
+            }
         },
         onClick = onClick,
-        enabled = enabled
+        enabled = enabled,
+        modifier = modifier
     )
+}
+
+@Composable
+private fun DropdownMenuDivider() {
+    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
 }
 
 @Composable
