@@ -207,11 +207,9 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 
-    fun showToast(context: Context, message: String) {
+    fun showToast(context: Context, text: String, duration: Int) {
         val handler = Handler(Looper.getMainLooper())
-        handler.post {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
+        handler.post { Toast.makeText(context, text, duration).show() }
     }
 
     private fun addNewItem() = viewModelScope.launch {

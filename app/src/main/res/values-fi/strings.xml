@@ -166,9 +166,13 @@
     <string name="import_dialog_text">Lisää kilpiä tuomalla CSV-tiedosto (.csv).</string>
     <string name="import_msg_failure">Tuonti epäonnistui</string>
     <string name="import_msg_success">Tuonti onnistui</string>
-    <plurals name="import_msg_success_size">
-        <item quantity="one">Tuotu %d kilpi</item>
-        <item quantity="other">Tuotu %d kilpeä</item>
+    <plurals name="import_plates_msg_success_size">
+        <item quantity="one">Tuotiin %d kilpi</item>
+        <item quantity="other">Tuotiin %d kilpeä</item>
+    </plurals>
+    <plurals name="import_wishlist_msg_success_size">
+        <item quantity="one">Tuotiin %d kilpi</item>
+        <item quantity="other">Tuotiin %d kilpeä</item>
     </plurals>
     <string name="help">Ohjeet</string>
     <string name="import_details">Lue lisää tuonnista</string>
@@ -241,10 +245,26 @@
     <string name="unique_details_label">Yksityiskohdat</string>
     <string name="size">Koko</string>
     <string name="hide">Piilota</string>
-    <string name="unhide">Näytä piilotetut</string>
+    <string name="unhide">Palauta piilotetut</string>
     <string name="hide_selected">Piilota valitut</string>
     <string name="plates_selection_size"><xliff:g name="size" example="3">%d</xliff:g> valittu</string>
     <string name="wishlist_selection_size"><xliff:g name="size" example="3">%d</xliff:g> valittu</string>
     <string name="plates_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g>/<xliff:g name="full_size" example="10">%d</xliff:g> kilvestä</string>
     <string name="wishlist_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g>/<xliff:g name="full_size" example="10">%d</xliff:g> kilvestä</string>
+    <plurals name="hide_plates_size">
+        <item quantity="one">Piilotettiin %d kilpi</item>
+        <item quantity="other">Piilotettiin %d kilpeä</item>
+    </plurals>
+    <plurals name="hide_wishlist_size">
+        <item quantity="one">Piilotettiin %d kilpi</item>
+        <item quantity="other">Piilotettiin %d kilpeä</item>
+    </plurals>
+    <plurals name="unhide_plates_size">
+        <item quantity="one">Palautettiin %d piilotettu kilpi</item>
+        <item quantity="other">Palautettiin %d piilotettua kilpeä</item>
+    </plurals>
+    <plurals name="unhide_wishlist_size">
+        <item quantity="one">Palautettiin %d piilotettu kilpi</item>
+        <item quantity="other">Palautettiin %d piilotettua kilpeä</item>
+    </plurals>
 </resources>

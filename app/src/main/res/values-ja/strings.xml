@@ -163,8 +163,11 @@
     <string name="import_dialog_text">CSVファイル（.csv）をインポートして、プレートを追加します。</string>
     <string name="import_msg_failure">インポートが失敗しました</string>
     <string name="import_msg_success">インポートが完成しました</string>
-    <plurals name="import_msg_success_size">
+    <plurals name="import_plates_msg_success_size">
         <item quantity="other">%d枚のプレートをインポートしました</item>
+    </plurals>
+    <plurals name="import_wishlist_msg_success_size">
+        <item quantity="other">%d件の欲しい物をインポートしました</item>
     </plurals>
     <string name="help">ヘルプ</string>
     <string name="import_details">インポートの詳細</string>
@@ -243,4 +246,16 @@
     <string name="wishlist_selection_size"><xliff:g name="size" example="3">%d</xliff:g>件選択中</string>
     <string name="plates_list_size_selection"><xliff:g name="full_size" example="10">%d</xliff:g>枚中<xliff:g name="selection_size" example="3">%d</xliff:g>枚のプレート</string>
     <string name="wishlist_list_size_selection"><xliff:g name="full_size" example="10">%d</xliff:g>件中<xliff:g name="selection_size" example="3">%d</xliff:g>件の欲しい物</string>
+    <plurals name="hide_plates_size">
+        <item quantity="other">%d枚のプレートを非表示にしました</item>
+    </plurals>
+    <plurals name="hide_wishlist_size">
+        <item quantity="other">%d件の欲しい物を非表示にしました</item>
+    </plurals>
+    <plurals name="unhide_plates_size">
+        <item quantity="other">%d枚のプレートを再表示しました</item>
+    </plurals>
+    <plurals name="unhide_wishlist_size">
+        <item quantity="other">%d件の欲しい物を再表示しました</item>
+    </plurals>
 </resources>

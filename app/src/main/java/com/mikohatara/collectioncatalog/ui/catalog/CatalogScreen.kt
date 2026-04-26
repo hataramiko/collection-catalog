@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.data.UserPreferences
@@ -89,7 +90,26 @@ fun CatalogScreen(
         onAddItem = onAddItem,
         onItemClick = onItemClick,
         onOpenDrawer = onOpenDrawer,
-        onImportHelp = onImportHelp
+        onImportHelp = onImportHelp,
+        updateTopRowVisibility = viewModel::updateTopRowVisibility,
+        openSortByBottomSheet = viewModel::openSortByBottomSheet,
+        openFilterBottomSheet = viewModel::openFilterBottomSheet,
+        closeSortByBottomSheet = viewModel::closeSortByBottomSheet,
+        closeFilterBottomSheet = viewModel::closeFilterBottomSheet,
+        setSortBy = viewModel::setSortBy,
+        setFilter = viewModel::setFilter,
+        resetFilter = viewModel::resetFilter,
+        importItems = viewModel::importItems,
+        exportItems = viewModel::exportItems,
+        clearImportResult = viewModel::clearImportResult,
+        clearExportResult = viewModel::clearExportResult,
+        toggleSelection = viewModel::toggleSelection,
+        clearSelection = viewModel::clearSelection,
+        toggleSearch = viewModel::toggleSearch,
+        updateSearchQuery = viewModel::updateSearchQuery,
+        hideSelectedItems = viewModel::hideSelectedItems,
+        clearHiddenItems = viewModel::clearHiddenItems,
+        showToast = viewModel::showToast
     )
 }
 
@@ -105,24 +125,58 @@ private fun CatalogScreen(
     onItemClick: (Item) -> Unit,
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit,
+    updateTopRowVisibility: (Int, Float) -> Unit,
+    openSortByBottomSheet: () -> Unit,
+    openFilterBottomSheet: () -> Unit,
+    closeSortByBottomSheet: () -> Unit,
+    closeFilterBottomSheet: () -> Unit,
+    setSortBy: (SortBy) -> Unit,
+    setFilter: () -> Unit,
+    resetFilter: () -> Unit,
+    importItems: (Context, Uri) -> Unit,
+    exportItems: (Context, Uri) -> Unit,
+    clearImportResult: () -> Unit,
+    clearExportResult: () -> Unit,
+    toggleSelection: (Int) -> Unit,
+    clearSelection: () -> Unit,
+    toggleSearch: () -> Unit,
+    updateSearchQuery: (String) -> Unit,
+    hideSelectedItems: () -> Unit,
+    clearHiddenItems: () -> Unit,
+    showToast: (Context, String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults
         .enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val isFabHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
-    val topBarTitle = viewModel.getTopBarTitle(context)
     val onBackBehavior = {
         if (uiState.isSelectionMode) {
-            viewModel.clearSelection()
+            clearSelection()
         } else if (uiState.isSearchActive) {
-            viewModel.toggleSearch()
+            toggleSearch()
         }
     }
 
-    val redirectMessage = stringResource(R.string.add_plate_redirect_msg)
+    val (hideToast, unhideToast) = if (uiState.itemType == ItemType.WANTED_PLATE) {
+        pluralStringResource(
+            R.plurals.hide_wishlist_size,
+            uiState.selectedItemIds.size, uiState.selectedItemIds.size
+        ) to pluralStringResource(
+            R.plurals.unhide_wishlist_size,
+            uiState.hiddenItemIds.size, uiState.hiddenItemIds.size
+        )
+    } else {
+        pluralStringResource(
+            R.plurals.hide_plates_size,
+            uiState.selectedItemIds.size, uiState.selectedItemIds.size
+        ) to pluralStringResource(
+            R.plurals.unhide_plates_size,
+            uiState.hiddenItemIds.size, uiState.hiddenItemIds.size
+        )
+    }
+    val redirectToast = stringResource(R.string.add_plate_redirect_msg)
     val onFabClick = {
         if (uiState.isCollection) {
-            Toast.makeText(context, redirectMessage, Toast.LENGTH_SHORT).show()
+            showToast(context, redirectToast, Toast.LENGTH_SHORT)
         } else onAddItem()
     }
     val (fabContainerColor, fabContentColor) = if (uiState.isCollection) {
@@ -139,20 +193,16 @@ private fun CatalogScreen(
     val onDismissExportDialog = { showExportDialog = false }
     val onImport = if (!uiState.isCollection) { { showImportDialog = true } } else null
     val onToggleSearch = if (uiState.itemType != ItemType.WANTED_PLATE) {
-        { viewModel.toggleSearch() }
+        { toggleSearch() }
     } else null
 
     val pickCsvForImport = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
-        onResult = { uri: Uri? ->
-            uri?.let { viewModel.importItems(context, it) }
-        }
+        onResult = { uri: Uri? -> uri?.let { importItems(context, it) } }
     )
     val createCsvForExport = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("text/csv"),
-        onResult = { uri: Uri? ->
-            uri?.let { viewModel.exportItems(context, it) }
-        }
+        onResult = { uri: Uri? -> uri?.let { exportItems(context, it) } }
     )
 
     BackHandler { onBackBehavior() }
@@ -161,26 +211,26 @@ private fun CatalogScreen(
         uiState.importResult?.let { result ->
             when (result) {
                 is ImportResult.Success -> {
-                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                    showToast(context, result.message, Toast.LENGTH_LONG)
                 }
                 is ImportResult.Failure -> {
-                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                    showToast(context, result.message, Toast.LENGTH_LONG)
                 }
             }
-            viewModel.clearImportResult()
+            clearImportResult()
         }
     }
     LaunchedEffect(key1 = uiState.exportResult) {
         uiState.exportResult?.let { result ->
             when (result) {
                 is ExportResult.Success -> {
-                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                    showToast(context, result.message, Toast.LENGTH_LONG)
                 }
                 is ExportResult.Failure -> {
-                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                    showToast(context, result.message, Toast.LENGTH_LONG)
                 }
             }
-            viewModel.clearExportResult()
+            clearExportResult()
         }
     }
 
@@ -207,12 +257,18 @@ private fun CatalogScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CatalogTopAppBar(
-                title = topBarTitle,
+                title = uiState.topBarTitle,
                 onOpenDrawer = onOpenDrawer,
-                onClearSelection = viewModel::clearSelection,
+                onClearSelection = clearSelection,
                 onToggleSearch = onToggleSearch,
-                onHide = { viewModel.hideSelectedItems() },
-                onUnhide = { viewModel.clearHiddenItems() },
+                onHide = {
+                    hideSelectedItems()
+                    showToast(context, hideToast, Toast.LENGTH_SHORT)
+                },
+                onUnhide = {
+                    clearHiddenItems()
+                    showToast(context, unhideToast, Toast.LENGTH_SHORT)
+                },
                 onImport = onImport,
                 onExport = { showExportDialog = true },
                 itemListSize = itemList.size,
@@ -221,13 +277,13 @@ private fun CatalogScreen(
                 selectionSize = uiState.selectedItemIds.size,
                 isSearchActive = uiState.isSearchActive,
                 searchQuery = uiState.searchQuery,
-                onSearchQueryChange = { viewModel.updateSearchQuery(it) },
+                onSearchQueryChange = { updateSearchQuery(it) },
                 scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = {
             AnimatedVisibility(
-                visible = !isFabHidden,
+                visible = !uiState.isTopRowHidden,
                 enter = slideInVertically(initialOffsetY = { it * 2 }),
                 exit = slideOutVertically(targetOffsetY = { it * 3 })
             ) {
@@ -246,34 +302,35 @@ private fun CatalogScreen(
         content = { innerPadding ->
             CatalogScreenContent(
                 uiState = uiState,
-                viewModel = viewModel,
                 topBarState = scrollBehavior.state,
                 itemList = itemList,
                 onItemClick = onItemClick,
-                onToggleSelection = viewModel::toggleSelection,
-                onSortByClick = { viewModel.openSortByBottomSheet() },
-                onFilterClick = { viewModel.openFilterBottomSheet() },
-                modifier = modifier.padding(innerPadding),
-                maxItemWidth = viewModel.getMaxItemWidth()
+                onToggleSelection = toggleSelection,
+                updateTopRowVisibility = updateTopRowVisibility,
+                isTopRowHidden = uiState.isTopRowHidden,
+                onSortByClick = openSortByBottomSheet,
+                onFilterClick = openFilterBottomSheet,
+                maxItemWidth = uiState.maxItemWidth,
+                collectionEmoji = uiState.collectionEmoji,
+                collectionColor = uiState.collectionColor,
+                modifier = modifier.padding(innerPadding)
             )
-            if (viewModel.showSortByBottomSheet.value) {
+            if (uiState.showSortByBottomSheet) {
                 SortByBottomSheet(
-                    onDismiss = { viewModel.closeSortByBottomSheet() },
-                    onClick = { sortBy ->
-                        viewModel.setSortBy(sortBy)
-                    },
-                    sortByOptions = viewModel.getSortByOptions(),
+                    onDismiss = closeSortByBottomSheet,
+                    onClick = { setSortBy(it) },
+                    sortByOptions = uiState.sortByOptions,
                     selectedSortBy = uiState.sortBy
                 )
             }
-            if (viewModel.showFilterBottomSheet.value) {
+            if (uiState.showFilterBottomSheet) {
                 FilterBottomSheet(
                     itemType = uiState.itemType,
-                    onDismiss = { viewModel.closeFilterBottomSheet() },
+                    onDismiss = closeFilterBottomSheet,
                     filters = uiState.filters,
-                    filterCount = viewModel.getFilterCount(),
-                    onApply = { viewModel.setFilter() },
-                    onReset = { viewModel.resetFilter() },
+                    filterCount = uiState.activeFilterCount,
+                    onApply = setFilter,
+                    onReset = resetFilter,
                     localeCode = userPreferences.userCountry,
                     lengthUnit = userPreferences.lengthUnit,
                     countryList = FilterListData(
@@ -389,7 +446,7 @@ private fun CatalogScreen(
         ExportDialog(
             onConfirm = {
                 onDismissExportDialog()
-                val fileName = getFileNameForExport(topBarTitle)
+                val fileName = getFileNameForExport(uiState.topBarTitle)
                 createCsvForExport.launch(fileName)
             },
             onCancel = onDismissExportDialog
@@ -401,15 +458,18 @@ private fun CatalogScreen(
 @Composable
 private fun CatalogScreenContent(
     uiState: CatalogUiState,
-    viewModel: CatalogViewModel,
     topBarState: TopAppBarState,
     itemList: List<Item>,
     onItemClick: (Item) -> Unit,
     onToggleSelection: (Int) -> Unit,
+    updateTopRowVisibility: (Int, Float) -> Unit,
+    isTopRowHidden: Boolean,
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    maxItemWidth: Int = 1
+    maxItemWidth: Int,
+    collectionEmoji: String?,
+    collectionColor: CollectionColor,
+    modifier: Modifier = Modifier
 ) {
     // Use this if filtered items need to occupy all available width, instead of conforming to
     // the maximum available width from _allItems
@@ -420,12 +480,11 @@ private fun CatalogScreenContent(
     } }
     val itemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
     val topBarCollapsedFraction = remember { derivedStateOf { topBarState.collapsedFraction } }
-    val isTopRowHidden by viewModel.isTopRowHidden.collectAsStateWithLifecycle()
     val contentPadding = PaddingValues(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 8.dp)
 
-    // Use itemIndex and topBarCollapsedFraction to update TopRow visibility in viewModel
+    // Use itemIndex and topBarCollapsedFraction to update TopRow visibility
     LaunchedEffect(itemIndex.value, topBarCollapsedFraction.value) {
-        viewModel.updateTopRowVisibility(itemIndex.value, topBarCollapsedFraction.value)
+        updateTopRowVisibility(itemIndex.value, topBarCollapsedFraction.value)
     }
 
     LazyColumn(
@@ -482,8 +541,8 @@ private fun CatalogScreenContent(
                         message = stringResource(R.string.empty_list_collection_msg),
                         description = stringResource(R.string.empty_list_collection_desc),
                         iconModifier = Modifier.offset(x = 2.dp),
-                        collectionEmoji = viewModel.getCollectionEmoji(),
-                        collectionColor = viewModel.getCollectionColor()
+                        collectionEmoji = collectionEmoji,
+                        collectionColor = collectionColor
                     )
                 } else {
                     EmptyList(
@@ -549,9 +608,13 @@ private fun CatalogScreenContent(
                 EndOfList(
                     hasCircle = true,
                     text = if (uiState.itemType == ItemType.WANTED_PLATE) {
-                        pluralStringResource(R.plurals.wishlist_list_size, itemList.size, itemList.size)
+                        pluralStringResource(
+                            R.plurals.wishlist_list_size,
+                            itemList.size, itemList.size)
                     } else {
-                        pluralStringResource(R.plurals.plates_list_size, itemList.size, itemList.size)
+                        pluralStringResource(
+                            R.plurals.plates_list_size,
+                            itemList.size, itemList.size)
                     }
                 )
             }

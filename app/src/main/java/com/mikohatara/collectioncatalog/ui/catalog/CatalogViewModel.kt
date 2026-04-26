@@ -4,14 +4,15 @@ import android.content.Context
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.Item
@@ -33,6 +34,7 @@ import com.mikohatara.collectioncatalog.util.toDateString
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toTimestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -50,9 +52,18 @@ data class CatalogUiState(
     val items: List<Item> = emptyList(),
     val itemType: ItemType = ItemType.PLATE,
     val isCollection: Boolean = false,
+    val collectionEmoji: String? = null,
+    val collectionColor: CollectionColor = CollectionColor.DEFAULT,
+    val topBarTitle: String = "",
+    val sortByOptions: List<SortBy> = emptyList(),
     val sortBy: SortBy = SortBy.COUNTRY_AND_TYPE_ASC,
     val filters: FilterData = FilterData(),
     val activeFilterCount: Int = 0,
+    val maxItemWidth: Int = 1,
+    //
+    val isTopRowHidden: Boolean = false,
+    val showSortByBottomSheet: Boolean = false,
+    val showFilterBottomSheet: Boolean = false,
     //
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
@@ -67,6 +78,7 @@ data class CatalogUiState(
     val isSelectionMode: Boolean = false,
     val selectedItemIds: Set<Int> = emptySet(),
     val hiddenItemIds: Set<Int> = emptySet(),
+    //
     val isLoading: Boolean = false,
     val isExporting: Boolean = false,
     val isImporting: Boolean = false,
@@ -86,6 +98,7 @@ sealed class ImportResult {
 
 @HiltViewModel
 class CatalogViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
     private val plateRepository: PlateRepository,
     private val collectionRepository: CollectionRepository,
@@ -102,14 +115,8 @@ class CatalogViewModel @Inject constructor(
     private val _itemType: ItemType = savedStateHandle.get<String>(ITEM_TYPE)
         ?.let { ItemType.valueOf(it) } ?: ItemType.PLATE
     private val _collectionId: Int? = savedStateHandle.get<Int>(COLLECTION_ID)
-    private val _collection = mutableStateOf<Collection?>(null)
 
     private val _allItems = mutableStateListOf<Item>()
-    val showSortByBottomSheet = mutableStateOf(false)
-    val showFilterBottomSheet = mutableStateOf(false)
-
-    private val _isTopRowHidden = MutableStateFlow(false)
-    val isTopRowHidden: StateFlow<Boolean> = _isTopRowHidden.asStateFlow()
 
     private val _uiState = MutableStateFlow(CatalogUiState())
     val uiState: StateFlow<CatalogUiState> = _uiState.asStateFlow()
@@ -122,7 +129,13 @@ class CatalogViewModel @Inject constructor(
     private var _archivalDateSliderRange: ClosedRange<Float>? = null
 
     init {
-        _uiState.update { it.copy(itemType = _itemType) }
+        _uiState.update {
+            it.copy(
+                itemType = _itemType,
+                sortByOptions = getSortByOptions(),
+                topBarTitle = getTopBarTitle()
+            )
+        }
 
         viewModelScope.launch {
             val userPreferences = userPreferencesRepository.userPreferences.first()
@@ -132,34 +145,23 @@ class CatalogViewModel @Inject constructor(
 
             _collectionId?.let {
                 _uiState.update { it.copy(isCollection = true) }
-                collectionRepository.getCollectionStream(_collectionId).collect {
-                    _collection.value = it
+                collectionRepository.getCollectionStream(_collectionId).collect { collection ->
+                    _uiState.update {
+                        it.copy(
+                            collectionEmoji = collection?.emoji,
+                            collectionColor = collection?.color ?: CollectionColor.DEFAULT,
+                            topBarTitle = collection?.name ?: ""
+                        )
+                    }
                 }
             }
         }
     }
 
-    fun getTopBarTitle(context: Context): String {
-        val collectionName = getCollectionName() ?: ""
-        return collectionName.ifEmpty {
-            when (_itemType) {
-                ItemType.PLATE -> context.getString(R.string.all_plates)
-                ItemType.WANTED_PLATE -> context.getString(R.string.wishlist)
-                ItemType.FORMER_PLATE -> context.getString(R.string.archive)
-            }
-        }
-    }
-
-    fun getMaxItemWidth(): Int {
-        val allWidths = _allItems.mapNotNull { item ->
-            val details = item.toItemDetails()
-            details.width
-        }
-        return allWidths.maxOrNull() ?: 1
-    }
-
     fun updateTopRowVisibility(itemIndex: Int, topBarCollapsedFraction: Float) {
-        _isTopRowHidden.value = (topBarCollapsedFraction > 0.5f) && (itemIndex > 0)
+        _uiState.update {
+            it.copy(isTopRowHidden = (topBarCollapsedFraction > 0.5f) && (itemIndex > 0))
+        }
     }
 
     fun updateSearchQuery(query: String) {
@@ -266,85 +268,21 @@ class CatalogViewModel @Inject constructor(
         updateDefaultSortBy(sortBy)
     }
 
-    fun getSortByOptions(): List<SortBy> {
-        return when (_itemType) {
-            ItemType.PLATE -> SortBy.entries.filter {
-                it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
-            }
-            ItemType.WANTED_PLATE -> SortBy.entries.filter {
-                it != SortBy.AGE_ASC && it != SortBy.AGE_DESC &&
-                it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST &&
-                it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
-            }
-            ItemType.FORMER_PLATE -> SortBy.entries.filter {
-                it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST
-            }
-        }
-    }
-
-    fun getFilterCount(): Int {
-        val filters = _uiState.value.filters
-        val countrySize = filters.country.size
-        val typeSize = filters.type.size
-        val vehicleSize = if (filters.hasVehicle) 1 else 0
-        val locationSize = filters.location.size
-        val colorMainSize = filters.colorMain.size
-        val colorSecondarySize = filters.colorSecondary.size
-        val sourceTypeSize = filters.sourceType.size
-        val sourceCountrySize = filters.sourceCountry.size
-        val archivalReasonSize = filters.archivalReason.size
-        val recipientCountrySize = filters.recipientCountry.size
-
-        val yearSliderRange = _yearSliderRange ?: getYearSliderRange()
-        val dateSliderRange = _dateSliderRange ?: getDateSliderRange()
-        val costSliderRange = _costSliderRange ?: getCostSliderRange()
-        val valueSliderRange = _valueSliderRange ?: getValueSliderRange()
-        val widthSliderRange = _widthSliderRange ?: getWidthSliderRange()
-        val archivalDateSliderRange = _archivalDateSliderRange ?: getArchivalDateSliderRange()
-
-        val periodSize = if (
-            isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
-        ) 1 else 0
-        val yearSize = if (
-            isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
-        ) 1 else 0
-        val dateSize = if (
-            isSliderActive(_uiState.value.dateSliderPosition, dateSliderRange)
-        ) 1 else 0
-        val costSize = if (
-            isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
-        ) 1 else 0
-        val valueSize = if (
-            isSliderActive(_uiState.value.valueSliderPosition, valueSliderRange)
-        ) 1 else 0
-        val widthSize = if (
-            isSliderActive(_uiState.value.widthSliderPosition, widthSliderRange)
-        ) 1 else 0
-        val archivalDateSize = if (
-            isSliderActive(_uiState.value.archivalDateSliderPosition, archivalDateSliderRange)
-        ) 1 else 0
-
-        return countrySize + typeSize + vehicleSize + locationSize + widthSize + colorMainSize +
-                colorSecondarySize + sourceTypeSize + sourceCountrySize + archivalReasonSize +
-                recipientCountrySize + periodSize + yearSize + dateSize + costSize +
-                valueSize + archivalDateSize
-    }
-
     fun openSortByBottomSheet() {
-        showSortByBottomSheet.value = true
+        _uiState.update { it.copy(showSortByBottomSheet = true) }
     }
 
     fun openFilterBottomSheet() {
         setFilterSliderStartPositions()
-        showFilterBottomSheet.value = true
+        _uiState.update { it.copy(showFilterBottomSheet = true) }
     }
 
     fun closeSortByBottomSheet() {
-        showSortByBottomSheet.value = false
+        _uiState.update { it.copy(showSortByBottomSheet = false) }
     }
 
     fun closeFilterBottomSheet() {
-        showFilterBottomSheet.value = false
+        _uiState.update { it.copy(showFilterBottomSheet = false) }
     }
 
     fun setFilter() {
@@ -465,7 +403,9 @@ class CatalogViewModel @Inject constructor(
                 else -> true
             }
         }
-        _uiState.update { it.copy(items = filteredItems, activeFilterCount = getFilterCount()) }
+        _uiState.update {
+            it.copy(items = filteredItems, activeFilterCount = getActiveFilterCount())
+        }
         setSortBy(uiState.value.sortBy)
     }
 
@@ -647,18 +587,6 @@ class CatalogViewModel @Inject constructor(
         return _archivalDateSliderRange ?: getMinArchivalDate()..getMaxArchivalDate()
     }
 
-    fun getCollectionName(): String? {
-        return _collection.value?.name
-    }
-
-    fun getCollectionEmoji(): String? {
-        return _collection.value?.emoji
-    }
-
-    fun getCollectionColor(): CollectionColor {
-        return _collection.value?.color ?: CollectionColor.DEFAULT
-    }
-
     fun hideSelectedItems() {
         val selectedItemIds = _uiState.value.selectedItemIds
         _uiState.update { it.copy(hiddenItemIds = it.hiddenItemIds + selectedItemIds) }
@@ -688,7 +616,7 @@ class CatalogViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val items = uiState.value.items
+                val items = _uiState.value.items
                 val itemsAsItemDetails = items.map { it.toItemDetails() }
                 val contentResolver = context.contentResolver
                 contentResolver.openOutputStream(uri)?.use { outputStream ->
@@ -720,14 +648,14 @@ class CatalogViewModel @Inject constructor(
 
     fun importItems(context: Context, uri: Uri) {
         _uiState.update { it.copy(isImporting = true, importResult = null) }
-        val itemType = uiState.value.itemType
+        val itemType = _uiState.value.itemType
 
         viewModelScope.launch {
             try {
                 when (itemType) {
                     ItemType.PLATE -> {
                         val plates = importPlatesFromCsv(context, uri)
-                        if (plates != null && plates.isNotEmpty()) {
+                        if (!plates.isNullOrEmpty()) {
                             plateRepository.addPlates(plates)
                             _uiState.update { it.copy(
                                 isImporting = false,
@@ -749,7 +677,7 @@ class CatalogViewModel @Inject constructor(
                     }
                     ItemType.WANTED_PLATE -> {
                         val wantedPlates = importWantedPlatesFromCsv(context, uri)
-                        if (wantedPlates != null && wantedPlates.isNotEmpty()) {
+                        if (!wantedPlates.isNullOrEmpty()) {
                             plateRepository.addWantedPlates(wantedPlates)
                             _uiState.update { it.copy(
                                 isImporting = false,
@@ -771,7 +699,7 @@ class CatalogViewModel @Inject constructor(
                     }
                     ItemType.FORMER_PLATE -> {
                         val formerPlates = importFormerPlatesFromCsv(context, uri)
-                        if (formerPlates != null && formerPlates.isNotEmpty()) {
+                        if (!formerPlates.isNullOrEmpty()) {
                             plateRepository.addFormerPlates(formerPlates)
                             _uiState.update { it.copy(
                                 isImporting = false,
@@ -810,14 +738,49 @@ class CatalogViewModel @Inject constructor(
         _uiState.update { it.copy(isImporting = false, importResult = null) }
     }
 
+    fun showToast(context: Context, text: String, duration: Int) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post { Toast.makeText(context, text, duration).show() }
+    }
+
+    private fun getTopBarTitle(): String {
+        return when (_itemType) {
+            ItemType.PLATE -> context.getString(R.string.all_plates)
+            ItemType.WANTED_PLATE -> context.getString(R.string.wishlist)
+            ItemType.FORMER_PLATE -> context.getString(R.string.archive)
+        }
+    }
+
+    private fun getSortByOptions(): List<SortBy> {
+        return when (_itemType) {
+            ItemType.PLATE -> SortBy.entries.filter {
+                it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
+            }
+            ItemType.WANTED_PLATE -> SortBy.entries.filter {
+                it != SortBy.AGE_ASC && it != SortBy.AGE_DESC &&
+                        it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST &&
+                        it != SortBy.END_DATE_NEWEST && it != SortBy.END_DATE_OLDEST
+            }
+            ItemType.FORMER_PLATE -> SortBy.entries.filter {
+                it != SortBy.START_DATE_NEWEST && it != SortBy.START_DATE_OLDEST
+            }
+        }
+    }
+
+    private fun updateMaxItemWidth() {
+        val allWidths = _allItems.mapNotNull { it.toItemDetails().width }
+        val maxWidth = allWidths.maxOrNull() ?: 1
+        _uiState.update { it.copy(maxItemWidth = maxWidth) }
+    }
+
     private fun searchItems() {
         val query = _uiState.value.searchQuery.lowercase()
         setFilter()
         val searchResults = if (query.isBlank()) {
-            uiState.value.items.toList()
+            _uiState.value.items.toList()
         } else {
             val queryNormalized = normalizeString(query)
-            uiState.value.items.filter { item ->
+            _uiState.value.items.filter { item ->
                 val details = item.toItemDetails()
                 val regNo = details.regNo
 
@@ -842,6 +805,54 @@ class CatalogViewModel @Inject constructor(
                     .saveDefaultSortOrderArchive(sortBy)
             }
         }
+    }
+
+    private fun getActiveFilterCount(): Int {
+        val filters = _uiState.value.filters
+        val countrySize = filters.country.size
+        val typeSize = filters.type.size
+        val vehicleSize = if (filters.hasVehicle) 1 else 0
+        val locationSize = filters.location.size
+        val colorMainSize = filters.colorMain.size
+        val colorSecondarySize = filters.colorSecondary.size
+        val sourceTypeSize = filters.sourceType.size
+        val sourceCountrySize = filters.sourceCountry.size
+        val archivalReasonSize = filters.archivalReason.size
+        val recipientCountrySize = filters.recipientCountry.size
+
+        val yearSliderRange = _yearSliderRange ?: getYearSliderRange()
+        val dateSliderRange = _dateSliderRange ?: getDateSliderRange()
+        val costSliderRange = _costSliderRange ?: getCostSliderRange()
+        val valueSliderRange = _valueSliderRange ?: getValueSliderRange()
+        val widthSliderRange = _widthSliderRange ?: getWidthSliderRange()
+        val archivalDateSliderRange = _archivalDateSliderRange ?: getArchivalDateSliderRange()
+
+        val periodSize = if (
+            isSliderActive(_uiState.value.periodSliderPosition, yearSliderRange)
+        ) 1 else 0
+        val yearSize = if (
+            isSliderActive(_uiState.value.yearSliderPosition, yearSliderRange)
+        ) 1 else 0
+        val dateSize = if (
+            isSliderActive(_uiState.value.dateSliderPosition, dateSliderRange)
+        ) 1 else 0
+        val costSize = if (
+            isSliderActive(_uiState.value.costSliderPosition, costSliderRange)
+        ) 1 else 0
+        val valueSize = if (
+            isSliderActive(_uiState.value.valueSliderPosition, valueSliderRange)
+        ) 1 else 0
+        val widthSize = if (
+            isSliderActive(_uiState.value.widthSliderPosition, widthSliderRange)
+        ) 1 else 0
+        val archivalDateSize = if (
+            isSliderActive(_uiState.value.archivalDateSliderPosition, archivalDateSliderRange)
+        ) 1 else 0
+
+        return countrySize + typeSize + vehicleSize + locationSize + widthSize + colorMainSize +
+                colorSecondarySize + sourceTypeSize + sourceCountrySize + archivalReasonSize +
+                recipientCountrySize + periodSize + yearSize + dateSize + costSize +
+                valueSize + archivalDateSize
     }
 
     private fun cacheFilterSliderRanges() {
@@ -885,7 +896,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun setPeriodFilter() {
-        val periodRange = uiState.value.periodSliderPosition ?: return
+        val periodRange = _uiState.value.periodSliderPosition ?: return
         val rangeStart = periodRange.start.roundToInt()
         val rangeEnd = periodRange.endInclusive.roundToInt()
         if (rangeStart == getMinYear() && rangeEnd == getMaxYear()) {
@@ -896,7 +907,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun setYearFilter() {
-        val yearRange = uiState.value.yearSliderPosition ?: return
+        val yearRange = _uiState.value.yearSliderPosition ?: return
         val rangeStart = yearRange.start.roundToInt()
         val rangeEnd = yearRange.endInclusive.roundToInt()
         if (rangeStart == getMinYear() && rangeEnd == getMaxYear()) {
@@ -907,7 +918,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun setDateFilter() {
-        val dateRange = uiState.value.dateSliderPosition ?: return
+        val dateRange = _uiState.value.dateSliderPosition ?: return
         val rangeStart = dateRange.start
         val rangeEnd = dateRange.endInclusive
         val startString = rangeStart.toLong().toDateString()
@@ -922,7 +933,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun setCostFilter() {
-        val costRange = uiState.value.costSliderPosition ?: return
+        val costRange = _uiState.value.costSliderPosition ?: return
         val rangeStart = costRange.start.roundToLong()
         val rangeEnd = costRange.endInclusive.roundToLong()
         if (rangeStart == getMinCost() && rangeEnd == getMaxCost()) {
@@ -933,7 +944,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun setValueFilter() {
-        val valueRange = uiState.value.valueSliderPosition ?: return
+        val valueRange = _uiState.value.valueSliderPosition ?: return
         val rangeStart = valueRange.start.roundToLong()
         val rangeEnd = valueRange.endInclusive.roundToLong()
         if (rangeStart == getMinValue() && rangeEnd == getMaxValue()) {
@@ -944,7 +955,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun setWidthFilter() {
-        val widthRange = uiState.value.widthSliderPosition ?: return
+        val widthRange = _uiState.value.widthSliderPosition ?: return
         val rangeStart = widthRange.start.roundToInt()
         val rangeEnd = widthRange.endInclusive.roundToInt()
         if (rangeStart == getMinWidth() && rangeEnd == getMaxWidth()) {
@@ -955,7 +966,7 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun setArchivalDateFilter() {
-        val dateRange = uiState.value.archivalDateSliderPosition ?: return
+        val dateRange = _uiState.value.archivalDateSliderPosition ?: return
         val rangeStart = dateRange.start
         val rangeEnd = dateRange.endInclusive
         val startString = rangeStart.toLong().toDateString()
@@ -984,6 +995,7 @@ class CatalogViewModel @Inject constructor(
                                 if (collectionPlates != null) {
                                     _allItems.addAll(items)
                                     cacheFilterSliderRanges()
+                                    updateMaxItemWidth()
                                     _uiState.update { it.copy(items = items, isLoading = false) }
                                 }
                                 setFilter()
@@ -994,6 +1006,7 @@ class CatalogViewModel @Inject constructor(
                             _allItems.clear()
                             _allItems.addAll(items)
                             cacheFilterSliderRanges()
+                            updateMaxItemWidth()
                             _uiState.update { it.copy(items = items, isLoading = false) }
                             setFilter()
                         }
@@ -1005,6 +1018,7 @@ class CatalogViewModel @Inject constructor(
                         _allItems.clear()
                         _allItems.addAll(items)
                         cacheFilterSliderRanges()
+                        updateMaxItemWidth()
                         _uiState.update { it.copy(items = items, isLoading = false) }
                         setFilter()
                     }
@@ -1015,6 +1029,7 @@ class CatalogViewModel @Inject constructor(
                         _allItems.clear()
                         _allItems.addAll(items)
                         cacheFilterSliderRanges()
+                        updateMaxItemWidth()
                         _uiState.update { it.copy(items = items, isLoading = false) }
                         setFilter()
                     }
@@ -1238,8 +1253,19 @@ class CatalogViewModel @Inject constructor(
     }
 
     private fun getImportMessage(context: Context, size: Int = 0): String {
+        val itemType = _uiState.value.itemType
+
         return if (size > 0) {
-            context.resources.getQuantityString(R.plurals.import_msg_success_size, size, size)
+            when {
+                itemType == ItemType.WANTED_PLATE -> {
+                    context.resources.getQuantityString(R.plurals
+                        .import_wishlist_msg_success_size, size, size)
+                }
+                else -> {
+                    context.resources.getQuantityString(R.plurals
+                        .import_plates_msg_success_size, size, size)
+                }
+            }
         } else context.getString(R.string.import_msg_failure)
     }
 

@@ -172,9 +172,13 @@
     <string name="import_dialog_text">Add plates by importing a CSV file (.csv).</string>
     <string name="import_msg_failure">Import failed</string>
     <string name="import_msg_success">Import completed</string>
-    <plurals name="import_msg_success_size">
+    <plurals name="import_plates_msg_success_size">
         <item quantity="one">Imported %d plate</item>
         <item quantity="other">Imported %d plates</item>
+    </plurals>
+    <plurals name="import_wishlist_msg_success_size">
+        <item quantity="one">Imported %d wishlist entry</item>
+        <item quantity="other">Imported %d wishlist entries</item>
     </plurals>
     <string name="help">Help</string>
     <string name="import_details">Learn more about importing</string>
@@ -311,4 +315,20 @@
     <string name="wishlist_selection_size"><xliff:g name="size" example="3">%d</xliff:g> selected</string>
     <string name="plates_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g> out of <xliff:g name="full_size" example="10">%d</xliff:g> plates</string>
     <string name="wishlist_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g> out of <xliff:g name="full_size" example="10">%d</xliff:g> entries</string>
+    <plurals name="hide_plates_size">
+        <item quantity="one">Hid %d plate</item>
+        <item quantity="other">Hid %d plates</item>
+    </plurals>
+    <plurals name="hide_wishlist_size">
+        <item quantity="one">Hid %d entry</item>
+        <item quantity="other">Hid %d entries</item>
+    </plurals>
+    <plurals name="unhide_plates_size">
+        <item quantity="one">%d plate unhidden</item>
+        <item quantity="other">%d plates unhidden</item>
+    </plurals>
+    <plurals name="unhide_wishlist_size">
+        <item quantity="one">%d entry unhidden</item>
+        <item quantity="other">%d entries unhidden</item>
+    </plurals>
 </resources>

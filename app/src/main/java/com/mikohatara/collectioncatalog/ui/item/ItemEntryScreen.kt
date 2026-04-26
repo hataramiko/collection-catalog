@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -123,7 +124,7 @@ private fun ItemEntryScreen(
     isValidEntry: Boolean,
     isPasteEnabled: Boolean,
     hasUnsavedChanges: Boolean,
-    showToast: (Context, String) -> Unit,
+    showToast: (Context, String, Int) -> Unit,
     onBack: () -> Unit,
     onSave: (Context) -> Unit,
     onCopy: () -> Unit,
@@ -179,11 +180,15 @@ private fun ItemEntryScreen(
                 ),
                 scrollBehavior = scrollBehavior,
                 onBack = onBackBehavior,
-                onSave = { onSave(context); showToast(context, saveToast); onBack() },
+                onSave = {
+                    onSave(context)
+                    showToast(context, saveToast, Toast.LENGTH_SHORT)
+                    onBack()
+                },
                 saveIcon = saveButtonIcon,
                 isSaveEnabled = isValidEntry,
-                onCopy = { onCopy(); showToast(context, copyToast) },
-                onPaste = { onPaste(); showToast(context, pasteToast) },
+                onCopy = { onCopy(); showToast(context, copyToast, Toast.LENGTH_SHORT) },
+                onPaste = { onPaste(); showToast(context, pasteToast, Toast.LENGTH_SHORT) },
                 isPasteEnabled = isPasteEnabled
             )
         },
@@ -207,7 +212,11 @@ private fun ItemEntryScreen(
                     onImagePicked = onImagePicked,
                     onImageRemoved = onImageRemoved,
                     onToggleCollection = onToggleCollection,
-                    onSave = { onSave(context); showToast(context, saveToast); onBack() },
+                    onSave = {
+                        onSave(context)
+                        showToast(context, saveToast, Toast.LENGTH_SHORT)
+                        onBack()
+                    },
                     modifier = Modifier.padding(innerPadding)
                 )
             }
