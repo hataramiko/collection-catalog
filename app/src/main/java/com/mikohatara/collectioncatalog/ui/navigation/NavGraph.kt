@@ -69,9 +69,7 @@ fun CollectionCatalogNavGraph(
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavBackStackEntry?.destination?.route ?: startDestination
     val onBack = {
-        if (navController.currentBackStackEntry?.destination?.route != startDestination) {
-            navController.popBackStack()
-        }
+        if (navController.previousBackStackEntry != null) { navController.popBackStack() }
     }
     val onEditCollections = { navActions.navigateToCollectionListScreen() }
     val onAddCollection = { navActions.navigateToCollectionEntryScreen() }
@@ -98,6 +96,7 @@ fun CollectionCatalogNavGraph(
                 currentNavBackStackEntry
             ) {
                 CatalogScreen(
+                    onBack = onBack,
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
                     },
@@ -129,6 +128,7 @@ fun CollectionCatalogNavGraph(
                 currentNavBackStackEntry
             ) {
                 CatalogScreen(
+                    onBack = onBack,
                     onAddItem = {
                         //navActions.navigateToItemEntryScreen(ItemType.PLATE, null)
                     },
@@ -157,6 +157,7 @@ fun CollectionCatalogNavGraph(
                 currentNavBackStackEntry
             ) {
                 CatalogScreen(
+                    onBack = onBack,
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.WANTED_PLATE, null)
                     },
@@ -185,6 +186,7 @@ fun CollectionCatalogNavGraph(
                 currentNavBackStackEntry
             ) {
                 CatalogScreen(
+                    onBack = onBack,
                     onAddItem = {
                         navActions.navigateToItemEntryScreen(ItemType.FORMER_PLATE, null)
                     },
@@ -223,7 +225,7 @@ fun CollectionCatalogNavGraph(
                 drawerState.close()
             }
             SettingsScreen(
-                onBack = { onBack() }
+                onBack = onBack
             )
         }
         composable(
@@ -234,7 +236,7 @@ fun CollectionCatalogNavGraph(
             }
             HelpScreen(
                 navActions = navActions,
-                onBack = { onBack() }
+                onBack = onBack
             )
         }
         composable(
@@ -243,7 +245,7 @@ fun CollectionCatalogNavGraph(
         ) {
             HelpScreen(
                 navActions = navActions,
-                onBack = { onBack() }
+                onBack = onBack
             )
         }
         composable(

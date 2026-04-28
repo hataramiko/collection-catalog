@@ -167,7 +167,7 @@ private fun ItemEntryScreen(
     }
 
     val onBackBehavior = { if (hasUnsavedChanges) showDiscardDialog = true else onBack() }
-    BackHandler(enabled = true) { onBackBehavior() }
+    BackHandler { onBackBehavior() }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

@@ -83,7 +83,6 @@ private fun CollectionEntryScreen(
     val onDismissDiscardDialog = { showDiscardDialog = false }
     val onDismissDeletionDialog = { showDeletionDialog = false }
     val onDismissColorDialog = { showColorDialog = false }
-    val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
     val topAppBarColors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     )
@@ -99,9 +98,8 @@ private fun CollectionEntryScreen(
         uiState.collection?.name ?: ""
     )
 
-    BackHandler(enabled = true) {
-        onBackBehavior()
-    }
+    val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
+    BackHandler { onBackBehavior() }
 
     Scaffold(
         topBar = {

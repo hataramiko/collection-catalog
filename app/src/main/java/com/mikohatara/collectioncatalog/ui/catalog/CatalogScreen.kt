@@ -72,6 +72,7 @@ import com.mikohatara.collectioncatalog.util.toItemDetails
 @Composable
 fun CatalogScreen(
     viewModel: CatalogViewModel = hiltViewModel(),
+    onBack: () -> Unit,
     onAddItem: () -> Unit,
     onItemClick: (Item) -> Unit,
     onOpenDrawer: () -> Unit,
@@ -87,6 +88,7 @@ fun CatalogScreen(
         viewModel = viewModel,
         userPreferences = userPreferences,
         context = context,
+        onBack = onBack,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
         onOpenDrawer = onOpenDrawer,
@@ -121,6 +123,7 @@ private fun CatalogScreen(
     viewModel: CatalogViewModel,
     userPreferences: UserPreferences,
     context: Context,
+    onBack: () -> Unit,
     onAddItem: () -> Unit,
     onItemClick: (Item) -> Unit,
     onOpenDrawer: () -> Unit,
@@ -148,13 +151,6 @@ private fun CatalogScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults
         .enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val onBackBehavior = {
-        if (uiState.isSelectionMode) {
-            clearSelection()
-        } else if (uiState.isSearchActive) {
-            toggleSearch()
-        }
-    }
 
     val (hideToast, unhideToast) = if (uiState.itemType == ItemType.WANTED_PLATE) {
         pluralStringResource(
@@ -205,6 +201,15 @@ private fun CatalogScreen(
         onResult = { uri: Uri? -> uri?.let { exportItems(context, it) } }
     )
 
+    val onBackBehavior = {
+        if (uiState.isSelectionMode) {
+            clearSelection()
+        } else if (uiState.isSearchActive) {
+            toggleSearch()
+        } else if (uiState.itemType != ItemType.PLATE || uiState.isCollection) {
+            onBack()
+        }
+    }
     BackHandler { onBackBehavior() }
 
     LaunchedEffect(key1 = uiState.importResult) {

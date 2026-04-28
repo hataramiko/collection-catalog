@@ -109,7 +109,6 @@ private fun ItemSummaryScreen(
     val onDismissDeletionDialog = { showDeletionDialog = false }
     val onDismissCheckWishlistDialog = { showCheckWishlistDialog = false }
     val onDismissTransferDialog = { showTransferDialog = false }
-    val onBackBehavior = { if (isInspectingImage) isInspectingImage = false else onBack() }
     val onCheckWishlistLambda = { showCheckWishlistDialog = true }
         .takeIf { uiState.itemType == ItemType.WANTED_PLATE }
     val onTransferLambda = { showTransferDialog = true }
@@ -150,6 +149,7 @@ private fun ItemSummaryScreen(
         else -> ""
     }
 
+    val onBackBehavior = { if (isInspectingImage) isInspectingImage = false else onBack() }
     BackHandler { onBackBehavior() }
 
     Scaffold(
@@ -163,7 +163,7 @@ private fun ItemSummaryScreen(
                     scrolledContainerColor = colorScheme.surfaceContainer,
                 ),
                 scrollBehavior = scrollBehavior,
-                onBack = onBack,
+                onBack = onBackBehavior,
                 onEdit = onEdit,
                 onDelete = { showDeletionDialog = true },
                 onCopy = {
