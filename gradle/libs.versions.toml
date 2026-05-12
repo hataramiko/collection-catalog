@@ -1,7 +1,7 @@
 [versions]
-agp = "9.2.0"
-hiltAndroid = "2.58"
-kotlin = "2.3.20"
+agp = "9.2.1"
+hiltAndroid = "2.59.2"
+kotlin = "2.3.21"
 kotlinxSerialization = "1.11.0"
 coreKtx = "1.18.0"
 coreSplash = "1.2.0"
@@ -10,9 +10,9 @@ junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
-composeBom = "2026.04.01"
-composeRuntime = "1.11.0"
-composeFoundation = "1.11.0"
+composeBom = "2026.05.00"
+composeRuntime = "1.11.1"
+composeFoundation = "1.11.1"
 room = "2.8.4"
 devtoolsKsp = "2.3.2"
 navigation = "2.9.8"
@@ -73,7 +73,6 @@ androidx-compose-foundation = { group = "androidx.compose.foundation", name = "f
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-jetbrainsKotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 jetbrainsKotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 jetbrainsKotlinComposeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }

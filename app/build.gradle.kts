@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.jetbrainsKotlinKapt)
     alias(libs.plugins.jetbrainsKotlinSerialization)
     alias(libs.plugins.jetbrainsKotlinComposeCompiler)
     alias(libs.plugins.hiltAndroid)
@@ -110,7 +109,7 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
 
     // Room
@@ -126,9 +125,4 @@ dependencies {
 
     // Opencsv
     implementation(libs.opencsv.core)
-}
-
-// Hilt - Allow references to generated code
-kapt {
-    correctErrorTypes = true
 }
