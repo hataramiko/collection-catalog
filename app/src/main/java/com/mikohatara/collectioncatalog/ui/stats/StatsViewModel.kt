@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToLong
 
 data class StatsUiState(
     val isLoading: Boolean = true,
@@ -474,7 +475,7 @@ class StatsViewModel @Inject constructor(
             if (combinedSize == 0) {
                 return "–"
             } else {
-                val costPerPlate = combinedCost / combinedSize
+                val costPerPlate = getPerPlateAverage(combinedCost, combinedSize)
                 return costPerPlate.toCurrencyString(countryCode)
             }
         } else return combinedCost.toCurrencyString(countryCode)
@@ -495,7 +496,7 @@ class StatsViewModel @Inject constructor(
                 if (size == 0) {
                     return "–"
                 } else {
-                    val costPerPlate = cost / size
+                    val costPerPlate = getPerPlateAverage(cost, size)
                     return costPerPlate.toCurrencyString(countryCode)
                 }
             } else return cost.toCurrencyString(countryCode)
@@ -509,7 +510,7 @@ class StatsViewModel @Inject constructor(
                 if (size == 0) {
                     return "–"
                 } else {
-                    val costPerPlate = cost / size
+                    val costPerPlate = getPerPlateAverage(cost, size)
                     return costPerPlate.toCurrencyString(countryCode)
                 }
             } else return cost.toCurrencyString(countryCode)
@@ -523,7 +524,7 @@ class StatsViewModel @Inject constructor(
                 if (size == 0) {
                     return "–"
                 } else {
-                    val costPerPlate = cost / size
+                    val costPerPlate = getPerPlateAverage(cost, size)
                     return costPerPlate.toCurrencyString(countryCode)
                 }
             } else return cost.toCurrencyString(countryCode)
@@ -546,7 +547,7 @@ class StatsViewModel @Inject constructor(
                 if (size == 0) {
                     return "–"
                 } else {
-                    val valuePerPlate = value / size
+                    val valuePerPlate = getPerPlateAverage(value, size)
                     return valuePerPlate.toCurrencyString(countryCode)
                 }
             } else return value.toCurrencyString(countryCode)
@@ -560,7 +561,7 @@ class StatsViewModel @Inject constructor(
                 if (size == 0) {
                     return "–"
                 } else {
-                    val valuePerPlate = value / size
+                    val valuePerPlate = getPerPlateAverage(value, size)
                     return valuePerPlate.toCurrencyString(countryCode)
                 }
             } else return value.toCurrencyString(countryCode)
@@ -739,5 +740,10 @@ class StatsViewModel @Inject constructor(
 
     private fun getMaxDate(): Int {
         return getCurrentYear()
+    }
+
+    private fun getPerPlateAverage(sum: Long, size: Int): Long {
+        val perPlateAsDouble = sum.toDouble() / size
+        return perPlateAsDouble.roundToLong()
     }
 }
