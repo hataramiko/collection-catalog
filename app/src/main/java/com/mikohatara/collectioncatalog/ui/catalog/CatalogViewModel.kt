@@ -98,7 +98,7 @@ sealed class ImportResult {
 
 @HiltViewModel
 class CatalogViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
     private val plateRepository: PlateRepository,
     private val collectionRepository: CollectionRepository,

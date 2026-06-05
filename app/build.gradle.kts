@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.jetbrainsKotlinSerialization)
     alias(libs.plugins.jetbrainsKotlinComposeCompiler)
     alias(libs.plugins.hiltAndroid)
@@ -11,7 +10,7 @@ plugins {
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.fromTarget("17")
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -57,17 +56,15 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.7"
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    ksp {
-        arg("room.schemaLocation", "${projectDir}/schemas")
-    }
+}
+
+ksp {
+    arg("room.schemaLocation", "${projectDir}/schemas")
 }
 
 dependencies {

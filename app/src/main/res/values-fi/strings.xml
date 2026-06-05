@@ -249,8 +249,8 @@
     <string name="hide_selected">Piilota valitut</string>
     <string name="plates_selection_size"><xliff:g name="size" example="3">%d</xliff:g> valittu</string>
     <string name="wishlist_selection_size"><xliff:g name="size" example="3">%d</xliff:g> valittu</string>
-    <string name="plates_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g>/<xliff:g name="full_size" example="10">%d</xliff:g> kilvestä</string>
-    <string name="wishlist_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g>/<xliff:g name="full_size" example="10">%d</xliff:g> kilvestä</string>
+    <string name="plates_list_size_selection"><xliff:g name="selection_size" example="3">%1$d</xliff:g>/<xliff:g name="full_size" example="10">%2$d</xliff:g> kilvestä</string>
+    <string name="wishlist_list_size_selection"><xliff:g name="selection_size" example="3">%1$d</xliff:g>/<xliff:g name="full_size" example="10">%2$d</xliff:g> kilvestä</string>
     <plurals name="hide_plates_size">
         <item quantity="one">Piilotettiin %d kilpi</item>
         <item quantity="other">Piilotettiin %d kilpeä</item>

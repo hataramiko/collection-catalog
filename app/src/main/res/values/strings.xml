@@ -313,8 +313,8 @@
     <string name="hide_selected">Hide selected</string>
     <string name="plates_selection_size"><xliff:g name="size" example="3">%d</xliff:g> selected</string>
     <string name="wishlist_selection_size"><xliff:g name="size" example="3">%d</xliff:g> selected</string>
-    <string name="plates_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g> out of <xliff:g name="full_size" example="10">%d</xliff:g> plates</string>
-    <string name="wishlist_list_size_selection"><xliff:g name="selection_size" example="3">%d</xliff:g> out of <xliff:g name="full_size" example="10">%d</xliff:g> entries</string>
+    <string name="plates_list_size_selection"><xliff:g name="selection_size" example="3">%1$d</xliff:g> out of <xliff:g name="full_size" example="10">%2$d</xliff:g> plates</string>
+    <string name="wishlist_list_size_selection"><xliff:g name="selection_size" example="3">%1$d</xliff:g> out of <xliff:g name="full_size" example="10">%2$d</xliff:g> entries</string>
     <plurals name="hide_plates_size">
         <item quantity="one">Hid %d plate</item>
         <item quantity="other">Hid %d plates</item>
