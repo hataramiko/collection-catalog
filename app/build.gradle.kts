@@ -16,12 +16,12 @@ kotlin {
 
 android {
     namespace = "com.mikohatara.collectioncatalog"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.mikohatara.collectioncatalog"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 19
         versionName = "1.2.0"
 
