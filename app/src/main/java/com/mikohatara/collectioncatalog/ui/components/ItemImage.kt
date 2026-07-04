@@ -65,6 +65,7 @@ import java.io.File
 
 @Composable
 fun ItemImage(
+    //TODO context: Context,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     imageUri: Uri? = null,
@@ -181,21 +182,24 @@ fun ItemImage(
 @Composable
 fun pickItemImage(
     existingImagePath: String?,
+    onPick: (Uri?) -> Unit,
+    onRemove: () -> Unit,
     modifier: Modifier = Modifier,
     temporaryImageUri: Uri? = null,
-    onPick: (Uri?) -> Unit = {},
-    onRemove: () -> Unit = {}
 ): String? {
     var isRemoveIntent by remember { mutableStateOf(false) }
     val toggleRemoveIntent = { isRemoveIntent = !isRemoveIntent }
     val photoPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()) { uri ->
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
             onPick(uri)
     }
     val onLaunchPicker = {
-        photoPicker.launch(PickVisualMediaRequest(
-            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-        ))
+        photoPicker.launch(
+            PickVisualMediaRequest(
+                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+            )
+        )
     }
 
     if (isRemoveIntent) {
@@ -333,7 +337,11 @@ private fun ItemEntryImageFrame(
             modifier = Modifier.fillMaxWidth()
         ) {
             // ...a Box within the Card to apply padding to the actual image content...
-            Box(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
+            ) {
                 content()
             }
         }
@@ -344,7 +352,7 @@ private fun ItemEntryImageFrame(
                 .clickable(onClick = onLaunchPicker)
         )
         // ...and finally a button on top of it all to allow for removal of an existing image.
-        RemovalButton(onRemove, hasExistingImage)
+        RemovalButton(onClick = onRemove, hasExistingImage = hasExistingImage)
     }
 }
 

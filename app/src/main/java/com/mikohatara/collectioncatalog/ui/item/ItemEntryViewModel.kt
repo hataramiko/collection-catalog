@@ -21,8 +21,8 @@ import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
 import com.mikohatara.collectioncatalog.util.InternalClipboardManager
-import com.mikohatara.collectioncatalog.util.filePathFromUri
 import com.mikohatara.collectioncatalog.util.pasteItemDetails
+import com.mikohatara.collectioncatalog.util.toFilePath
 import com.mikohatara.collectioncatalog.util.toFormerPlate
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toPlate
@@ -151,7 +151,7 @@ class ItemEntryViewModel @Inject constructor(
 
     fun saveImageToInternalStorage(context: Context) {
         uiState.value.temporaryImageUri?.let { uri ->
-            val newImagePath = filePathFromUri(uri, context)
+            val newImagePath = uri.toFilePath(context)
             val newItemDetails = uiState.value.itemDetails.copy(imagePath = newImagePath)
             updateUiState(newItemDetails)
         }
