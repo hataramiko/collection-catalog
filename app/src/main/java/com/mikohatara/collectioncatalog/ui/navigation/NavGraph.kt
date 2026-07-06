@@ -49,8 +49,6 @@ import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinati
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogScreens.CATALOG_SCREEN
 import com.mikohatara.collectioncatalog.ui.settings.SettingsScreen
 import com.mikohatara.collectioncatalog.ui.stats.StatsScreen
-import com.mikohatara.collectioncatalog.util.getItemId
-import com.mikohatara.collectioncatalog.util.getItemType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -257,11 +255,8 @@ fun CollectionCatalogNavGraph(
         ) {
             ItemSummaryScreen(
                 onBack = onBack,
-                onEdit = {
-                    navActions.navigateToItemEntryScreen(
-                        getItemType(it),
-                        getItemId(it)
-                    )
+                onEdit = { itemType, itemId ->
+                    navActions.navigateToItemEntryScreen(itemType, itemId)
                 }
             )
         }

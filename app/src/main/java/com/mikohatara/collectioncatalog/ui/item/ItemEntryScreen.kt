@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,6 +66,8 @@ import com.mikohatara.collectioncatalog.util.getCurrencySymbol
 import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ItemEntryScreen(
@@ -72,6 +75,7 @@ fun ItemEntryScreen(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isPasteEnabled by viewModel.canPasteFromInternalClipboard.collectAsState()
@@ -82,6 +86,7 @@ fun ItemEntryScreen(
 
     ItemEntryScreen(
         context = context,
+        coroutineScope = coroutineScope,
         itemDetails = uiState.itemDetails,
         itemType = uiState.itemType,
         temporaryImageUri = uiState.temporaryImageUri,
@@ -111,6 +116,7 @@ fun ItemEntryScreen(
 @Composable
 private fun ItemEntryScreen(
     context: Context,
+    coroutineScope: CoroutineScope,
     itemDetails: ItemDetails,
     itemType: ItemType,
     temporaryImageUri: Uri?,
@@ -126,7 +132,7 @@ private fun ItemEntryScreen(
     hasUnsavedChanges: Boolean,
     showToast: (Context, String, Int) -> Unit,
     onBack: () -> Unit,
-    onSave: (Context) -> Unit,
+    onSave: suspend (Context) -> Unit,
     onCopy: () -> Unit,
     onPaste: () -> Unit,
     onValueChange: (ItemDetails) -> Unit,
@@ -181,9 +187,11 @@ private fun ItemEntryScreen(
                 scrollBehavior = scrollBehavior,
                 onBack = onBackBehavior,
                 onSave = {
-                    onSave(context)
-                    showToast(context, saveToast, Toast.LENGTH_SHORT)
-                    onBack()
+                    coroutineScope.launch {
+                        onSave(context)
+                        showToast(context, saveToast, Toast.LENGTH_SHORT)
+                        onBack()
+                    }
                 },
                 saveIcon = saveButtonIcon,
                 isSaveEnabled = isValidEntry,
@@ -197,6 +205,7 @@ private fun ItemEntryScreen(
                 Loading()
             } else {
                 ItemEntryScreenContent(
+                    context = context,
                     itemDetails = itemDetails,
                     itemType = itemType,
                     temporaryImageUri = temporaryImageUri,
@@ -213,9 +222,11 @@ private fun ItemEntryScreen(
                     onImageRemoved = onImageRemoved,
                     onToggleCollection = onToggleCollection,
                     onSave = {
-                        onSave(context)
-                        showToast(context, saveToast, Toast.LENGTH_SHORT)
-                        onBack()
+                        coroutineScope.launch {
+                            onSave(context)
+                            showToast(context, saveToast, Toast.LENGTH_SHORT)
+                            onBack()
+                        }
                     },
                     modifier = Modifier.padding(innerPadding)
                 )
@@ -235,6 +246,7 @@ private fun ItemEntryScreen(
 
 @Composable
 private fun ItemEntryScreenContent(
+    context: Context,
     itemDetails: ItemDetails,
     itemType: ItemType,
     temporaryImageUri: Uri?,
@@ -257,6 +269,7 @@ private fun ItemEntryScreenContent(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         EntryFormImage(
+            context = context,
             existingImagePath = itemDetails.imagePath,
             tempImagePath = temporaryImageUri,
             onPick = onImagePicked,
@@ -639,6 +652,7 @@ private fun ItemEntryScreenContent(
 
 @Composable
 private fun EntryFormImage(
+    context: Context,
     existingImagePath: String?,
     tempImagePath: Uri?,
     onPick: (Uri?) -> Unit,
@@ -646,6 +660,7 @@ private fun EntryFormImage(
     modifier: Modifier = Modifier
 ) {
     pickItemImage(
+        context = context,
         existingImagePath = existingImagePath,
         modifier = modifier,
         temporaryImageUri = tempImagePath,

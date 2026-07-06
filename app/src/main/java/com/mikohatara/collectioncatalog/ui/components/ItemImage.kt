@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.components
 
+import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.util.Log
@@ -65,14 +66,13 @@ import java.io.File
 
 @Composable
 fun ItemImage(
-    //TODO context: Context,
+    context: Context,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     imageUri: Uri? = null,
     imagePath: String? = null,
     isEditMode: Boolean = false
 ) {
-    val context = LocalContext.current
     val maxHeight = LocalConfiguration.current.screenWidthDp * 0.75
     val defaultColor = MaterialTheme.colorScheme.surface
     var containerColor by remember { mutableStateOf(defaultColor) }
@@ -181,6 +181,7 @@ fun ItemImage(
 
 @Composable
 fun pickItemImage(
+    context: Context,
     existingImagePath: String?,
     onPick: (Uri?) -> Unit,
     onRemove: () -> Unit,
@@ -213,7 +214,7 @@ fun pickItemImage(
             onRemove = toggleRemoveIntent,
             modifier = modifier
         ) {
-            ItemImage(imageUri = temporaryImageUri, isEditMode = true)
+            ItemImage(context = context, imageUri = temporaryImageUri, isEditMode = true)
         }
         return null
 
@@ -223,7 +224,7 @@ fun pickItemImage(
             onRemove = toggleRemoveIntent,
             modifier = modifier
         ) {
-            ItemImage(imagePath = existingImagePath, isEditMode = true)
+            ItemImage(context = context, imagePath = existingImagePath, isEditMode = true)
         }
         return existingImagePath
 
@@ -234,7 +235,7 @@ fun pickItemImage(
             modifier = modifier,
             hasExistingImage = false
         ) {
-            ItemImage(isEditMode = true)
+            ItemImage(context = context, isEditMode = true)
         }
         return null
     }

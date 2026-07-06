@@ -43,7 +43,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
-import com.mikohatara.collectioncatalog.data.Item
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -265,11 +264,10 @@ fun CatalogTopAppBar(
 @Composable
 fun ItemSummaryTopAppBar(
     title: String,
-    item: Item,
     colors: TopAppBarColors,
     scrollBehavior: TopAppBarScrollBehavior,
     onBack: () -> Unit,
-    onEdit: (Item) -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit,
     onCopy: (() -> Unit)? = null,
     onCheckWishlist: (() -> Unit)? = null,
@@ -298,7 +296,7 @@ fun ItemSummaryTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { onEdit(item) }) {
+            IconButton(onClick = onEdit) {
                 Icon(
                     painter = painterResource(R.drawable.rounded_edit),
                     contentDescription = "Edit"

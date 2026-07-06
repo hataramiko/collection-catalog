@@ -138,7 +138,7 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 
-    fun saveEntry(context: Context) = viewModelScope.launch {
+    suspend fun saveEntry(context: Context) {
         if (uiState.value.temporaryImageUri != null) saveImageToInternalStorage(context)
         if (uiState.value.itemDetails.imagePath == null && !uiState.value.isNew) clearImagePath()
         if (uiState.value.isNew) addNewItem() else updateItem()
@@ -212,7 +212,7 @@ class ItemEntryViewModel @Inject constructor(
         handler.post { Toast.makeText(context, text, duration).show() }
     }
 
-    private fun addNewItem() = viewModelScope.launch {
+    private suspend fun addNewItem() {
         when (itemType) {
             ItemType.PLATE -> plateRepository
                 .addPlateWithCollections(
@@ -226,7 +226,7 @@ class ItemEntryViewModel @Inject constructor(
         }
     }
 
-    private fun updateItem() = viewModelScope.launch {
+    private suspend fun updateItem() {
         when (itemType) {
             ItemType.PLATE -> plateRepository
                 .updatePlateWithCollections(

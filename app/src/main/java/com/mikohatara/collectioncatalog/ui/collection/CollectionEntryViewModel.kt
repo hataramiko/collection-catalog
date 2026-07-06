@@ -78,8 +78,10 @@ class CollectionEntryViewModel @Inject constructor(
         if (uiState.value.isNew) addNewCollection() else updateCollection()
     }
 
-    fun deleteCollection() = viewModelScope.launch {
-        uiState.value.collection?.let { collectionRepository.deleteCollectionWithPlates(it) }
+    suspend fun deleteCollection() {
+        uiState.value.collection?.let {
+            collectionRepository.deleteCollectionWithPlates(it)
+        }
     }
 
     fun updateCollectionColor(input: String, context: Context) {
@@ -91,25 +93,25 @@ class CollectionEntryViewModel @Inject constructor(
         updateUiState(newCollectionDetails)
     }
 
-    fun showToast(context: Context, message: String) {
+    fun showToast(context: Context, text: String) {
         val handler = Handler(Looper.getMainLooper())
         handler.post {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun addNewCollection() = viewModelScope.launch {
+    private suspend fun addNewCollection() {
         collectionRepository.addCollection(uiState.value.collectionDetails.toCollection())
     }
 
-    private fun updateCollection() = viewModelScope.launch {
+    private suspend fun updateCollection() {
         collectionRepository.updateCollection(uiState.value.collectionDetails.toCollection())
     }
 
-    private fun loadCollection(collectionId: Int) = viewModelScope.launch {
-        collectionRepository.getCollectionStream(collectionId).let {
-            val collection = it.firstOrNull()
-            _uiState.value = CollectionEntryUiState(
+    private suspend fun loadCollection(collectionId: Int) {
+        val collection = collectionRepository.getCollectionStream(collectionId).firstOrNull()
+        _uiState.update {
+            it.copy(
                 collection = collection,
                 collectionDetails = collection?.toCollectionDetails() ?: CollectionDetails(),
                 isNew = false,

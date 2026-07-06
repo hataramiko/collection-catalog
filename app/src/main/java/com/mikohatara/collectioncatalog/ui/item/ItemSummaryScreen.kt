@@ -1,7 +1,9 @@
 package com.mikohatara.collectioncatalog.ui.item
 
+import android.content.Context
 import android.icu.util.MeasureUnit
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,10 +49,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.Collection
-import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
-import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.ui.components.DeletionDialog
 import com.mikohatara.collectioncatalog.ui.components.ExpandableSummaryCard
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
@@ -61,44 +61,61 @@ import com.mikohatara.collectioncatalog.ui.components.TransferDialog
 import com.mikohatara.collectioncatalog.util.toCurrencyString
 import com.mikohatara.collectioncatalog.util.toFormattedDate
 import com.mikohatara.collectioncatalog.util.toMeasurementString
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun ItemSummaryScreen(
     viewModel: ItemSummaryViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    onEdit: (Item) -> Unit
+    onEdit: (ItemType, Int) -> Unit
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
-    val uiState: ItemSummaryUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ItemSummaryScreen(
-        viewModel,
-        userPreferences,
-        uiState,
-        onBack,
-        onEdit,
+        context = context,
+        coroutineScope = coroutineScope,
+        itemDetails = uiState.itemDetails,
+        itemType = uiState.itemType,
+        collections = uiState.collections,
+        localeCode = userPreferences.userCountry,
+        lengthUnit = userPreferences.lengthUnit,
+        weightUnit = userPreferences.weightUnit,
+        showToast = viewModel::showToast,
+        onBack = onBack,
+        onEdit = {
+            uiState.itemDetails.id?.let { itemId ->
+                onEdit(uiState.itemType, itemId)
+            } ?: Log.e("ItemSummaryScreen", "itemDetails.id is null")
+        },
+        onCopy = viewModel::copyItemDetails,
+        onTransfer = viewModel::transferItem,
+        onDelete = viewModel::deleteItem,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemSummaryScreen(
-    viewModel: ItemSummaryViewModel,
-    userPreferences: UserPreferences,
-    uiState: ItemSummaryUiState,
+    context: Context,
+    coroutineScope: CoroutineScope,
+    itemDetails: ItemDetails,
+    itemType: ItemType,
+    collections: List<Collection>,
+    localeCode: String,
+    lengthUnit: MeasureUnit,
+    weightUnit: MeasureUnit,
+    showToast: (Context, String, Int) -> Unit,
     onBack: () -> Unit,
-    onEdit: (Item) -> Unit,
+    onEdit: () -> Unit,
+    onCopy: () -> Unit,
+    onTransfer: suspend () -> Unit,
+    onDelete: suspend () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val item: Item = uiState.item ?: run {
-        Log.e("ItemSummaryScreen", "Item is null")
-        return
-    }
-    val itemDetails: ItemDetails = uiState.itemDetails
-
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults
         .exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -110,41 +127,37 @@ private fun ItemSummaryScreen(
     val onDismissCheckWishlistDialog = { showCheckWishlistDialog = false }
     val onDismissTransferDialog = { showTransferDialog = false }
     val onCheckWishlistLambda = { showCheckWishlistDialog = true }
-        .takeIf { uiState.itemType == ItemType.WANTED_PLATE }
+        .takeIf { itemType == ItemType.WANTED_PLATE }
     val onTransferLambda = { showTransferDialog = true }
-        .takeIf { uiState.itemType != ItemType.FORMER_PLATE }
+        .takeIf { itemType != ItemType.FORMER_PLATE }
 
-    val (transferButtonText, transferButtonPainter) = when (uiState.item) {
-        is Item.WantedPlateItem -> stringResource(R.string.transfer_from_wishlist_button) to
+    val (transferButtonText, transferButtonPainter) = when (itemType) {
+        ItemType.WANTED_PLATE -> stringResource(R.string.transfer_from_wishlist_button) to
             painterResource(R.drawable.rounded_done_all_24)
-        is Item.PlateItem -> stringResource(R.string.transfer_from_plates_button) to
+        ItemType.PLATE -> stringResource(R.string.transfer_from_plates_button) to
             painterResource(R.drawable.rounded_archive)
         else -> "" to painterResource(R.drawable.rounded_question_mark)
     }
-    val (transferDialogTitle, transferDialogText) = when (uiState.item) {
-        is Item.WantedPlateItem -> stringResource(
+    val (transferDialogTitle, transferDialogText) = when (itemType) {
+        ItemType.WANTED_PLATE -> stringResource(
             R.string.transfer_from_wishlist_dialog_title
         ) to stringResource(R.string.transfer_from_wishlist_dialog_text)
-        is Item.PlateItem -> stringResource(
-            R.string.transfer_from_plates_dialog_title, uiState.itemDetails.regNo ?: ""
+        ItemType.PLATE -> stringResource(
+            R.string.transfer_from_plates_dialog_title, itemDetails.regNo ?: ""
         ) to stringResource(R.string.transfer_from_plates_dialog_text)
         else -> "" to ""
     }
 
     val copyToast = stringResource(R.string.copied)
-    val deletionToast = if (uiState.item is Item.WantedPlateItem) {
+    val deletionToast = if (itemType == ItemType.WANTED_PLATE) {
         stringResource(R.string.deletion_message_wishlist)
     } else {
-        stringResource(
-            R.string.deletion_message_plate,
-            uiState.itemDetails.regNo ?: ""
-        )
+        stringResource(R.string.deletion_message_plate, itemDetails.regNo ?: "")
     }
-    val transferToast = when (uiState.item) {
-        is Item.WantedPlateItem -> stringResource(R.string.transferred_from_wishlist_message)
-        is Item.PlateItem -> stringResource(
-            R.string.transferred_from_plates_message,
-            uiState.itemDetails.regNo ?: ""
+    val transferToast = when (itemType) {
+        ItemType.WANTED_PLATE -> stringResource(R.string.transferred_from_wishlist_message)
+        ItemType.PLATE -> stringResource(
+            R.string.transferred_from_plates_message, itemDetails.regNo ?: ""
         )
         else -> ""
     }
@@ -157,7 +170,6 @@ private fun ItemSummaryScreen(
         topBar = {
             ItemSummaryTopAppBar(
                 title = itemDetails.regNo ?: "",
-                item = item,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = colorScheme.surfaceContainerHighest,
                     scrolledContainerColor = colorScheme.surfaceContainer,
@@ -167,8 +179,8 @@ private fun ItemSummaryScreen(
                 onEdit = onEdit,
                 onDelete = { showDeletionDialog = true },
                 onCopy = {
-                    viewModel.copyItemDetails()
-                    viewModel.showToast(context, copyToast)
+                    onCopy()
+                    showToast(context, copyToast, Toast.LENGTH_SHORT)
                 },
                 onCheckWishlist = onCheckWishlistLambda,
                 onTransfer = onTransferLambda,
@@ -178,9 +190,12 @@ private fun ItemSummaryScreen(
         },
         content = { innerPadding ->
             ItemSummaryScreenContent(
-                userPreferences = userPreferences,
+                context = context,
                 itemDetails = itemDetails,
-                collections = uiState.collections,
+                localeCode = localeCode,
+                lengthUnit = lengthUnit,
+                weightUnit = weightUnit,
+                collections = collections,
                 onInspectImage = { isInspectingImage = true },
                 modifier = modifier.padding(innerPadding)
             )
@@ -197,8 +212,8 @@ private fun ItemSummaryScreen(
             onConfirm = {
                 onDismissDeletionDialog()
                 coroutineScope.launch {
-                    viewModel.deleteItem()
-                    viewModel.showToast(context, deletionToast)
+                    onDelete()
+                    showToast(context, deletionToast, Toast.LENGTH_SHORT)
                     onBack()
                 }
             },
@@ -212,8 +227,8 @@ private fun ItemSummaryScreen(
             onConfirm = {
                 onDismissCheckWishlistDialog()
                 coroutineScope.launch {
-                    viewModel.transferItem()
-                    viewModel.showToast(context, transferToast)
+                    onTransfer()
+                    showToast(context, transferToast, Toast.LENGTH_SHORT)
                 }
             },
             onCancel = onDismissCheckWishlistDialog
@@ -226,9 +241,9 @@ private fun ItemSummaryScreen(
             onConfirm = {
                 onDismissTransferDialog()
                 coroutineScope.launch {
-                    viewModel.transferItem()
-                    viewModel.deleteItem()
-                    viewModel.showToast(context, transferToast)
+                    onTransfer()
+                    onDelete()
+                    showToast(context, transferToast, Toast.LENGTH_SHORT)
                     onBack()
                 }
             },
@@ -239,11 +254,14 @@ private fun ItemSummaryScreen(
 
 @Composable
 private fun ItemSummaryScreenContent(
-    userPreferences: UserPreferences,
+    context: Context,
     itemDetails: ItemDetails,
+    collections: List<Collection>,
+    localeCode: String,
+    lengthUnit: MeasureUnit,
+    weightUnit: MeasureUnit,
     onInspectImage: () -> Unit,
     modifier: Modifier = Modifier,
-    collections: List<Collection> = emptyList()
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
@@ -252,6 +270,7 @@ private fun ItemSummaryScreenContent(
             itemDetails = itemDetails,
             image = {
                 ItemImage(
+                    context = context,
                     onClick = onInspectImage,
                     imagePath = itemDetails.imagePath,
                     modifier = Modifier.padding(16.dp)
@@ -266,13 +285,13 @@ private fun ItemSummaryScreenContent(
         Column(modifier = Modifier.padding(horizontal = 12.dp)) {
             UniqueDetailsCard(
                 itemDetails = itemDetails,
-                localeCode = userPreferences.userCountry
+                localeCode = localeCode
             )
             SizeCard(
                 itemDetails = itemDetails,
-                localeCode = userPreferences.userCountry,
-                lengthUnit = userPreferences.lengthUnit,
-                weightUnit = userPreferences.weightUnit
+                localeCode = localeCode,
+                lengthUnit = lengthUnit,
+                weightUnit = weightUnit
             )
             ColorCard(
                 itemDetails = itemDetails
@@ -282,7 +301,7 @@ private fun ItemSummaryScreenContent(
             )
             ArchivalInfoCard(
                 itemDetails = itemDetails,
-                localeCode = userPreferences.userCountry
+                localeCode = localeCode
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
