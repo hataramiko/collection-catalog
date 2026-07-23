@@ -2,6 +2,7 @@ package com.mikohatara.collectioncatalog.ui.settings
 
 import android.content.Context
 import android.os.Build
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -88,7 +90,7 @@ private fun SettingsScreen(
                 onClickLanguage = { showRedirectDialog = true },
                 onClickLengthUnit = { showLengthUnitDialog = true },
                 onClickWeightUnit = { showWeightUnitDialog = true },
-                modifier = Modifier.padding(innerPadding)
+                innerPadding = innerPadding
             )
         }
     )
@@ -148,14 +150,22 @@ private fun SettingsScreenContent(
     onClickLanguage: () -> Unit,
     onClickLengthUnit: () -> Unit,
     onClickWeightUnit: () -> Unit,
+    innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
     val userCountry = uiState.userCountry
     val currentLocale = getLocale(userCountry)
-    val displayCountry = currentLocale.getDisplayCountry(Locale.getDefault())
+    val displayCountry = currentLocale.getDisplayCountry(LocalLocale.current.platformLocale)
     val cardGroupLabelColor = colorScheme.onSurfaceVariant
+    val contentPadding = PaddingValues(
+        top = innerPadding.calculateTopPadding(),
+        bottom = innerPadding.calculateBottomPadding()
+    )
 
-    LazyColumn(modifier = modifier.padding(16.dp)) {
+    LazyColumn(
+        contentPadding = contentPadding,
+        modifier = modifier.padding(16.dp)
+    ) {
         item {
             CardGroup(
                 label = stringResource(R.string.settings_general),
@@ -173,7 +183,8 @@ private fun SettingsScreenContent(
                     CardButton(
                         label = stringResource(R.string.language),
                         onClick = onClickLanguage,
-                        value = Locale.getDefault().displayLanguage.takeIf { !it.isNullOrEmpty() },
+                        value = LocalLocale.current.platformLocale
+                            .displayLanguage.takeIf { !it.isNullOrEmpty() },
                         mainIconPainter = painterResource(R.drawable.rounded_language)
                     )
                 }
@@ -215,12 +226,11 @@ private fun Version() {
     val packageManager = LocalContext.current.packageManager
     val packageName = LocalContext.current.packageName
     val versionName = packageManager.getPackageInfo(packageName, 0).versionName
-    //val versionCode = getLongVersionCode(packageManager.getPackageInfo(packageName, 0))
 
     CardButton(
         label = stringResource(R.string.version),
         onClick = {},
         enabled = false,
-        value = "$versionName"// ($versionCode)"
+        value = "$versionName"
     )
 }

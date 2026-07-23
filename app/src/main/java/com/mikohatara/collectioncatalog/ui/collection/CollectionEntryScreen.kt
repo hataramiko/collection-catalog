@@ -3,6 +3,7 @@ package com.mikohatara.collectioncatalog.ui.collection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -121,14 +122,14 @@ private fun CollectionEntryScreen(
         content = { innerPadding ->
             CollectionEntryScreenContent(
                 uiState = uiState,
-                modifier = Modifier.padding(innerPadding),
                 onValueChange = onValueChange,
                 onPickColor = { showColorDialog = true },
                 onSave = {
                     viewModel.saveEntry()
                     viewModel.showToast(context, saveToast)
                     onBack()
-                }
+                },
+                innerPadding = innerPadding
             )
         }
     )
@@ -171,10 +172,11 @@ private fun CollectionEntryScreen(
 @Composable
 private fun CollectionEntryScreenContent(
     uiState: CollectionEntryUiState,
-    modifier: Modifier = Modifier,
-    onValueChange: (CollectionDetails) -> Unit = {},
+    onValueChange: (CollectionDetails) -> Unit,
     onPickColor: () -> Unit,
-    onSave: () -> Unit
+    onSave: () -> Unit,
+    innerPadding: PaddingValues,
+    modifier: Modifier = Modifier
 ) {
     val (saveButtonIcon, saveButtonText) = when (uiState.isNew) {
         true -> painterResource(R.drawable.rounded_save) to stringResource(
@@ -193,6 +195,7 @@ private fun CollectionEntryScreenContent(
     Column(
         modifier = modifier
     ) {
+        Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
         Card(
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(
@@ -275,5 +278,6 @@ private fun CollectionEntryScreenContent(
                 Text(saveButtonText)
             }
         }
+        Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
     }
 }

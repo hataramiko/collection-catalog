@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -132,7 +133,7 @@ private fun HelpScreen(
                 uiState = uiState,
                 context = context,
                 navActions = navActions,
-                modifier = Modifier.padding(innerPadding)
+                innerPadding = innerPadding
             )
         }
     )
@@ -144,9 +145,18 @@ private fun HelpScreenContent(
     uiState: HelpUiState,
     context: Context,
     navActions: CollectionCatalogNavigationActions,
+    innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
+    val contentPadding = PaddingValues(
+        top = innerPadding.calculateTopPadding(),
+        bottom = innerPadding.calculateBottomPadding()
+    )
+
+    LazyColumn(
+        contentPadding = contentPadding,
+        modifier = modifier
+    ) {
         when (uiState.helpPage) {
             HelpPage.DEFAULT -> item {
                 LandingPage(viewModel = viewModel, navActions = navActions, context = context)
@@ -320,18 +330,6 @@ private fun ImportPage(
         buttonTextHide = stringResource(R.string.hide_examples, "in, oz")
     )
     EndOfList()
-}
-
-// This was used before modifying the TopAppBar
-// TODO remove?
-@Composable
-private fun HelpPageTitle(text: String) {
-    Spacer(modifier = Modifier.height(16.dp))
-    Text(
-        text = text,
-        style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier.padding(16.dp)
-    )
 }
 
 @Composable

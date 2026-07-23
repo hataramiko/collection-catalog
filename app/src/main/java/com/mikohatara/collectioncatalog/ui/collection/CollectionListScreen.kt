@@ -3,6 +3,7 @@ package com.mikohatara.collectioncatalog.ui.collection
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -83,7 +84,8 @@ private fun CollectionListScreen(
                 collectionList = collectionList,
                 onAddNew = onAddNew,
                 onCollectionClick = onCollectionClick,
-                modifier = modifier.padding(innerPadding)
+                innerPadding = innerPadding,
+                modifier = modifier
             )
         },
     )
@@ -95,9 +97,16 @@ private fun CollectionListScreenContent(
     collectionList: List<Collection>,
     onAddNew: () -> Unit,
     onCollectionClick: (Collection) -> Unit,
+    innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
+    val contentPadding = PaddingValues(
+        top = innerPadding.calculateTopPadding(),
+        bottom = innerPadding.calculateBottomPadding()
+    )
+
     LazyColumn(
+        contentPadding = contentPadding,
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -228,7 +229,7 @@ private fun ItemEntryScreen(
                             onBack()
                         }
                     },
-                    modifier = Modifier.padding(innerPadding)
+                    innerPadding = innerPadding
                 )
             }
         }
@@ -263,18 +264,20 @@ private fun ItemEntryScreenContent(
     onImageRemoved: () -> Unit,
     onToggleCollection: (Collection) -> Unit,
     onSave: () -> Unit,
+    innerPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
+        Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
         EntryFormImage(
             context = context,
             existingImagePath = itemDetails.imagePath,
             tempImagePath = temporaryImageUri,
             onPick = onImagePicked,
             onRemove = onImageRemoved,
-            modifier = Modifier.padding(16.dp)//10.dp)
+            modifier = Modifier.padding(16.dp)
         )
         EntryFormSection(
             label = stringResource(R.string.common_details_label),
@@ -647,6 +650,7 @@ private fun ItemEntryScreenContent(
                 Text(text = saveButtonText)
             }
         }
+        Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
     }
 }
 

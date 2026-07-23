@@ -318,7 +318,8 @@ private fun CatalogScreen(
                 maxItemWidth = uiState.maxItemWidth,
                 collectionEmoji = uiState.collectionEmoji,
                 collectionColor = uiState.collectionColor,
-                modifier = modifier.padding(innerPadding)
+                innerPadding = innerPadding,
+                modifier = modifier
             )
             if (uiState.showSortByBottomSheet) {
                 SortByBottomSheet(
@@ -474,6 +475,7 @@ private fun CatalogScreenContent(
     maxItemWidth: Int,
     collectionEmoji: String?,
     collectionColor: CollectionColor,
+    innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
     // Use this if filtered items need to occupy all available width, instead of conforming to
@@ -485,7 +487,12 @@ private fun CatalogScreenContent(
     } }
     val itemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
     val topBarCollapsedFraction = remember { derivedStateOf { topBarState.collapsedFraction } }
-    val contentPadding = PaddingValues(start = 8.dp, top = 0.dp, end = 8.dp, bottom = 8.dp)
+    val contentPadding = PaddingValues(
+        start = 8.dp,
+        top = innerPadding.calculateTopPadding(),
+        end = 8.dp,
+        bottom = innerPadding.calculateBottomPadding() + 8.dp
+    )
 
     // Use itemIndex and topBarCollapsedFraction to update TopRow visibility
     LaunchedEffect(itemIndex.value, topBarCollapsedFraction.value) {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -197,7 +198,8 @@ private fun ItemSummaryScreen(
                 weightUnit = weightUnit,
                 collections = collections,
                 onInspectImage = { isInspectingImage = true },
-                modifier = modifier.padding(innerPadding)
+                innerPadding = innerPadding,
+                modifier = modifier
             )
         }
     )
@@ -261,11 +263,13 @@ private fun ItemSummaryScreenContent(
     lengthUnit: MeasureUnit,
     weightUnit: MeasureUnit,
     onInspectImage: () -> Unit,
+    innerPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
+        Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
         CommonDetailsCard(
             itemDetails = itemDetails,
             image = {
@@ -304,7 +308,7 @@ private fun ItemSummaryScreenContent(
                 localeCode = localeCode
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 16.dp))
     }
 }
 
