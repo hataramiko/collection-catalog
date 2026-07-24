@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.collection
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,6 +49,7 @@ import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionColor
 import com.mikohatara.collectioncatalog.ui.components.SettingsBottomSheet
 import com.mikohatara.collectioncatalog.util.getCollectionColor
+import com.mikohatara.collectioncatalog.util.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -58,26 +60,41 @@ fun CollectionEntryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     CollectionEntryScreen(
-        uiState = uiState,
-        viewModel = viewModel,
         coroutineScope = coroutineScope,
+        context = context,
+        collectionDetails = uiState.collectionDetails,
+        collectionName = uiState.collection?.name ?: "",
+        isNew = uiState.isNew,
+        isValidEntry = uiState.isValidEntry,
+        hasUnsavedChanges = uiState.hasUnsavedChanges,
         onValueChange = viewModel::updateUiState,
-        onBack = onBack
+        onCollectionColorUpdate = viewModel::updateCollectionColor,
+        onBack = onBack,
+        onSave = viewModel::saveEntry,
+        onDelete = viewModel::deleteCollection
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CollectionEntryScreen(
-    uiState: CollectionEntryUiState,
-    viewModel: CollectionEntryViewModel,
     coroutineScope: CoroutineScope,
+    context: Context,
+    collectionDetails: CollectionDetails,
+    // collectionDetails.name is dynamic, hence the need for a separate static name
+    collectionName: String,
+    isNew: Boolean,
+    isValidEntry: Boolean,
+    hasUnsavedChanges: Boolean,
     onValueChange: (CollectionDetails) -> Unit,
-    onBack: () -> Unit
+    onCollectionColorUpdate: (String, Context) -> Unit,
+    onBack: () -> Unit,
+    onSave: () -> Unit,
+    onDelete: suspend () -> Unit,
 ) {
-    val context = LocalContext.current
     var showDiscardDialog by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
     var showColorDialog by rememberSaveable { mutableStateOf(false) }
@@ -85,26 +102,25 @@ private fun CollectionEntryScreen(
     val onDismissDeletionDialog = { showDeletionDialog = false }
     val onDismissColorDialog = { showColorDialog = false }
     val topAppBarColors = TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        containerColor = colorScheme.surfaceContainerHigh
     )
-    val (topBarTitle, saveToast) = if (!uiState.isNew) { // Could be .collectionDetails.name below
-        stringResource(R.string.edit_item_title, uiState.collection?.name ?: "") to
-        stringResource(R.string.saved_old_item, uiState.collectionDetails.name ?: "")
+    val (topBarTitle, saveToast) = if (!isNew) {
+        stringResource(R.string.edit_item_title, collectionName) to
+        stringResource(R.string.saved_old_collection, collectionDetails.name ?: "")
     } else {
         stringResource(R.string.create_collection) to
-        stringResource(R.string.saved_new_collection, uiState.collectionDetails.name ?: "")
+        stringResource(R.string.saved_new_collection, collectionDetails.name ?: "")
     }
     val deletionToast = stringResource(
-        R.string.deletion_message_plate,
-        uiState.collection?.name ?: ""
+        R.string.deletion_message_plate, collectionName
     )
 
-    val onBackBehavior = { if (uiState.hasUnsavedChanges) showDiscardDialog = true else onBack() }
+    val onBackBehavior = { if (hasUnsavedChanges) showDiscardDialog = true else onBack() }
     BackHandler { onBackBehavior() }
 
     Scaffold(
         topBar = {
-            if (uiState.isNew) {
+            if (isNew) {
                 CollectionListTopAppBar(
                     title = topBarTitle,
                     onBack = onBackBehavior,
@@ -121,12 +137,14 @@ private fun CollectionEntryScreen(
         },
         content = { innerPadding ->
             CollectionEntryScreenContent(
-                uiState = uiState,
+                collectionDetails = collectionDetails,
+                isNew = isNew,
+                isValidEntry = isValidEntry,
                 onValueChange = onValueChange,
                 onPickColor = { showColorDialog = true },
                 onSave = {
-                    viewModel.saveEntry()
-                    viewModel.showToast(context, saveToast)
+                    onSave()
+                    context.toast(text = saveToast)
                     onBack()
                 },
                 innerPadding = innerPadding
@@ -138,8 +156,8 @@ private fun CollectionEntryScreen(
             label = stringResource(R.string.collection_color),
             context = context,
             options = CollectionColor.entries.map { getCollectionColor(it, context) },
-            selectedOption = getCollectionColor(uiState.collectionDetails.color, context),
-            onToggleSelection = { viewModel.updateCollectionColor(it, context) },
+            selectedOption = getCollectionColor(collectionDetails.color, context),
+            onToggleSelection = { onCollectionColorUpdate(it, context) },
             onDismiss = onDismissColorDialog,
             skipPartiallyExpanded = true
         )
@@ -159,8 +177,8 @@ private fun CollectionEntryScreen(
             onConfirm = {
                 onDismissDeletionDialog()
                 coroutineScope.launch {
-                    viewModel.deleteCollection()
-                    viewModel.showToast(context, deletionToast)
+                    onDelete()
+                    context.toast(text = deletionToast)
                     onBack()
                 }
             },
@@ -171,25 +189,27 @@ private fun CollectionEntryScreen(
 
 @Composable
 private fun CollectionEntryScreenContent(
-    uiState: CollectionEntryUiState,
+    collectionDetails: CollectionDetails,
+    isNew: Boolean,
+    isValidEntry: Boolean,
     onValueChange: (CollectionDetails) -> Unit,
     onPickColor: () -> Unit,
     onSave: () -> Unit,
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    val (saveButtonIcon, saveButtonText) = when (uiState.isNew) {
+    val (saveButtonIcon, saveButtonText) = when (isNew) {
         true -> painterResource(R.drawable.rounded_save) to stringResource(
-            R.string.save_new_collection, uiState.collectionDetails.name ?: ""
+            R.string.save_new_collection, collectionDetails.name ?: ""
         )
         false -> painterResource(R.drawable.rounded_save_as) to stringResource(
-            R.string.save_edited_item, uiState.collectionDetails.name ?: ""
+            R.string.save_edited_item, collectionDetails.name ?: ""
         )
     }
-    val tint = if (uiState.collectionDetails.color == CollectionColor.DEFAULT) {
-        MaterialTheme.colorScheme.primary
+    val tint = if (collectionDetails.color == CollectionColor.DEFAULT) {
+        colorScheme.primary
     } else {
-        uiState.collectionDetails.color.color
+        collectionDetails.color.color
     }
 
     Column(
@@ -197,7 +217,7 @@ private fun CollectionEntryScreenContent(
     ) {
         Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
         Card(
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHigh),
+            colors = CardDefaults.cardColors(colorScheme.surfaceContainerHigh),
             shape = RoundedCornerShape(
                 topStart = 0.dp,
                 topEnd = 0.dp,
@@ -207,8 +227,8 @@ private fun CollectionEntryScreenContent(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             OutlinedTextField(
-                value = uiState.collectionDetails.name ?: "",
-                onValueChange = { onValueChange(uiState.collectionDetails.copy(name = it)) },
+                value = collectionDetails.name ?: "",
+                onValueChange = { onValueChange(collectionDetails.copy(name = it)) },
                 label = {
                     Text(
                         stringResource(R.string.collection),
@@ -227,9 +247,9 @@ private fun CollectionEntryScreenContent(
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
             ) {
                 OutlinedTextField(
-                    value = uiState.collectionDetails.emoji ?: "",
+                    value = collectionDetails.emoji ?: "",
                     onValueChange = {
-                        onValueChange(uiState.collectionDetails.copy(emoji = it))
+                        onValueChange(collectionDetails.copy(emoji = it))
                     },
                     label = {
                         Text(
@@ -265,7 +285,7 @@ private fun CollectionEntryScreenContent(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = onSave,
-                enabled = uiState.isValidEntry,
+                enabled = isValidEntry,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 16.dp)

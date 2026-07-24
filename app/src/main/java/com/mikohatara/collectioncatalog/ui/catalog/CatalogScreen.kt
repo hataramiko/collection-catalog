@@ -68,6 +68,7 @@ import com.mikohatara.collectioncatalog.ui.components.TopRow
 import com.mikohatara.collectioncatalog.ui.components.WishlistCard
 import com.mikohatara.collectioncatalog.util.getFileNameForExport
 import com.mikohatara.collectioncatalog.util.toItemDetails
+import com.mikohatara.collectioncatalog.util.toast
 
 @Composable
 fun CatalogScreen(
@@ -110,8 +111,7 @@ fun CatalogScreen(
         toggleSearch = viewModel::toggleSearch,
         updateSearchQuery = viewModel::updateSearchQuery,
         hideSelectedItems = viewModel::hideSelectedItems,
-        clearHiddenItems = viewModel::clearHiddenItems,
-        showToast = viewModel::showToast
+        clearHiddenItems = viewModel::clearHiddenItems
     )
 }
 
@@ -146,7 +146,6 @@ private fun CatalogScreen(
     updateSearchQuery: (String) -> Unit,
     hideSelectedItems: () -> Unit,
     clearHiddenItems: () -> Unit,
-    showToast: (Context, String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults
@@ -172,7 +171,7 @@ private fun CatalogScreen(
     val redirectToast = stringResource(R.string.add_plate_redirect_msg)
     val onFabClick = {
         if (uiState.isCollection) {
-            showToast(context, redirectToast, Toast.LENGTH_SHORT)
+            context.toast(text = redirectToast)
         } else onAddItem()
     }
     val (fabContainerColor, fabContentColor) = if (uiState.isCollection) {
@@ -216,10 +215,10 @@ private fun CatalogScreen(
         uiState.importResult?.let { result ->
             when (result) {
                 is ImportResult.Success -> {
-                    showToast(context, result.message, Toast.LENGTH_LONG)
+                    context.toast(text = result.message, duration = Toast.LENGTH_LONG)
                 }
                 is ImportResult.Failure -> {
-                    showToast(context, result.message, Toast.LENGTH_LONG)
+                    context.toast(text = result.message, duration = Toast.LENGTH_LONG)
                 }
             }
             clearImportResult()
@@ -229,10 +228,10 @@ private fun CatalogScreen(
         uiState.exportResult?.let { result ->
             when (result) {
                 is ExportResult.Success -> {
-                    showToast(context, result.message, Toast.LENGTH_LONG)
+                    context.toast(text = result.message, duration = Toast.LENGTH_LONG)
                 }
                 is ExportResult.Failure -> {
-                    showToast(context, result.message, Toast.LENGTH_LONG)
+                    context.toast(text = result.message, duration = Toast.LENGTH_LONG)
                 }
             }
             clearExportResult()
@@ -268,11 +267,11 @@ private fun CatalogScreen(
                 onToggleSearch = onToggleSearch,
                 onHide = {
                     hideSelectedItems()
-                    showToast(context, hideToast, Toast.LENGTH_SHORT)
+                    context.toast(text = hideToast)
                 },
                 onUnhide = {
                     clearHiddenItems()
-                    showToast(context, unhideToast, Toast.LENGTH_SHORT)
+                    context.toast(text = unhideToast)
                 },
                 onImport = onImport,
                 onExport = { showExportDialog = true },

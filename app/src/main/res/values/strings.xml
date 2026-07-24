@@ -331,4 +331,5 @@
         <item quantity="one">%d entry unhidden</item>
         <item quantity="other">%d entries unhidden</item>
     </plurals>
+    <string name="saved_old_collection"><xliff:g name="collection_name" example="Collection">%s</xliff:g> has been saved</string>
 </resources>

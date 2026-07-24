@@ -258,4 +258,5 @@
     <plurals name="unhide_wishlist_size">
         <item quantity="other">%d件の欲しい物を再表示しました</item>
     </plurals>
+    <string name="saved_old_collection">｢<xliff:g name="collection_name" example="Collection">%s</xliff:g>｣ を保存されました</string>
 </resources>

@@ -2,9 +2,6 @@ package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
-import android.widget.Toast
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
@@ -205,11 +202,6 @@ class ItemEntryViewModel @Inject constructor(
         } ?: run {
             //TODO nothing to paste, internal clipboard was empty
         }
-    }
-
-    fun showToast(context: Context, text: String, duration: Int) {
-        val handler = Handler(Looper.getMainLooper())
-        handler.post { Toast.makeText(context, text, duration).show() }
     }
 
     private suspend fun addNewItem() {

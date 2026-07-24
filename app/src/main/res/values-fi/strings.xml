@@ -267,4 +267,5 @@
         <item quantity="one">Palautettiin %d piilotettu kilpi</item>
         <item quantity="other">Palautettiin %d piilotettua kilpeä</item>
     </plurals>
+    <string name="saved_old_collection"><xliff:g name="collection_name" example="Collection">%s</xliff:g> on tallennettu</string>
 </resources>

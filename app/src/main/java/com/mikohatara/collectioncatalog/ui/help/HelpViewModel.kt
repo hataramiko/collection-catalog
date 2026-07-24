@@ -4,10 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -119,13 +116,6 @@ class HelpViewModel @Inject constructor(
 
     fun getWishlistUsedValues(): String {
         return ImportConstString.USED_VALUES_WISHLIST
-    }
-
-    fun showToast(context: Context, message: String) {
-        val handler = Handler(Looper.getMainLooper())
-        handler.post {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun getDownloadMessage(isSuccess: Boolean, context: Context): String {

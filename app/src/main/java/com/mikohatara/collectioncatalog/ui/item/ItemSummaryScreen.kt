@@ -3,7 +3,6 @@ package com.mikohatara.collectioncatalog.ui.item
 import android.content.Context
 import android.icu.util.MeasureUnit
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +61,7 @@ import com.mikohatara.collectioncatalog.ui.components.TransferDialog
 import com.mikohatara.collectioncatalog.util.toCurrencyString
 import com.mikohatara.collectioncatalog.util.toFormattedDate
 import com.mikohatara.collectioncatalog.util.toMeasurementString
+import com.mikohatara.collectioncatalog.util.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -85,7 +85,6 @@ fun ItemSummaryScreen(
         localeCode = userPreferences.userCountry,
         lengthUnit = userPreferences.lengthUnit,
         weightUnit = userPreferences.weightUnit,
-        showToast = viewModel::showToast,
         onBack = onBack,
         onEdit = {
             uiState.itemDetails.id?.let { itemId ->
@@ -109,7 +108,6 @@ private fun ItemSummaryScreen(
     localeCode: String,
     lengthUnit: MeasureUnit,
     weightUnit: MeasureUnit,
-    showToast: (Context, String, Int) -> Unit,
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onCopy: () -> Unit,
@@ -181,7 +179,7 @@ private fun ItemSummaryScreen(
                 onDelete = { showDeletionDialog = true },
                 onCopy = {
                     onCopy()
-                    showToast(context, copyToast, Toast.LENGTH_SHORT)
+                    context.toast(text = copyToast)
                 },
                 onCheckWishlist = onCheckWishlistLambda,
                 onTransfer = onTransferLambda,
@@ -215,7 +213,7 @@ private fun ItemSummaryScreen(
                 onDismissDeletionDialog()
                 coroutineScope.launch {
                     onDelete()
-                    showToast(context, deletionToast, Toast.LENGTH_SHORT)
+                    context.toast(text = deletionToast)
                     onBack()
                 }
             },
@@ -230,7 +228,7 @@ private fun ItemSummaryScreen(
                 onDismissCheckWishlistDialog()
                 coroutineScope.launch {
                     onTransfer()
-                    showToast(context, transferToast, Toast.LENGTH_SHORT)
+                    context.toast(text = transferToast)
                 }
             },
             onCancel = onDismissCheckWishlistDialog
@@ -245,7 +243,7 @@ private fun ItemSummaryScreen(
                 coroutineScope.launch {
                     onTransfer()
                     onDelete()
-                    showToast(context, transferToast, Toast.LENGTH_SHORT)
+                    context.toast(text = transferToast)
                     onBack()
                 }
             },

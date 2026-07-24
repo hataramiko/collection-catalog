@@ -1,9 +1,5 @@
 package com.mikohatara.collectioncatalog.ui.item
 
-import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import android.widget.Toast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -115,11 +111,6 @@ class ItemSummaryViewModel @Inject constructor(
     fun copyItemDetails() {
         val itemDetails = _uiState.value.itemDetails
         internalClipboardManager.copyItemDetails(itemDetails)
-    }
-
-    fun showToast(context: Context, text: String, duration: Int) {
-        val handler = Handler(Looper.getMainLooper())
-        handler.post { Toast.makeText(context, text, duration).show() }
     }
 
     private suspend fun addNewPlate() {

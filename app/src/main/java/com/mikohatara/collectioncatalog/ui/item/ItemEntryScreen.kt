@@ -2,7 +2,6 @@ package com.mikohatara.collectioncatalog.ui.item
 
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -67,6 +66,7 @@ import com.mikohatara.collectioncatalog.util.getCurrencySymbol
 import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
 import com.mikohatara.collectioncatalog.util.isBlankOrZero
 import com.mikohatara.collectioncatalog.util.isValidYear
+import com.mikohatara.collectioncatalog.util.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -101,7 +101,6 @@ fun ItemEntryScreen(
         isValidEntry = uiState.isValidEntry,
         isPasteEnabled = isPasteEnabled,
         hasUnsavedChanges = uiState.hasUnsavedChanges,
-        showToast = viewModel::showToast,
         onBack = onBack,
         onSave = viewModel::saveEntry,
         onCopy = viewModel::copyItemDetails,
@@ -131,7 +130,6 @@ private fun ItemEntryScreen(
     isValidEntry: Boolean,
     isPasteEnabled: Boolean,
     hasUnsavedChanges: Boolean,
-    showToast: (Context, String, Int) -> Unit,
     onBack: () -> Unit,
     onSave: suspend (Context) -> Unit,
     onCopy: () -> Unit,
@@ -190,14 +188,14 @@ private fun ItemEntryScreen(
                 onSave = {
                     coroutineScope.launch {
                         onSave(context)
-                        showToast(context, saveToast, Toast.LENGTH_SHORT)
+                        context.toast(text = saveToast)
                         onBack()
                     }
                 },
                 saveIcon = saveButtonIcon,
                 isSaveEnabled = isValidEntry,
-                onCopy = { onCopy(); showToast(context, copyToast, Toast.LENGTH_SHORT) },
-                onPaste = { onPaste(); showToast(context, pasteToast, Toast.LENGTH_SHORT) },
+                onCopy = { onCopy(); context.toast(text = copyToast) },
+                onPaste = { onPaste(); context.toast(text = pasteToast) },
                 isPasteEnabled = isPasteEnabled
             )
         },
@@ -225,7 +223,7 @@ private fun ItemEntryScreen(
                     onSave = {
                         coroutineScope.launch {
                             onSave(context)
-                            showToast(context, saveToast, Toast.LENGTH_SHORT)
+                            context.toast(text = saveToast)
                             onBack()
                         }
                     },

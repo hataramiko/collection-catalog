@@ -4,10 +4,7 @@ import android.content.Context
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -736,11 +733,6 @@ class CatalogViewModel @Inject constructor(
 
     fun clearImportResult() {
         _uiState.update { it.copy(isImporting = false, importResult = null) }
-    }
-
-    fun showToast(context: Context, text: String, duration: Int) {
-        val handler = Handler(Looper.getMainLooper())
-        handler.post { Toast.makeText(context, text, duration).show() }
     }
 
     private fun getTopBarTitle(): String {

@@ -63,6 +63,7 @@ import com.mikohatara.collectioncatalog.ui.components.RedirectDialog
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogNavigationActions
 import com.mikohatara.collectioncatalog.util.getDateExample
 import com.mikohatara.collectioncatalog.util.getFileNameForExport
+import com.mikohatara.collectioncatalog.util.toast
 
 private object Url {
     const val PRIVACY_POLICY = "https://hataramiko.github.io/rekkary/privacy-policy.html"
@@ -189,8 +190,7 @@ private fun LandingPage(
                 dialogMessage = stringResource(R.string.url_redirect_to_feedback),
                 painter = painterResource(R.drawable.rounded_forward_to_inbox_24),
                 url = Url.SEND_FEEDBACK,
-                context = context,
-                viewModel = viewModel
+                context = context
             )
             CardGroupSpacer()
             LandingPageLink(
@@ -198,8 +198,7 @@ private fun LandingPage(
                 dialogMessage = stringResource(R.string.url_redirect_to_rating),
                 painter = painterResource(R.drawable.rounded_reviews_24),
                 url = Url.RATE,
-                context = context,
-                viewModel = viewModel
+                context = context
             )
         }
         CardGroup(modifier = Modifier.padding(bottom = 16.dp)) {
@@ -207,8 +206,7 @@ private fun LandingPage(
                 text = stringResource(R.string.privacy_policy),
                 painter = painterResource(R.drawable.rounded_privacy_tip_24),
                 url = Url.PRIVACY_POLICY,
-                context = context,
-                viewModel = viewModel
+                context = context
             )
         }
     }
@@ -474,7 +472,6 @@ private fun LandingPageButton(
 
 @Composable
 private fun LandingPageLink(
-    viewModel: HelpViewModel,
     text: String,
     context: Context,
     url: String,
@@ -490,7 +487,7 @@ private fun LandingPageLink(
             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            viewModel.showToast(context, openUrlErrorMessage)
+            context.toast(text = openUrlErrorMessage)
             e.printStackTrace()
         }
     }
