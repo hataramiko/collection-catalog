@@ -94,6 +94,8 @@ fun ItemSummaryScreen(
         onCopy = viewModel::copyItemDetails,
         onTransfer = viewModel::transferItem,
         onDelete = viewModel::deleteItem,
+        isTransferDestructive = uiState.isTransferDestructive,
+        setTransferDestructive = viewModel::setTransferDestructive
     )
 }
 
@@ -113,6 +115,8 @@ private fun ItemSummaryScreen(
     onCopy: () -> Unit,
     onTransfer: suspend () -> Unit,
     onDelete: suspend () -> Unit,
+    isTransferDestructive: Boolean,
+    setTransferDestructive: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults
@@ -120,19 +124,17 @@ private fun ItemSummaryScreen(
 
     var isInspectingImage by rememberSaveable { mutableStateOf(false) }
     var showDeletionDialog by rememberSaveable { mutableStateOf(false) }
-    var showCheckWishlistDialog by rememberSaveable { mutableStateOf(false) }
     var showTransferDialog by rememberSaveable { mutableStateOf(false) }
+
     val onDismissDeletionDialog = { showDeletionDialog = false }
-    val onDismissCheckWishlistDialog = { showCheckWishlistDialog = false }
     val onDismissTransferDialog = { showTransferDialog = false }
-    val onCheckWishlistLambda = { showCheckWishlistDialog = true }
-        .takeIf { itemType == ItemType.WANTED_PLATE }
-    val onTransferLambda = { showTransferDialog = true }
-        .takeIf { itemType != ItemType.FORMER_PLATE }
+    val onTransferLambda = {
+        showTransferDialog = true
+    }.takeIf { itemType != ItemType.FORMER_PLATE }
 
     val (transferButtonText, transferButtonPainter) = when (itemType) {
         ItemType.WANTED_PLATE -> stringResource(R.string.transfer_from_wishlist_button) to
-            painterResource(R.drawable.rounded_done_all_24)
+            painterResource(R.drawable.rounded_check_24)
         ItemType.PLATE -> stringResource(R.string.transfer_from_plates_button) to
             painterResource(R.drawable.rounded_archive)
         else -> "" to painterResource(R.drawable.rounded_question_mark)
@@ -181,7 +183,6 @@ private fun ItemSummaryScreen(
                     onCopy()
                     context.toast(text = copyToast)
                 },
-                onCheckWishlist = onCheckWishlistLambda,
                 onTransfer = onTransferLambda,
                 transferButtonText = transferButtonText,
                 transferButtonPainter = transferButtonPainter
@@ -220,31 +221,26 @@ private fun ItemSummaryScreen(
             onCancel = onDismissDeletionDialog
         )
     }
-    if (showCheckWishlistDialog) {
-        TransferDialog(
-            title = stringResource(R.string.check_wishlist_dialog_title),
-            text = stringResource(R.string.check_wishlist_dialog_text),
-            onConfirm = {
-                onDismissCheckWishlistDialog()
-                coroutineScope.launch {
-                    onTransfer()
-                    context.toast(text = transferToast)
-                }
-            },
-            onCancel = onDismissCheckWishlistDialog
-        )
-    }
     if (showTransferDialog) {
         TransferDialog(
             title = transferDialogTitle,
             text = transferDialogText,
+            checkboxText = if (itemType == ItemType.WANTED_PLATE) {
+                stringResource(R.string.transfer_from_wishlist_checkbox)
+            } else null, // If checkboxText is null, the dialog doesn't display the checkbox
+            isCheckboxChecked = isTransferDestructive,
+            onUpdateCheckbox = setTransferDestructive,
             onConfirm = {
                 onDismissTransferDialog()
                 coroutineScope.launch {
                     onTransfer()
-                    onDelete()
-                    context.toast(text = transferToast)
-                    onBack()
+                    if (isTransferDestructive) {
+                        onDelete()
+                        context.toast(text = transferToast)
+                        onBack()
+                    } else {
+                        context.toast(text = transferToast)
+                    }
                 }
             },
             onCancel = onDismissTransferDialog

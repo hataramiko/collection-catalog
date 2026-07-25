@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +30,8 @@ data class ItemSummaryUiState(
     val item: Item? = null,
     val itemType: ItemType = ItemType.PLATE,
     val itemDetails: ItemDetails = ItemDetails(),
-    val collections: List<Collection> = emptyList()
+    val collections: List<Collection> = emptyList(),
+    val isTransferDestructive: Boolean = false
 )
 
 @HiltViewModel
@@ -111,6 +113,10 @@ class ItemSummaryViewModel @Inject constructor(
     fun copyItemDetails() {
         val itemDetails = _uiState.value.itemDetails
         internalClipboardManager.copyItemDetails(itemDetails)
+    }
+
+    fun setTransferDestructive(isDestructive: Boolean) {
+        _uiState.update { it.copy(isTransferDestructive = isDestructive) }
     }
 
     private suspend fun addNewPlate() {
