@@ -18,6 +18,9 @@ interface PlateDao {
     suspend fun insertPlateCollectionCrossRef(crossRef: PlateCollectionCrossRef)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertPlateCollectionCrossRefs(crossRefs: List<PlateCollectionCrossRef>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPlates(plates: List<Plate>)
 
     @Transaction

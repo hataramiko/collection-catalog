@@ -260,4 +260,6 @@
     </plurals>
     <string name="saved_old_collection">｢<xliff:g name="collection_name" example="Collection">%s</xliff:g>｣ を保存されました</string>
     <string name="transfer_from_wishlist_checkbox">欲しい物を削除</string>
+    <string name="add_to_collection">コレクションに追加</string>
+    <string name="selection_added_to_collection">｢<xliff:g name="collection_name" example="For trade">%s</xliff:g>｣ に追加されました</string>
 </resources>

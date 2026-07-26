@@ -45,6 +45,7 @@ data class StatsUiState(
     val collectionPlates: List<Plate> = emptyList(),
     val collectionPercentage: Float = 0f,
     val userCountry: String = "FI",
+    val showCollectionBottomSheet: Boolean = false,
     // Sets for tables
     val countries: Set<String?> = emptySet(),
     val types: Set<String?> = emptySet(),
@@ -608,6 +609,11 @@ class StatsViewModel @Inject constructor(
         _uiState.update {
             it.copy(collection = null, collectionPlates = emptyList(), collectionPercentage = 0f)
         }
+    }
+
+    fun toggleCollectionBottomSheet() {
+        val isOpen = !_uiState.value.showCollectionBottomSheet
+        _uiState.update { it.copy(showCollectionBottomSheet = isOpen) }
     }
 
     private fun getPercentageOfAllPlates(comparisonSize: Float): Float {

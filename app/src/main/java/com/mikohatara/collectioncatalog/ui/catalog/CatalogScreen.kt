@@ -35,8 +35,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -48,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.Item
 import com.mikohatara.collectioncatalog.data.ItemType
@@ -63,6 +62,7 @@ import com.mikohatara.collectioncatalog.ui.components.FilterSwitchData
 import com.mikohatara.collectioncatalog.ui.components.ImportDialog
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.Loading
+import com.mikohatara.collectioncatalog.ui.components.SelectCollectionBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.TopRow
 import com.mikohatara.collectioncatalog.ui.components.WishlistCard
@@ -85,6 +85,7 @@ fun CatalogScreen(
 
     CatalogScreen(
         itemList = uiState.items,
+        collectionList = viewModel.getCollections(),
         uiState = uiState,
         viewModel = viewModel,
         userPreferences = userPreferences,
@@ -94,11 +95,13 @@ fun CatalogScreen(
         onItemClick = onItemClick,
         onOpenDrawer = onOpenDrawer,
         onImportHelp = onImportHelp,
+        onAddPlatesToCollection = { viewModel.addPlatesToCollection(it) },
         updateTopRowVisibility = viewModel::updateTopRowVisibility,
-        openSortByBottomSheet = viewModel::openSortByBottomSheet,
-        openFilterBottomSheet = viewModel::openFilterBottomSheet,
-        closeSortByBottomSheet = viewModel::closeSortByBottomSheet,
-        closeFilterBottomSheet = viewModel::closeFilterBottomSheet,
+        toggleSortByBottomSheet = viewModel::toggleSortByBottomSheet,
+        toggleFilterBottomSheet = viewModel::toggleFilterBottomSheet,
+        toggleImportDialog = viewModel::toggleImportDialog,
+        toggleExportDialog = viewModel::toggleExportDialog,
+        toggleCollectionBottomSheet = viewModel::toggleCollectionBottomSheet,
         setSortBy = viewModel::setSortBy,
         setFilter = viewModel::setFilter,
         resetFilter = viewModel::resetFilter,
@@ -119,6 +122,7 @@ fun CatalogScreen(
 @Composable
 private fun CatalogScreen(
     itemList: List<Item>,
+    collectionList: List<Collection>,
     uiState: CatalogUiState,
     viewModel: CatalogViewModel,
     userPreferences: UserPreferences,
@@ -128,11 +132,13 @@ private fun CatalogScreen(
     onItemClick: (Item) -> Unit,
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit,
+    onAddPlatesToCollection: (Int) -> Unit,
     updateTopRowVisibility: (Int, Float) -> Unit,
-    openSortByBottomSheet: () -> Unit,
-    openFilterBottomSheet: () -> Unit,
-    closeSortByBottomSheet: () -> Unit,
-    closeFilterBottomSheet: () -> Unit,
+    toggleSortByBottomSheet: () -> Unit,
+    toggleFilterBottomSheet: () -> Unit,
+    toggleImportDialog: () -> Unit,
+    toggleExportDialog: () -> Unit,
+    toggleCollectionBottomSheet: () -> Unit,
     setSortBy: (SortBy) -> Unit,
     setFilter: () -> Unit,
     resetFilter: () -> Unit,
@@ -182,13 +188,12 @@ private fun CatalogScreen(
                 MaterialTheme.colorScheme.onPrimaryContainer
     }
 
-    var showImportDialog by rememberSaveable { mutableStateOf(false) }
-    var showExportDialog by rememberSaveable { mutableStateOf(false) }
-    val onDismissImportDialog = { showImportDialog = false }
-    val onDismissExportDialog = { showExportDialog = false }
-    val onImport = if (!uiState.isCollection) { { showImportDialog = true } } else null
+    val onImport = if (!uiState.isCollection) { { toggleImportDialog() } } else null
     val onToggleSearch = if (uiState.itemType != ItemType.WANTED_PLATE) {
         { toggleSearch() }
+    } else null
+    val onToggleCollectionBottomSheet = if (uiState.itemType == ItemType.PLATE) {
+        { toggleCollectionBottomSheet() }
     } else null
 
     val pickCsvForImport = rememberLauncherForActivityResult(
@@ -273,8 +278,9 @@ private fun CatalogScreen(
                     clearHiddenItems()
                     context.toast(text = unhideToast)
                 },
+                onAddToCollection = onToggleCollectionBottomSheet,
                 onImport = onImport,
-                onExport = { showExportDialog = true },
+                onExport = { toggleExportDialog() },
                 itemListSize = itemList.size,
                 hiddenItemsSize = uiState.hiddenItemIds.size,
                 isSelectionMode = uiState.isSelectionMode,
@@ -312,8 +318,8 @@ private fun CatalogScreen(
                 onToggleSelection = toggleSelection,
                 updateTopRowVisibility = updateTopRowVisibility,
                 isTopRowHidden = uiState.isTopRowHidden,
-                onSortByClick = openSortByBottomSheet,
-                onFilterClick = openFilterBottomSheet,
+                onSortByClick = toggleSortByBottomSheet,
+                onFilterClick = toggleFilterBottomSheet,
                 maxItemWidth = uiState.maxItemWidth,
                 collectionEmoji = uiState.collectionEmoji,
                 collectionColor = uiState.collectionColor,
@@ -322,7 +328,7 @@ private fun CatalogScreen(
             )
             if (uiState.showSortByBottomSheet) {
                 SortByBottomSheet(
-                    onDismiss = closeSortByBottomSheet,
+                    onDismiss = toggleSortByBottomSheet,
                     onClick = { setSortBy(it) },
                     sortByOptions = uiState.sortByOptions,
                     selectedSortBy = uiState.sortBy
@@ -331,7 +337,7 @@ private fun CatalogScreen(
             if (uiState.showFilterBottomSheet) {
                 FilterBottomSheet(
                     itemType = uiState.itemType,
-                    onDismiss = closeFilterBottomSheet,
+                    onDismiss = toggleFilterBottomSheet,
                     filters = uiState.filters,
                     filterCount = uiState.activeFilterCount,
                     onApply = setFilter,
@@ -432,29 +438,44 @@ private fun CatalogScreen(
             }
         }
     )
-    if (showImportDialog) {
+    if (uiState.showImportDialog) {
         ImportDialog(
             onConfirm = {
-                onDismissImportDialog()
+                toggleImportDialog()
                 pickCsvForImport.launch(arrayOf( //TODO "*/*" should be removed
                     "text/csv", "application/csv", "application/vnd.ms-excel", "*/*"
                 ))
             },
-            onCancel = onDismissImportDialog,
+            onCancel = toggleImportDialog,
             onHelp = {
-                onDismissImportDialog()
+                toggleImportDialog()
                 onImportHelp()
             }
         )
     }
-    if (showExportDialog) {
+    if (uiState.showExportDialog) {
         ExportDialog(
             onConfirm = {
-                onDismissExportDialog()
+                toggleExportDialog()
                 val fileName = getFileNameForExport(uiState.topBarTitle)
                 createCsvForExport.launch(fileName)
             },
-            onCancel = onDismissExportDialog
+            onCancel = toggleExportDialog
+        )
+    }
+    if (uiState.showCollectionBottomSheet) {
+        SelectCollectionBottomSheet(
+            label = stringResource(R.string.add_to_collection),
+            collections = collectionList,
+            selectedCollection = "",
+            onSelect = {
+                onAddPlatesToCollection(it.id)
+                val toast = context.getString(
+                    R.string.selection_added_to_collection, it.name
+                )
+                context.toast(text = toast)
+            },
+            onDismiss = toggleCollectionBottomSheet
         )
     }
 }

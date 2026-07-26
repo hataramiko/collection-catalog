@@ -7,6 +7,7 @@ import javax.inject.Inject
 interface PlateRepository {
     suspend fun addPlate(plate: Plate): Long
     suspend fun addPlateWithCollections(plate: Plate, collectionIds: List<Int>)
+    suspend fun addPlatesToCollection(plateIds: List<Int>, collectionId: Int)
     suspend fun addPlates(plates: List<Plate>)
 
     suspend fun updatePlate(plate: Plate)
@@ -53,6 +54,10 @@ class OfflinePlateRepository @Inject constructor(
     override suspend fun addPlate(plate: Plate) = plateDao.insertPlate(plate)
     override suspend fun addPlateWithCollections(plate: Plate, collectionIds: List<Int>) =
         plateDao.insertPlateWithCollections(plate, collectionIds)
+    override suspend fun addPlatesToCollection(plateIds: List<Int>, collectionId: Int) {
+        val crossRefs = plateIds.map { PlateCollectionCrossRef(it, collectionId) }
+        plateDao.insertPlateCollectionCrossRefs(crossRefs)
+    }
     override suspend fun addPlates(plates: List<Plate>) = plateDao.insertPlates(plates)
 
     override suspend fun updatePlate(plate: Plate) = plateDao.updatePlate(plate)

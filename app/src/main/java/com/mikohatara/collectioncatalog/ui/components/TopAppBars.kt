@@ -53,6 +53,7 @@ fun CatalogTopAppBar(
     onToggleSearch: (() -> Unit)? = null,
     onHide: (() -> Unit)? = null,
     onUnhide: (() -> Unit)? = null,
+    onAddToCollection: (() -> Unit)? = null,
     onImport: (() -> Unit)? = null,
     onExport: (() -> Unit)? = null,
     itemListSize: Int = 0,
@@ -110,6 +111,15 @@ fun CatalogTopAppBar(
                             painterResource = painterResource(R.drawable.rounded_do_not_disturb_on_24),
                             text = stringResource(R.string.hide),
                             enabled = onHide != null
+                        )
+                        ModifiedDropdownMenuItem(
+                            onClick = {
+                                onAddToCollection?.let { it() }
+                                onDismissMenu()
+                            },
+                            painterResource = painterResource(R.drawable.rounded_new_label),
+                            text = stringResource(R.string.add_to_collection),
+                            enabled = onAddToCollection != null
                         )
                     }
                 }

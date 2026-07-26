@@ -10,6 +10,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.data.Collection
 import com.mikohatara.collectioncatalog.data.CollectionColor
 import com.mikohatara.collectioncatalog.data.CollectionRepository
 import com.mikohatara.collectioncatalog.data.Item
@@ -61,6 +62,9 @@ data class CatalogUiState(
     val isTopRowHidden: Boolean = false,
     val showSortByBottomSheet: Boolean = false,
     val showFilterBottomSheet: Boolean = false,
+    val showImportDialog: Boolean = false,
+    val showExportDialog: Boolean = false,
+    val showCollectionBottomSheet: Boolean = false,
     //
     val periodSliderPosition: ClosedRange<Float>? = null,
     val yearSliderPosition: ClosedRange<Float>? = null,
@@ -114,6 +118,7 @@ class CatalogViewModel @Inject constructor(
     private val _collectionId: Int? = savedStateHandle.get<Int>(COLLECTION_ID)
 
     private val _allItems = mutableStateListOf<Item>()
+    private val _allCollections = mutableStateListOf<Collection>()
 
     private val _uiState = MutableStateFlow(CatalogUiState())
     val uiState: StateFlow<CatalogUiState> = _uiState.asStateFlow()
@@ -139,6 +144,13 @@ class CatalogViewModel @Inject constructor(
             val defaultSortBy = getDefaultSortBy(_itemType, userPreferences)
             _uiState.update { it.copy(sortBy = defaultSortBy) }
             getItems(_itemType)
+
+            launch {
+                collectionRepository.getAllCollectionsStream().collect {
+                    _allCollections.clear()
+                    _allCollections.addAll(it)
+                }
+            }
 
             _collectionId?.let {
                 _uiState.update { it.copy(isCollection = true) }
@@ -265,21 +277,30 @@ class CatalogViewModel @Inject constructor(
         updateDefaultSortBy(sortBy)
     }
 
-    fun openSortByBottomSheet() {
-        _uiState.update { it.copy(showSortByBottomSheet = true) }
+    fun toggleSortByBottomSheet() {
+        val isOpen = !_uiState.value.showSortByBottomSheet
+        _uiState.update { it.copy(showSortByBottomSheet = isOpen) }
     }
 
-    fun openFilterBottomSheet() {
+    fun toggleFilterBottomSheet() {
         setFilterSliderStartPositions()
-        _uiState.update { it.copy(showFilterBottomSheet = true) }
+        val isOpen = !_uiState.value.showFilterBottomSheet
+        _uiState.update { it.copy(showFilterBottomSheet = isOpen) }
     }
 
-    fun closeSortByBottomSheet() {
-        _uiState.update { it.copy(showSortByBottomSheet = false) }
+    fun toggleImportDialog() {
+        val isOpen = !_uiState.value.showImportDialog
+        _uiState.update { it.copy(showImportDialog = isOpen) }
     }
 
-    fun closeFilterBottomSheet() {
-        _uiState.update { it.copy(showFilterBottomSheet = false) }
+    fun toggleExportDialog() {
+        val isOpen = !_uiState.value.showExportDialog
+        _uiState.update { it.copy(showExportDialog = isOpen) }
+    }
+
+    fun toggleCollectionBottomSheet() {
+        val isOpen = !_uiState.value.showCollectionBottomSheet
+        _uiState.update { it.copy(showCollectionBottomSheet = isOpen) }
     }
 
     fun setFilter() {
@@ -495,6 +516,11 @@ class CatalogViewModel @Inject constructor(
             archivalDateSliderPosition = getArchivalDateSliderRange()
         ) }
         setFilter()
+    }
+
+    fun getCollections(): List<Collection> {
+        val collections = _allCollections
+        return collections
     }
 
     fun getCountries(): Set<String> {
@@ -733,6 +759,20 @@ class CatalogViewModel @Inject constructor(
 
     fun clearImportResult() {
         _uiState.update { it.copy(isImporting = false, importResult = null) }
+    }
+
+    fun addPlatesToCollection(collectionId: Int) {
+        val itemType = _uiState.value.itemType
+        if (itemType == ItemType.WANTED_PLATE || itemType == ItemType.FORMER_PLATE) return
+
+        val selectedItemIds = _uiState.value.selectedItemIds.toList()
+        if (selectedItemIds.isEmpty()) return
+
+        viewModelScope.launch {
+            plateRepository.addPlatesToCollection(selectedItemIds, collectionId)
+            clearSelection()
+            toggleCollectionBottomSheet()
+        }
     }
 
     private fun getTopBarTitle(): String {

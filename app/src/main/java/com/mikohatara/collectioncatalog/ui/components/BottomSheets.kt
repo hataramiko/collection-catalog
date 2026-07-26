@@ -461,6 +461,7 @@ fun SettingsBottomSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectCollectionBottomSheet(
+    label: String,
     collections: List<Collection>,
     selectedCollection: String,
     onSelect: (Collection) -> Unit,
@@ -473,7 +474,7 @@ fun SelectCollectionBottomSheet(
         sheetState = sheetState,
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
     ) {
-        BottomSheetHeader(stringResource(R.string.select_collection))
+        BottomSheetHeader(label)
         LazyColumn {
             item { Spacer(modifier = Modifier.height(8.dp)) }
             items(collections) { collection ->

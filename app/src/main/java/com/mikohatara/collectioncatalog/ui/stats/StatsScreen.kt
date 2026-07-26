@@ -85,7 +85,10 @@ fun StatsScreen(
         viewModel = viewModel,
         userPreferences = userPreferences,
         uiState = uiState,
-        onOpenDrawer = onOpenDrawer
+        collectionList = viewModel.getCollections(),
+        onOpenDrawer = onOpenDrawer,
+        onSetCollection = viewModel::setCollection,
+        toggleCollectionBottomSheet = viewModel::toggleCollectionBottomSheet
     )
 }
 
@@ -95,11 +98,12 @@ private fun StatsScreen(
     viewModel: StatsViewModel,
     userPreferences: UserPreferences,
     uiState: StatsUiState,
-    onOpenDrawer: () -> Unit
+    collectionList: List<Collection>,
+    onOpenDrawer: () -> Unit,
+    onSetCollection: (Collection) -> Unit,
+    toggleCollectionBottomSheet: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    var showCollectionBottomSheet by rememberSaveable { mutableStateOf(false) }
-    val onDismissCollectionBottomSheet = { showCollectionBottomSheet = false }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -114,20 +118,21 @@ private fun StatsScreen(
                 viewModel = viewModel,
                 userPreferences = userPreferences,
                 uiState = uiState,
-                onShowCollectionBottomSheet = { showCollectionBottomSheet = true },
+                onShowCollectionBottomSheet = toggleCollectionBottomSheet,
                 innerPadding = innerPadding
             )
         }
     )
-    if (showCollectionBottomSheet) {
+    if (uiState.showCollectionBottomSheet) {
         SelectCollectionBottomSheet(
-            collections = viewModel.getCollections(),
+            label = stringResource(R.string.select_collection),
+            collections = collectionList,
             selectedCollection = uiState.collection?.name ?: "",
             onSelect = {
-                viewModel.setCollection(it)
-                onDismissCollectionBottomSheet()
+                onSetCollection(it)
+                toggleCollectionBottomSheet()
             },
-            onDismiss = onDismissCollectionBottomSheet
+            onDismiss = toggleCollectionBottomSheet
         )
     }
 }
