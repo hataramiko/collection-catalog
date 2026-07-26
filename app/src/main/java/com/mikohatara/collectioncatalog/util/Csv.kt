@@ -142,7 +142,7 @@ fun importPlatesFromCsv(context: Context, uri: Uri): List<Plate>? {
                     imagePath = null,
                     notes = csvPlate.notes?.takeIf { it.isNotBlank() },
                     vehicle = csvPlate.vehicle?.takeIf { it.isNotBlank() },
-                    date = csvPlate.date?.takeIf { it.isNotBlank() },
+                    date = csvPlate.date?.takeIf { it.isValidDate() },
                     cost = csvPlate.cost?.toCurrencyLongOrNull(),
                     value = csvPlate.value?.toCurrencyLongOrNull(),
                     status = csvPlate.status?.takeIf { it.isNotBlank() }
@@ -260,7 +260,7 @@ fun importFormerPlatesFromCsv(context: Context, uri: Uri): List<FormerPlate>? {
                     imagePath = null,
                     notes = csvPlate.notes?.takeIf { it.isNotBlank() },
                     vehicle = csvPlate.vehicle?.takeIf { it.isNotBlank() },
-                    date = csvPlate.date?.takeIf { it.isNotBlank() },
+                    date = csvPlate.date?.takeIf { it.isValidDate() },
                     cost = csvPlate.cost?.toCurrencyLongOrNull(),
                     value = null,
                     status = null
@@ -282,7 +282,7 @@ fun importFormerPlatesFromCsv(context: Context, uri: Uri): List<FormerPlate>? {
                     country = csvPlate.sourceCountry?.takeIf { it.isNotBlank() }
                 ),
                 archivalDetails = ArchivalDetails(
-                    archivalDate = csvPlate.archivalDate?.takeIf { it.isNotBlank() },
+                    archivalDate = csvPlate.archivalDate?.takeIf { it.isValidDate() },
                     recipientName = csvPlate.recipientName?.takeIf { it.isNotBlank() },
                     recipientAlias = csvPlate.recipientAlias?.takeIf { it.isNotBlank() },
                     archivalReason = csvPlate.archivalType?.takeIf { it.isNotBlank() },
