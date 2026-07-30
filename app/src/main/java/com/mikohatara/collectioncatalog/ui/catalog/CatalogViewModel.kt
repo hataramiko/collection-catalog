@@ -169,7 +169,7 @@ class CatalogViewModel @Inject constructor(
 
     fun updateTopRowVisibility(itemIndex: Int, topBarCollapsedFraction: Float) {
         _uiState.update {
-            it.copy(isTopRowHidden = (topBarCollapsedFraction > 0.5f) && (itemIndex > 0))
+            it.copy(isTopRowHidden = (topBarCollapsedFraction > 0.75f) && (itemIndex > 0))
         }
     }
 

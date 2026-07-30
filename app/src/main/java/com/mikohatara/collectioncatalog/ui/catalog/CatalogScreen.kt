@@ -11,20 +11,25 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
@@ -37,8 +42,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -67,6 +74,7 @@ import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.TopRow
 import com.mikohatara.collectioncatalog.ui.components.WishlistCard
 import com.mikohatara.collectioncatalog.util.getFileNameForExport
+import com.mikohatara.collectioncatalog.util.getTopAppBarColor
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toast
 
@@ -156,6 +164,15 @@ private fun CatalogScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults
         .enterAlwaysScrollBehavior(rememberTopAppBarState())
+    val listState = rememberLazyListState()
+    val listItemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
+
+    val currentTopAppBarColor = getTopAppBarColor(
+        uiState.isSelectionMode,
+        uiState.isTopRowHidden,
+        scrollBehavior.state.contentOffset,
+        scrollBehavior.state.collapsedFraction
+    )
 
     val (hideToast, unhideToast) = if (uiState.itemType == ItemType.WANTED_PLATE) {
         pluralStringResource(
@@ -182,10 +199,9 @@ private fun CatalogScreen(
     }
     val (fabContainerColor, fabContentColor) = if (uiState.isCollection) {
         FloatingActionButtonDefaults.containerColor.copy(alpha = 0.1f) to
-                MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.38f)
+                colorScheme.onPrimaryContainer.copy(alpha = 0.38f)
     } else {
-        FloatingActionButtonDefaults.containerColor to
-                MaterialTheme.colorScheme.onPrimaryContainer
+        FloatingActionButtonDefaults.containerColor to colorScheme.onPrimaryContainer
     }
 
     val onImport = if (!uiState.isCollection) { { toggleImportDialog() } } else null
@@ -267,6 +283,7 @@ private fun CatalogScreen(
         topBar = {
             CatalogTopAppBar(
                 title = uiState.topBarTitle,
+                containerColor = currentTopAppBarColor,
                 onOpenDrawer = onOpenDrawer,
                 onClearSelection = clearSelection,
                 onToggleSearch = onToggleSearch,
@@ -313,10 +330,13 @@ private fun CatalogScreen(
             CatalogScreenContent(
                 uiState = uiState,
                 topBarState = scrollBehavior.state,
+                listState = listState,
+                listItemIndex = listItemIndex.value,
                 itemList = itemList,
                 onItemClick = onItemClick,
                 onToggleSelection = toggleSelection,
                 updateTopRowVisibility = updateTopRowVisibility,
+                topRowColor = currentTopAppBarColor,
                 isTopRowHidden = uiState.isTopRowHidden,
                 onSortByClick = toggleSortByBottomSheet,
                 onFilterClick = toggleFilterBottomSheet,
@@ -485,10 +505,13 @@ private fun CatalogScreen(
 private fun CatalogScreenContent(
     uiState: CatalogUiState,
     topBarState: TopAppBarState,
+    listState: LazyListState,
+    listItemIndex: Int,
     itemList: List<Item>,
     onItemClick: (Item) -> Unit,
     onToggleSelection: (Int) -> Unit,
     updateTopRowVisibility: (Int, Float) -> Unit,
+    topRowColor: Color,
     isTopRowHidden: Boolean,
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit,
@@ -501,22 +524,31 @@ private fun CatalogScreenContent(
     // Use this if filtered items need to occupy all available width, instead of conforming to
     // the maximum available width from _allItems
     //val maxItemWidth = itemList.maxOfOrNull { it.toItemDetails().width ?: 1 } ?: 1
-    val listState = rememberLazyListState()
-    val isAtTop = remember { derivedStateOf {
-        (listState.firstVisibleItemIndex == 0) && (listState.firstVisibleItemScrollOffset == 0)
-    } }
-    val itemIndex = remember { derivedStateOf { listState.firstVisibleItemIndex } }
+
     val topBarCollapsedFraction = remember { derivedStateOf { topBarState.collapsedFraction } }
     val contentPadding = PaddingValues(
         start = 8.dp,
-        top = innerPadding.calculateTopPadding(),
+        top = 0.dp, //innerPadding.calculateTopPadding(), Revert to this when getting rid of TopRow
         end = 8.dp,
         bottom = innerPadding.calculateBottomPadding() + 8.dp
     )
 
+    // Remove these if and when getting rid of TopRow
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val topBarHeight = innerPadding.calculateTopPadding()
+    val density = LocalDensity.current
+    val topBarOffset = remember {
+        derivedStateOf { with(density) { topBarState.heightOffset.toDp() } }
+    }
+    val topRowHeaderPadding by remember {
+        derivedStateOf {
+            maxOf(statusBarHeight, topBarHeight + topBarOffset.value)
+        }
+    }
+
     // Use itemIndex and topBarCollapsedFraction to update TopRow visibility
-    LaunchedEffect(itemIndex.value, topBarCollapsedFraction.value) {
-        updateTopRowVisibility(itemIndex.value, topBarCollapsedFraction.value)
+    LaunchedEffect(listItemIndex, topBarCollapsedFraction.value) {
+        updateTopRowVisibility(listItemIndex, topBarCollapsedFraction.value)
     }
 
     LazyColumn(
@@ -527,14 +559,17 @@ private fun CatalogScreenContent(
         modifier = modifier.fillMaxWidth()
     ) {
         stickyHeader {
-            TopRow(
-                isHidden = isTopRowHidden,
-                isAtTop = isAtTop.value,
-                isSelectionMode = uiState.isSelectionMode,
-                onSortByClick = onSortByClick,
-                onFilterClick = onFilterClick,
-                filterCount = uiState.activeFilterCount
-            )
+            Column {
+                Spacer(modifier = Modifier.height(topRowHeaderPadding))
+                TopRow(
+                    containerColor = topRowColor,
+                    isHidden = isTopRowHidden,
+                    isSelectionMode = uiState.isSelectionMode,
+                    onSortByClick = onSortByClick,
+                    onFilterClick = onFilterClick,
+                    filterCount = uiState.activeFilterCount
+                )
+            }
         }
         if (uiState.isLoading) {
             item {

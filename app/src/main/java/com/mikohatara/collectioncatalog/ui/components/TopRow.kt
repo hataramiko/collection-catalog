@@ -1,8 +1,6 @@
 package com.mikohatara.collectioncatalog.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
@@ -25,10 +23,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,25 +35,14 @@ import com.mikohatara.collectioncatalog.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopRow(
+    containerColor: Color,
     isHidden: Boolean,
-    isAtTop: Boolean,
     isSelectionMode: Boolean,
     onSortByClick: () -> Unit,
     onFilterClick: () -> Unit,
     filterCount: Int
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
-    val appBarColors = TopAppBarDefaults.topAppBarColors()
-
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isAtTop || isSelectionMode) {
-            appBarColors.containerColor
-        } else {
-            appBarColors.scrolledContainerColor
-        },
-        animationSpec = tween(100),
-        label = "TopRowBackgroundColor"
-    )
     val buttonColors = ButtonDefaults.outlinedButtonColors(contentColor = colorScheme.primary)
 
     /*  Wrapping the AnimatedVisibility block inside a Box seems to prevent crashes when
@@ -72,7 +58,7 @@ fun TopRow(
             exit = slideOutVertically(targetOffsetY = { -it * 2 })
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = backgroundColor),
+                colors = CardDefaults.cardColors(containerColor = containerColor),
                 shape = RoundedCornerShape(
                     topStart = 0.dp,
                     topEnd = 0.dp,

@@ -44,10 +44,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikohatara.collectioncatalog.R
 
+@Composable
+fun customTopAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+    navigationIconContentColor = colorScheme.onSurfaceVariant
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogTopAppBar(
     title: String,
+    containerColor: Color,
     onOpenDrawer: () -> Unit,
     onClearSelection: (() -> Unit)? = null,
     onToggleSearch: (() -> Unit)? = null,
@@ -124,7 +130,10 @@ fun CatalogTopAppBar(
                     }
                 }
             },
-            colors = customTopAppBarColors(),
+            colors = customTopAppBarColors().copy(
+                containerColor = containerColor,
+                scrolledContainerColor = containerColor
+            ),
             //scrollBehavior = scrollBehavior
         )
     } else if (isSearchActive) {
@@ -171,7 +180,10 @@ fun CatalogTopAppBar(
                     )
                 }
             },
-            colors = customTopAppBarColors(),
+            colors = customTopAppBarColors().copy(
+                containerColor = containerColor,
+                scrolledContainerColor = containerColor
+            ),
             scrollBehavior = scrollBehavior
         )
         LaunchedEffect(Unit) {
@@ -264,7 +276,10 @@ fun CatalogTopAppBar(
                     }
                 }
             },
-            colors = customTopAppBarColors(),
+            colors = customTopAppBarColors().copy(
+                containerColor = containerColor,
+                scrolledContainerColor = containerColor
+            ),
             scrollBehavior = scrollBehavior
         )
     }
@@ -626,8 +641,3 @@ private fun ModifiedDropdownMenuItem(
 private fun DropdownMenuDivider() {
     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
 }
-
-@Composable
-private fun customTopAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    navigationIconContentColor = colorScheme.onSurfaceVariant
-)
