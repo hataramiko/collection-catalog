@@ -115,7 +115,7 @@
     <string name="empty_list_wishlist_msg">Toivelista on tyhjä</string>
     <string name="empty_list_collection_msg">Tämä kokoelma on tyhjä</string>
     <string name="empty_list_plates_msg">Ei vielä näytettävää</string>
-    <string name="empty_list_collection_desc">Lisää kilpiä valitsemalla tämä kokoelma kilpeä muokattaessa.</string>
+    <string name="empty_list_collection_desc">Lisää kilpiä kokoelmaan joko yksitellen kilpeä muokattaessa, tai valitsemalla useampia kerrallaan kataloginäkymässä.</string>
     <string name="empty_list_plates_desc">Aloita lisäämällä uusi kilpi.</string>
     <string name="empty_list_default_desc">Tarkista käytössä olevat rajausehdot virheiden varalta.</string>
     <string name="empty_list_archive_desc">Pidä kirjaa entisistä kilvistäsi. Arkistoon voi lisätä kilpiä manuaalisesti tai arkistoimalla jo olemassa olevan kilven.</string>

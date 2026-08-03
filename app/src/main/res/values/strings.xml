@@ -121,7 +121,7 @@
     <string name="empty_list_plates_msg">Nothing to show yet</string>
     <string name="empty_list_plates_desc">Start by adding a new plate.</string>
     <string name="empty_list_collection_msg">This collection is empty</string>
-    <string name="empty_list_collection_desc">You can add plates by selecting the collection while editing a plate.</string>
+    <string name="empty_list_collection_desc">You can add plates to the collection one by one while editing them, or multiple at once by selecting them in the catalog view.</string>
     <string name="empty_list_archive_msg">Archive is empty</string>
     <string name="empty_list_archive_desc">Keep track of plates no longer in your possession. You can archive existing plates, or add new entries manually.</string>
     <string name="empty_list_wishlist_msg">Wishlist is empty</string>
