@@ -69,6 +69,7 @@ import com.mikohatara.collectioncatalog.ui.components.FilterSwitchData
 import com.mikohatara.collectioncatalog.ui.components.ImportDialog
 import com.mikohatara.collectioncatalog.ui.components.ItemCard
 import com.mikohatara.collectioncatalog.ui.components.Loading
+import com.mikohatara.collectioncatalog.ui.components.MassChangeDialog
 import com.mikohatara.collectioncatalog.ui.components.SelectCollectionBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.TopRow
@@ -107,6 +108,7 @@ fun CatalogScreen(
         updateTopRowVisibility = viewModel::updateTopRowVisibility,
         toggleSortByBottomSheet = viewModel::toggleSortByBottomSheet,
         toggleFilterBottomSheet = viewModel::toggleFilterBottomSheet,
+        toggleMassChangeDialog = viewModel::toggleMassChangeDialog,
         toggleImportDialog = viewModel::toggleImportDialog,
         toggleExportDialog = viewModel::toggleExportDialog,
         toggleCollectionBottomSheet = viewModel::toggleCollectionBottomSheet,
@@ -144,6 +146,7 @@ private fun CatalogScreen(
     updateTopRowVisibility: (Int, Float) -> Unit,
     toggleSortByBottomSheet: () -> Unit,
     toggleFilterBottomSheet: () -> Unit,
+    toggleMassChangeDialog: () -> Unit,
     toggleImportDialog: () -> Unit,
     toggleExportDialog: () -> Unit,
     toggleCollectionBottomSheet: () -> Unit,
@@ -296,6 +299,7 @@ private fun CatalogScreen(
                     context.toast(text = unhideToast)
                 },
                 onAddToCollection = onToggleCollectionBottomSheet,
+                onMassChange = toggleMassChangeDialog,
                 onImport = onImport,
                 onExport = { toggleExportDialog() },
                 itemListSize = itemList.size,
@@ -458,6 +462,22 @@ private fun CatalogScreen(
             }
         }
     )
+    if (uiState.showMassChangeDialog) {
+        val testList = listOf("Country", "Region", "Type", "Period", "Year")
+
+        MassChangeDialog(
+            targetFieldList = testList,
+            selectedTargetField = testList[0],
+            oldValue = "",
+            newValue = "",
+            onTargetFieldChange = {},
+            onOldValueChange = {},
+            onNewValueChange = {},
+            onConfirm = {},
+            onDismiss = toggleMassChangeDialog,
+            isSelectionMode = uiState.isSelectionMode,
+        )
+    }
     if (uiState.showImportDialog) {
         ImportDialog(
             onConfirm = {

@@ -57,10 +57,10 @@ import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.components.DatePickerField
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
-import com.mikohatara.collectioncatalog.ui.components.EntryField
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
+import com.mikohatara.collectioncatalog.ui.components.TextEntryField
 import com.mikohatara.collectioncatalog.ui.components.pickItemImage
 import com.mikohatara.collectioncatalog.util.getCurrencySymbol
 import com.mikohatara.collectioncatalog.util.getMeasurementUnitSymbol
@@ -281,42 +281,42 @@ private fun ItemEntryScreenContent(
             label = stringResource(R.string.common_details_label),
             isFirst = true
         ) {
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.reg_no),
                 value = itemDetails.regNo ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(regNo = it)) },
                 capitalization = KeyboardCapitalization.Characters
             )
             EntryFormHorizontalSpacer()
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.country),
                 value = itemDetails.country ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(country = it)) }
             )
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.subdivision),
                 value = itemDetails.region1st ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(region1st = it)) }
             )
             InfoField(text = stringResource(R.string.info_region_1st))
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.region),
                 value = itemDetails.region2nd ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(region2nd = it)) }
             )
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.region_second),
                 value = itemDetails.region3rd ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(region3rd = it)) }
             )
             EntryFormHorizontalSpacer()
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.type),
                 value = itemDetails.type ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(type = it)) }
             )
             Row {
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.period_start),
                     value = itemDetails.periodStart?.toString() ?: "",
                     onValueChange = { newValue ->
@@ -331,7 +331,7 @@ private fun ItemEntryScreenContent(
                     modifier = Modifier.weight(1f),
                 )
                 EntryFormVerticalSpacer()
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.period_end),
                     value = itemDetails.periodEnd?.toString() ?: "",
                     onValueChange = { newValue ->
@@ -345,7 +345,7 @@ private fun ItemEntryScreenContent(
                     modifier = Modifier.weight(1f)
                 )
             }
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.year),
                 value = itemDetails.year?.toString() ?: "",
                 onValueChange = { newValue ->
@@ -391,19 +391,19 @@ private fun ItemEntryScreenContent(
             }
         }
         EntryFormSection(label = stringResource(R.string.unique_details_label)) {
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.notes),
                 value = itemDetails.notes ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(notes = it)) },
-                singleLine = false,
+                isSingleLine = false,
                 hasEntryDialog = true
             )
             if (itemType != ItemType.WANTED_PLATE) {
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.vehicle),
                     value = itemDetails.vehicle ?: "",
                     onValueChange = { onValueChange(itemDetails.copy(vehicle = it)) },
-                    singleLine = false
+                    isSingleLine = false
                 )
                 EntryFormHorizontalSpacer()
                 DatePickerField(
@@ -413,7 +413,7 @@ private fun ItemEntryScreenContent(
                     countryCode = localeCode
                 )
                 Row {
-                    EntryField(
+                    TextEntryField(
                         label = stringResource(R.string.cost),
                         placeholder = {
                             Text(getCurrencySymbol(localeCode))
@@ -431,7 +431,7 @@ private fun ItemEntryScreenContent(
                     if (itemType == ItemType.FORMER_PLATE) {
                         Spacer(modifier = Modifier.weight(1f))
                     } else {
-                        EntryField(
+                        TextEntryField(
                             label = stringResource(R.string.value),
                             placeholder = {
                                 Text(getCurrencySymbol(localeCode))
@@ -452,7 +452,7 @@ private fun ItemEntryScreenContent(
                 }
                 if (itemType == ItemType.PLATE) {
                     EntryFormHorizontalSpacer()
-                    EntryField(
+                    TextEntryField(
                         label = stringResource(R.string.location),
                         value = itemDetails.status ?: "",
                         onValueChange = {
@@ -464,7 +464,7 @@ private fun ItemEntryScreenContent(
         }
         EntryFormSection(label = stringResource(R.string.size)) {
             Row {
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.width),
                     placeholder = { Text(lengthUnit) },
                     value = itemDetails.width?.toString() ?: "",
@@ -481,7 +481,7 @@ private fun ItemEntryScreenContent(
                     modifier = Modifier.weight(1f)
                 )
                 EntryFormVerticalSpacer()
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.height),
                     placeholder = { Text(lengthUnit) },
                     value = itemDetails.height?.toString() ?: "",
@@ -499,7 +499,7 @@ private fun ItemEntryScreenContent(
                 )
             }
             InfoField(stringResource(R.string.info_width))
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.weight),
                 placeholder = { Text(weightUnit) },
                 value = itemDetails.weight?.toString() ?: "",
@@ -518,12 +518,12 @@ private fun ItemEntryScreenContent(
                 label = stringResource(R.string.color),
                 modifier = Modifier.padding(top = 24.dp)
             )
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.color_base),
                 value = itemDetails.colorMain ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(colorMain = it)) }
             )
-            EntryField(
+            TextEntryField(
                 label = stringResource(R.string.color_characters),
                 value = itemDetails.colorSecondary ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(colorSecondary = it)) },
@@ -533,33 +533,33 @@ private fun ItemEntryScreenContent(
         }
         if (itemType != ItemType.WANTED_PLATE) {
             EntryFormSection(label = stringResource(R.string.source)) {
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.source_name),
                     value = itemDetails.sourceName ?: "",
                     onValueChange = { onValueChange(itemDetails.copy(sourceName = it)) }
                 )
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.source_alias),
                     value = itemDetails.sourceAlias ?: "",
                     onValueChange = { onValueChange(itemDetails.copy(sourceAlias = it)) }
                 )
                 EntryFormHorizontalSpacer()
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.source_type),
                     value = itemDetails.sourceType ?: "",
                     onValueChange = { onValueChange(itemDetails.copy(sourceType = it)) }
                 )
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.source_country),
                     value = itemDetails.sourceCountry ?: "",
                     onValueChange = { onValueChange(itemDetails.copy(sourceCountry = it)) }
                 )
                 EntryFormHorizontalSpacer()
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.source_details),
                     value = itemDetails.sourceDetails ?: "",
                     onValueChange = { onValueChange(itemDetails.copy(sourceDetails = it)) },
-                    singleLine = false,
+                    isSingleLine = false,
                     hasEntryDialog = true,
                     imeAction = if (itemType != ItemType.FORMER_PLATE) ImeAction.Done
                     else ImeAction.Next
@@ -576,14 +576,14 @@ private fun ItemEntryScreenContent(
                     },
                     countryCode = localeCode
                 )
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.archival_reason),
                     value = itemDetails.archivalType ?: "",
                     onValueChange = {
                         onValueChange(itemDetails.copy(archivalType = it))
                     }
                 )
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.sold_price),
                     placeholder = { Text(getCurrencySymbol(localeCode)) },
                     value = itemDetails.price?.toString() ?: "",
@@ -598,21 +598,21 @@ private fun ItemEntryScreenContent(
                     countryCode = localeCode
                 )
                 EntryFormHorizontalSpacer()
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.recipient_name),
                     value = itemDetails.recipientName ?: "",
                     onValueChange = {
                         onValueChange(itemDetails.copy(recipientName = it))
                     }
                 )
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.recipient_alias),
                     value = itemDetails.recipientAlias ?: "",
                     onValueChange = {
                         onValueChange(itemDetails.copy(recipientAlias = it))
                     }
                 )
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.recipient_country),
                     value = itemDetails.recipientCountry ?: "",
                     onValueChange = {
@@ -620,13 +620,13 @@ private fun ItemEntryScreenContent(
                     }
                 )
                 EntryFormHorizontalSpacer()
-                EntryField(
+                TextEntryField(
                     label = stringResource(R.string.archival_details),
                     value = itemDetails.archivalDetails ?: "",
                     onValueChange = {
                         onValueChange(itemDetails.copy(archivalDetails = it))
                     },
-                    singleLine = false,
+                    isSingleLine = false,
                     hasEntryDialog = true,
                     imeAction = ImeAction.Done
                 )

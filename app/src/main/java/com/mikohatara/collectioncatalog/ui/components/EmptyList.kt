@@ -84,5 +84,3 @@ fun EmptyList(
         }
     }
 }
-
-

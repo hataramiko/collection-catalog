@@ -109,7 +109,7 @@ fun TopRow(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.rounded_filter),
+                                painter = painterResource(R.drawable.rounded_filter_list_24),
                                 contentDescription = null,
                                 modifier = Modifier.padding(end = 6.dp)
                             )

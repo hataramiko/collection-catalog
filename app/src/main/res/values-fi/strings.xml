@@ -43,10 +43,6 @@
     <string name="discard_dialog_text">Muutoksia ei ole tallennettu.</string>
     <string name="discard">Hylkää</string>
     <string name="keep_editing">Jatka muokkausta</string>
-    <plurals name="statistics_intro">
-        <item quantity="one">%d kilpi.</item>
-        <item quantity="other">%d kilpeä.</item>
-    </plurals>
     <string name="statistics_intro_empty">Ei kilpiä.</string>
     <string name="width">Leveys</string>
     <string name="height">Korkeus</string>
@@ -271,4 +267,8 @@
     <string name="transfer_from_wishlist_checkbox">Poista toivelistalta</string>
     <string name="add_to_collection">Lisää kokoelmaan</string>
     <string name="selection_added_to_collection">Lisätty kokoelmaan \"<xliff:g name="collection_name" example="For trade">%s</xliff:g>\"</string>
+    <string name="mass_change">Etsi ja korvaa</string>
+    <string name="mass_change_field">Etsi kentästä</string>
+    <string name="mass_change_old_value">Etsittävä arvo</string>
+    <string name="mass_change_new_value">Korvaava arvo</string>
 </resources>

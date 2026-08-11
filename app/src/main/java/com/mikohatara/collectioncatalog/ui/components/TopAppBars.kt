@@ -60,6 +60,7 @@ fun CatalogTopAppBar(
     onHide: (() -> Unit)? = null,
     onUnhide: (() -> Unit)? = null,
     onAddToCollection: (() -> Unit)? = null,
+    onMassChange: (() -> Unit)? = null,
     onImport: (() -> Unit)? = null,
     onExport: (() -> Unit)? = null,
     itemListSize: Int = 0,
@@ -117,6 +118,15 @@ fun CatalogTopAppBar(
                             painterResource = painterResource(R.drawable.rounded_do_not_disturb_on_24),
                             text = stringResource(R.string.hide),
                             enabled = onHide != null
+                        )
+                        ModifiedDropdownMenuItem(
+                            onClick = {
+                                onMassChange?.let { it() }
+                                onDismissMenu()
+                            },
+                            painterResource = painterResource(R.drawable.rounded_find_replace_24),
+                            text = stringResource(R.string.mass_change),
+                            enabled = onMassChange != null
                         )
                         ModifiedDropdownMenuItem(
                             onClick = {
@@ -253,6 +263,15 @@ fun CatalogTopAppBar(
                             text = stringResource(R.string.unhide),
                             badgeNumerableSize = hiddenItemsSize,
                             enabled = onUnhide != null && hiddenItemsSize > 0
+                        )
+                        ModifiedDropdownMenuItem(
+                            onClick = {
+                                onMassChange?.let { it() }
+                                onDismissMenu()
+                            },
+                            painterResource = painterResource(R.drawable.rounded_find_replace_24),
+                            text = stringResource(R.string.mass_change),
+                            enabled = onMassChange != null
                         )
                         DropdownMenuDivider()
                         ModifiedDropdownMenuItem(

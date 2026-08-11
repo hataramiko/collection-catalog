@@ -16,7 +16,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,14 +59,14 @@ import java.util.Date
 import kotlin.math.roundToInt
 
 @Composable
-fun EntryField(
+fun TextEntryField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: @Composable (() -> Unit)? = null,
-    enabled: Boolean = true,
-    singleLine: Boolean = true,
+    isEnabled: Boolean = true,
+    isSingleLine: Boolean = true,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
@@ -121,7 +125,7 @@ fun EntryField(
             label = {
                 Text(
                     text = label,
-                    maxLines = if (singleLine) 1 else Int.MAX_VALUE,
+                    maxLines = if (isSingleLine) 1 else Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis
                 )
             },
@@ -135,8 +139,8 @@ fun EntryField(
                 }
             }},
             modifier = Modifier.fillMaxWidth().weight(1f),
-            enabled = enabled,
-            singleLine = singleLine,
+            enabled = isEnabled,
+            singleLine = isSingleLine,
             interactionSource = interactionSource,
             visualTransformation = visualTransformation
         )
@@ -163,6 +167,62 @@ fun EntryField(
                 if (imeAction == ImeAction.Next) focusManager.moveFocus(FocusDirection.Next)
             }
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DropdownMenuField(
+    label: String,
+    values: List<String>,
+    selectedValue: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+   var isExpanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = modifier
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = isExpanded,
+            onExpandedChange = { isExpanded = !isExpanded },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                label = {
+                    Text(
+                        text = label,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                value = selectedValue,
+                onValueChange = { /* Value is changed by the DropdownMenuItem onClick */ },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
+                readOnly = true,
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                modifier = Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth()
+            )
+            ExposedDropdownMenu(
+                expanded = isExpanded,
+                onDismissRequest = { isExpanded = false },
+                shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+            ) {
+                values.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it) },
+                        onClick = {
+                            onValueChange(it)
+                            isExpanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -333,7 +393,7 @@ fun FilterSliderRangeFields(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
             ) {
-                EntryField(
+                TextEntryField(
                     label = "",
                     value = localMinTextValue,
                     onValueChange = { localMinTextValue = it },
@@ -362,7 +422,7 @@ fun FilterSliderRangeFields(
                     text = "–",
                     modifier = Modifier.padding(horizontal = 4.dp)
                 )
-                EntryField(
+                TextEntryField(
                     label = "",
                     value = localMaxTextValue,
                     onValueChange = { localMaxTextValue = it },

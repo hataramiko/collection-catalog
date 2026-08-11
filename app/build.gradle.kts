@@ -14,6 +14,10 @@ kotlin {
     }
 }
 
+base {
+    archivesName.set("rekkary")
+}
+
 android {
     namespace = "com.mikohatara.collectioncatalog"
     compileSdk = 37

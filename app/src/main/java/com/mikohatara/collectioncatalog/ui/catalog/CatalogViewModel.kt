@@ -62,6 +62,7 @@ data class CatalogUiState(
     val isTopRowHidden: Boolean = false,
     val showSortByBottomSheet: Boolean = false,
     val showFilterBottomSheet: Boolean = false,
+    val showMassChangeDialog: Boolean = false,
     val showImportDialog: Boolean = false,
     val showExportDialog: Boolean = false,
     val showCollectionBottomSheet: Boolean = false,
@@ -286,6 +287,11 @@ class CatalogViewModel @Inject constructor(
         setFilterSliderStartPositions()
         val isOpen = !_uiState.value.showFilterBottomSheet
         _uiState.update { it.copy(showFilterBottomSheet = isOpen) }
+    }
+
+    fun toggleMassChangeDialog() {
+        val isOpen = !_uiState.value.showMassChangeDialog
+        _uiState.update { it.copy(showMassChangeDialog = isOpen) }
     }
 
     fun toggleImportDialog() {
