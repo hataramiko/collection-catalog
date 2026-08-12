@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,6 +20,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -35,12 +37,12 @@ fun MassChangeDialog(
     onNewValueChange: (String) -> Unit,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    isSelectionMode: Boolean,
+    isOldValueEnabled: Boolean,
+    isNewValueEnabled: Boolean,
+    isConfirmEnabled: Boolean,
     modifier: Modifier = Modifier,
     label: String = stringResource(R.string.mass_change)
 ) {
-    val dropdownMenuTestContent = listOf("Country", "Region", "Type", "Period", "Year")
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -74,7 +76,10 @@ fun MassChangeDialog(
                     label = { Text(stringResource(R.string.mass_change_old_value)) },
                     value = oldValue,
                     onValueChange = { onOldValueChange(it) },
-                    enabled = !isSelectionMode,
+                    enabled = isOldValueEnabled,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    maxLines = 1,
+                    singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
@@ -83,6 +88,10 @@ fun MassChangeDialog(
                     label = { Text(stringResource(R.string.mass_change_new_value)) },
                     value = newValue,
                     onValueChange = { onNewValueChange(it) },
+                    enabled = isNewValueEnabled,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    maxLines = 1,
+                    singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
@@ -100,9 +109,12 @@ fun MassChangeDialog(
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = onConfirm) {
+                    Button(
+                        onClick = onConfirm,
+                        enabled = isConfirmEnabled
+                    ) {
                         Text(
-                            text = stringResource(R.string.ok_text),
+                            text = stringResource(R.string.replace),
                             modifier = Modifier.padding(horizontal = 12.dp)
                         )
                     }

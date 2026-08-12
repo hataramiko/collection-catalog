@@ -81,6 +81,13 @@ data class CatalogUiState(
     val selectedItemIds: Set<Int> = emptySet(),
     val hiddenItemIds: Set<Int> = emptySet(),
     //
+    val massChangeTargetField: String = "",
+    val massChangeOldValue: String = "",
+    val massChangeNewValue: String = "",
+    val isMassChangeOldValueEnabled: Boolean = false,
+    val isMassChangeNewValueEnabled: Boolean = false,
+    val isMassChangeValid: Boolean = false,
+    //
     val isLoading: Boolean = false,
     val isExporting: Boolean = false,
     val isImporting: Boolean = false,
@@ -177,6 +184,34 @@ class CatalogViewModel @Inject constructor(
     fun updateSearchQuery(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
         searchItems()
+    }
+
+    fun updateMassChangeTargetField(field: String) {
+        _uiState.update {
+            it.copy(
+                massChangeTargetField = field,
+                isMassChangeOldValueEnabled = !it.isSelectionMode && field.isNotBlank(),
+                isMassChangeNewValueEnabled = field.isNotBlank() && (it.isSelectionMode || it.massChangeOldValue.isNotEmpty())
+            )
+        }
+    }
+
+    fun updateMassChangeOldValue(value: String) {
+        _uiState.update {
+            it.copy(
+                massChangeOldValue = value,
+                isMassChangeNewValueEnabled = value.isNotBlank()
+            )
+        }
+    }
+
+    fun updateMassChangeNewValue(value: String) {
+        _uiState.update {
+            it.copy(
+                massChangeNewValue = value,
+                isMassChangeValid = value.isNotBlank()
+            )
+        }
     }
 
     fun toggleSearch() {
@@ -291,7 +326,17 @@ class CatalogViewModel @Inject constructor(
 
     fun toggleMassChangeDialog() {
         val isOpen = !_uiState.value.showMassChangeDialog
-        _uiState.update { it.copy(showMassChangeDialog = isOpen) }
+        _uiState.update {
+            it.copy(
+                showMassChangeDialog = isOpen,
+                massChangeTargetField = "",
+                massChangeOldValue = "",
+                massChangeNewValue = "",
+                isMassChangeOldValueEnabled = false,
+                isMassChangeNewValueEnabled = false,
+                isMassChangeValid = false
+            )
+        }
     }
 
     fun toggleImportDialog() {
@@ -778,6 +823,54 @@ class CatalogViewModel @Inject constructor(
             plateRepository.addPlatesToCollection(selectedItemIds, collectionId)
             clearSelection()
             toggleCollectionBottomSheet()
+        }
+    }
+
+    fun performMassChange() {
+        val state = _uiState.value
+        val tableName = when (state.itemType) {
+            ItemType.PLATE -> "plates"
+            ItemType.WANTED_PLATE -> "wishlist"
+            ItemType.FORMER_PLATE -> "archive"
+        }
+
+        //TODO for testing purposes only, replace with the actual list
+        val columnName = when (state.massChangeTargetField) {
+            "Country" -> "country"
+            "Region" -> "region_1st"
+            "Type" -> "type"
+            "Year" -> "year"
+            else -> "country"
+        }
+
+        viewModelScope.launch {
+            if (state.isSelectionMode) {
+                plateRepository.massChangeForSelection(
+                    tableName = tableName,
+                    columnName = columnName,
+                    selectionIds = state.selectedItemIds.toList(),
+                    newValue = state.massChangeNewValue
+                )
+            } else {
+                plateRepository.massChangeForAll(
+                    tableName = tableName,
+                    columnName = columnName,
+                    oldValue = state.massChangeOldValue,
+                    newValue = state.massChangeNewValue
+                )
+            }
+            //clearSelection()
+            toggleMassChangeDialog()
+            /*_uiState.update { // Should the dialog stay open after mass change?
+                it.copy(
+                    massChangeTargetField = "",
+                    massChangeOldValue = "",
+                    massChangeNewValue = "",
+                    isMassChangeOldValueEnabled = false,
+                    isMassChangeNewValueEnabled = false,
+                    isMassChangeValid = false
+                )
+            }*/
         }
     }
 

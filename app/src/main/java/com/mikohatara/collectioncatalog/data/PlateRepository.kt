@@ -1,5 +1,6 @@
 package com.mikohatara.collectioncatalog.data
 
+import androidx.sqlite.db.SimpleSQLiteQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -46,6 +47,22 @@ interface PlateRepository {
     fun getAllFormerPlatesStream(): Flow<List<FormerPlate>>
 
     fun getFormerPlateStream(id: Int): Flow<FormerPlate?>
+
+    //
+
+    suspend fun massChangeForAll(
+        tableName: String,
+        columnName: String,
+        oldValue: String,
+        newValue: String
+    ): Int
+
+    suspend fun massChangeForSelection(
+        tableName: String,
+        columnName: String,
+        selectionIds: List<Int>,
+        newValue: String
+    ): Int
 }
 
 class OfflinePlateRepository @Inject constructor(
@@ -105,5 +122,35 @@ class OfflinePlateRepository @Inject constructor(
 
     override fun getFormerPlateStream(id: Int): Flow<FormerPlate?> {
         return plateDao.getFormerPlate(id).map { it }
+    }
+
+    //
+
+    override suspend fun massChangeForAll(
+        tableName: String,
+        columnName: String,
+        oldValue: String,
+        newValue: String
+    ): Int {
+        val query = SimpleSQLiteQuery(
+            "UPDATE $tableName SET $columnName = ? WHERE $columnName = ?",
+            arrayOf(newValue, oldValue)
+        )
+        return plateDao.massChange(query)
+    }
+
+    override suspend fun massChangeForSelection(
+        tableName: String,
+        columnName: String,
+        selectionIds: List<Int>,
+        newValue: String
+    ): Int {
+        val selectionIdsSqlSafe = selectionIds.joinToString(",")
+
+        val query = SimpleSQLiteQuery(
+            "UPDATE $tableName SET $columnName = ? WHERE id IN ($selectionIdsSqlSafe)",
+            arrayOf(newValue)
+        )
+        return plateDao.massChange(query)
     }
 }

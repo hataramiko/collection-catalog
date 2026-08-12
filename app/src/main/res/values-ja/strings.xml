@@ -263,4 +263,5 @@
     <string name="mass_change_field">検索対象</string>
     <string name="mass_change_old_value">検索する値</string>
     <string name="mass_change_new_value">置換後の値</string>
+    <string name="replace">置換</string>
 </resources>

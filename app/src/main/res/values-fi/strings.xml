@@ -271,4 +271,5 @@
     <string name="mass_change_field">Etsi kentästä</string>
     <string name="mass_change_old_value">Etsittävä arvo</string>
     <string name="mass_change_new_value">Korvaava arvo</string>
+    <string name="replace">Korvaa</string>
 </resources>

@@ -104,6 +104,7 @@ fun CatalogScreen(
         onItemClick = onItemClick,
         onOpenDrawer = onOpenDrawer,
         onImportHelp = onImportHelp,
+        onMassChange = viewModel::performMassChange,
         onAddPlatesToCollection = { viewModel.addPlatesToCollection(it) },
         updateTopRowVisibility = viewModel::updateTopRowVisibility,
         toggleSortByBottomSheet = viewModel::toggleSortByBottomSheet,
@@ -123,6 +124,9 @@ fun CatalogScreen(
         clearSelection = viewModel::clearSelection,
         toggleSearch = viewModel::toggleSearch,
         updateSearchQuery = viewModel::updateSearchQuery,
+        updateMassChangeTargetField = viewModel::updateMassChangeTargetField,
+        updateMassChangeOldValue = viewModel::updateMassChangeOldValue,
+        updateMassChangeNewValue = viewModel::updateMassChangeNewValue,
         hideSelectedItems = viewModel::hideSelectedItems,
         clearHiddenItems = viewModel::clearHiddenItems
     )
@@ -142,6 +146,7 @@ private fun CatalogScreen(
     onItemClick: (Item) -> Unit,
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit,
+    onMassChange: () -> Unit,
     onAddPlatesToCollection: (Int) -> Unit,
     updateTopRowVisibility: (Int, Float) -> Unit,
     toggleSortByBottomSheet: () -> Unit,
@@ -161,6 +166,9 @@ private fun CatalogScreen(
     clearSelection: () -> Unit,
     toggleSearch: () -> Unit,
     updateSearchQuery: (String) -> Unit,
+    updateMassChangeTargetField: (String) -> Unit,
+    updateMassChangeOldValue: (String) -> Unit,
+    updateMassChangeNewValue: (String) -> Unit,
     hideSelectedItems: () -> Unit,
     clearHiddenItems: () -> Unit,
     modifier: Modifier = Modifier
@@ -463,19 +471,21 @@ private fun CatalogScreen(
         }
     )
     if (uiState.showMassChangeDialog) {
-        val testList = listOf("Country", "Region", "Type", "Period", "Year")
+        val testList = listOf("Country", "Region", "Type", "Year") //TODO see below
 
         MassChangeDialog(
-            targetFieldList = testList,
-            selectedTargetField = testList[0],
-            oldValue = "",
-            newValue = "",
-            onTargetFieldChange = {},
-            onOldValueChange = {},
-            onNewValueChange = {},
-            onConfirm = {},
+            targetFieldList = testList, //TODO replace with actual list of all available fields
+            selectedTargetField = uiState.massChangeTargetField,
+            oldValue = uiState.massChangeOldValue,
+            newValue = uiState.massChangeNewValue,
+            onTargetFieldChange = updateMassChangeTargetField,
+            onOldValueChange = updateMassChangeOldValue,
+            onNewValueChange = updateMassChangeNewValue,
+            onConfirm = onMassChange,
             onDismiss = toggleMassChangeDialog,
-            isSelectionMode = uiState.isSelectionMode,
+            isOldValueEnabled = uiState.isMassChangeOldValueEnabled,
+            isNewValueEnabled = uiState.isMassChangeNewValueEnabled,
+            isConfirmEnabled = uiState.isMassChangeValid
         )
     }
     if (uiState.showImportDialog) {

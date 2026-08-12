@@ -335,4 +335,5 @@
     <string name="mass_change_field">Search in</string>
     <string name="mass_change_old_value">Look for</string>
     <string name="mass_change_new_value">Replace with</string>
+    <string name="replace">Replace</string>
 </resources>
