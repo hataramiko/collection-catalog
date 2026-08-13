@@ -191,8 +191,8 @@
     <string name="punctuation_colon">：</string>
     <string name="add_plate_redirect_msg">プレートを追加には、「すべてのプレート」へ移動してください</string>
     <string name="info_stats_cost">総額 =\n「すべてのプレート」+「アーカイブ」の費用\n\n正味 =\n「総額」–「アーカイブ」の価格</string>
-    <string name="deletion_message_wishlist">欲しい物は削除されました</string>
-    <string name="deletion_message_plate">｢<xliff:g name="reg_no" example="ABC-123">%s</xliff:g>｣ が削除されました</string>
+    <string name="deletion_message_wishlist">欲しい物を削除しました</string>
+    <string name="deletion_message_plate">｢<xliff:g name="reg_no" example="ABC-123">%s</xliff:g>｣ を削除しました</string>
     <string name="copied_to_clipboard">クリップボードにコピーしました</string>
     <string name="paste_success">貼り付けました</string>
     <string name="paste_failure">貼り付けが失敗しました</string>
@@ -200,7 +200,7 @@
     <string name="pasted">貼り付けました</string>
     <string name="saved_new_item">｢<xliff:g name="reg_no" example="ABC-123">%s</xliff:g>｣ を作成しました</string>
     <string name="saved_old_item">｢<xliff:g name="reg_no" example="ABC-123">%s</xliff:g>｣ を保存しました</string>
-    <string name="saved_new_collection">｢<xliff:g name="collection_name" example="Collection">%s</xliff:g>｣ を作成されました</string>
+    <string name="saved_new_collection">｢<xliff:g name="collection_name" example="Collection">%s</xliff:g>｣ を作成しました</string>
     <string name="save_new_collection">｢<xliff:g name="collection_name" example="Collection">%s</xliff:g>｣ を作成</string>
     <string name="saved_to_wishlist">欲しい物を作成しました</string>
     <string name="saved_generic">保存しました</string>
@@ -255,7 +255,7 @@
     <plurals name="unhide_wishlist_size">
         <item quantity="other">%d件の欲しい物を再表示しました</item>
     </plurals>
-    <string name="saved_old_collection">｢<xliff:g name="collection_name" example="Collection">%s</xliff:g>｣ を保存されました</string>
+    <string name="saved_old_collection">｢<xliff:g name="collection_name" example="Collection">%s</xliff:g>｣ を保存しました</string>
     <string name="transfer_from_wishlist_checkbox">欲しい物を削除</string>
     <string name="add_to_collection">コレクションに追加</string>
     <string name="selection_added_to_collection">｢<xliff:g name="collection_name" example="For trade">%s</xliff:g>｣ に追加されました</string>
@@ -264,4 +264,5 @@
     <string name="mass_change_old_value">検索する値</string>
     <string name="mass_change_new_value">置換後の値</string>
     <string name="replace">置換</string>
+    <string name="mass_change_msg_success"><xliff:g name="field" example="Type">%1$s</xliff:g>を ｢<xliff:g name="old_value" example="A">%2$s</xliff:g>｣ から ｢<xliff:g name="new_value" example="B">%3$s</xliff:g>｣ に変更しました</string>
 </resources>

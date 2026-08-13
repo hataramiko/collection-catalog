@@ -110,6 +110,6 @@ interface PlateDao {
 
     //
 
-    @RawQuery
+    @RawQuery(observedEntities = [Plate::class, WantedPlate::class, FormerPlate::class])
     suspend fun massChange(query: SupportSQLiteQuery): Int
 }

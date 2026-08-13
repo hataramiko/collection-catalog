@@ -828,11 +828,6 @@ class CatalogViewModel @Inject constructor(
 
     fun performMassChange() {
         val state = _uiState.value
-        val tableName = when (state.itemType) {
-            ItemType.PLATE -> "plates"
-            ItemType.WANTED_PLATE -> "wishlist"
-            ItemType.FORMER_PLATE -> "archive"
-        }
 
         //TODO for testing purposes only, replace with the actual list
         val columnName = when (state.massChangeTargetField) {
@@ -845,6 +840,12 @@ class CatalogViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (state.isSelectionMode) {
+                val tableName = when (state.itemType) {
+                    ItemType.PLATE -> "plates"
+                    ItemType.WANTED_PLATE -> "wishlist"
+                    ItemType.FORMER_PLATE -> "archive"
+                }
+
                 plateRepository.massChangeForSelection(
                     tableName = tableName,
                     columnName = columnName,
@@ -853,14 +854,13 @@ class CatalogViewModel @Inject constructor(
                 )
             } else {
                 plateRepository.massChangeForAll(
-                    tableName = tableName,
                     columnName = columnName,
                     oldValue = state.massChangeOldValue,
                     newValue = state.massChangeNewValue
                 )
             }
-            //clearSelection()
-            toggleMassChangeDialog()
+            getItems(state.itemType) // Refresh items with new values after the mass change
+            clearSelection()
             /*_uiState.update { // Should the dialog stay open after mass change?
                 it.copy(
                     massChangeTargetField = "",

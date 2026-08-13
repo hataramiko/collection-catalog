@@ -272,4 +272,5 @@
     <string name="mass_change_old_value">Etsittävä arvo</string>
     <string name="mass_change_new_value">Korvaava arvo</string>
     <string name="replace">Korvaa</string>
+    <string name="mass_change_msg_success">Korvattiin kentän \"<xliff:g name="field" example="Type">%1$s</xliff:g>\" arvo \"<xliff:g name="old_value" example="A">%2$s</xliff:g>\" uudella arvolla \"<xliff:g name="new_value" example="B">%3$s</xliff:g>\"</string>
 </resources>

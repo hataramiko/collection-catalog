@@ -40,6 +40,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -78,6 +79,8 @@ import com.mikohatara.collectioncatalog.util.getFileNameForExport
 import com.mikohatara.collectioncatalog.util.getTopAppBarColor
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun CatalogScreen(
@@ -91,6 +94,7 @@ fun CatalogScreen(
     val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     CatalogScreen(
         itemList = uiState.items,
@@ -99,6 +103,7 @@ fun CatalogScreen(
         viewModel = viewModel,
         userPreferences = userPreferences,
         context = context,
+        coroutineScope = coroutineScope,
         onBack = onBack,
         onAddItem = onAddItem,
         onItemClick = onItemClick,
@@ -141,6 +146,7 @@ private fun CatalogScreen(
     viewModel: CatalogViewModel,
     userPreferences: UserPreferences,
     context: Context,
+    coroutineScope: CoroutineScope,
     onBack: () -> Unit,
     onAddItem: () -> Unit,
     onItemClick: (Item) -> Unit,
@@ -481,7 +487,19 @@ private fun CatalogScreen(
             onTargetFieldChange = updateMassChangeTargetField,
             onOldValueChange = updateMassChangeOldValue,
             onNewValueChange = updateMassChangeNewValue,
-            onConfirm = onMassChange,
+            onConfirm = {
+                coroutineScope.launch {
+                    onMassChange()
+                    val toast = context.getString(
+                        R.string.mass_change_msg_success,
+                        uiState.massChangeTargetField,
+                        uiState.massChangeOldValue,
+                        uiState.massChangeNewValue
+                    )
+                    context.toast(text = toast, duration = Toast.LENGTH_LONG)
+                    toggleMassChangeDialog()
+                }
+            },
             onDismiss = toggleMassChangeDialog,
             isOldValueEnabled = uiState.isMassChangeOldValueEnabled,
             isNewValueEnabled = uiState.isMassChangeNewValueEnabled,

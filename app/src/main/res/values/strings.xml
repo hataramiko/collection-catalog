@@ -336,4 +336,5 @@
     <string name="mass_change_old_value">Look for</string>
     <string name="mass_change_new_value">Replace with</string>
     <string name="replace">Replace</string>
+    <string name="mass_change_msg_success">Replaced the <xliff:g name="field" example="Type">%1$s</xliff:g> value \"<xliff:g name="old_value" example="A">%2$s</xliff:g>\" with \"<xliff:g name="new_value" example="B">%3$s</xliff:g>\"</string>
 </resources>
