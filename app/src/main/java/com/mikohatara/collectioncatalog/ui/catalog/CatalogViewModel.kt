@@ -20,6 +20,7 @@ import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
+import com.mikohatara.collectioncatalog.util.MASS_CHANGE_FIELDS
 import com.mikohatara.collectioncatalog.util.exportItemDetailsToCsv
 import com.mikohatara.collectioncatalog.util.getCurrencyFractions
 import com.mikohatara.collectioncatalog.util.getCurrentYear
@@ -661,6 +662,28 @@ class CatalogViewModel @Inject constructor(
         return _archivalDateSliderRange ?: getMinArchivalDate()..getMaxArchivalDate()
     }
 
+    fun getMassChangeToast(context: Context): String {
+        val state = _uiState.value
+        val targetField = MASS_CHANGE_FIELDS
+            .firstOrNull { it.databaseColumnName == state.massChangeTargetField }
+        val targetFieldLabel = targetField?.getLabel(context) ?: state.massChangeTargetField
+
+        return if (state.isSelectionMode) {
+            context.getString(
+                R.string.mass_change_selection_msg_success,
+                targetFieldLabel,
+                state.massChangeNewValue
+            )
+        } else {
+            context.getString(
+                R.string.mass_change_msg_success,
+                targetFieldLabel,
+                state.massChangeOldValue,
+                state.massChangeNewValue
+            )
+        }
+    }
+
     fun hideSelectedItems() {
         val selectedItemIds = _uiState.value.selectedItemIds
         _uiState.update { it.copy(hiddenItemIds = it.hiddenItemIds + selectedItemIds) }
@@ -828,15 +851,8 @@ class CatalogViewModel @Inject constructor(
 
     fun performMassChange() {
         val state = _uiState.value
-
-        //TODO for testing purposes only, replace with the actual list
-        val columnName = when (state.massChangeTargetField) {
-            "Country" -> "country"
-            "Region" -> "region_1st"
-            "Type" -> "type"
-            "Year" -> "year"
-            else -> "country"
-        }
+        val columnName = state.massChangeTargetField
+        if (columnName.isBlank()) return // Prevent SQL query if blank
 
         viewModelScope.launch {
             if (state.isSelectionMode) {

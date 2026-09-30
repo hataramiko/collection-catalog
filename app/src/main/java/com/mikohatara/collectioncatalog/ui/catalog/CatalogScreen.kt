@@ -76,6 +76,7 @@ import com.mikohatara.collectioncatalog.ui.components.SortByBottomSheet
 import com.mikohatara.collectioncatalog.ui.components.TopRow
 import com.mikohatara.collectioncatalog.ui.components.WishlistCard
 import com.mikohatara.collectioncatalog.util.getFileNameForExport
+import com.mikohatara.collectioncatalog.util.getMassChangeFields
 import com.mikohatara.collectioncatalog.util.getTopAppBarColor
 import com.mikohatara.collectioncatalog.util.toItemDetails
 import com.mikohatara.collectioncatalog.util.toast
@@ -477,10 +478,8 @@ private fun CatalogScreen(
         }
     )
     if (uiState.showMassChangeDialog) {
-        val testList = listOf("Country", "Region", "Type", "Year") //TODO see below
-
         MassChangeDialog(
-            targetFieldList = testList, //TODO replace with actual list of all available fields
+            targetFieldList = getMassChangeFields(),
             selectedTargetField = uiState.massChangeTargetField,
             oldValue = uiState.massChangeOldValue,
             newValue = uiState.massChangeNewValue,
@@ -490,12 +489,7 @@ private fun CatalogScreen(
             onConfirm = {
                 coroutineScope.launch {
                     onMassChange()
-                    val toast = context.getString(
-                        R.string.mass_change_msg_success,
-                        uiState.massChangeTargetField,
-                        uiState.massChangeOldValue,
-                        uiState.massChangeNewValue
-                    )
+                    val toast = viewModel.getMassChangeToast(context)
                     context.toast(text = toast, duration = Toast.LENGTH_LONG)
                     toggleMassChangeDialog()
                 }

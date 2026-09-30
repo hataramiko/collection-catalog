@@ -22,6 +22,7 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -177,7 +178,8 @@ fun DropdownMenuField(
     values: List<String>,
     selectedValue: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    hasDividerBeforeIndex: (index: Int) -> Boolean = { false }
 ) {
    var isExpanded by remember { mutableStateOf(false) }
 
@@ -209,13 +211,19 @@ fun DropdownMenuField(
             ExposedDropdownMenu(
                 expanded = isExpanded,
                 onDismissRequest = { isExpanded = false },
-                shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                shape = RoundedCornerShape(16.dp)//bottomStart = 16.dp, bottomEnd = 16.dp)
             ) {
-                values.forEach {
+                values.forEachIndexed { index, string ->
+                    if (hasDividerBeforeIndex(index)) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        )
+                    }
+
                     DropdownMenuItem(
-                        text = { Text(it) },
+                        text = { Text(string) },
                         onClick = {
-                            onValueChange(it)
+                            onValueChange(string)
                             isExpanded = false
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding

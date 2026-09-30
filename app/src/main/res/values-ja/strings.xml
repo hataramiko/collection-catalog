@@ -265,4 +265,5 @@
     <string name="mass_change_new_value">置換後の値</string>
     <string name="replace">置換</string>
     <string name="mass_change_msg_success"><xliff:g name="field" example="Type">%1$s</xliff:g>を ｢<xliff:g name="old_value" example="A">%2$s</xliff:g>｣ から ｢<xliff:g name="new_value" example="B">%3$s</xliff:g>｣ に変更しました</string>
+    <string name="mass_change_selection_msg_success">選択の<xliff:g name="field" example="Type">%1$s</xliff:g>を ｢<xliff:g name="new_value" example="B">%2$s</xliff:g>｣ に変更しました</string>
 </resources>

@@ -25,10 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.mikohatara.collectioncatalog.R
+import com.mikohatara.collectioncatalog.util.MassChangeField
+import com.mikohatara.collectioncatalog.util.getLabel
 
 @Composable
 fun MassChangeDialog(
-    targetFieldList: List<String>,
+    targetFieldList: List<MassChangeField>,
     selectedTargetField: String,
     oldValue: String,
     newValue: String,
@@ -43,6 +45,11 @@ fun MassChangeDialog(
     modifier: Modifier = Modifier,
     label: String = stringResource(R.string.mass_change)
 ) {
+    val targetFieldToLabelMap = targetFieldList.associateWith { it.getLabel() }
+    val targetFieldLabelList = targetFieldList.map { targetFieldToLabelMap[it].orEmpty() }
+    val selectedValue = targetFieldList.firstOrNull { it.databaseColumnName == selectedTargetField }
+    val selectedValueLabel = selectedValue?.let { targetFieldToLabelMap[it] }.orEmpty()
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -65,9 +72,12 @@ fun MassChangeDialog(
                 )
                 DropdownMenuField(
                     label = stringResource(R.string.mass_change_field),
-                    values = targetFieldList,
-                    selectedValue = selectedTargetField,
+                    values = targetFieldLabelList,
+                    selectedValue = selectedValueLabel,
                     onValueChange = onTargetFieldChange,
+                    hasDividerBeforeIndex = { index ->
+                        targetFieldList.getOrNull(index)?.hasDividerBefore == true
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)

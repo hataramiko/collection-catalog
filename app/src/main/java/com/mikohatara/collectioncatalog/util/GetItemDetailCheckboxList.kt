@@ -1,97 +1,77 @@
 package com.mikohatara.collectioncatalog.util
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.mikohatara.collectioncatalog.R
 import com.mikohatara.collectioncatalog.data.ItemDetails
+import kotlin.reflect.KProperty1
 
 data class ItemDetailsCheckbox(
     val label: String,
     val value: String? = null
 )
 
-@Composable
-fun getItemDetailsCheckboxList(itemDetails: ItemDetails): List<ItemDetailsCheckbox> {
-    val checkboxList = mutableListOf<ItemDetailsCheckbox>()
+private data class CheckboxField(
+    @StringRes val labelResId: Int,
+    val property: KProperty1<ItemDetails, *>,
+    @StringRes val prefixResId: Int? = null
+)
 
-    checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.reg_no), itemDetails.regNo))
+private val CHECKBOX_FIELDS = listOf(
+    CheckboxField(R.string.reg_no, ItemDetails::regNo),
     // CommonDetails
-    checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.country), itemDetails.country))
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.subdivision), itemDetails.region1st))
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.region), itemDetails.region2nd))
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.region_second), itemDetails.region3rd))
-    checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.type), itemDetails.type))
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.period_start), itemDetails.periodStart?.toString())
-    )
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.period_end), itemDetails.periodEnd?.toString())
-    )
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.year), itemDetails.year?.toString()))
+    CheckboxField(R.string.country, ItemDetails::country),
+    CheckboxField(R.string.subdivision, ItemDetails::region1st),
+    CheckboxField(R.string.region, ItemDetails::region2nd),
+    CheckboxField(R.string.region_second, ItemDetails::region3rd),
+    CheckboxField(R.string.type, ItemDetails::type),
+    CheckboxField(R.string.period_start, ItemDetails::periodStart),
+    CheckboxField(R.string.period_end, ItemDetails::periodEnd),
+    CheckboxField(R.string.year, ItemDetails::year),
     // UniqueDetails, minus regNo & imagePath
     // regNo is on top of the list, imagePath is a separate item
-    checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.notes), itemDetails.notes))
-    checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.vehicle), itemDetails.vehicle))
-    checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.date), itemDetails.date))
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.cost), itemDetails.cost?.toString()))
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.value), itemDetails.value?.toString()))
-    checkboxList.add(ItemDetailsCheckbox(stringResource(R.string.location), itemDetails.status))
+    CheckboxField(R.string.notes, ItemDetails::notes),
+    CheckboxField(R.string.vehicle, ItemDetails::vehicle),
+    CheckboxField(R.string.date, ItemDetails::date),
+    CheckboxField(R.string.cost, ItemDetails::cost),
+    CheckboxField(R.string.value, ItemDetails::value),
+    CheckboxField(R.string.location, ItemDetails::status),
     // Size
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.width), itemDetails.width?.toString()))
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.height), itemDetails.height?.toString()))
-    checkboxList
-        .add(ItemDetailsCheckbox(stringResource(R.string.weight), itemDetails.weight?.toString()))
+    CheckboxField(R.string.width, ItemDetails::width),
+    CheckboxField(R.string.height, ItemDetails::height),
+    CheckboxField(R.string.weight, ItemDetails::weight),
     // Color
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.color_main), itemDetails.colorMain)
-    )
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.color_secondary), itemDetails.colorSecondary)
-    )
+    CheckboxField(R.string.color_main, ItemDetails::colorMain),
+    CheckboxField(R.string.color_secondary, ItemDetails::colorSecondary),
     // Source
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.source) + "・" + stringResource(R.string.source_name),
-        itemDetails.sourceName)
-    )
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.source) + "・" + stringResource(R.string.source_alias),
-        itemDetails.sourceAlias)
-    )
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.source) + "・" + stringResource(R.string.source_type),
-        itemDetails.sourceType)
-    )
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.source) + "・" + stringResource(R.string.source_details),
-        itemDetails.sourceDetails)
-    )
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.source) + "・" + stringResource(R.string.source_country),
-        itemDetails.sourceCountry)
-    )
+    CheckboxField(R.string.source_name, ItemDetails::sourceName, R.string.source),
+    CheckboxField(R.string.source_alias, ItemDetails::sourceAlias, R.string.source),
+    CheckboxField(R.string.source_type, ItemDetails::sourceType, R.string.source),
+    CheckboxField(R.string.source_details, ItemDetails::sourceDetails, R.string.source),
+    CheckboxField(R.string.source_country, ItemDetails::sourceCountry, R.string.source),
     // ArchivalDetails
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.archival_date), itemDetails.archivalDate))
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.recipient_name), itemDetails.recipientName))
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.recipient_alias), itemDetails.recipientAlias))
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.archival_reason), itemDetails.archivalType))
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.archival_details), itemDetails.archivalDetails))
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.sold_price), itemDetails.price?.toString()))
-    checkboxList.add(ItemDetailsCheckbox(
-        stringResource(R.string.recipient_country), itemDetails.recipientCountry))
+    CheckboxField(R.string.archival_date, ItemDetails::archivalDate),
+    CheckboxField(R.string.recipient_name, ItemDetails::recipientName),
+    CheckboxField(R.string.recipient_alias, ItemDetails::recipientAlias),
+    CheckboxField(R.string.archival_reason, ItemDetails::archivalType),
+    CheckboxField(R.string.archival_details, ItemDetails::archivalDetails),
+    CheckboxField(R.string.sold_price, ItemDetails::price),
+    CheckboxField(R.string.recipient_country, ItemDetails::recipientCountry)
+)
 
-    return checkboxList
+@Composable
+fun getItemDetailsCheckboxList(itemDetails: ItemDetails): List<ItemDetailsCheckbox> {
+    return CHECKBOX_FIELDS.map { field ->
+        val label = if (field.prefixResId != null) {
+            "${stringResource(field.prefixResId)}・${stringResource(field.labelResId)}"
+        } else {
+            stringResource(field.labelResId)
+        }
+
+        ItemDetailsCheckbox(
+            label = label,
+            value = field.property.get(itemDetails)?.toString()
+        )
+    }
 }

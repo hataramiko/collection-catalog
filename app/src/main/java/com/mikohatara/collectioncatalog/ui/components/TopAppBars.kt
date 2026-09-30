@@ -128,6 +128,7 @@ fun CatalogTopAppBar(
                             text = stringResource(R.string.mass_change),
                             enabled = onMassChange != null
                         )
+                        DropdownMenuDivider()
                         ModifiedDropdownMenuItem(
                             onClick = {
                                 onAddToCollection?.let { it() }
