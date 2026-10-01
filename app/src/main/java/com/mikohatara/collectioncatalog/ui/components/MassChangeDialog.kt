@@ -45,10 +45,10 @@ fun MassChangeDialog(
     modifier: Modifier = Modifier,
     label: String = stringResource(R.string.mass_change)
 ) {
-    val targetFieldToLabelMap = targetFieldList.associateWith { it.getLabel() }
-    val targetFieldLabelList = targetFieldList.map { targetFieldToLabelMap[it].orEmpty() }
-    val selectedValue = targetFieldList.firstOrNull { it.databaseColumnName == selectedTargetField }
-    val selectedValueLabel = selectedValue?.let { targetFieldToLabelMap[it] }.orEmpty()
+    val labelToFieldMap = targetFieldList.associateBy { it.getLabel() }
+    val fieldLabelList = targetFieldList.map { it.getLabel() }
+    val selectedField = targetFieldList.firstOrNull { it.databaseColumnName == selectedTargetField }
+    val selectedFieldLabel = selectedField?.getLabel().orEmpty()
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -72,9 +72,11 @@ fun MassChangeDialog(
                 )
                 DropdownMenuField(
                     label = stringResource(R.string.mass_change_field),
-                    values = targetFieldLabelList,
-                    selectedValue = selectedValueLabel,
-                    onValueChange = onTargetFieldChange,
+                    values = fieldLabelList,
+                    selectedValue = selectedFieldLabel,
+                    onValueChange = { label ->
+                        labelToFieldMap[label]?.let { onTargetFieldChange(it.databaseColumnName) }
+                    },
                     hasDividerBeforeIndex = { index ->
                         targetFieldList.getOrNull(index)?.hasDividerBefore == true
                     },

@@ -50,7 +50,8 @@ interface PlateRepository {
 
     //
 
-    suspend fun massChangeForAll(
+    suspend fun massChangeForEntireTable(
+        tableName: String,
         columnName: String,
         oldValue: String,
         newValue: String
@@ -129,16 +130,17 @@ class OfflinePlateRepository @Inject constructor(
 
     //
 
-    override suspend fun massChangeForAll(columnName: String, oldValue: String, newValue: String) {
-        val tables = listOf("plates", "wishlist", "archive")
-
-        tables.forEach { tableName ->
-            val query = SimpleSQLiteQuery(
-                "UPDATE $tableName SET $columnName = ? WHERE $columnName = ?",
-                arrayOf(newValue, oldValue)
-            )
-            plateDao.massChange(query)
-        }
+    override suspend fun massChangeForEntireTable(
+        tableName: String,
+        columnName: String,
+        oldValue: String,
+        newValue: String
+    ) {
+        val query = SimpleSQLiteQuery(
+            "UPDATE $tableName SET $columnName = ? WHERE $columnName = ?",
+            arrayOf(newValue, oldValue)
+        )
+        plateDao.massChange(query)
     }
 
     override suspend fun massChangeForSelection(

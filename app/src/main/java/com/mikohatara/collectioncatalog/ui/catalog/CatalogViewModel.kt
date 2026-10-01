@@ -24,6 +24,7 @@ import com.mikohatara.collectioncatalog.util.MASS_CHANGE_FIELDS
 import com.mikohatara.collectioncatalog.util.exportItemDetailsToCsv
 import com.mikohatara.collectioncatalog.util.getCurrencyFractions
 import com.mikohatara.collectioncatalog.util.getCurrentYear
+import com.mikohatara.collectioncatalog.util.getMassChangeFields
 import com.mikohatara.collectioncatalog.util.getMeasurementUnitFractions
 import com.mikohatara.collectioncatalog.util.importFormerPlatesFromCsv
 import com.mikohatara.collectioncatalog.util.importPlatesFromCsv
@@ -188,11 +189,15 @@ class CatalogViewModel @Inject constructor(
     }
 
     fun updateMassChangeTargetField(field: String) {
-        _uiState.update {
-            it.copy(
+        _uiState.update { state ->
+            val isValidField = getMassChangeFields(state.itemType)
+                .any { it.databaseColumnName == field }
+
+            state.copy(
                 massChangeTargetField = field,
-                isMassChangeOldValueEnabled = !it.isSelectionMode && field.isNotBlank(),
-                isMassChangeNewValueEnabled = field.isNotBlank() && (it.isSelectionMode || it.massChangeOldValue.isNotEmpty())
+                isMassChangeOldValueEnabled = isValidField && !state.isSelectionMode,
+                isMassChangeNewValueEnabled = isValidField
+                        && (state.isSelectionMode || state.massChangeOldValue.isNotEmpty())
             )
         }
     }
@@ -852,16 +857,18 @@ class CatalogViewModel @Inject constructor(
     fun performMassChange() {
         val state = _uiState.value
         val columnName = state.massChangeTargetField
-        if (columnName.isBlank()) return // Prevent SQL query if blank
+        // Prevent SQL query if column name is invalid
+        if (getMassChangeFields(state.itemType)
+            .none { it.databaseColumnName == columnName }) return
+
+        val tableName = when (state.itemType) {
+            ItemType.PLATE -> "plates"
+            ItemType.WANTED_PLATE -> "wishlist"
+            ItemType.FORMER_PLATE -> "archive"
+        }
 
         viewModelScope.launch {
             if (state.isSelectionMode) {
-                val tableName = when (state.itemType) {
-                    ItemType.PLATE -> "plates"
-                    ItemType.WANTED_PLATE -> "wishlist"
-                    ItemType.FORMER_PLATE -> "archive"
-                }
-
                 plateRepository.massChangeForSelection(
                     tableName = tableName,
                     columnName = columnName,
@@ -869,7 +876,8 @@ class CatalogViewModel @Inject constructor(
                     newValue = state.massChangeNewValue
                 )
             } else {
-                plateRepository.massChangeForAll(
+                plateRepository.massChangeForEntireTable(
+                    tableName = tableName,
                     columnName = columnName,
                     oldValue = state.massChangeOldValue,
                     newValue = state.massChangeNewValue
@@ -877,16 +885,6 @@ class CatalogViewModel @Inject constructor(
             }
             getItems(state.itemType) // Refresh items with new values after the mass change
             clearSelection()
-            /*_uiState.update { // Should the dialog stay open after mass change?
-                it.copy(
-                    massChangeTargetField = "",
-                    massChangeOldValue = "",
-                    massChangeNewValue = "",
-                    isMassChangeOldValueEnabled = false,
-                    isMassChangeNewValueEnabled = false,
-                    isMassChangeValid = false
-                )
-            }*/
         }
     }
 

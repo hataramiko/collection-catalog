@@ -479,7 +479,7 @@ private fun CatalogScreen(
     )
     if (uiState.showMassChangeDialog) {
         MassChangeDialog(
-            targetFieldList = getMassChangeFields(),
+            targetFieldList = getMassChangeFields(uiState.itemType),
             selectedTargetField = uiState.massChangeTargetField,
             oldValue = uiState.massChangeOldValue,
             newValue = uiState.massChangeNewValue,
