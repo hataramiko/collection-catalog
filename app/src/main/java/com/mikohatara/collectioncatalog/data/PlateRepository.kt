@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 interface PlateRepository {
+    // All plates
     suspend fun addPlate(plate: Plate): Long
     suspend fun addPlateWithCollections(plate: Plate, collectionIds: List<Int>)
     suspend fun addPlatesToCollection(plateIds: List<Int>, collectionId: Int)
@@ -22,8 +23,7 @@ interface PlateRepository {
     fun getPlateStream(id: Int): Flow<Plate?>
     fun getPlateWithCollectionsStream(id: Int): Flow<PlateWithCollections?>
 
-    //
-
+    // Wishlist
     suspend fun addWantedPlate(plate: WantedPlate)
     suspend fun addWantedPlates(plates: List<WantedPlate>)
 
@@ -35,8 +35,7 @@ interface PlateRepository {
 
     fun getWantedPlateStream(id: Int): Flow<WantedPlate?>
 
-    //
-
+    // Archive
     suspend fun addFormerPlate(plate: FormerPlate)
     suspend fun addFormerPlates(plates: List<FormerPlate>)
 
@@ -48,14 +47,13 @@ interface PlateRepository {
 
     fun getFormerPlateStream(id: Int): Flow<FormerPlate?>
 
-    //
-
+    // Misc
     suspend fun massChangeForEntireTable(
         tableName: String,
         columnName: String,
         oldValue: String,
         newValue: String
-    )
+    ): Int
 
     suspend fun massChangeForSelection(
         tableName: String,
@@ -68,6 +66,7 @@ interface PlateRepository {
 class OfflinePlateRepository @Inject constructor(
     private val plateDao: PlateDao
 ) : PlateRepository {
+    // All plates
     override suspend fun addPlate(plate: Plate) = plateDao.insertPlate(plate)
     override suspend fun addPlateWithCollections(plate: Plate, collectionIds: List<Int>) =
         plateDao.insertPlateWithCollections(plate, collectionIds)
@@ -94,8 +93,7 @@ class OfflinePlateRepository @Inject constructor(
         return plateDao.getPlateWithCollections(id).map { it }
     }
 
-    //
-
+    // Wishlist
     override suspend fun addWantedPlate(plate: WantedPlate) = plateDao.insertWantedPlate(plate)
     override suspend fun addWantedPlates(plates: List<WantedPlate>) =
         plateDao.insertWantedPlates(plates)
@@ -111,8 +109,7 @@ class OfflinePlateRepository @Inject constructor(
         return plateDao.getWantedPlate(id).map { it }
     }
 
-    //
-
+    // Archive
     override suspend fun addFormerPlate(plate: FormerPlate) = plateDao.insertFormerPlate(plate)
     override suspend fun addFormerPlates(plates: List<FormerPlate>) =
         plateDao.insertFormerPlates(plates)
@@ -128,19 +125,18 @@ class OfflinePlateRepository @Inject constructor(
         return plateDao.getFormerPlate(id).map { it }
     }
 
-    //
-
+    // Misc
     override suspend fun massChangeForEntireTable(
         tableName: String,
         columnName: String,
         oldValue: String,
         newValue: String
-    ) {
+    ): Int {
         val query = SimpleSQLiteQuery(
             "UPDATE $tableName SET $columnName = ? WHERE $columnName = ?",
             arrayOf(newValue, oldValue)
         )
-        plateDao.massChange(query)
+        return plateDao.massChangeWithCount(query)
     }
 
     override suspend fun massChangeForSelection(
@@ -155,6 +151,6 @@ class OfflinePlateRepository @Inject constructor(
             "UPDATE $tableName SET $columnName = ? WHERE id IN ($selectionIdsSqlSafe)",
             arrayOf(newValue)
         )
-        return plateDao.massChange(query)
+        return plateDao.massChangeWithCount(query)
     }
 }

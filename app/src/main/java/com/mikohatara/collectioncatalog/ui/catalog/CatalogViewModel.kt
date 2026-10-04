@@ -20,7 +20,6 @@ import com.mikohatara.collectioncatalog.data.UserPreferences
 import com.mikohatara.collectioncatalog.data.UserPreferencesRepository
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.COLLECTION_ID
 import com.mikohatara.collectioncatalog.ui.navigation.CollectionCatalogDestinationArgs.ITEM_TYPE
-import com.mikohatara.collectioncatalog.util.MASS_CHANGE_FIELDS
 import com.mikohatara.collectioncatalog.util.exportItemDetailsToCsv
 import com.mikohatara.collectioncatalog.util.getCurrencyFractions
 import com.mikohatara.collectioncatalog.util.getCurrentYear
@@ -667,22 +666,23 @@ class CatalogViewModel @Inject constructor(
         return _archivalDateSliderRange ?: getMinArchivalDate()..getMaxArchivalDate()
     }
 
-    fun getMassChangeToast(context: Context): String {
+    fun getMassChangeToast(context: Context, size: Int, isSelectionMode: Boolean): String {
         val state = _uiState.value
-        val targetField = MASS_CHANGE_FIELDS
-            .firstOrNull { it.databaseColumnName == state.massChangeTargetField }
-        val targetFieldLabel = targetField?.getLabel(context) ?: state.massChangeTargetField
 
-        return if (state.isSelectionMode) {
-            context.getString(
-                R.string.mass_change_selection_msg_success,
-                targetFieldLabel,
+        return if (size == 0) {
+            context.getString(R.string.mass_change_msg_failure)
+        } else if (isSelectionMode) {
+            context.resources.getQuantityString(
+                R.plurals.mass_change_msg_success_size_selection,
+                size,
+                size,
                 state.massChangeNewValue
             )
         } else {
-            context.getString(
-                R.string.mass_change_msg_success,
-                targetFieldLabel,
+            context.resources.getQuantityString(
+                R.plurals.mass_change_msg_success_size_all,
+                size,
+                size,
                 state.massChangeOldValue,
                 state.massChangeNewValue
             )
@@ -854,12 +854,12 @@ class CatalogViewModel @Inject constructor(
         }
     }
 
-    fun performMassChange() {
+    suspend fun performMassChange(): Int {
         val state = _uiState.value
         val columnName = state.massChangeTargetField
         // Prevent SQL query if column name is invalid
         if (getMassChangeFields(state.itemType)
-            .none { it.databaseColumnName == columnName }) return
+            .none { it.databaseColumnName == columnName }) return 0
 
         val tableName = when (state.itemType) {
             ItemType.PLATE -> "plates"
@@ -867,25 +867,25 @@ class CatalogViewModel @Inject constructor(
             ItemType.FORMER_PLATE -> "archive"
         }
 
-        viewModelScope.launch {
-            if (state.isSelectionMode) {
-                plateRepository.massChangeForSelection(
-                    tableName = tableName,
-                    columnName = columnName,
-                    selectionIds = state.selectedItemIds.toList(),
-                    newValue = state.massChangeNewValue
-                )
-            } else {
-                plateRepository.massChangeForEntireTable(
-                    tableName = tableName,
-                    columnName = columnName,
-                    oldValue = state.massChangeOldValue,
-                    newValue = state.massChangeNewValue
-                )
-            }
-            getItems(state.itemType) // Refresh items with new values after the mass change
-            clearSelection()
+        val massChangeSize = if (state.isSelectionMode) {
+            plateRepository.massChangeForSelection(
+                tableName = tableName,
+                columnName = columnName,
+                selectionIds = state.selectedItemIds.toList(),
+                newValue = state.massChangeNewValue
+            )
+        } else {
+            plateRepository.massChangeForEntireTable(
+                tableName = tableName,
+                columnName = columnName,
+                oldValue = state.massChangeOldValue,
+                newValue = state.massChangeNewValue
+            )
         }
+        getItems(state.itemType) // Refresh items with new values after the mass change
+        clearSelection()
+
+        return massChangeSize
     }
 
     private fun getTopBarTitle(): String {

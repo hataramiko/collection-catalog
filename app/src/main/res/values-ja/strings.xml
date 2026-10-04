@@ -266,4 +266,11 @@
     <string name="replace">置換</string>
     <string name="mass_change_msg_success"><xliff:g name="field" example="Type">%1$s</xliff:g>を ｢<xliff:g name="old_value" example="A">%2$s</xliff:g>｣ から ｢<xliff:g name="new_value" example="B">%3$s</xliff:g>｣ に変更しました</string>
     <string name="mass_change_selection_msg_success">選択の<xliff:g name="field" example="Type">%1$s</xliff:g>を ｢<xliff:g name="new_value" example="B">%2$s</xliff:g>｣ に変更しました</string>
+    <string name="mass_change_msg_failure">一致する置換対象が見つかりませんでした</string>
+    <plurals name="mass_change_msg_success_size_all">
+        <item quantity="other">%1$d件の ｢<xliff:g name="old_value" example="A">%2$s</xliff:g>｣ を ｢<xliff:g name="new_value" example="B">%3$s</xliff:g>｣ に置換しました</item>
+    </plurals>
+    <plurals name="mass_change_msg_success_size_selection">
+        <item quantity="other">%1$d件の値を ｢<xliff:g name="new_value" example="B">%2$s</xliff:g>｣ に置換しました</item>
+    </plurals>
 </resources>

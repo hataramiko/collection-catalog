@@ -111,6 +111,7 @@ fun CatalogScreen(
         onOpenDrawer = onOpenDrawer,
         onImportHelp = onImportHelp,
         onMassChange = viewModel::performMassChange,
+        getMassChangeToast = viewModel::getMassChangeToast,
         onAddPlatesToCollection = { viewModel.addPlatesToCollection(it) },
         updateTopRowVisibility = viewModel::updateTopRowVisibility,
         toggleSortByBottomSheet = viewModel::toggleSortByBottomSheet,
@@ -153,7 +154,8 @@ private fun CatalogScreen(
     onItemClick: (Item) -> Unit,
     onOpenDrawer: () -> Unit,
     onImportHelp: () -> Unit,
-    onMassChange: () -> Unit,
+    onMassChange: suspend () -> Int,
+    getMassChangeToast: (Context, Int, Boolean) -> String,
     onAddPlatesToCollection: (Int) -> Unit,
     updateTopRowVisibility: (Int, Float) -> Unit,
     toggleSortByBottomSheet: () -> Unit,
@@ -488,8 +490,9 @@ private fun CatalogScreen(
             onNewValueChange = updateMassChangeNewValue,
             onConfirm = {
                 coroutineScope.launch {
-                    onMassChange()
-                    val toast = viewModel.getMassChangeToast(context)
+                    val isSelectionMode = uiState.isSelectionMode
+                    val massChangeSize = onMassChange()
+                    val toast = getMassChangeToast(context, massChangeSize, isSelectionMode)
                     context.toast(text = toast, duration = Toast.LENGTH_LONG)
                     toggleMassChangeDialog()
                 }

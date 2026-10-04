@@ -338,4 +338,13 @@
     <string name="replace">Replace</string>
     <string name="mass_change_msg_success">Replaced the <xliff:g name="field" example="Type">%1$s</xliff:g> value \"<xliff:g name="old_value" example="A">%2$s</xliff:g>\" with \"<xliff:g name="new_value" example="B">%3$s</xliff:g>\"</string>
     <string name="mass_change_selection_msg_success">Replaced the <xliff:g name="field" example="Type">%1$s</xliff:g> value of the selected with \"<xliff:g name="new_value" example="B">%2$s</xliff:g>\"</string>
+    <string name="mass_change_msg_failure">Found no matching values to replace</string>
+    <plurals name="mass_change_msg_success_size_all">
+        <item quantity="one">Replaced %1$d \"<xliff:g name="old_value" example="A">%2$s</xliff:g>\" value with \"<xliff:g name="new_value" example="B">%3$s</xliff:g>\"</item>
+        <item quantity="other">Replaced %1$d \"<xliff:g name="old_value" example="A">%2$s</xliff:g>\" values with \"<xliff:g name="new_value" example="B">%3$s</xliff:g>\"</item>
+    </plurals>
+    <plurals name="mass_change_msg_success_size_selection">
+        <item quantity="one">Replaced %1$d value with \"<xliff:g name="new_value" example="B">%2$s</xliff:g>\"</item>
+        <item quantity="other">Replaced %1$d values with \"<xliff:g name="new_value" example="B">%2$s</xliff:g>\"</item>
+    </plurals>
 </resources>

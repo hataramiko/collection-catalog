@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlateDao {
+    // All plates
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPlate(plate: Plate): Long
 
@@ -68,8 +69,7 @@ interface PlateDao {
     @Query("SELECT * from plates WHERE id = :id")
     fun getPlateWithCollections(id: Int): Flow<PlateWithCollections?>
 
-    //
-
+    // Wishlist
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWantedPlate(wantedPlate: WantedPlate)
 
@@ -88,8 +88,7 @@ interface PlateDao {
     @Query("SELECT * from wishlist WHERE id = :id")
     fun getWantedPlate(id: Int): Flow<WantedPlate?>
 
-    //
-
+    // Archive
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFormerPlate(formerPlate: FormerPlate)
 
@@ -108,8 +107,16 @@ interface PlateDao {
     @Query("SELECT * from archive WHERE id = :id")
     fun getFormerPlate(id: Int): Flow<FormerPlate?>
 
-    //
-
+    // Misc
     @RawQuery(observedEntities = [Plate::class, WantedPlate::class, FormerPlate::class])
     suspend fun massChange(query: SupportSQLiteQuery): Int
+
+    @Query("SELECT changes()")
+    suspend fun getChangesCount(): Int
+
+    @Transaction
+    suspend fun massChangeWithCount(query: SupportSQLiteQuery): Int {
+        massChange(query)
+        return getChangesCount()
+    }
 }

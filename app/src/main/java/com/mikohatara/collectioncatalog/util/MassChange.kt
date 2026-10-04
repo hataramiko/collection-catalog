@@ -79,7 +79,7 @@ val MASS_CHANGE_FIELDS: List<MassChangeField> = listOf(
 
     // ArchivalDetails
     //TODO DatePickerField: MassChangeField(ItemDetails::archivalDate, "archival_date", R.string.archival_date, R.string.archival),
-    MassChangeField(ItemDetails::archivalType, "archival_type", R.string.archival_reason, R.string.archival,
+    MassChangeField(ItemDetails::archivalType, "archival_reason", R.string.archival_reason, R.string.archival,
         hasDividerBefore = true, supportedItemTypes = setOf(ItemType.FORMER_PLATE)),
     //TODO Long: MassChangeField(ItemDetails::price, "price", R.string.sold_price, R.string.archival, Long::class),
     MassChangeField(ItemDetails::recipientName, "recipient_name", R.string.recipient_name, R.string.archival,

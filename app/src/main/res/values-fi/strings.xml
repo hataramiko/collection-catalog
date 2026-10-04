@@ -274,4 +274,13 @@
     <string name="replace">Korvaa</string>
     <string name="mass_change_msg_success">Korvattiin kentän \"<xliff:g name="field" example="Type">%1$s</xliff:g>\" arvo \"<xliff:g name="old_value" example="A">%2$s</xliff:g>\" uudella arvolla \"<xliff:g name="new_value" example="B">%3$s</xliff:g>\"</string>
     <string name="mass_change_selection_msg_success">Korvattiin valitut \"<xliff:g name="field" example="Type">%1$s</xliff:g>\" -arvot uudella arvolla \"<xliff:g name="new_value" example="B">%2$s</xliff:g>\"</string>
+    <string name="mass_change_msg_failure">Etsittyä arvoa ei löydetty korvattavaksi</string>
+    <plurals name="mass_change_msg_success_size_all">
+        <item quantity="one">Korvattiin \"<xliff:g name="old_value" example="A">%2$s</xliff:g>\" arvolla \"<xliff:g name="new_value" example="B">%3$s</xliff:g>\" kertaalleen</item>
+        <item quantity="other">Korvattiin \"<xliff:g name="old_value" example="A">%2$s</xliff:g>\" arvolla \"<xliff:g name="new_value" example="B">%3$s</xliff:g>\" %1$d kertaa</item>
+    </plurals>
+    <plurals name="mass_change_msg_success_size_selection">
+        <item quantity="one">Korvattiin %1$d arvo \"<xliff:g name="new_value" example="B">%2$s</xliff:g>\" arvolla</item>
+        <item quantity="other">Korvattiin %1$d arvoa \"<xliff:g name="new_value" example="B">%2$s</xliff:g>\" arvolla</item>
+    </plurals>
 </resources>

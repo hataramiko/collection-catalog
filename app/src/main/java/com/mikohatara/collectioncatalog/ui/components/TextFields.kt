@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -211,12 +212,16 @@ fun DropdownMenuField(
             ExposedDropdownMenu(
                 expanded = isExpanded,
                 onDismissRequest = { isExpanded = false },
-                shape = RoundedCornerShape(16.dp)//bottomStart = 16.dp, bottomEnd = 16.dp)
+                shape = RoundedCornerShape(
+                    topStart = 4.dp, topEnd = 4.dp,
+                    bottomStart = 16.dp, bottomEnd = 16.dp
+                ),
+                modifier = Modifier.heightIn(max = 384.dp)
             ) {
                 values.forEachIndexed { index, string ->
                     if (hasDividerBeforeIndex(index)) {
                         HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                         )
                     }
 
