@@ -347,4 +347,5 @@
         <item quantity="one">Replaced %1$d value with \"<xliff:g name="new_value" example="B">%2$s</xliff:g>\"</item>
         <item quantity="other">Replaced %1$d values with \"<xliff:g name="new_value" example="B">%2$s</xliff:g>\"</item>
     </plurals>
+    <string name="info_mass_change_selection_mode">Replacement applies to the entire selection</string>
 </resources>

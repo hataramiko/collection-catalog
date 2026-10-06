@@ -273,4 +273,5 @@
     <plurals name="mass_change_msg_success_size_selection">
         <item quantity="other">%1$d件の値を ｢<xliff:g name="new_value" example="B">%2$s</xliff:g>｣ に置換しました</item>
     </plurals>
+    <string name="info_mass_change_selection_mode">置換は選択全体に適用されます</string>
 </resources>

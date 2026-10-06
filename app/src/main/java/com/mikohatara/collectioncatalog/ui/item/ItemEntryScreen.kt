@@ -57,6 +57,7 @@ import com.mikohatara.collectioncatalog.data.ItemDetails
 import com.mikohatara.collectioncatalog.data.ItemType
 import com.mikohatara.collectioncatalog.ui.components.DatePickerField
 import com.mikohatara.collectioncatalog.ui.components.DiscardDialog
+import com.mikohatara.collectioncatalog.ui.components.EntryInfoField
 import com.mikohatara.collectioncatalog.ui.components.IconCollectionLabel
 import com.mikohatara.collectioncatalog.ui.components.ItemEntryTopAppBar
 import com.mikohatara.collectioncatalog.ui.components.Loading
@@ -298,7 +299,7 @@ private fun ItemEntryScreenContent(
                 value = itemDetails.region1st ?: "",
                 onValueChange = { onValueChange(itemDetails.copy(region1st = it)) }
             )
-            InfoField(text = stringResource(R.string.info_region_1st))
+            EntryInfoField(stringResource(R.string.info_region_1st))
             TextEntryField(
                 label = stringResource(R.string.region),
                 value = itemDetails.region2nd ?: "",
@@ -498,7 +499,7 @@ private fun ItemEntryScreenContent(
                     modifier = Modifier.weight(1f)
                 )
             }
-            InfoField(stringResource(R.string.info_width))
+            EntryInfoField(stringResource(R.string.info_width))
             TextEntryField(
                 label = stringResource(R.string.weight),
                 placeholder = { Text(weightUnit) },
@@ -706,26 +707,4 @@ private fun EntryFormHorizontalSpacer(height: Dp = 24.dp) {
 @Composable
 private fun EntryFormVerticalSpacer(width: Dp = 12.dp) {
     Spacer(modifier = Modifier.width(width))
-}
-
-@Composable
-private fun InfoField(text: String, modifier: Modifier = Modifier) {
-    Spacer(modifier = Modifier.height(2.dp))
-    Row(
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp)
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.rounded_info),
-            contentDescription = null,
-            tint = colorScheme.outline,
-            modifier = Modifier.size(24.dp).padding(end = 8.dp)
-        )
-        Text(
-            text = text,
-            color = colorScheme.outline,
-            style = typography.bodySmall
-        )
-    }
 }

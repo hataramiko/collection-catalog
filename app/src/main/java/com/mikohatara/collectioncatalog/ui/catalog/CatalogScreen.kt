@@ -498,6 +498,7 @@ private fun CatalogScreen(
                 }
             },
             onDismiss = toggleMassChangeDialog,
+            isSelectionMode = uiState.isSelectionMode,
             isOldValueEnabled = uiState.isMassChangeOldValueEnabled,
             isNewValueEnabled = uiState.isMassChangeNewValueEnabled,
             isConfirmEnabled = uiState.isMassChangeValid
@@ -545,7 +546,6 @@ private fun CatalogScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CatalogScreenContent(
     uiState: CatalogUiState,

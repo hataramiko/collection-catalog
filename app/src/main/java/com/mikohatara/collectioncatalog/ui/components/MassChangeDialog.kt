@@ -39,6 +39,7 @@ fun MassChangeDialog(
     onNewValueChange: (String) -> Unit,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    isSelectionMode: Boolean,
     isOldValueEnabled: Boolean,
     isNewValueEnabled: Boolean,
     isConfirmEnabled: Boolean,
@@ -96,6 +97,11 @@ fun MassChangeDialog(
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 )
+                if (isSelectionMode && isNewValueEnabled) {
+                    EntryInfoField(
+                        text = stringResource(R.string.info_mass_change_selection_mode)
+                    )
+                }
                 OutlinedTextField(
                     label = { Text(stringResource(R.string.mass_change_new_value)) },
                     value = newValue,
