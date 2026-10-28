@@ -26,8 +26,8 @@ android {
         applicationId = "com.mikohatara.collectioncatalog"
         minSdk = 29
         targetSdk = 36
-        versionCode = 22
-        versionName = "1.5.0"
+        versionCode = 23
+        versionName = "1.5.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
