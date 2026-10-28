@@ -64,7 +64,8 @@ class ItemSummaryViewModel @Inject constructor(
                             item = Item.PlateItem(it.plate),
                             itemType = itemType,
                             itemDetails = it.plate.toItemDetails(),
-                            collections = it.collections
+                            collections = it.collections,
+                            isTransferDestructive = true
                         )
                     }
                 }
