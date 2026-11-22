@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -67,7 +66,7 @@ fun IconCollectionColor(
     modifier: Modifier = Modifier
 ) {
     // This should be the same as the color set in "val tint" of CollectionEntryScreenContent
-    val isDefaultColor = color == MaterialTheme.colorScheme.primary
+    val isDefaultColor = color == colorScheme.primary
 
     if (isDefaultColor) {
         Icon(
@@ -122,7 +121,7 @@ fun IconSelectedCheckmark(
 fun IconQuotationMark(
     modifier: Modifier = Modifier,
     size: Dp = 24.dp,
-    tint: Color = MaterialTheme.colorScheme.outline,
+    tint: Color = colorScheme.outline,
     isFlipped: Boolean = false
 ) {
     val scale = if (isFlipped) -1f else 1f

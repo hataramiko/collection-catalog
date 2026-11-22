@@ -5,9 +5,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
 fun String.isValidDate(): Boolean {
-    if (this.isBlank()) return false
-
-    return try {
+    return this.isNotBlank() && try {
         LocalDate.parse(this)
         true
     } catch (e: DateTimeParseException) {

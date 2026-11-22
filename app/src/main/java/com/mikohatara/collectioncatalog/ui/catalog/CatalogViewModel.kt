@@ -434,9 +434,7 @@ class CatalogViewModel @Inject constructor(
                 }
             } != false
 
-            val matchesVehicleFilter = if (filters.hasVehicle) {
-                !details.vehicle.isNullOrEmpty()
-            } else true
+            val matchesVehicleFilter = !filters.hasVehicle || !details.vehicle.isNullOrEmpty()
 
             when {
                 filters.country.isNotEmpty() && filters.country.none {

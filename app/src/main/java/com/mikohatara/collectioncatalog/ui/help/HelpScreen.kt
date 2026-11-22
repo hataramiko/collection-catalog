@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -94,7 +93,6 @@ fun HelpScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HelpScreen(
     viewModel: HelpViewModel,
@@ -160,7 +158,7 @@ private fun HelpScreenContent(
     ) {
         when (uiState.helpPage) {
             HelpPage.DEFAULT -> item {
-                LandingPage(viewModel = viewModel, navActions = navActions, context = context)
+                LandingPage(navActions = navActions, context = context)
             }
             HelpPage.IMPORT -> item {
                 ImportPage(viewModel = viewModel, context = context)
@@ -171,7 +169,6 @@ private fun HelpScreenContent(
 
 @Composable
 private fun LandingPage(
-    viewModel: HelpViewModel,
     navActions: CollectionCatalogNavigationActions,
     context: Context,
     modifier: Modifier = Modifier

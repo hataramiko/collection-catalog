@@ -6,7 +6,6 @@ import android.icu.util.MeasureUnit
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,11 +46,14 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
+import androidx.compose.material3.rememberRangeSliderState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -116,7 +118,7 @@ fun SortByBottomSheet(
     sortByOptions: List<SortBy>,
     selectedSortBy: SortBy
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -154,7 +156,7 @@ fun SortByBottomSheet(
 }
 
 @SuppressLint("StateFlowValueCalledInComposition")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(
     itemType: ItemType,
@@ -183,7 +185,7 @@ fun FilterBottomSheet(
     archivalReasonList: FilterListData? = null,
     recipientCountryList: FilterListData? = null
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
     var sheetHeight by remember { mutableIntStateOf(0) }
 
     var expandedSection by rememberSaveable { mutableStateOf<Int?>(null) }
@@ -403,7 +405,14 @@ fun SettingsBottomSheet(
     infoText: String? = null
 ) {
     //val skipPartiallyExpanded = options.size < 12
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
+    val sheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = if (skipPartiallyExpanded) {
+            setOf(SheetValue.Hidden, SheetValue.Expanded)
+        } else {
+            setOf(SheetValue.Hidden, SheetValue.PartiallyExpanded, SheetValue.Expanded)
+        }
+    )
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -467,7 +476,7 @@ fun SelectCollectionBottomSheet(
     onSelect: (Collection) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
@@ -751,12 +760,23 @@ private fun FilterSlider(
             .animateContentSize()
     ) {
         if (isExpanded) {
+            val rangeSliderState = rememberRangeSliderState(
+                startValue = sliderPosition.start,
+                endValue = sliderPosition.endInclusive,
+                trackRange = sliderRange.start..sliderRange.endInclusive
+            )
+            LaunchedEffect(sliderPosition) {
+                rangeSliderState.startValue = sliderPosition.start
+                rangeSliderState.endValue = sliderPosition.endInclusive
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             RangeSlider(
-                value = sliderPosition as ClosedFloatingPointRange<Float>,
-                valueRange = sliderRange as ClosedFloatingPointRange<Float>,
-                onValueChange = { newSliderPosition ->
-                    onSliderChange(newSliderPosition)
+                state = rangeSliderState,
+                onValueChange = { newValue ->
+                    rangeSliderState.startValue = newValue.start
+                    rangeSliderState.endValue = newValue.endInclusive
+                    onSliderChange(newValue)
                 },
                 onValueChangeFinished = { onSliderChangeFinished() },
                 modifier = Modifier

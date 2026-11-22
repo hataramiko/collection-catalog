@@ -11,7 +11,6 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -49,7 +48,6 @@ fun customTopAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors
     navigationIconContentColor = colorScheme.onSurfaceVariant
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogTopAppBar(
     title: String,
@@ -305,7 +303,6 @@ fun CatalogTopAppBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemSummaryTopAppBar(
     title: String,
@@ -393,7 +390,6 @@ fun ItemSummaryTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemEntryTopAppBar(
     title: String,
@@ -474,7 +470,6 @@ fun ItemEntryTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionListTopAppBar(
     title: String,
@@ -502,7 +497,6 @@ fun CollectionListTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionEntryTopAppBar(
     title: String,
@@ -557,7 +551,6 @@ fun CollectionEntryTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsTopAppBar(
     onOpenDrawer: () -> Unit,
@@ -578,7 +571,6 @@ fun StatsTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsTopAppBar(
     onBack: () -> Unit,
@@ -599,7 +591,6 @@ fun SettingsTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HelpTopAppBar(
     title: String,
